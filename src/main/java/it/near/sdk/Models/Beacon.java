@@ -8,10 +8,22 @@ import at.rags.morpheus.Resource;
  */
 
 public class Beacon extends Resource {
+
     @SerializeName("name")
     String name;
     @SerializeName("major")
-    String major;
+    Integer major;
+    @SerializeName("proximity_uuid")
+    String proximity_uuid;
+    @SerializeName("range")
+    Integer range;
+    @SerializeName("minor")
+    Integer minor;
+    @SerializeName("color")
+    String color;
+
+
+
 }
 
 

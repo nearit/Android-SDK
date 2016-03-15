@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Intent;
 
 import it.near.sdk.Beacons.AltBeaconWrapper;
+import it.near.sdk.Communication.NearItServer;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.ULog;
@@ -20,6 +21,7 @@ public class NearItManager {
     public NearItManager(Application application) {
         this.application = application;
         initLifecycleMonitor();
+        NearItServer server = new NearItServer();
     }
 
 
