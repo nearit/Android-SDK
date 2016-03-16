@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="API_BASE_URL">http://sandbox.api.nearit.com:8000</string>
+    <string name="API_BASE_URL">http://sandbox.api.nearit.com:8000/</string>
 
 
 </resources>

@@ -21,7 +21,9 @@ public class NearItManager {
     public NearItManager(Application application, String apiKey) {
         this.application = application;
         initLifecycleMonitor();
+        GlobalState.getInstance(application).setApiKey(apiKey);
         NearItServer server = NearItServer.getInstance(application);
+        server.downloadNearConfiguration();
 
     }
 

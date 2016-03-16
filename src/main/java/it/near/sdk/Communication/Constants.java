@@ -13,5 +13,9 @@ public class Constants {
         String jsonApiHeader = "application/vnd.api+json";
     }
 
+    public interface API{
+        String matchings = "matchings";
+    }
+
 
 }

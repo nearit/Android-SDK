@@ -5,13 +5,18 @@ import android.content.Context;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
 
 import at.rags.morpheus.Deserializer;
 import at.rags.morpheus.JSONAPIObject;
 import at.rags.morpheus.Morpheus;
 import it.near.sdk.Models.Beacon;
 import it.near.sdk.Models.Content;
+import it.near.sdk.Models.Matching;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -21,10 +26,10 @@ public class NearItServer {
 
     private static NearItServer mInstance = null;
     private static final String TAG = "NearItServer";
+    private final Morpheus morpheus;
     private Context mContext;
 
     private RequestQueue requestQueue;
-    private String apiKey;
 
     private final String inputString = "{\n" +
             "  \"data\": {\n" +
@@ -83,25 +88,17 @@ public class NearItServer {
             "  }\n" +
             "}";
 
+
     private NearItServer(Context context) {
         this.mContext = context;
-        Morpheus morpheus = new Morpheus();
+        morpheus = new Morpheus();
         //register your resources
         Deserializer.registerResourceClass("beacons", Beacon.class);
         Deserializer.registerResourceClass("contents", Content.class);
+        Deserializer.registerResourceClass("matchings", Matching.class);
 
         requestQueue = Volley.newRequestQueue(context);
-
-        JSONAPIObject jsonapiObject = null;
-        try {
-            jsonapiObject = morpheus.parse(inputStringContent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Content content = (Content)jsonapiObject.getResource();
-        ULog.d(TAG, "Content Id: " + content.getId());
-
+        requestQueue.start();
     }
 
     public static NearItServer getInstance(Context context){
@@ -116,15 +113,34 @@ public class NearItServer {
         return requestQueue;
     }
 
-    public String getApiKey() {
-        return apiKey;
+
+    public void downloadNearConfiguration(){
+
+        requestQueue.add(new CustomJsonRequest(mContext, Constants.API.matchings, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                ULog.d(TAG, response.toString());
+                setMatchings(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                ULog.d(TAG, "error " + error.toString() );
+            }
+        }));
+
     }
 
-    public void downloadNearConfiguration(String apiKey){
-        this.apiKey = apiKey;
 
-        requestQueue.add(new CustomJsonRequest(mContext, Request.Method.GET, ));
+    public void setMatchings(JSONObject matchings) {
+        JSONAPIObject jsonapiObject = null;
+        try {
+            jsonapiObject = morpheus.parse(matchings.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Matching matching = (Matching)jsonapiObject.getResources().get(0);
+        ULog.d(TAG, "Matching Id: " + matching.getId());
     }
-
-
 }
