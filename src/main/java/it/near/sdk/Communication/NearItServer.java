@@ -1,10 +1,17 @@
 package it.near.sdk.Communication;
 
+import android.content.Context;
+
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 import at.rags.morpheus.Deserializer;
 import at.rags.morpheus.JSONAPIObject;
 import at.rags.morpheus.Morpheus;
 import it.near.sdk.Models.Beacon;
-import it.near.sdk.R;
+import it.near.sdk.Models.Content;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -12,7 +19,12 @@ import it.near.sdk.Utils.ULog;
  */
 public class NearItServer {
 
+    private static NearItServer mInstance = null;
     private static final String TAG = "NearItServer";
+    private Context mContext;
+
+    private RequestQueue requestQueue;
+    private String apiKey;
 
     private final String inputString = "{\n" +
             "  \"data\": {\n" +
@@ -43,18 +55,76 @@ public class NearItServer {
             "  }\n" +
             "}";
 
-    public NearItServer() {
+    private final String inputStringContent = "{\n" +
+            "  \"data\": {\n" +
+            "    \"id\": \"33GW3ZrpDRz4Eb\",\n" +
+            "    \"type\": \"contents\",\n" +
+            "    \"attributes\": {\n" +
+            "      \"title\": \"2xxasd\",\n" +
+            "      \"short_description\": \"2\",\n" +
+            "      \"long_description\": \"<p>2</p>\",\n" +
+            "      \"creator_id\": \"33f12c79-7176-4764-beca-53437a06b90b\",\n" +
+            "      \"created_at\": \"2016-02-24T15:21:12.089+00:00\",\n" +
+            "      \"updated_at\": \"2016-03-02T14:39:13.085+00:00\",\n" +
+            "      \"photo_ids\": [\n" +
+            "        \"6e7978c0-6fde-4ac9-a2f0-0976f1315dc9\"\n" +
+            "      ],\n" +
+            "      \"trashed\": false,\n" +
+            "      \"app_id\": \"5210eed1-e471-4c37-a4dd-832513864645\"\n" +
+            "    },\n" +
+            "    \"relationships\": {\n" +
+            "      \"matchings\": {\n" +
+            "        \"data\": []\n" +
+            "      }\n" +
+            "    },\n" +
+            "    \"meta\": {\n" +
+            "      \"matching_count\": 0\n" +
+            "    }\n" +
+            "  }\n" +
+            "}";
+
+    private NearItServer(Context context) {
+        this.mContext = context;
         Morpheus morpheus = new Morpheus();
         //register your resources
         Deserializer.registerResourceClass("beacons", Beacon.class);
+        Deserializer.registerResourceClass("contents", Content.class);
+
+        requestQueue = Volley.newRequestQueue(context);
+
         JSONAPIObject jsonapiObject = null;
         try {
-            jsonapiObject = morpheus.parse(inputString);
+            jsonapiObject = morpheus.parse(inputStringContent);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        Beacon beacon = (Beacon)jsonapiObject.getResource();
-        ULog.d(TAG, "Beacon Id: " + beacon.getId());
+        Content content = (Content)jsonapiObject.getResource();
+        ULog.d(TAG, "Content Id: " + content.getId());
+
     }
+
+    public static NearItServer getInstance(Context context){
+        if(mInstance == null)
+        {
+            mInstance = new NearItServer(context);
+        }
+        return mInstance;
+    }
+
+    public RequestQueue getRequestQueue() {
+        return requestQueue;
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public void downloadNearConfiguration(String apiKey){
+        this.apiKey = apiKey;
+
+        requestQueue.add(new CustomJsonRequest(mContext, Request.Method.GET, ));
+    }
+
+
 }

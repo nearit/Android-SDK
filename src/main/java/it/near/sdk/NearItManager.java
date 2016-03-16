@@ -18,10 +18,11 @@ public class NearItManager {
 
     Application application;
 
-    public NearItManager(Application application) {
+    public NearItManager(Application application, String apiKey) {
         this.application = application;
         initLifecycleMonitor();
-        NearItServer server = new NearItServer();
+        NearItServer server = NearItServer.getInstance(application);
+
     }
 
 
