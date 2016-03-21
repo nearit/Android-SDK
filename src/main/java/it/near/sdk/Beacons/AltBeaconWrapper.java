@@ -2,6 +2,7 @@ package it.near.sdk.Beacons;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
@@ -17,6 +18,11 @@ import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
 import java.util.Collection;
+import java.util.List;
+
+import it.near.sdk.GlobalState;
+import it.near.sdk.Models.Configuration;
+import it.near.sdk.Utils.ULog;
 
 /**
  * Created by cattaneostefano on 14/03/16.
@@ -25,6 +31,19 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
 
     private static final String TAG = "AltBeaconWrapper";
     private BeaconManager beaconManager;
+    // Binder given to clients
+    private final IBinder mBinder = new LocalBinder();
+
+    /**
+     * Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    public class LocalBinder extends Binder {
+        public AltBeaconWrapper getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return AltBeaconWrapper.this;
+        }
+    }
 
     @Override
     public void onCreate() {
@@ -40,6 +59,7 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         Log.d(TAG, "onStartCommand");
         beaconManager.bind(this);
         beaconManager.setBackgroundMode(false);
+        beaconManager.setRangeNotifier(GlobalState.getInstance(this).getNearRangeNotifier());
         return START_NOT_STICKY;
     }
 
@@ -55,28 +75,54 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
     @Override
     public void onBeaconServiceConnect() {
-        Log.d(TAG, "onBeaconServiceConnect, startRanging");
+        ULog.d(TAG, "onBeaconServiceConnect, startRanging");
 
-        beaconManager.setRangeNotifier(new RangeNotifier() {
+        /*beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                Log.d(TAG, "didRangeBeaconsInRegion " + beacons.size() + " region: " + region.toString());
+                ULog.d(TAG, "didRangeBeaconsInRegion " + beacons.size() + " region: " + region.toString());
                 if (beacons.size() > 0) {
-                    Log.d(TAG, "The first beacon I see is about " + beacons.iterator().next().getDistance() + " meters away.");
+                    ULog.d(TAG, "The first beacon I see is about " + beacons.iterator().next().getDistance() + " meters away.");
                 }
             }
-        });
+        });*/
+        configureScanner(GlobalState.getInstance(getApplicationContext()).getConfiguration());
+    }
 
-        try {
-            String proximityUUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
-            int major = 452;
-            beaconManager.startRangingBeaconsInRegion(new Region("Kontact, with Estimote proximityUUID", Identifier.parse(proximityUUID), Identifier.fromInt(major), Identifier.fromInt(111)));
-        } catch (RemoteException e) {  Log.d(TAG, "Exception");  }
+    public void configureScanner(Configuration configuration){
+        stopRangingAll();
+        List<it.near.sdk.Models.Beacon> beaconList = configuration.getBeaconList();
+        if ( beaconList == null  ||  beaconList.size() == 0 ) return;
 
+        for (it.near.sdk.Models.Beacon b : beaconList){
+            try {
+                ULog.d(TAG, "startRanging beacon: " + b.getMajor() + " " + b.getMinor());
+                beaconManager.startRangingBeaconsInRegion(new Region("Region", null, null, null));
+                //beaconManager.startRangingBeaconsInRegion(new Region("Region" + b.getMinor() + b.getMajor(), Identifier.parse(b.getProximity_uuid()), Identifier.fromInt(b.getMajor()), Identifier.fromInt(b.getMinor())));
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void stopRangingAll(){
+        Collection<Region> regionList = beaconManager.getRangedRegions();
+        for (Region r : regionList){
+            try {
+                beaconManager.stopRangingBeaconsInRegion(r);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    public void setBackgroundMode(boolean isInBackground){
+        beaconManager.setBackgroundMode(isInBackground);
     }
 }

@@ -17,4 +17,19 @@ public class Matching extends Resource {
     @SerializeName("active")
     Boolean active;
 
+    public String getContent_id() {
+        return content_id;
+    }
+
+    public String getApp_id() {
+        return app_id;
+    }
+
+    public String getBeacon_id() {
+        return beacon_id;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
 }
