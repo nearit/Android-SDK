@@ -78,6 +78,8 @@ public class NearItServer {
                 List<Matching> matchings = parseList(response, Matching.class);
                 configuration.setMatchingList(matchings);
                 downloadBeacons(matchings);
+                downloadContents(matchings);
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -108,6 +110,28 @@ public class NearItServer {
         }
         ULog.d(TAG, "");
 
+
+    }
+
+    private void downloadContents(List<Matching> matchings) {
+
+        for (Matching matching : matchings) {
+            requestQueue.add(new CustomJsonRequest(mContext, Constants.API.contents + "/" + matching.getContent_id(), new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    ULog.d(TAG, "Content downloaded" + response.toString());
+                    Content content = parse(response, Content.class);
+                    configuration.addContent(content);
+
+                }
+            },new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    ULog.d(TAG, "error " + error.toString() );
+                }
+            }));
+        }
 
     }
 
