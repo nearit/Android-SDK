@@ -22,6 +22,7 @@ import java.util.List;
 
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
+import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -96,10 +97,10 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
 
     public void configureScanner(Configuration configuration){
         stopRangingAll();
-        List<it.near.sdk.Models.Beacon> beaconList = configuration.getBeaconList();
+        List<NearBeacon> beaconList = configuration.getBeaconList();
         if ( beaconList == null  ||  beaconList.size() == 0 ) return;
 
-        for (it.near.sdk.Models.Beacon b : beaconList){
+        for (NearBeacon b : beaconList){
             try {
                 ULog.d(TAG, "startRanging beacon: " + b.getMajor() + " " + b.getMinor());
                 beaconManager.startRangingBeaconsInRegion(new Region("Region", null, null, null));

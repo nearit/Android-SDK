@@ -12,8 +12,8 @@ public class Configuration {
 
     private static final String TAG = "Configuration";
     List<Matching> matchingList;
-    List<Beacon> beaconList;
-    List<Content> contentList;
+    List<NearBeacon> beaconList;
+ List<Content> contentList;
 
     public List<Matching> getMatchingList() {
         return matchingList;
@@ -23,7 +23,7 @@ public class Configuration {
         this.matchingList = matchingList;
     }
 
-    public List<Beacon> getBeaconList() {
+    public List<NearBeacon> getBeaconList() {
         return beaconList;
     }
 
@@ -39,9 +39,9 @@ public class Configuration {
         this.beaconList = beaconList;
     }
 
-    public void addBeacon(Beacon beacon) {
+    public void addBeacon(NearBeacon beacon) {
         if (beaconList == null) {
-            beaconList = new ArrayList<Beacon>();
+            beaconList = new ArrayList<NearBeacon>();
         }
         beaconList.add(beacon);
     }
@@ -50,7 +50,7 @@ public class Configuration {
         if ( beaconList == null || beaconList.size()==0 ){
             return false;
         }
-        for (Beacon appBeacon : beaconList){
+        for (NearBeacon appBeacon : beaconList){
             if (appBeacon.isLike(beacon))
                 return true;
         }

@@ -17,7 +17,6 @@ import at.rags.morpheus.JSONAPIObject;
 import at.rags.morpheus.Morpheus;
 import at.rags.morpheus.Resource;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Models.Beacon;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
@@ -51,7 +50,7 @@ public class NearItServer {
     private void setUpParser() {
         morpheus = new Morpheus();
         //register your resources
-        Deserializer.registerResourceClass("beacons", Beacon.class);
+        Deserializer.registerResourceClass("beacons", NearBeacon.class);
         Deserializer.registerResourceClass("contents", Content.class);
         Deserializer.registerResourceClass("matchings", Matching.class);
     }
@@ -102,7 +101,8 @@ public class NearItServer {
                 @Override
                 public void onResponse(JSONObject response) {
                     ULog.d(TAG, "Beacon downloaded: " + response.toString());
-                    Beacon beacon = parse(response, Beacon.class);
+                    NearBeacon beacon = parse(response, NearBeacon.class);
+
                     configuration.addBeacon(beacon);
                     realmWrapper.save(beacon);
                     GlobalState.getInstance(mContext).getAltBeaconWrapper().configureScanner(configuration);

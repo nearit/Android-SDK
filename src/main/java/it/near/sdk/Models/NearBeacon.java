@@ -4,10 +4,9 @@ import at.rags.morpheus.Annotations.SerializeName;
 import at.rags.morpheus.Resource;
 
 /**
- * Created by cattaneostefano on 15/03/16.
+ * Created by cattaneostefano on 22/03/16.
  */
-
-public class Beacon extends Resource {
+public class NearBeacon extends Resource {
 
     @SerializeName("name")
     String name;
@@ -75,6 +74,23 @@ public class Beacon extends Resource {
                 && beacon.getId2().toInt() == this.getMajor()
                 && beacon.getId3().toInt() == this.getMinor();
     }
+
+
+
+    public static int distanceToProximity(double distance) {
+
+        if (distance<=0)
+            return 3;
+
+        else if (distance<=0.3)
+            return 1;
+
+        else if (distance<=3)
+            return 2;
+
+        else if (distance<3)
+            return 3;
+
+        return 3;
+    }
 }
-
-
