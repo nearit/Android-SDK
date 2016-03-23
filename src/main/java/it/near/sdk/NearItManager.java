@@ -14,6 +14,7 @@ import org.altbeacon.beacon.Region;
 import java.util.Collection;
 
 import it.near.sdk.Beacons.AltBeaconWrapper;
+import it.near.sdk.Beacons.BeaconDynamicRadar;
 import it.near.sdk.Beacons.NearRangeNotifier;
 import it.near.sdk.Communication.NearItServer;
 import it.near.sdk.Utils.AppLifecycleMonitor;

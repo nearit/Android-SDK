@@ -3,6 +3,7 @@ package it.near.sdk;
 import android.content.Context;
 
 import it.near.sdk.Beacons.AltBeaconWrapper;
+import it.near.sdk.Beacons.BeaconDynamicRadar;
 import it.near.sdk.Beacons.NearRangeNotifier;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Utils.TraceNotifier;
@@ -21,6 +22,7 @@ public class GlobalState {
     private AltBeaconWrapper altBeaconWrapper;
     private NearRangeNotifier nearRangeNotifier;
     private TraceNotifier traceNotifier;
+    private BeaconDynamicRadar beaconDynamicRadar;
 
     public GlobalState(Context mContext) {
         this.mContext = mContext;
@@ -76,5 +78,13 @@ public class GlobalState {
 
     public void setTraceNotifier(TraceNotifier traceNotifier) {
         this.traceNotifier = traceNotifier;
+    }
+
+    public BeaconDynamicRadar getBeaconDynamicRadar() {
+        return beaconDynamicRadar;
+    }
+
+    public void setBeaconDynamicRadar(BeaconDynamicRadar beaconDynamicRadar) {
+        this.beaconDynamicRadar = beaconDynamicRadar;
     }
 }

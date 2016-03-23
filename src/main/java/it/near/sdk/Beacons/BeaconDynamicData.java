@@ -58,7 +58,7 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData>{
     public void initializeCycleData() {
 
         distances.add(new Double(-1));
-        if (distances.size() > 4)
+        if (distances.size() > 3)
             distances.remove(0);
     }
 

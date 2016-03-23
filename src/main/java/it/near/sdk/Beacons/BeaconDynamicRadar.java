@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import it.near.sdk.GlobalState;
 import it.near.sdk.Models.NearBeacon;
 
 /**
@@ -18,10 +19,13 @@ public class BeaconDynamicRadar {
     private static final String TAG = "BeaconDynamicRadar";
 
     private List<BeaconDynamicData> beaconsDistances;
-    private BeaconDynamicData currentDynamicData;
+    private BeaconDynamicData currentDynamicBeacon;
     private final double minDifference = 0.3;
+    private Context context;
+    private ProximityListener proximityListener;
 
     public BeaconDynamicRadar(Context context, List<NearBeacon> beacons){
+        this.context = context;
         beaconsDistances = new ArrayList<>();
 
         initBeaconDynamicData(beacons);
@@ -53,7 +57,7 @@ public class BeaconDynamicRadar {
             if (dynBeacon.hasMinumumData()) {
 
                 int avgProximityValue = NearBeacon.distanceToProximity(dynBeacon.getAverage()); // trasformo la distanza media in metri in proximity
-                int requestedProximityValue = Integer.valueOf(dynBeacon.getBeaconConfig().getProximity_uuid());
+                int requestedProximityValue = Integer.valueOf(dynBeacon.getBeaconConfig().getRange());
                 dynBeacon.setCurrentProximity(avgProximityValue);
 
                 if ( avgProximityValue <= requestedProximityValue )
@@ -67,8 +71,23 @@ public class BeaconDynamicRadar {
             selectedBeacon = inRangeBeacons.get(0);
         }
 
+        if ( selectedBeacon==null && currentDynamicBeacon != null) {
+            leaveBeacon(currentDynamicBeacon.getBeaconConfig());
+            currentDynamicBeacon = null;
+        } else if (currentDynamicBeacon != null
+                && selectedBeacon != null
+                && selectedBeacon.getAltBeacon().getId3().toInt() != currentDynamicBeacon.getAltBeacon().getId3().toInt()) {
+            double actualDifference = currentDynamicBeacon.getAverage() - selectedBeacon.getAverage();
+            if (actualDifference > minDifference) {
+                leaveBeacon(currentDynamicBeacon.getBeaconConfig());
+                currentDynamicBeacon = null;
+            }
+        }
 
-
+        if (inRangeBeacons.size() > 0 && currentDynamicBeacon == null) {
+            currentDynamicBeacon = selectedBeacon;
+            enterBeacon(currentDynamicBeacon.getBeaconConfig());
+        }
 
     }
 
@@ -88,4 +107,19 @@ public class BeaconDynamicRadar {
         return null;
     }
 
+    private void enterBeacon(NearBeacon beacon){
+        proximityListener.enterBeaconRange(beacon);
+    }
+
+    private void leaveBeacon(NearBeacon beacon){
+        proximityListener.exitBeaconRange(beacon);
+    }
+
+    public ProximityListener getProximityListener() {
+        return proximityListener;
+    }
+
+    public void setProximityListener(ProximityListener proximityListener) {
+        this.proximityListener = proximityListener;
+    }
 }

@@ -53,6 +53,8 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+
+        GlobalState.getInstance(this.getApplicationContext()).getBeaconDynamicRadar().setProximityListener(proximityListener);
     }
 
     @Override
@@ -109,6 +111,10 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
                 e.printStackTrace();
             }
         }
+
+        BeaconDynamicRadar radar = new BeaconDynamicRadar(this.getApplicationContext(), beaconList);
+        GlobalState.getInstance(this.getApplicationContext()).setBeaconDynamicRadar(radar);
+
     }
 
     public void stopRangingAll(){
@@ -122,8 +128,21 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         }
     }
 
-
     public void setBackgroundMode(boolean isInBackground){
         beaconManager.setBackgroundMode(isInBackground);
     }
+
+    private ProximityListener proximityListener = new ProximityListener() {
+        @Override
+        public void enterBeaconRange(NearBeacon beacon) {
+            String dominant = "You entered the beacon with major: " + beacon.getMajor() + " and minor: " + beacon.getMinor();
+            GlobalState.getInstance(getApplicationContext()).getTraceNotifier().trace("", dominant);
+        }
+
+        @Override
+        public void exitBeaconRange(NearBeacon beacon) {
+            String dominant = "You exited the beacon with major: " + beacon.getMajor() + " and minor: " + beacon.getMinor();
+            GlobalState.getInstance(getApplicationContext()).getTraceNotifier().trace("", dominant);
+        }
+    };
 }
