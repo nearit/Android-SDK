@@ -26,24 +26,48 @@ public class Beacon extends Resource {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Integer getMajor() {
         return major;
+    }
+
+    public void setMajor(Integer major) {
+        this.major = major;
     }
 
     public String getProximity_uuid() {
         return proximity_uuid;
     }
 
+    public void setProximity_uuid(String proximity_uuid) {
+        this.proximity_uuid = proximity_uuid;
+    }
+
     public Integer getRange() {
         return range;
+    }
+
+    public void setRange(Integer range) {
+        this.range = range;
     }
 
     public Integer getMinor() {
         return minor;
     }
 
+    public void setMinor(Integer minor) {
+        this.minor = minor;
+    }
+
     public String getColor() {
         return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
     public boolean isLike(org.altbeacon.beacon.Beacon beacon) {
