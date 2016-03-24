@@ -12,6 +12,8 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Models.NearBeacon;
 
 /**
+ * Manage and calculate beacon distances from the user device.
+ *
  * Created by cattaneostefano on 22/03/16.
  */
 public class BeaconDynamicRadar {
@@ -34,6 +36,10 @@ public class BeaconDynamicRadar {
         }
     }
 
+    /**
+     * For every beacon create beacon dynamic data
+     * @param beacons
+     */
     public void initBeaconDynamicData(List<NearBeacon> beacons){
         // for every beacon, create a BeaconDynamicData
         for (NearBeacon beacon : beacons){
@@ -43,10 +49,15 @@ public class BeaconDynamicRadar {
         }
     }
 
+    /**
+     * Handle a list of beacons being detected. Note that this is called about every second.
+     * @param beacons
+     */
     public void beaconsDiscovered(List<Beacon> beacons) {
         initializeCycleDistance();
 
         for (Beacon beacon : beacons){
+            // for every beacon we save the new distance
             BeaconDynamicData dynBeacon = findDynamicBeacon(beacon);
 
             if (dynBeacon!=null){
@@ -55,7 +66,42 @@ public class BeaconDynamicRadar {
             }
         }
 
-        List<BeaconDynamicData> inRangeBeacons = new ArrayList<>();
+        // select only beacon for which we stand in their proximity
+        ArrayList<BeaconDynamicData> inRangeBeacons = filterInRange();
+
+
+        BeaconDynamicData closestBeacon = null;
+        Collections.sort(inRangeBeacons);
+        if (inRangeBeacons.size() > 0){
+            closestBeacon = inRangeBeacons.get(0);
+        }
+
+        if ( closestBeacon==null && currentDynamicBeacon != null) {
+            leaveBeacon(currentDynamicBeacon.getBeaconConfig());
+            currentDynamicBeacon = null;
+        } else if (currentDynamicBeacon != null
+                && closestBeacon != null
+                && closestBeacon.getAltBeacon().getId3().toInt() != currentDynamicBeacon.getAltBeacon().getId3().toInt()) {
+            double actualDifference = currentDynamicBeacon.getAverage() - closestBeacon.getAverage();
+            if (actualDifference > minDifference) {
+                leaveBeacon(currentDynamicBeacon.getBeaconConfig());
+                currentDynamicBeacon = null;
+            }
+        }
+
+        if (inRangeBeacons.size() > 0 && currentDynamicBeacon == null) {
+            currentDynamicBeacon = closestBeacon;
+            enterBeacon(currentDynamicBeacon.getBeaconConfig());
+        }
+
+    }
+
+    /**
+     * Filter beacons based on us being inside their proximity
+     * @return
+     */
+    private ArrayList<BeaconDynamicData> filterInRange() {
+        ArrayList<BeaconDynamicData> inRangeBeacons = new ArrayList<>();
         for (BeaconDynamicData dynBeacon : beaconsDistances) {
             if (dynBeacon.hasMinumumData()) {
 
@@ -67,33 +113,13 @@ public class BeaconDynamicRadar {
                     inRangeBeacons.add(dynBeacon);
             }
         }
-
-        BeaconDynamicData selectedBeacon = null;
-        Collections.sort(inRangeBeacons);
-        if (inRangeBeacons.size() > 0){
-            selectedBeacon = inRangeBeacons.get(0);
-        }
-
-        if ( selectedBeacon==null && currentDynamicBeacon != null) {
-            leaveBeacon(currentDynamicBeacon.getBeaconConfig());
-            currentDynamicBeacon = null;
-        } else if (currentDynamicBeacon != null
-                && selectedBeacon != null
-                && selectedBeacon.getAltBeacon().getId3().toInt() != currentDynamicBeacon.getAltBeacon().getId3().toInt()) {
-            double actualDifference = currentDynamicBeacon.getAverage() - selectedBeacon.getAverage();
-            if (actualDifference > minDifference) {
-                leaveBeacon(currentDynamicBeacon.getBeaconConfig());
-                currentDynamicBeacon = null;
-            }
-        }
-
-        if (inRangeBeacons.size() > 0 && currentDynamicBeacon == null) {
-            currentDynamicBeacon = selectedBeacon;
-            enterBeacon(currentDynamicBeacon.getBeaconConfig());
-        }
-
+        return inRangeBeacons;
     }
 
+
+    /**
+     * For every beacon add an empty distance, to take note of the out of range beacons
+     */
     private void initializeCycleDistance() {
         for (BeaconDynamicData data : beaconsDistances) {
             data.initializeCycleData();
