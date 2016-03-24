@@ -66,7 +66,7 @@ public class RealmWrapper {
     }
 
     /**
-     * Save an object into the Realm
+     * Save a Resource into the Realm
      * Takes a {@link Resource} as argument, retrieve its ResourceObject model
      * (done by the {@link RealmObjectFactory}) and save it into the Realm
      *
@@ -81,6 +81,15 @@ public class RealmWrapper {
 
     }
 
+    /**
+     *
+     * Save a list of Resrouce into the Realm.
+     * Takes a list of {@link Resource} as argument and save it to the Realm, after the conversion
+     * to a {@link io.realm.RealmList}
+     *
+     * @param resourceList
+     * @param <T>
+     */
     public <T extends Resource> void saveList(List<T> resourceList) {
 
         realm.beginTransaction();
@@ -93,18 +102,10 @@ public class RealmWrapper {
 
     }
 
-    public <T extends Resource> void deleteList(List<T> resourceList) {
-
-        for (T resource : resourceList) {
-            delete(resource);
-        }
-
-    }
-
     /**
-     * Delete a Realm object
-     * Takes the {@link Resource} that has to been deleted locally. This will be used to retrieve
-     * the {@link RealmObject} used by Realm
+     * Delete a resource
+     * Takes the {@link Resource} that has to been deleted from the device.
+     * This resource will be used to retrieve the {@link RealmObject} used by Realm
      *
      * @param resource
      * @param <T>
@@ -116,6 +117,20 @@ public class RealmWrapper {
         realm.beginTransaction();
         toDelete.removeFromRealm();
         realm.commitTransaction();
+    }
+
+    /**
+     * Delete a list of resources.
+     * Cycle through the list and call the {@link #delete(Resource)} for every resource
+     * @param resourceList
+     * @param <T>
+     */
+    public <T extends Resource> void deleteList(List<T> resourceList) {
+
+        for (T resource : resourceList) {
+            delete(resource);
+        }
+
     }
 
     /**
@@ -164,13 +179,10 @@ public class RealmWrapper {
             e.printStackTrace();
         }
 
-        RealmObject realmObject = realmObjectFactory.getRealmObject(resource);
         List<T> convertedList = new ArrayList<T>();
-        ULog.d("TEST", realmObject.getClass().toString());
+        RealmResults<MatchingRealm> realmResults = realm.where(MatchingRealm.class).findAll();
 
-        RealmResults<MatchingRealm> r = realm.where(MatchingRealm.class).findAll();
-
-        for (RealmObject ro : r) {
+        for (RealmObject ro : realmResults) {
             convertedList.add((T) realmObjectFactory.getResource(ro));
         }
 

@@ -11,15 +11,16 @@ import it.near.sdk.Realm.RealmString;
 /**
  * Created by alessandrocolleoni on 23/03/16.
  *
- * This class will convert a RealmList to a List
- * Methods for each type will be created.
+ * This class will be used as a converter between Resources or other objects to realm objects
+ * and vice versa.
  *
  */
 public class RealmListConverter {
 
     /**
      *
-     * This method takes a RealmList made by RealmString. This will be converted to a List of Strings
+     * This method takes a {@link RealmList} made by {@link RealmString}.
+     * This will be converted to a List of Strings
      *
      * @param list to convert
      * @return converted list
@@ -35,6 +36,13 @@ public class RealmListConverter {
         return convertedList;
     }
 
+    /**
+     *
+     * This method takes a List of resources and will be converted to a List of {@link RealmObject}
+     *
+     * @param list to convert
+     * @return converted list
+     */
     public static <T extends RealmObject> List<T> convertToRealmList(List<?> list) {
 
         RealmList<T> convertedList = new RealmList<T>();

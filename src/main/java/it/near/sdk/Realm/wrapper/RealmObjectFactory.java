@@ -11,10 +11,12 @@ import it.near.sdk.Realm.MatchingRealm;
 
 /**
  * Created by alessandrocolleoni on 23/03/16.
+ * Factory used to get an instance of a {@link RealmObject} from a {@link Resource} or vice versa.
  */
 public class RealmObjectFactory {
 
-    public <T extends RealmObject> T getRealmObject(Object object) {
+
+    public <T extends RealmObject> T getRealmObject(Resource object) {
 
         if (object instanceof Beacon) {
             return (T) new BeaconRealm((Beacon) object);
@@ -28,7 +30,7 @@ public class RealmObjectFactory {
 
     }
 
-    public <T extends Resource> T getResource(Object object) {
+    public <T extends Resource> T getResource(RealmObject object) {
 
         if(object instanceof BeaconRealm) {
             return (T) ((BeaconRealm) object).convertToModel();
