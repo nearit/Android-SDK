@@ -56,7 +56,7 @@ public class NearRangeNotifier implements RangeNotifier {
             trace = trace.concat("\nPosition: " + i + " Major: " + beacon.getId2().toString() + " Minor: " + beacon.getId3().toString() + " Distance: " + beacon.getDistance());
             i++;
         }
-        GlobalState.getInstance(context).getTraceNotifier().trace(trace, "");
+        GlobalState.getInstance(context).getTraceNotifier().trace(trace);
     }
 
 

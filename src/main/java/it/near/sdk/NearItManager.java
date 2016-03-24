@@ -11,7 +11,9 @@ import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import it.near.sdk.Beacons.AltBeaconWrapper;
 import it.near.sdk.Beacons.BeaconDynamicRadar;
@@ -34,12 +36,14 @@ public class NearItManager {
     private static final String TAG = "NearItManager";
     private static String APP_PACKAGE_NAME;
 
+    private List<ContentListener> contentListeners;
 
     Application application;
 
     public NearItManager(Application application, String apiKey) {
         this.application = application;
         initLifecycleMonitor();
+        contentListeners = new ArrayList<>();
 
         GlobalState.getInstance(application).setNearRangeNotifier(new NearRangeNotifier(application));
         GlobalState.getInstance(application).setApiKey(apiKey);
@@ -117,6 +121,17 @@ public class NearItManager {
         return GlobalState.getInstance(application).getConfiguration();
     }
 
+    public void addContentListener(ContentListener listener){
+        contentListeners.add(listener);
+    }
+
+    private void deliverContent(Content content, Matching matching){
+        for (ContentListener listener : contentListeners){
+            if (listener != null){
+                listener.onContentToDisplay(content, matching);
+            }
+        }
+    }
 
     private MatchingNotifier matchingNotifier = new MatchingNotifier() {
         @Override
@@ -124,8 +139,7 @@ public class NearItManager {
             getConfiguration();
             Content content = getConfiguration().getContentFromId(matching.getContent_id());
             // TODO deliver content
-            String contentToast = getConfiguration().getContentFromId(matching.getContent_id()).getTitle();
-            GlobalState.getInstance(application).getTraceNotifier().trace("", contentToast);
+            deliverContent(content, matching);
         }
     };
 }

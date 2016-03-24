@@ -139,23 +139,19 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         return GlobalState.getInstance(getApplicationContext());
     }
 
-    private void trace(String trace, String dominant){
-        getGlobalState().getTraceNotifier().trace(trace, dominant);
+    private void trace(String trace){
+        getGlobalState().getTraceNotifier().trace(trace);
     }
 
     private ProximityListener proximityListener = new ProximityListener() {
         @Override
         public void enterBeaconRange(NearBeacon beacon) {
-            String dominant = "You entered the beacon with major: " + beacon.getMajor() + " and minor: " + beacon.getMinor();
-            trace("", dominant);
             Matching matching = getGlobalState().getConfiguration().getMatchingFromBeacon(beacon);
             getGlobalState().getMatchingNotifier().onRuleFullfilled(matching);
         }
 
         @Override
         public void exitBeaconRange(NearBeacon beacon) {
-            String dominant = "You exited the beacon with major: " + beacon.getMajor() + " and minor: " + beacon.getMinor();
-            trace("", dominant);
         }
     };
 }

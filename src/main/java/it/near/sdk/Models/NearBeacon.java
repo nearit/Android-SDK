@@ -69,6 +69,12 @@ public class NearBeacon extends Resource {
         this.color = color;
     }
 
+    /**
+     * Check if a Near beacon has the same proximityUUID, major and minor of a given AltBeacon
+     *
+     * @param beacon
+     * @return
+     */
     public boolean isLike(org.altbeacon.beacon.Beacon beacon) {
         return beacon.getId1().toString().equals(this.getProximity_uuid())
                 && beacon.getId2().toInt() == this.getMajor()
@@ -76,19 +82,31 @@ public class NearBeacon extends Resource {
     }
 
 
-
+    /**
+     * Translate distance (in meters, but very approximate) to proximity
+     * 3 FAR
+     * 2 IMMEDIATE
+     * 1 NEAR
+     *
+     * @param distance
+     * @return
+     */
     public static int distanceToProximity(double distance) {
 
         if (distance<=0)
+            // negative distance, FAR
             return 3;
 
         else if (distance<=0.3)
+            // IMMEDIATE
             return 1;
 
         else if (distance<=3)
+            // NEAR
             return 2;
 
         else if (distance<3)
+            // FAR
             return 3;
 
         return 3;
