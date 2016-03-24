@@ -6,6 +6,7 @@ import java.util.List;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Object representing the configuration of an "app". As of release 1, it consist of beacons, contents and matchings.
  * Created by cattaneostefano on 17/03/16.
  */
 public class Configuration {

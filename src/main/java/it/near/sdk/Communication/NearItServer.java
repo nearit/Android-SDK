@@ -16,6 +16,7 @@ import at.rags.morpheus.Deserializer;
 import at.rags.morpheus.JSONAPIObject;
 import at.rags.morpheus.Morpheus;
 import at.rags.morpheus.Resource;
+import it.near.sdk.BuildConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
@@ -30,7 +31,7 @@ public class NearItServer {
 
     private static NearItServer mInstance = null;
     private static final String TAG = "NearItServer";
-
+    private String APP_PACKAGE_NAME;
     private final Configuration configuration;
     private Morpheus morpheus;
     private Context mContext;
@@ -39,20 +40,18 @@ public class NearItServer {
 
     private NearItServer(Context context) {
         this.mContext = context;
+        APP_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
+
+        setUpMorpheusParser();
         realmWrapper = RealmWrapper.getInstance(mContext);
-        setUpParser();
         configuration = new Configuration();
         GlobalState.getInstance(context).setConfiguration(configuration);
+
+        // Set-up a request queue for making http requests
+        // with Google own volley library
+        // https://developer.android.com/training/volley/index.html
         requestQueue = Volley.newRequestQueue(context);
         requestQueue.start();
-    }
-
-    private void setUpParser() {
-        morpheus = new Morpheus();
-        //register your resources
-        Deserializer.registerResourceClass("beacons", NearBeacon.class);
-        Deserializer.registerResourceClass("contents", Content.class);
-        Deserializer.registerResourceClass("matchings", Matching.class);
     }
 
     public static NearItServer getInstance(Context context){
@@ -61,6 +60,19 @@ public class NearItServer {
 
         }
         return mInstance;
+    }
+
+    /**
+     * Set up Morpheus parser. Morpheus parses jsonApi encoded resources
+     * https://github.com/xamoom/Morpheus
+     * We didn't actually use this library due to its minSdkVersion. We instead imported its code and adapted it.
+     */
+    private void setUpMorpheusParser() {
+        morpheus = new Morpheus();
+        //register your resources
+        Deserializer.registerResourceClass("beacons", NearBeacon.class);
+        Deserializer.registerResourceClass("contents", Content.class);
+        Deserializer.registerResourceClass("matchings", Matching.class);
     }
 
     public RequestQueue getRequestQueue() {

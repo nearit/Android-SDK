@@ -28,6 +28,7 @@ import it.near.sdk.Utils.ULog;
 public class NearItManager {
 
     private static final String TAG = "NearItManager";
+    private static String APP_PACKAGE_NAME;
 
     Application application;
 
@@ -35,8 +36,8 @@ public class NearItManager {
     public NearItManager(Application application, String apiKey) {
         this.application = application;
         initLifecycleMonitor();
-        NearRangeNotifier nearRangeNotifier = new NearRangeNotifier(application);
-        GlobalState.getInstance(application).setNearRangeNotifier(nearRangeNotifier);
+
+        GlobalState.getInstance(application).setNearRangeNotifier(new NearRangeNotifier(application));
         GlobalState.getInstance(application).setApiKey(apiKey);
 
         NearItServer server = NearItServer.getInstance(application);
