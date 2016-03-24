@@ -14,7 +14,7 @@ public class Configuration {
     private static final String TAG = "Configuration";
     List<Matching> matchingList;
     List<NearBeacon> beaconList;
- List<Content> contentList;
+    List<Content> contentList;
 
     public List<Matching> getMatchingList() {
         return matchingList;
@@ -82,5 +82,32 @@ public class Configuration {
 
         return false;
 
+    }
+
+
+
+    // Those next three methods work on the assumption that there's only one matching for a beacon
+
+    public Content getContentFromBeacon(NearBeacon beacon) {
+        Matching matching = getMatchingFromBeacon(beacon);
+        return getContentFromId(matching.getContent_id());
+    }
+
+    public Matching getMatchingFromBeacon(NearBeacon beacon) {
+        for ( Matching m : matchingList ) {
+            if (m.getBeacon_id().equals(beacon.getId())){
+                return m;
+            }
+        }
+        return null;
+    }
+
+    public Content getContentFromId(String content_id) {
+        for (Content c : contentList){
+            if (c.getId().equals(content_id)){
+                return c;
+            }
+        }
+        return null;
     }
 }

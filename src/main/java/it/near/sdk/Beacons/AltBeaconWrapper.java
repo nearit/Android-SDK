@@ -22,10 +22,14 @@ import java.util.List;
 
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
+import it.near.sdk.Models.Content;
+import it.near.sdk.Models.Matching;
 import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Wrapper around AltBeacon. It's a Service and it's used by the SDK with both startservice and bind.
+ *
  * Created by cattaneostefano on 14/03/16.
  */
 public class AltBeaconWrapper extends Service implements BeaconConsumer {
@@ -54,7 +58,6 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
 
-        GlobalState.getInstance(this.getApplicationContext()).getBeaconDynamicRadar().setProximityListener(proximityListener);
     }
 
     @Override
@@ -85,37 +88,37 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
     public void onBeaconServiceConnect() {
         ULog.d(TAG, "onBeaconServiceConnect, startRanging");
 
-        /*beaconManager.setRangeNotifier(new RangeNotifier() {
-            @Override
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                ULog.d(TAG, "didRangeBeaconsInRegion " + beacons.size() + " region: " + region.toString());
-                if (beacons.size() > 0) {
-                    ULog.d(TAG, "The first beacon I see is about " + beacons.iterator().next().getDistance() + " meters away.");
-                }
-            }
-        });*/
+        // after we connected with the beacon service, we use the configuration (if we ahve it yet) to configure our radar
         configureScanner(GlobalState.getInstance(getApplicationContext()).getConfiguration());
     }
 
+
+    /**
+     * Reset configuration.
+     * Stop current ranging and range new configuration beacons.
+     *
+     * @param configuration
+     */
     public void configureScanner(Configuration configuration){
+
         stopRangingAll();
         List<NearBeacon> beaconList = configuration.getBeaconList();
-        if ( beaconList == null  ||  beaconList.size() == 0 ) return;
 
-        for (NearBeacon b : beaconList){
-            try {
-                ULog.d(TAG, "startRanging beacon: " + b.getMajor() + " " + b.getMinor());
-                beaconManager.startRangingBeaconsInRegion(new Region("Region", null, null, null));
-                //beaconManager.startRangingBeaconsInRegion(new Region("Region" + b.getMinor() + b.getMajor(), Identifier.parse(b.getProximity_uuid()), Identifier.fromInt(b.getMajor()), Identifier.fromInt(b.getMinor())));
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-
-        BeaconDynamicRadar radar = new BeaconDynamicRadar(this.getApplicationContext(), beaconList);
+        BeaconDynamicRadar radar = new BeaconDynamicRadar(this.getApplicationContext(), beaconList, proximityListener);
         GlobalState.getInstance(this.getApplicationContext()).setBeaconDynamicRadar(radar);
 
+        if ( beaconList == null  ||  beaconList.size() == 0 ) return;
+
+        try {
+            // Since every beacon can have completely different identifiers, we don't range for specific regions, we range all beacons
+            // when we will have actual regions we will range regions
+            beaconManager.startRangingBeaconsInRegion(new Region("Region", null, null, null));
+            //beaconManager.startRangingBeaconsInRegion(new Region("Region" + b.getMinor() + b.getMajor(), Identifier.parse(b.getProximity_uuid()), Identifier.fromInt(b.getMajor()), Identifier.fromInt(b.getMinor())));
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
     }
+
 
     public void stopRangingAll(){
         Collection<Region> regionList = beaconManager.getRangedRegions();
@@ -132,17 +135,27 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         beaconManager.setBackgroundMode(isInBackground);
     }
 
+    private GlobalState getGlobalState(){
+        return GlobalState.getInstance(getApplicationContext());
+    }
+
+    private void trace(String trace, String dominant){
+        getGlobalState().getTraceNotifier().trace(trace, dominant);
+    }
+
     private ProximityListener proximityListener = new ProximityListener() {
         @Override
         public void enterBeaconRange(NearBeacon beacon) {
             String dominant = "You entered the beacon with major: " + beacon.getMajor() + " and minor: " + beacon.getMinor();
-            GlobalState.getInstance(getApplicationContext()).getTraceNotifier().trace("", dominant);
+            trace("", dominant);
+            Matching matching = getGlobalState().getConfiguration().getMatchingFromBeacon(beacon);
+            getGlobalState().getMatchingNotifier().onRuleFullfilled(matching);
         }
 
         @Override
         public void exitBeaconRange(NearBeacon beacon) {
             String dominant = "You exited the beacon with major: " + beacon.getMajor() + " and minor: " + beacon.getMinor();
-            GlobalState.getInstance(getApplicationContext()).getTraceNotifier().trace("", dominant);
+            trace("", dominant);
         }
     };
 }

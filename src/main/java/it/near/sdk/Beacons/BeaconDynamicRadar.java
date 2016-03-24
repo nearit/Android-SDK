@@ -20,15 +20,18 @@ public class BeaconDynamicRadar {
 
     private List<BeaconDynamicData> beaconsDistances;
     private BeaconDynamicData currentDynamicBeacon;
-    private final double minDifference = 0.3;
+    private final double minDifference = 0.5;
     private Context context;
     private ProximityListener proximityListener;
 
-    public BeaconDynamicRadar(Context context, List<NearBeacon> beacons){
+    public BeaconDynamicRadar(Context context, List<NearBeacon> beacons, ProximityListener proximityListener){
         this.context = context;
+        this.proximityListener = proximityListener;
         beaconsDistances = new ArrayList<>();
 
-        initBeaconDynamicData(beacons);
+        if (beacons!= null) {
+            initBeaconDynamicData(beacons);
+        }
     }
 
     public void initBeaconDynamicData(List<NearBeacon> beacons){
