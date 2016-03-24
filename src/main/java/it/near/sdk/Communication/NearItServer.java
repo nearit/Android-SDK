@@ -16,17 +16,12 @@ import at.rags.morpheus.Deserializer;
 import at.rags.morpheus.JSONAPIObject;
 import at.rags.morpheus.Morpheus;
 import at.rags.morpheus.Resource;
-import io.realm.RealmResults;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Beacon;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
-import it.near.sdk.Realm.BeaconRealm;
-import it.near.sdk.Realm.ContentRealm;
-import it.near.sdk.Realm.MatchingRealm;
-import it.near.sdk.Realm.RealmListConverter;
-import it.near.sdk.RealmWrapper;
+import it.near.sdk.Realm.wrapper.RealmWrapper;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -84,14 +79,9 @@ public class NearItServer {
             public void onResponse(JSONObject response) {
                 ULog.d(TAG, "Matchings downloaded: " + response.toString());
                 List<Matching> matchings = parseList(response, Matching.class);
-                configuration.setMatchingList(matchings);
 
-                for (Matching matching : matchings) {
-                    MatchingRealm matchingRealm = new MatchingRealm(matching);
-                    realmWrapper.getRealm().beginTransaction();
-                    realmWrapper.getRealm().copyToRealmOrUpdate(matchingRealm);
-                    realmWrapper.getRealm().commitTransaction();
-                }
+                configuration.setMatchingList(matchings);
+                realmWrapper.saveList(matchings);
 
                 downloadBeacons(matchings);
                 downloadContents(matchings);
@@ -114,12 +104,7 @@ public class NearItServer {
                     ULog.d(TAG, "Beacon downloaded: " + response.toString());
                     Beacon beacon = parse(response, Beacon.class);
                     configuration.addBeacon(beacon);
-
-                    BeaconRealm beaconRealm = new BeaconRealm(beacon);
-                    realmWrapper.getRealm().beginTransaction();
-                    realmWrapper.getRealm().copyToRealmOrUpdate(beaconRealm);
-                    realmWrapper.getRealm().commitTransaction();
-
+                    realmWrapper.save(beacon);
                     GlobalState.getInstance(mContext).getAltBeaconWrapper().configureScanner(configuration);
                 }
             }, new Response.ErrorListener() {
@@ -144,12 +129,7 @@ public class NearItServer {
                     ULog.d(TAG, "Content downloaded" + response.toString());
                     Content content = parse(response, Content.class);
                     configuration.addContent(content);
-
-                    ContentRealm contentRealm = new ContentRealm(content);
-                    realmWrapper.getRealm().beginTransaction();
-                    realmWrapper.getRealm().copyToRealmOrUpdate(contentRealm);
-                    realmWrapper.getRealm().commitTransaction();
-
+                    realmWrapper.save(content);
                     GlobalState.getInstance(mContext).setConfiguration(configuration);
 
                 }

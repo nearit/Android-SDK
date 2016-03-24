@@ -1,4 +1,4 @@
-package it.near.sdk.Realm;
+package it.near.sdk.Realm.wrapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import at.rags.morpheus.Resource;
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import it.near.sdk.Realm.RealmString;
 
 /**
  * Created by alessandrocolleoni on 23/03/16.
@@ -29,6 +30,18 @@ public class RealmListConverter {
 
         for (RealmString string : list) {
             convertedList.add(string.getVal());
+        }
+
+        return convertedList;
+    }
+
+    public static <T extends RealmObject> List<T> convertToRealmList(List<?> list) {
+
+        RealmList<T> convertedList = new RealmList<T>();
+        RealmObjectFactory realmObjectFactory = new RealmObjectFactory();
+
+        for (Resource resource : (List<Resource>) list) {
+            convertedList.add((T) realmObjectFactory.getRealmObject(resource));
         }
 
         return convertedList;

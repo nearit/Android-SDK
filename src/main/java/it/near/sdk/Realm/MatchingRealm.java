@@ -3,6 +3,7 @@ package it.near.sdk.Realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import it.near.sdk.Models.Matching;
+import it.near.sdk.Utils.ULog;
 
 /**
  * Created by alessandrocolleoni on 23/03/16.
