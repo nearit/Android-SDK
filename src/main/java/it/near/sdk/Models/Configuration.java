@@ -13,6 +13,7 @@ public class Configuration {
     private static final String TAG = "Configuration";
     List<Matching> matchingList;
     List<Beacon> beaconList;
+    List<Content> contentList;
 
     public List<Matching> getMatchingList() {
         return matchingList;
@@ -24,6 +25,14 @@ public class Configuration {
 
     public List<Beacon> getBeaconList() {
         return beaconList;
+    }
+
+    public List<Content> getContentList() {
+        return contentList;
+    }
+
+    public void setContentList(List<Content> contentList) {
+        this.contentList = contentList;
     }
 
     public void setBeaconList(List<Beacon> beaconList) {
@@ -46,5 +55,31 @@ public class Configuration {
                 return true;
         }
         return false;
+    }
+
+    public void addContent(Content content) {
+
+        if (contentList == null || contentList.isEmpty()) {
+            contentList = new ArrayList<Content>();
+        }
+
+        contentList.add(content);
+
+    }
+
+    public boolean hasContent(Content content) {
+
+        if(contentList.isEmpty()) {
+            return false;
+        }
+
+        for (Content toCheck : contentList) {
+            if (toCheck.getId().equals(content.getId())) {
+                return true;
+            }
+        }
+
+        return false;
+
     }
 }

@@ -16,6 +16,7 @@ public class Constants {
     public interface API{
         String matchings = "matchings";
         String beacons = "detectors/beacons";
+        String contents = "contents";
     }
 
 

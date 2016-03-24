@@ -2,7 +2,6 @@ package it.near.sdk.Communication;
 
 import android.content.Context;
 
-
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -22,6 +21,7 @@ import it.near.sdk.Models.Beacon;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
+import it.near.sdk.Realm.wrapper.RealmWrapper;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -31,13 +31,16 @@ public class NearItServer {
 
     private static NearItServer mInstance = null;
     private static final String TAG = "NearItServer";
+
     private final Configuration configuration;
     private Morpheus morpheus;
     private Context mContext;
     private RequestQueue requestQueue;
+    RealmWrapper realmWrapper;
 
     private NearItServer(Context context) {
         this.mContext = context;
+        realmWrapper = RealmWrapper.getInstance(mContext);
         setUpParser();
         configuration = new Configuration();
         GlobalState.getInstance(context).setConfiguration(configuration);
@@ -54,9 +57,9 @@ public class NearItServer {
     }
 
     public static NearItServer getInstance(Context context){
-        if(mInstance == null)
-        {
+        if(mInstance == null) {
             mInstance = new NearItServer(context);
+
         }
         return mInstance;
     }
@@ -76,8 +79,13 @@ public class NearItServer {
             public void onResponse(JSONObject response) {
                 ULog.d(TAG, "Matchings downloaded: " + response.toString());
                 List<Matching> matchings = parseList(response, Matching.class);
+
                 configuration.setMatchingList(matchings);
+                realmWrapper.saveList(matchings);
+
                 downloadBeacons(matchings);
+                downloadContents(matchings);
+
             }
         }, new Response.ErrorListener() {
             @Override
@@ -95,8 +103,8 @@ public class NearItServer {
                 public void onResponse(JSONObject response) {
                     ULog.d(TAG, "Beacon downloaded: " + response.toString());
                     Beacon beacon = parse(response, Beacon.class);
-
                     configuration.addBeacon(beacon);
+                    realmWrapper.save(beacon);
                     GlobalState.getInstance(mContext).getAltBeaconWrapper().configureScanner(configuration);
                 }
             }, new Response.ErrorListener() {
@@ -108,6 +116,30 @@ public class NearItServer {
         }
         ULog.d(TAG, "");
 
+
+    }
+
+    private void downloadContents(List<Matching> matchings) {
+
+        for (Matching matching : matchings) {
+            requestQueue.add(new CustomJsonRequest(mContext, Constants.API.contents + "/" + matching.getContent_id(), new Response.Listener<JSONObject>() {
+
+                @Override
+                public void onResponse(JSONObject response) {
+                    ULog.d(TAG, "Content downloaded" + response.toString());
+                    Content content = parse(response, Content.class);
+                    configuration.addContent(content);
+                    realmWrapper.save(content);
+                    GlobalState.getInstance(mContext).setConfiguration(configuration);
+
+                }
+            },new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    ULog.d(TAG, "error " + error.toString() );
+                }
+            }));
+        }
 
     }
 

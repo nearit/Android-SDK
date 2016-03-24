@@ -21,4 +21,43 @@ public class Content extends Resource{
     @SerializeName("photo_ids")
     List<String> photoIds;
 
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getShortDescription() {
+        return shortDescription;
+    }
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
+    }
+
+    public String getLongDescription() {
+        return longDescription;
+    }
+
+    public void setLongDescription(String longDescription) {
+        this.longDescription = longDescription;
+    }
+
+    public Boolean getTrashed() {
+        return trashed;
+    }
+
+    public void setTrashed(Boolean trashed) {
+        this.trashed = trashed;
+    }
+
+    public List<String> getPhotoIds() {
+        return photoIds;
+    }
+
+    public void setPhotoIds(List<String> photoIds) {
+        this.photoIds = photoIds;
+    }
 }

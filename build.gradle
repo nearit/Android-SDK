@@ -26,3 +26,14 @@ dependencies {
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile project(':morpheus')
 }
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "io.realm:realm-gradle-plugin:0.88.2"
+    }
+}
+
+apply plugin: 'realm-android'
