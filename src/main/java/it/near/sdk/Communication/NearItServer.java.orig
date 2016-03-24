@@ -21,7 +21,6 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
-import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Realm.wrapper.RealmWrapper;
 import it.near.sdk.Utils.ULog;
 
@@ -32,7 +31,11 @@ public class NearItServer {
 
     private static NearItServer mInstance = null;
     private static final String TAG = "NearItServer";
+<<<<<<< HEAD
+
+=======
     private String APP_PACKAGE_NAME;
+>>>>>>> gitignore, commenting.
     private final Configuration configuration;
     private Morpheus morpheus;
     private Context mContext;
@@ -41,10 +44,14 @@ public class NearItServer {
 
     private NearItServer(Context context) {
         this.mContext = context;
+<<<<<<< HEAD
+        realmWrapper = RealmWrapper.getInstance(mContext);
+        setUpParser();
+=======
         APP_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
 
         setUpMorpheusParser();
-        realmWrapper = RealmWrapper.getInstance(mContext);
+>>>>>>> gitignore, commenting.
         configuration = new Configuration();
         GlobalState.getInstance(context).setConfiguration(configuration);
 

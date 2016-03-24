@@ -36,7 +36,7 @@ public class Configuration {
         this.contentList = contentList;
     }
 
-    public void setBeaconList(List<Beacon> beaconList) {
+    public void setBeaconList(List<NearBeacon> beaconList) {
         this.beaconList = beaconList;
     }
 
