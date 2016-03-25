@@ -81,6 +81,7 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(TAG, "onBind");
         return mBinder;
     }
 
