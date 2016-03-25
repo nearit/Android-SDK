@@ -1,12 +1,14 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -134,6 +136,7 @@ public class NearItServer {
 
     }
 
+
     private void downloadContents(List<Matching> matchings) {
 
         for (Matching matching : matchings) {
@@ -145,6 +148,7 @@ public class NearItServer {
                     Content content = parse(response, Content.class);
                     configuration.addContent(content);
                     realmWrapper.save(content);
+                    resolveContentLinksAndSave(content);
                     GlobalState.getInstance(mContext).setConfiguration(configuration);
 
                 }
@@ -156,6 +160,38 @@ public class NearItServer {
             }));
         }
 
+    }
+
+    private void resolveContentLinksAndSave(final Content content) {
+        for (final String mediaId : content.getPhotoIds()){
+            requestQueue.add(new CustomJsonRequest(mContext, Constants.API.image + "/" + mediaId, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    ULog.d(TAG, "Image link downloaded " + response.toString());
+                    try {
+                        JSONObject data = response.getJSONObject("data");
+                        JSONObject attributes = data.getJSONObject("attributes");
+                        JSONObject image = attributes.getJSONObject("image");
+                        String fullLink = image.getString("url");
+                        JSONObject max_1920 = image.getJSONObject("max_1920_jpg");
+                        String bigLink = max_1920.getString("url");
+                        JSONObject square_300 = image.getJSONObject("square_300");
+                        String smallLink = square_300.getString("url");
+                        ULog.d(TAG, fullLink + " " + bigLink + " " + smallLink);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    int location = content.getPhotoIds().indexOf(mediaId);
+                    content.getPhotoIds().get(location);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    ULog.d(TAG, "error " + error.toString() );
+                }
+            }));
+        }
     }
 
     private <T> List<T> parseList(JSONObject json, Class<T> clazz) {

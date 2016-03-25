@@ -17,6 +17,7 @@ public class Constants {
         String matchings = "matchings";
         String beacons = "detectors/beacons";
         String contents = "contents";
+        String image = "media/images";
     }
 
 
