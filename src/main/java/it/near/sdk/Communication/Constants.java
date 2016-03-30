@@ -18,6 +18,8 @@ public class Constants {
         String beacons = "detectors/beacons";
         String contents = "contents";
         String image = "media/images";
+        // todo add track path
+        String track = "";
     }
 
 
