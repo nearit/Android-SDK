@@ -1,7 +1,6 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -15,10 +14,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.rags.morpheus.Deserializer;
-import at.rags.morpheus.JSONAPIObject;
-import at.rags.morpheus.Morpheus;
-import at.rags.morpheus.Resource;
+import it.near.sdk.MorpheusNear.Deserializer;
+import it.near.sdk.MorpheusNear.JSONAPIObject;
+import it.near.sdk.MorpheusNear.Morpheus;
+import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.BuildConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;

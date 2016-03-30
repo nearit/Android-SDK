@@ -1,6 +1,6 @@
 package it.near.sdk.Realm.wrapper;
 
-import at.rags.morpheus.Resource;
+import it.near.sdk.MorpheusNear.Resource;
 import io.realm.RealmObject;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
