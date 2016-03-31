@@ -7,14 +7,10 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
-import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
-import org.altbeacon.beacon.Identifier;
-import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
 import java.util.Collection;
@@ -22,7 +18,6 @@ import java.util.List;
 
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
-import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
 import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Utils.ULog;

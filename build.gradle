@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
     compileSdkVersion 22
@@ -19,10 +21,72 @@ android {
     }
 }
 
+configurations {
+    javadocDeps
+}
+
+task generateSourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier 'sources'
+}
+
+task generateJavadocs(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath()
+            .join(File.pathSeparator))
+}
+
+task generateJavadocsJar(type: Jar) {
+    from generateJavadocs.destinationDir
+    classifier 'javadoc'
+}
+
+task allJavadoc(dependsOn: ['assembleRelease'], type: Javadoc) {
+    classpath += configurations.javadocDeps
+}
+
+generateJavadocsJar.dependsOn generateJavadocs
+
+artifacts {
+    archives generateJavadocsJar
+    archives generateSourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+
+bintray {
+    user = properties.getProperty("bintray.user")
+    key = properties.getProperty("bintray.apikey")
+    pkg {
+        repo = 'maven'
+        name = 'it.near.sdk.core'
+
+        version {
+            name = '0.0.2-alpha'
+            desc = 'My test upload'
+            released  = new Date()
+            vcsTag = '0.0.1'
+        }
+
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/catt-stefano/near-sdk-core.git'
+        websiteUrl = 'https://github.com/catt-stefano/near-sdk-core'
+    }
+    configurations = ['archives']
+}
+
+group = 'it.near.sdk.core'
+version = '0.0.2-alpha'
+
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:support-annotations:22.2.0'
+    javadocDeps 'com.android.support:support-annotations:22.2.0'
+    compile 'com.android.support:support-v4:22.0.0'
     compile 'org.altbeacon:android-beacon-library:2.7.1'
     compile 'com.mcxiaoke.volley:library:1.0.19'
 }
