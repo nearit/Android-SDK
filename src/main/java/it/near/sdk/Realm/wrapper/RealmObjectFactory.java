@@ -1,10 +1,10 @@
 package it.near.sdk.Realm.wrapper;
 
-import at.rags.morpheus.Resource;
+import it.near.sdk.MorpheusNear.Resource;
 import io.realm.RealmObject;
-import it.near.sdk.Models.Beacon;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
+import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Realm.BeaconRealm;
 import it.near.sdk.Realm.ContentRealm;
 import it.near.sdk.Realm.MatchingRealm;
@@ -18,8 +18,8 @@ public class RealmObjectFactory {
 
     public <T extends RealmObject> T getRealmObject(Resource object) {
 
-        if (object instanceof Beacon) {
-            return (T) new BeaconRealm((Beacon) object);
+        if (object instanceof NearBeacon) {
+            return (T) new BeaconRealm((NearBeacon) object);
         } else if (object instanceof Matching) {
             return (T) new MatchingRealm((Matching) object);
         } else if (object instanceof Content) {

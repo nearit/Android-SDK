@@ -2,7 +2,7 @@ package it.near.sdk.Realm;
 
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
-import it.near.sdk.Models.Beacon;
+import it.near.sdk.Models.NearBeacon;
 
 /**
  * Created by alessandrocolleoni on 23/03/16.
@@ -33,7 +33,7 @@ public class BeaconRealm extends RealmObject {
      * Initialize a BeaconRealm with data's from a beacon model
      * @param beacon
      */
-    public BeaconRealm(Beacon beacon) {
+    public BeaconRealm(NearBeacon beacon) {
 
         id = beacon.getId();
         name = beacon.getName();
@@ -49,9 +49,9 @@ public class BeaconRealm extends RealmObject {
      * Convert the BeaconRealm to a Beacon model
      * @return converted beacon
      */
-    public Beacon convertToModel() {
+    public NearBeacon convertToModel() {
 
-        Beacon beacon = new Beacon();
+        NearBeacon beacon = new NearBeacon();
 
         beacon.setId(id);
         beacon.setName(name);

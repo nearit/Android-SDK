@@ -1,7 +1,7 @@
 package it.near.sdk.Models;
 
-import at.rags.morpheus.Annotations.SerializeName;
-import at.rags.morpheus.Resource;
+import it.near.sdk.MorpheusNear.Annotations.SerializeName;
+import it.near.sdk.MorpheusNear.Resource;
 
 /**
  * Created by cattaneostefano on 15/03/16.

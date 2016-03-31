@@ -3,7 +3,7 @@ package it.near.sdk.Realm.wrapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.rags.morpheus.Resource;
+import it.near.sdk.MorpheusNear.Resource;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import it.near.sdk.Realm.RealmString;

@@ -5,14 +5,12 @@ import android.content.Context;
 import java.util.ArrayList;
 import java.util.List;
 
-import at.rags.morpheus.Resource;
+import it.near.sdk.MorpheusNear.Resource;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
-import it.near.sdk.Models.Matching;
 import it.near.sdk.Realm.MatchingRealm;
-import it.near.sdk.Utils.ULog;
 
 
 /**

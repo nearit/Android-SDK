@@ -2,25 +2,29 @@ package it.near.sdk.Communication;
 
 import android.content.Context;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import at.rags.morpheus.Deserializer;
-import at.rags.morpheus.JSONAPIObject;
-import at.rags.morpheus.Morpheus;
-import at.rags.morpheus.Resource;
+import it.near.sdk.Models.ImageSet;
+import it.near.sdk.MorpheusNear.Deserializer;
+import it.near.sdk.MorpheusNear.JSONAPIObject;
+import it.near.sdk.MorpheusNear.Morpheus;
+import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.BuildConfig;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Models.Beacon;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
+import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Realm.wrapper.RealmWrapper;
 import it.near.sdk.Utils.ULog;
 
@@ -31,7 +35,7 @@ public class NearItServer {
 
     private static NearItServer mInstance = null;
     private static final String TAG = "NearItServer";
-
+    private String APP_PACKAGE_NAME;
     private final Configuration configuration;
     private Morpheus morpheus;
     private Context mContext;
@@ -40,20 +44,18 @@ public class NearItServer {
 
     private NearItServer(Context context) {
         this.mContext = context;
+        APP_PACKAGE_NAME = BuildConfig.APPLICATION_ID;
+
+        setUpMorpheusParser();
         realmWrapper = RealmWrapper.getInstance(mContext);
-        setUpParser();
         configuration = new Configuration();
         GlobalState.getInstance(context).setConfiguration(configuration);
+
+        // Set-up a request queue for making http requests
+        // with Google own volley library
+        // https://developer.android.com/training/volley/index.html
         requestQueue = Volley.newRequestQueue(context);
         requestQueue.start();
-    }
-
-    private void setUpParser() {
-        morpheus = new Morpheus();
-        //register your resources
-        Deserializer.registerResourceClass("beacons", Beacon.class);
-        Deserializer.registerResourceClass("contents", Content.class);
-        Deserializer.registerResourceClass("matchings", Matching.class);
     }
 
     public static NearItServer getInstance(Context context){
@@ -62,6 +64,19 @@ public class NearItServer {
 
         }
         return mInstance;
+    }
+
+    /**
+     * Set up Morpheus parser. Morpheus parses jsonApi encoded resources
+     * https://github.com/xamoom/Morpheus
+     * We didn't actually use this library due to its minSdkVersion. We instead imported its code and adapted it.
+     */
+    private void setUpMorpheusParser() {
+        morpheus = new Morpheus();
+        //register your resources
+        Deserializer.registerResourceClass("beacons", NearBeacon.class);
+        Deserializer.registerResourceClass("contents", Content.class);
+        Deserializer.registerResourceClass("matchings", Matching.class);
     }
 
     public RequestQueue getRequestQueue() {
@@ -102,10 +117,13 @@ public class NearItServer {
                 @Override
                 public void onResponse(JSONObject response) {
                     ULog.d(TAG, "Beacon downloaded: " + response.toString());
-                    Beacon beacon = parse(response, Beacon.class);
+                    NearBeacon beacon = parse(response, NearBeacon.class);
+
                     configuration.addBeacon(beacon);
                     realmWrapper.save(beacon);
-                    GlobalState.getInstance(mContext).getAltBeaconWrapper().configureScanner(configuration);
+                    if (GlobalState.getInstance(mContext).getAltBeaconWrapper()!=null){
+                        GlobalState.getInstance(mContext).getAltBeaconWrapper().configureScanner(configuration);
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -114,10 +132,9 @@ public class NearItServer {
                 }
             }));
         }
-        ULog.d(TAG, "");
-
 
     }
+
 
     private void downloadContents(List<Matching> matchings) {
 
@@ -130,6 +147,7 @@ public class NearItServer {
                     Content content = parse(response, Content.class);
                     configuration.addContent(content);
                     realmWrapper.save(content);
+                    resolveContentLinksAndSave(content);
                     GlobalState.getInstance(mContext).setConfiguration(configuration);
 
                 }
@@ -141,6 +159,60 @@ public class NearItServer {
             }));
         }
 
+    }
+
+    private void resolveContentLinksAndSave(final Content content) {
+        content.setImageSets(new ArrayList<ImageSet>());
+        for (final String mediaId : content.getPhotoIds()){
+            requestQueue.add(new CustomJsonRequest(mContext, Constants.API.image + "/" + mediaId, new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    ULog.d(TAG, "Image link downloaded " + response.toString());
+                    ImageSet set = new ImageSet();
+                    try {
+                        JSONObject data = response.getJSONObject("data");
+                        JSONObject attributes = data.getJSONObject("attributes");
+                        JSONObject image = attributes.getJSONObject("image");
+                        String fullLink = image.getString("url");
+                        set.setFullSize(fullLink);
+                        JSONObject max_1920 = image.getJSONObject("max_1920_jpg");
+                        String bigLink = max_1920.getString("url");
+                        set.setBigSize(bigLink);
+                        JSONObject square_300 = image.getJSONObject("square_300");
+                        String smallLink = square_300.getString("url");
+                        set.setSmallSize(smallLink);
+                        content.getImageSets().add(set);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    ULog.d(TAG, "error " + error.toString() );
+                }
+            }));
+        }
+    }
+
+
+
+    public void sendTrack(String track){
+        // todo do something with the body
+        String body = track;
+        requestQueue.add(new CustomJsonRequest(mContext, Request.Method.POST, Constants.API.track, body, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }));
     }
 
     private <T> List<T> parseList(JSONObject json, Class<T> clazz) {

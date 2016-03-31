@@ -38,6 +38,11 @@ public class NearRangeNotifier implements RangeNotifier {
         if (beacons.size() > 0) {
             logList(beacons);
             traceList(beacons);
+
+            BeaconDynamicRadar radar = GlobalState.getInstance(context).getBeaconDynamicRadar();
+            if (radar!=null){
+                radar.beaconsDiscovered((List<Beacon>) beacons);
+            }
             /*Beacon firstBeacon = beacons.iterator().next();
             ULog.d(TAG, "The first beacon I see is about " + firstBeacon.getDistance() + " meters away.");
             ULog.d(TAG, "Major: " + firstBeacon.getId2().toString() + "  Minor: " + firstBeacon.getId3().toString() );*/
