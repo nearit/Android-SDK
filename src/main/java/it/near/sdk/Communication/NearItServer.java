@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.near.sdk.Models.ImageSet;
 import it.near.sdk.MorpheusNear.Deserializer;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
@@ -131,8 +132,6 @@ public class NearItServer {
                 }
             }));
         }
-        ULog.d(TAG, "");
-
 
     }
 
@@ -163,27 +162,31 @@ public class NearItServer {
     }
 
     private void resolveContentLinksAndSave(final Content content) {
+        content.setImageSets(new ArrayList<ImageSet>());
         for (final String mediaId : content.getPhotoIds()){
             requestQueue.add(new CustomJsonRequest(mContext, Constants.API.image + "/" + mediaId, new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     ULog.d(TAG, "Image link downloaded " + response.toString());
+                    ImageSet set = new ImageSet();
                     try {
                         JSONObject data = response.getJSONObject("data");
                         JSONObject attributes = data.getJSONObject("attributes");
                         JSONObject image = attributes.getJSONObject("image");
                         String fullLink = image.getString("url");
+                        set.setFullSize(fullLink);
                         JSONObject max_1920 = image.getJSONObject("max_1920_jpg");
                         String bigLink = max_1920.getString("url");
+                        set.setBigSize(bigLink);
                         JSONObject square_300 = image.getJSONObject("square_300");
                         String smallLink = square_300.getString("url");
-                        ULog.d(TAG, fullLink + " " + bigLink + " " + smallLink);
+                        set.setSmallSize(smallLink);
+                        content.getImageSets().add(set);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    int location = content.getPhotoIds().indexOf(mediaId);
-                    content.getPhotoIds().get(location);
+
                 }
             }, new Response.ErrorListener() {
                 @Override

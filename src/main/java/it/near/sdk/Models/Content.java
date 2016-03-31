@@ -1,5 +1,6 @@
 package it.near.sdk.Models;
 
+import java.io.Serializable;
 import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.SerializeName;
@@ -8,7 +9,7 @@ import it.near.sdk.MorpheusNear.Resource;
 /**
  * Created by cattaneostefano on 16/03/16.
  */
-public class Content extends Resource{
+public class Content extends Resource implements Serializable{
 
     @SerializeName("title")
     String title;
@@ -20,6 +21,8 @@ public class Content extends Resource{
     Boolean trashed;
     @SerializeName("photo_ids")
     List<String> photoIds;
+
+    List<ImageSet> imageSets;
 
     public String getTitle() {
         return title;
@@ -60,4 +63,13 @@ public class Content extends Resource{
     public void setPhotoIds(List<String> photoIds) {
         this.photoIds = photoIds;
     }
+
+    public List<ImageSet> getImageSets() {
+        return imageSets;
+    }
+
+    public void setImageSets(List<ImageSet> imageSets) {
+        this.imageSets = imageSets;
+    }
+
 }
