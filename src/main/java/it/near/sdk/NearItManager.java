@@ -8,6 +8,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 
 import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
@@ -74,6 +75,16 @@ public class NearItManager {
         Intent intent = new Intent(application, AltBeaconWrapper.class);
         application.stopService(intent);
 
+    }
+
+    /**
+     * Checks the device capabilities to detect beacons
+     *
+     * @return true if the device has bluetooth enabled, false otherwise
+     * @throws RuntimeException when the device doesn't have the essential BLE compatibility
+     */
+    public boolean verifyBluetooth() throws RuntimeException{
+        return BeaconManager.getInstanceForApplication(application).checkAvailability();
     }
 
     private void initLifecycleMonitor() {
