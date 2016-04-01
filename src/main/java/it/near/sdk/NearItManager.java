@@ -37,6 +37,7 @@ public class NearItManager {
     private static final String TAG = "NearItManager";
     private static String APP_PACKAGE_NAME;
     private final NearItServer server;
+    private AltBeaconWrapper altBeaconWrapper;
 
     private List<ContentListener> contentListeners;
 
@@ -54,6 +55,8 @@ public class NearItManager {
         server = NearItServer.getInstance(application);
         refreshNearConfig();
 
+        altBeaconWrapper = new AltBeaconWrapper(application);
+
     }
 
     public void refreshNearConfig() {
@@ -62,18 +65,24 @@ public class NearItManager {
 
 
     public void startRanging(){
-        Intent intent = new Intent(application, AltBeaconWrapper.class);
+        altBeaconWrapper.startRanging();
+        altBeaconWrapper.configureScanner(getConfiguration());
+
+        /*Intent intent = new Intent(application, AltBeaconWrapper.class);
         application.startService(intent);
-        application.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        application.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);*/
     }
 
     public void stopRanging(){
-        if (mBound) {
+
+        altBeaconWrapper.stopRangingAll();
+
+        /*if (mBound) {
             application.unbindService(mConnection);
             mBound = false;
         }
         Intent intent = new Intent(application, AltBeaconWrapper.class);
-        application.stopService(intent);
+        application.stopService(intent);*/
 
     }
 
@@ -106,7 +115,7 @@ public class NearItManager {
     private AltBeaconWrapper mService;
     private boolean mBound;
     /** Defines callbacks for service binding, passed to bindService() */
-    private ServiceConnection mConnection = new ServiceConnection() {
+    /*private ServiceConnection mConnection = new ServiceConnection() {
 
         @Override
         public void onServiceConnected(ComponentName className,
@@ -123,7 +132,7 @@ public class NearItManager {
         public void onServiceDisconnected(ComponentName arg0) {
             mBound = false;
         }
-    };
+    };*/
 
 
 

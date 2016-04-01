@@ -1,7 +1,9 @@
 package it.near.sdk.Beacons;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -18,6 +20,7 @@ import java.util.List;
 
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
+import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
 import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Utils.ULog;
@@ -27,57 +30,45 @@ import it.near.sdk.Utils.ULog;
  *
  * Created by cattaneostefano on 14/03/16.
  */
-public class AltBeaconWrapper extends Service implements BeaconConsumer {
+public class AltBeaconWrapper implements BeaconConsumer {
 
     private static final String TAG = "AltBeaconWrapper";
     private BeaconManager beaconManager;
-    // Binder given to clients
-    private final IBinder mBinder = new LocalBinder();
+    private Context mContext;
 
-    /**
-     * Class used for the client Binder.  Because we know this service always
-     * runs in the same process as its clients, we don't need to deal with IPC.
-     */
-    public class LocalBinder extends Binder {
-        public AltBeaconWrapper getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return AltBeaconWrapper.this;
-        }
-    }
-
-    @Override
-    public void onCreate() {
-        Log.d(TAG, "onCreate");
-        super.onCreate();
-        beaconManager = BeaconManager.getInstanceForApplication(this);
+    public AltBeaconWrapper(Context context) {
+        ULog.d(TAG , "Constructor called");
+        mContext = context;
+        beaconManager = BeaconManager.getInstanceForApplication(mContext);
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "onStartCommand");
+    public void startRanging() {
+        ULog.d(TAG , "startRanging");
         beaconManager.bind(this);
         beaconManager.setBackgroundMode(false);
-        beaconManager.setRangeNotifier(GlobalState.getInstance(this).getNearRangeNotifier());
-        return START_NOT_STICKY;
+        beaconManager.setRangeNotifier(GlobalState.getInstance(mContext).getNearRangeNotifier());
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
+    public void stopRangingAll(){
+        ULog.d(TAG, "stopRangingAll");
+        resetRanging();
         beaconManager.unbind(this);
         beaconManager.setRangeNotifier(null);
         beaconManager.setBackgroundMode(true);
-        super.onDestroy();
     }
 
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        Log.d(TAG, "onBind");
-        return mBinder;
+    private void resetRanging(){
+        ULog.d(TAG, "resetRanging");
+        Collection<Region> regionList = beaconManager.getRangedRegions();
+        for (Region r : regionList){
+            try {
+                beaconManager.stopRangingBeaconsInRegion(r);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -88,6 +79,21 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         configureScanner(GlobalState.getInstance(getApplicationContext()).getConfiguration());
     }
 
+    @Override
+    public Context getApplicationContext() {
+        return mContext;
+    }
+
+    @Override
+    public void unbindService(ServiceConnection serviceConnection) {
+        mContext.unbindService(serviceConnection);
+    }
+
+    @Override
+    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
+        return mContext.bindService(intent, serviceConnection, i);
+    }
+
 
     /**
      * Reset configuration.
@@ -96,8 +102,8 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
      * @param configuration
      */
     public void configureScanner(Configuration configuration){
-
-        stopRangingAll();
+        ULog.d(TAG , "configureScanner");
+        resetRanging();
         List<NearBeacon> beaconList = configuration.getBeaconList();
 
         BeaconDynamicRadar radar = new BeaconDynamicRadar(this.getApplicationContext(), beaconList, proximityListener);
@@ -116,16 +122,7 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
     }
 
 
-    public void stopRangingAll(){
-        Collection<Region> regionList = beaconManager.getRangedRegions();
-        for (Region r : regionList){
-            try {
-                beaconManager.stopRangingBeaconsInRegion(r);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+
 
     public void setBackgroundMode(boolean isInBackground){
         beaconManager.setBackgroundMode(isInBackground);
@@ -150,4 +147,6 @@ public class AltBeaconWrapper extends Service implements BeaconConsumer {
         public void exitBeaconRange(NearBeacon beacon) {
         }
     };
+
+
 }
