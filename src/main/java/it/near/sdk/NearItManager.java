@@ -35,6 +35,7 @@ public class NearItManager {
 
     private static final String TAG = "NearItManager";
     private static String APP_PACKAGE_NAME;
+    private final NearItServer server;
 
     private List<ContentListener> contentListeners;
 
@@ -49,11 +50,14 @@ public class NearItManager {
         GlobalState.getInstance(application).setApiKey(apiKey);
         GlobalState.getInstance(application).setMatchingNotifier(matchingNotifier);
 
-        NearItServer server = NearItServer.getInstance(application);
-        server.downloadNearConfiguration();
+        server = NearItServer.getInstance(application);
+        refreshNearConfig();
 
     }
 
+    public void refreshNearConfig() {
+        server.downloadNearConfiguration();
+    }
 
 
     public void startRanging(){

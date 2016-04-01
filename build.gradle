@@ -68,7 +68,7 @@ bintray {
             name = '0.0.2-alpha'
             desc = 'My test upload'
             released  = new Date()
-            vcsTag = '0.0.1'
+            vcsTag = '0.0.2-alpha'
         }
 
         licenses = ['MIT']

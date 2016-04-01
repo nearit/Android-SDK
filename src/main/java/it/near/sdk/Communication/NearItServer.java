@@ -112,6 +112,7 @@ public class NearItServer {
     }
 
     private void downloadBeacons(List<Matching> matchings) {
+        configuration.setBeaconList(new ArrayList<NearBeacon>());
         for (Matching matching : matchings){
             requestQueue.add(new CustomJsonRequest(mContext, Constants.API.beacons + "/" + matching.getBeacon_id(), new Response.Listener<JSONObject>() {
                 @Override
@@ -137,7 +138,7 @@ public class NearItServer {
 
 
     private void downloadContents(List<Matching> matchings) {
-
+        configuration.setContentList(new ArrayList<Content>());
         for (Matching matching : matchings) {
             requestQueue.add(new CustomJsonRequest(mContext, Constants.API.contents + "/" + matching.getContent_id(), new Response.Listener<JSONObject>() {
 
