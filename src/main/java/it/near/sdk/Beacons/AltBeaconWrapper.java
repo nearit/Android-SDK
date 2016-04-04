@@ -13,8 +13,12 @@ import android.util.Log;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.startup.BootstrapNotifier;
+import org.altbeacon.beacon.startup.RegionBootstrap;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,6 +39,7 @@ public class AltBeaconWrapper implements BeaconConsumer {
     private static final String TAG = "AltBeaconWrapper";
     private BeaconManager beaconManager;
     private Context mContext;
+    private RegionBootstrap regionBootstrap;
 
     public AltBeaconWrapper(Context context) {
         ULog.d(TAG , "Constructor called");
@@ -42,6 +47,8 @@ public class AltBeaconWrapper implements BeaconConsumer {
         beaconManager = BeaconManager.getInstanceForApplication(mContext);
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        /*beaconManager.setBackgroundBetweenScanPeriod(40000);
+        beaconManager.setBackgroundScanPeriod(1500);*/
     }
 
     public void startRanging() {
@@ -49,12 +56,13 @@ public class AltBeaconWrapper implements BeaconConsumer {
         beaconManager.bind(this);
         beaconManager.setBackgroundMode(false);
         beaconManager.setRangeNotifier(GlobalState.getInstance(mContext).getNearRangeNotifier());
+        beaconManager.setMonitorNotifier(GlobalState.getInstance(mContext).getNearMonitorNotifier());
     }
 
     public void stopRangingAll(){
         ULog.d(TAG, "stopRangingAll");
         resetRanging();
-        beaconManager.unbind(this);
+        // beaconManager.unbind(this);
         beaconManager.setRangeNotifier(null);
         beaconManager.setBackgroundMode(true);
     }
@@ -71,11 +79,24 @@ public class AltBeaconWrapper implements BeaconConsumer {
         }
     }
 
+    private void resetMonitoring() {
+        ULog.d(TAG , "resetMonitoring");
+        Collection<Region> regionList = beaconManager.getMonitoredRegions();
+        for (Region region : regionList){
+            try {
+                beaconManager.stopMonitoringBeaconsInRegion(region);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
     @Override
     public void onBeaconServiceConnect() {
         ULog.d(TAG, "onBeaconServiceConnect, startRanging");
 
-        // after we connected with the beacon service, we use the configuration (if we ahve it yet) to configure our radar
+        // after we connected with the beacon service, we use the configuration (if we have it yet) to configure our radar
         configureScanner(GlobalState.getInstance(getApplicationContext()).getConfiguration());
     }
 
@@ -104,6 +125,7 @@ public class AltBeaconWrapper implements BeaconConsumer {
     public void configureScanner(Configuration configuration){
         ULog.d(TAG , "configureScanner");
         resetRanging();
+        // resetMonitoring();
         List<NearBeacon> beaconList = configuration.getBeaconList();
 
         BeaconDynamicRadar radar = new BeaconDynamicRadar(this.getApplicationContext(), beaconList, proximityListener);
@@ -114,6 +136,15 @@ public class AltBeaconWrapper implements BeaconConsumer {
         try {
             // Since every beacon can have completely different identifiers, we don't range for specific regions, we range all beacons
             // when we will have actual regions we will range regions
+            Region region1 = new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(451), null);
+            Region region2 = new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null);
+
+            ArrayList<Region> regions = new ArrayList<>();
+            regions.add(region1);
+            regions.add(region2);
+            regionBootstrap = new RegionBootstrap(GlobalState.getInstance(mContext).getNearMonitorNotifier(), regions);
+            beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(451), null));
+            beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null));
             beaconManager.startRangingBeaconsInRegion(new Region("Region", null, null, null));
             //beaconManager.startRangingBeaconsInRegion(new Region("Region" + b.getMinor() + b.getMajor(), Identifier.parse(b.getProximity_uuid()), Identifier.fromInt(b.getMajor()), Identifier.fromInt(b.getMinor())));
         } catch (RemoteException e) {

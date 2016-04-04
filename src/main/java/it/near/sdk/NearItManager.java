@@ -18,6 +18,7 @@ import java.util.List;
 
 import it.near.sdk.Beacons.AltBeaconWrapper;
 import it.near.sdk.Beacons.BeaconDynamicRadar;
+import it.near.sdk.Beacons.NearMonitorNotifier;
 import it.near.sdk.Beacons.NearRangeNotifier;
 import it.near.sdk.Communication.NearItServer;
 import it.near.sdk.Models.Configuration;
@@ -49,6 +50,7 @@ public class NearItManager {
         contentListeners = new ArrayList<>();
 
         GlobalState.getInstance(application).setNearRangeNotifier(new NearRangeNotifier(application));
+        GlobalState.getInstance(application).setNearMonitorNotifier(new NearMonitorNotifier(application));
         GlobalState.getInstance(application).setApiKey(apiKey);
         GlobalState.getInstance(application).setMatchingNotifier(matchingNotifier);
 
