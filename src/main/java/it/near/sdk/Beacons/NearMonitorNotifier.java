@@ -15,9 +15,11 @@ import it.near.sdk.Utils.ULog;
 public class NearMonitorNotifier implements MonitorNotifier, BootstrapNotifier {
     private static final String TAG = "NearMonitorNotifier";
     private final Context mContext;
+    private RegionListener regionListener;
 
-    public NearMonitorNotifier(Application application) {
-       this.mContext = application;
+    public NearMonitorNotifier(Context context, RegionListener regionListener) {
+        this.mContext = context;
+        this.regionListener = regionListener;
     }
 
     @Override

@@ -1,21 +1,15 @@
 package it.near.sdk.Beacons;
 
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Binder;
-import android.os.IBinder;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
-import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
 import java.util.ArrayList;
@@ -24,7 +18,6 @@ import java.util.List;
 
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
-import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
 import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Utils.ULog;
@@ -47,13 +40,16 @@ public class AltBeaconWrapper implements BeaconConsumer {
         beaconManager = BeaconManager.getInstanceForApplication(mContext);
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        GlobalState.getInstance(context).setNearRangeNotifier(new NearRangeNotifier(context));
+        GlobalState.getInstance(context).setNearMonitorNotifier(new NearMonitorNotifier(context, regionListener));
+        beaconManager.bind(this);
+        beaconManager.setBackgroundMode(true);
         /*beaconManager.setBackgroundBetweenScanPeriod(40000);
         beaconManager.setBackgroundScanPeriod(1500);*/
     }
 
     public void startRanging() {
         ULog.d(TAG , "startRanging");
-        beaconManager.bind(this);
         beaconManager.setBackgroundMode(false);
         beaconManager.setRangeNotifier(GlobalState.getInstance(mContext).getNearRangeNotifier());
         beaconManager.setMonitorNotifier(GlobalState.getInstance(mContext).getNearMonitorNotifier());
@@ -136,15 +132,15 @@ public class AltBeaconWrapper implements BeaconConsumer {
         try {
             // Since every beacon can have completely different identifiers, we don't range for specific regions, we range all beacons
             // when we will have actual regions we will range regions
-            Region region1 = new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(451), null);
+            Region region1 = new Region("Region", Identifier.parse("8492E75F-4FD6-469D-B132-043FE94921D8"), Identifier.fromInt(1197), null);
             Region region2 = new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null);
 
             ArrayList<Region> regions = new ArrayList<>();
             regions.add(region1);
             regions.add(region2);
             regionBootstrap = new RegionBootstrap(GlobalState.getInstance(mContext).getNearMonitorNotifier(), regions);
-            beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(451), null));
-            beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null));
+            // beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(451), null));
+            // beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null));
             beaconManager.startRangingBeaconsInRegion(new Region("Region", null, null, null));
             //beaconManager.startRangingBeaconsInRegion(new Region("Region" + b.getMinor() + b.getMajor(), Identifier.parse(b.getProximity_uuid()), Identifier.fromInt(b.getMajor()), Identifier.fromInt(b.getMinor())));
         } catch (RemoteException e) {
@@ -176,6 +172,18 @@ public class AltBeaconWrapper implements BeaconConsumer {
 
         @Override
         public void exitBeaconRange(NearBeacon beacon) {
+        }
+    };
+
+    private RegionListener regionListener = new RegionListener() {
+        @Override
+        public void enterRegion(Region region) {
+
+        }
+
+        @Override
+        public void exitRegion(Region region) {
+
         }
     };
 

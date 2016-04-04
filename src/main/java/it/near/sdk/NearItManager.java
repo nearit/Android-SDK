@@ -1,23 +1,13 @@
 package it.near.sdk;
 
 import android.app.Application;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
 
-import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.RangeNotifier;
-import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import it.near.sdk.Beacons.AltBeaconWrapper;
-import it.near.sdk.Beacons.BeaconDynamicRadar;
 import it.near.sdk.Beacons.NearMonitorNotifier;
 import it.near.sdk.Beacons.NearRangeNotifier;
 import it.near.sdk.Communication.NearItServer;
@@ -40,17 +30,16 @@ public class NearItManager {
     private final NearItServer server;
     private AltBeaconWrapper altBeaconWrapper;
 
-    private List<ContentListener> contentListeners;
+    private List<NearListener> nearListeners;
 
     Application application;
 
     public NearItManager(Application application, String apiKey) {
         this.application = application;
         initLifecycleMonitor();
-        contentListeners = new ArrayList<>();
+        nearListeners = new ArrayList<>();
 
-        GlobalState.getInstance(application).setNearRangeNotifier(new NearRangeNotifier(application));
-        GlobalState.getInstance(application).setNearMonitorNotifier(new NearMonitorNotifier(application));
+
         GlobalState.getInstance(application).setApiKey(apiKey);
         GlobalState.getInstance(application).setMatchingNotifier(matchingNotifier);
 
@@ -147,12 +136,12 @@ public class NearItManager {
         return GlobalState.getInstance(application).getConfiguration();
     }
 
-    public void addContentListener(ContentListener listener){
-        contentListeners.add(listener);
+    public void addContentListener(NearListener listener){
+        nearListeners.add(listener);
     }
 
     private void deliverContent(Content content, Matching matching){
-        for (ContentListener listener : contentListeners){
+        for (NearListener listener : nearListeners){
             if (listener != null){
                 listener.onContentToDisplay(content, matching);
             }
