@@ -23,7 +23,7 @@ import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Wrapper around AltBeacon. It's a Service and it's used by the SDK with both startservice and bind.
+ * Wrapper around AltBeacon.
  *
  * Created by cattaneostefano on 14/03/16.
  */
@@ -33,6 +33,7 @@ public class AltBeaconWrapper implements BeaconConsumer {
     private BeaconManager beaconManager;
     private Context mContext;
     private RegionBootstrap regionBootstrap;
+    private ArrayList<Region> testRegions;
 
     public AltBeaconWrapper(Context context) {
         ULog.d(TAG , "Constructor called");
@@ -44,15 +45,21 @@ public class AltBeaconWrapper implements BeaconConsumer {
         GlobalState.getInstance(context).setNearMonitorNotifier(new NearMonitorNotifier(context, regionListener));
         beaconManager.bind(this);
         beaconManager.setBackgroundMode(true);
+
+        craftTestRegions(context);
         /*beaconManager.setBackgroundBetweenScanPeriod(40000);
         beaconManager.setBackgroundScanPeriod(1500);*/
     }
 
+
+
     public void startRanging() {
         ULog.d(TAG , "startRanging");
-        beaconManager.setBackgroundMode(false);
+        // todo reenable ranging
+        // beaconManager.setBackgroundMode(false);
+
         beaconManager.setRangeNotifier(GlobalState.getInstance(mContext).getNearRangeNotifier());
-        beaconManager.setMonitorNotifier(GlobalState.getInstance(mContext).getNearMonitorNotifier());
+        // beaconManager.setMonitorNotifier(GlobalState.getInstance(mContext).getNearMonitorNotifier());
     }
 
     public void stopRangingAll(){
@@ -138,10 +145,11 @@ public class AltBeaconWrapper implements BeaconConsumer {
             ArrayList<Region> regions = new ArrayList<>();
             regions.add(region1);
             regions.add(region2);
+            regions.addAll(testRegions);
             regionBootstrap = new RegionBootstrap(GlobalState.getInstance(mContext).getNearMonitorNotifier(), regions);
             // beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(451), null));
             // beaconManager.startMonitoringBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null));
-            beaconManager.startRangingBeaconsInRegion(new Region("Region", null, null, null));
+            beaconManager.startRangingBeaconsInRegion(new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null));
             //beaconManager.startRangingBeaconsInRegion(new Region("Region" + b.getMinor() + b.getMajor(), Identifier.parse(b.getProximity_uuid()), Identifier.fromInt(b.getMajor()), Identifier.fromInt(b.getMinor())));
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -163,11 +171,18 @@ public class AltBeaconWrapper implements BeaconConsumer {
         getGlobalState().getTraceNotifier().trace(trace);
     }
 
+
+    private void craftTestRegions(Context context) {
+        testRegions = new ArrayList<>();
+        testRegions = TestRegionCrafter.getTestRegions(context);
+    }
+
+
     private ProximityListener proximityListener = new ProximityListener() {
         @Override
         public void enterBeaconRange(NearBeacon beacon) {
             Matching matching = getGlobalState().getConfiguration().getMatchingFromBeacon(beacon);
-            getGlobalState().getMatchingNotifier().onRuleFullfilled(matching);
+            getGlobalState().getNearNotifier().onRuleFullfilled(matching);
         }
 
         @Override
@@ -178,12 +193,12 @@ public class AltBeaconWrapper implements BeaconConsumer {
     private RegionListener regionListener = new RegionListener() {
         @Override
         public void enterRegion(Region region) {
-
+            getGlobalState().getNearNotifier().onEnterRegion(region);
         }
 
         @Override
         public void exitRegion(Region region) {
-
+            getGlobalState().getNearNotifier().onExitRegion(region);
         }
     };
 

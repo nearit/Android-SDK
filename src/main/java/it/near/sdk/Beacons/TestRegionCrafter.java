@@ -29,7 +29,8 @@ public class TestRegionCrafter {
             Region testRegion;
             int major = Integer.parseInt(identifiers[1]);
             int minor = Integer.parseInt(identifiers[2]);
-            testRegion = new Region("Region" , Identifier.parse(identifiers[0]), Identifier.fromInt(major), Identifier.fromInt(minor) );
+            String uniqueId = "Region" + Integer.toString(major) + Integer.toString(minor);
+            testRegion = new Region(uniqueId, Identifier.parse(identifiers[0]), Identifier.fromInt(major), Identifier.fromInt(minor) );
             testRegions.add(testRegion);
         }
         return testRegions;

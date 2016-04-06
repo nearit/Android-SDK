@@ -3,18 +3,19 @@ package it.near.sdk;
 import android.app.Application;
 
 import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import it.near.sdk.Beacons.AltBeaconMonitor;
 import it.near.sdk.Beacons.AltBeaconWrapper;
-import it.near.sdk.Beacons.NearMonitorNotifier;
-import it.near.sdk.Beacons.NearRangeNotifier;
+import it.near.sdk.Beacons.NearRegionLogger;
 import it.near.sdk.Communication.NearItServer;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
-import it.near.sdk.Rules.MatchingNotifier;
+import it.near.sdk.Rules.NearNotifier;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.TraceNotifier;
@@ -26,28 +27,38 @@ import it.near.sdk.Utils.ULog;
 public class NearItManager {
 
     private static final String TAG = "NearItManager";
+    private static final String ENTER = "enter";
+    private static final String LEAVE = "leave";
     private static String APP_PACKAGE_NAME;
     private final NearItServer server;
     private AltBeaconWrapper altBeaconWrapper;
+
+    private AltBeaconMonitor monitor;
 
     private List<NearListener> nearListeners;
 
     Application application;
 
     public NearItManager(Application application, String apiKey) {
+        ULog.d(TAG, "NearItManager constructor");
         this.application = application;
         initLifecycleMonitor();
         nearListeners = new ArrayList<>();
 
 
         GlobalState.getInstance(application).setApiKey(apiKey);
-        GlobalState.getInstance(application).setMatchingNotifier(matchingNotifier);
+        GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
         server = NearItServer.getInstance(application);
         refreshNearConfig();
 
-        altBeaconWrapper = new AltBeaconWrapper(application);
+        // altBeaconWrapper = new AltBeaconWrapper(application);
+        monitor = new AltBeaconMonitor(application);
 
+    }
+
+    public void setLogger(NearRegionLogger logger){
+        monitor.setLogger(logger);
     }
 
     public void refreshNearConfig() {
@@ -56,8 +67,8 @@ public class NearItManager {
 
 
     public void startRanging(){
-        altBeaconWrapper.startRanging();
-        altBeaconWrapper.configureScanner(getConfiguration());
+        // altBeaconWrapper.startRanging();
+        // altBeaconWrapper.configureScanner(getConfiguration());
 
         /*Intent intent = new Intent(application, AltBeaconWrapper.class);
         application.startService(intent);
@@ -66,7 +77,7 @@ public class NearItManager {
 
     public void stopRanging(){
 
-        altBeaconWrapper.stopRangingAll();
+        // altBeaconWrapper.stopRangingAll();
 
         /*if (mBound) {
             application.unbindService(mConnection);
@@ -148,13 +159,37 @@ public class NearItManager {
         }
     }
 
-    private MatchingNotifier matchingNotifier = new MatchingNotifier() {
+    private NearNotifier nearNotifier = new NearNotifier() {
         @Override
         public void onRuleFullfilled(Matching matching) {
             getConfiguration();
             Content content = getConfiguration().getContentFromId(matching.getContent_id());
-            // TODO deliver content
             deliverContent(content, matching);
         }
+
+        @Override
+        public void onEnterRegion(Region region) {
+            // todo find correct content
+            Content content = getConfiguration().getContentList().get(0);
+            deliverRegionEvent(ENTER, region, content);
+        }
+
+        @Override
+        public void onExitRegion(Region region) {
+            Content content = getConfiguration().getContentList().get(0);
+            deliverRegionEvent(LEAVE, region, content);
+        }
     };
+
+    private void deliverRegionEvent(String event, Region region, Content content) {
+        for (NearListener listener : nearListeners){
+            if (listener != null){
+                if (event.equals(ENTER)){
+                    listener.onRegionEntered(region, content);
+                } else if (event.equals(LEAVE)){
+                    listener.onRegionExited(region, content);
+                }
+            }
+        }
+    }
 }

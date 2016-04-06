@@ -21,16 +21,16 @@ public interface NearListener {
     /**
      * Notify listener of region entered and assigned content
      *
-     * @param content
+     *  @param content
      * @param region
      */
-    public abstract void onRegionEntered(Content content, Region region);
+    public abstract void onRegionEntered(Region region, Content content);
 
     /**
      * Notify listener of region exited and assigned content (mostly null)
      *
-     * @param content
      * @param region
+     * @param content
      */
-    public abstract void onRegionExited(Content content, Region region);
+    public abstract void onRegionExited(Region region, Content content);
 }

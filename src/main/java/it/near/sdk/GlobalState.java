@@ -6,9 +6,8 @@ import it.near.sdk.Beacons.AltBeaconWrapper;
 import it.near.sdk.Beacons.BeaconDynamicRadar;
 import it.near.sdk.Beacons.NearMonitorNotifier;
 import it.near.sdk.Beacons.NearRangeNotifier;
-import it.near.sdk.Beacons.RegionListener;
 import it.near.sdk.Models.Configuration;
-import it.near.sdk.Rules.MatchingNotifier;
+import it.near.sdk.Rules.NearNotifier;
 import it.near.sdk.Utils.TraceNotifier;
 
 /**
@@ -26,7 +25,7 @@ public class GlobalState {
     private NearRangeNotifier nearRangeNotifier;
     private TraceNotifier traceNotifier;
     private BeaconDynamicRadar beaconDynamicRadar;
-    private MatchingNotifier matchingNotifier;
+    private NearNotifier nearNotifier;
     private NearMonitorNotifier nearMonitorNotifier;
 
 
@@ -102,11 +101,11 @@ public class GlobalState {
         this.beaconDynamicRadar = beaconDynamicRadar;
     }
 
-    public void setMatchingNotifier(MatchingNotifier matchingNotifier) {
-        this.matchingNotifier = matchingNotifier;
+    public void setNearNotifier(NearNotifier nearNotifier) {
+        this.nearNotifier = nearNotifier;
     }
 
-    public MatchingNotifier getMatchingNotifier() {
-        return matchingNotifier;
+    public NearNotifier getNearNotifier() {
+        return nearNotifier;
     }
 }

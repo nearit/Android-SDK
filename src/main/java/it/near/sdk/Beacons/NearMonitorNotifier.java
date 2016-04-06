@@ -25,12 +25,13 @@ public class NearMonitorNotifier implements MonitorNotifier, BootstrapNotifier {
     @Override
     public void didEnterRegion(Region region) {
         ULog.d(TAG , "didEnterRegion: " + region.toString());
-
+        regionListener.enterRegion(region);
     }
 
     @Override
     public void didExitRegion(Region region) {
         ULog.d(TAG , "didExitRegion: " + region.toString());
+        regionListener.exitRegion(region);
     }
 
     @Override
