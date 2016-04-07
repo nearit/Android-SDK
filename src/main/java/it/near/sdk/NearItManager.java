@@ -148,6 +148,7 @@ public class NearItManager {
     }
 
     public void addContentListener(NearListener listener){
+        ULog.d(TAG , "AddListener");
         nearListeners.add(listener);
     }
 
@@ -170,18 +171,21 @@ public class NearItManager {
         @Override
         public void onEnterRegion(Region region) {
             // todo find correct content
+            ULog.d(TAG, "Entered in region: " + region.toString());
             Content content = getConfiguration().getContentList().get(0);
             deliverRegionEvent(ENTER, region, content);
         }
 
         @Override
         public void onExitRegion(Region region) {
+            ULog.d(TAG, "Exited in region: " + region.toString());
             Content content = getConfiguration().getContentList().get(0);
             deliverRegionEvent(LEAVE, region, content);
         }
     };
 
     private void deliverRegionEvent(String event, Region region, Content content) {
+        ULog.d(TAG , "deliverEvent");
         for (NearListener listener : nearListeners){
             if (listener != null){
                 if (event.equals(ENTER)){
