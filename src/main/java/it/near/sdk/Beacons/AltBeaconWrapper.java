@@ -43,12 +43,20 @@ public class AltBeaconWrapper implements BeaconConsumer {
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         GlobalState.getInstance(context).setNearRangeNotifier(new NearRangeNotifier(context));
         GlobalState.getInstance(context).setNearMonitorNotifier(new NearMonitorNotifier(context, regionListener));
-        beaconManager.bind(this);
+        //beaconManager.bind(this);
         beaconManager.setBackgroundMode(true);
 
         craftTestRegions(context);
         /*beaconManager.setBackgroundBetweenScanPeriod(40000);
         beaconManager.setBackgroundScanPeriod(1500);*/
+        Region region1 = new Region("Region", Identifier.parse("8492E75F-4FD6-469D-B132-043FE94921D8"), Identifier.fromInt(1197), null);
+        Region region2 = new Region("Region", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null);
+
+        ArrayList<Region> regions = new ArrayList<>();
+        regions.add(region1);
+        regions.add(region2);
+        regions.addAll(testRegions);
+        regionBootstrap = new RegionBootstrap(GlobalState.getInstance(mContext).getNearMonitorNotifier(), regions);
     }
 
 

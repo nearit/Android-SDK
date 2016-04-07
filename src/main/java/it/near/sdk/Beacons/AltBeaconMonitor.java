@@ -53,6 +53,7 @@ public class AltBeaconMonitor implements BeaconConsumer, MonitorNotifier {
 //        Region kontaktRegion = new Region("Kontakt", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null);
 //        testRegions.add(kontaktRegion);
         beaconManager.setMonitorNotifier(this);
+        beaconManager.setBackgroundMode(true);
         beaconManager.bind(this);
     }
 
