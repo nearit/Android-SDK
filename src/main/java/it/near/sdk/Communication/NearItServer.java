@@ -122,9 +122,7 @@ public class NearItServer {
 
                     configuration.addBeacon(beacon);
                     realmWrapper.save(beacon);
-                    if (GlobalState.getInstance(mContext).getAltBeaconWrapper()!=null){
-                        GlobalState.getInstance(mContext).getAltBeaconWrapper().configureScanner(configuration);
-                    }
+
                 }
             }, new Response.ErrorListener() {
                 @Override

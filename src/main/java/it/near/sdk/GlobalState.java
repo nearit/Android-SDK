@@ -2,8 +2,7 @@ package it.near.sdk;
 
 import android.content.Context;
 
-import it.near.sdk.Beacons.AltBeaconWrapper;
-import it.near.sdk.Beacons.BeaconDynamicRadar;
+import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Beacons.NearMonitorNotifier;
 import it.near.sdk.Beacons.NearRangeNotifier;
 import it.near.sdk.Models.Configuration;
@@ -21,7 +20,6 @@ public class GlobalState {
     private Context mContext;
     private String apiKey;
     private Configuration configuration;
-    private AltBeaconWrapper altBeaconWrapper;
     private NearRangeNotifier nearRangeNotifier;
     private TraceNotifier traceNotifier;
     private BeaconDynamicRadar beaconDynamicRadar;
@@ -59,14 +57,6 @@ public class GlobalState {
 
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
-    }
-
-    public void setAltBeaconWrapper(AltBeaconWrapper altBeaconWrapper) {
-        this.altBeaconWrapper = altBeaconWrapper;
-    }
-
-    public AltBeaconWrapper getAltBeaconWrapper() {
-        return altBeaconWrapper;
     }
 
     public NearRangeNotifier getNearRangeNotifier() {

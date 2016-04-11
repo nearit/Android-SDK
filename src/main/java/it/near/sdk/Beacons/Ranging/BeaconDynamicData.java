@@ -1,9 +1,8 @@
-package it.near.sdk.Beacons;
+package it.near.sdk.Beacons.Ranging;
 
 import org.altbeacon.beacon.Beacon;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 
 import it.near.sdk.Models.NearBeacon;
 

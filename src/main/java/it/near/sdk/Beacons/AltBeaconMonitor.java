@@ -25,7 +25,7 @@ import it.near.sdk.Utils.ULog;
 /**
  * Created by cattaneostefano on 05/04/16.
  */
-public class AltBeaconMonitor implements BeaconConsumer, MonitorNotifier {
+public class AltBeaconMonitor implements BootstrapNotifier {
 
     private static final String TAG = "AltBeaconMonitor";
     private final BeaconManager beaconManager;
@@ -38,23 +38,23 @@ public class AltBeaconMonitor implements BeaconConsumer, MonitorNotifier {
         this.mContext = context;
 
         ULog.d(TAG, "Constructor called");
-        beaconManager = BeaconManager.getInstanceForApplication(context);
+        beaconManager = BeaconManager.getInstanceForApplication(context.getApplicationContext());
+        beaconManager.getBeaconParsers().clear();
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        BeaconManager.setDebug(true);
 
-        resetMonitoring();
         insideRegions = new ArrayList<>();
 
         ArrayList<Region> testRegions = TestRegionCrafter.getTestRegions(mContext);
 
-        Region emitterRegion = new Region("Region", Identifier.parse("ACFD065E-C3C0-11E3-9BBE-1A514932AC01"), Identifier.fromInt(6000),
-                                            Identifier.fromInt(1));
+        Region emitterRegion = new Region("Region", Identifier.parse("ACFD065E-C3C0-11E3-9BBE-1A514932AC01"), Identifier.fromInt(2009), null);
         testRegions.add(emitterRegion);
 //        Region kontaktRegion = new Region("Kontakt", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null);
 //        testRegions.add(kontaktRegion);
-        beaconManager.setMonitorNotifier(this);
-        beaconManager.setBackgroundMode(true);
-        beaconManager.bind(this);
+        beaconManager.setBackgroundBetweenScanPeriod(10000l);
+        beaconManager.setBackgroundScanPeriod(2000l);
+        regionBootstrap = new RegionBootstrap( this, testRegions);
     }
 
     public void setLogger(NearRegionLogger logger){
@@ -73,32 +73,10 @@ public class AltBeaconMonitor implements BeaconConsumer, MonitorNotifier {
     }
 
     @Override
-    public void onBeaconServiceConnect() {
-
-        resetMonitoring();
-        for (Region region : insideRegions){
-            try {
-                beaconManager.startMonitoringBeaconsInRegion(region);
-            } catch (RemoteException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
     public Context getApplicationContext() {
-        return mContext;
+        return mContext.getApplicationContext();
     }
 
-    @Override
-    public void unbindService(ServiceConnection serviceConnection) {
-        mContext.unbindService(serviceConnection);
-    }
-
-    @Override
-    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
-        return mContext.bindService(intent, serviceConnection, i);
-    }
 
     @Override
     public void didEnterRegion(Region region) {

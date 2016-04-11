@@ -1,6 +1,5 @@
 package it.near.sdk.Beacons;
 
-import android.app.Application;
 import android.content.Context;
 
 import org.altbeacon.beacon.Beacon;
@@ -13,9 +12,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
-import it.near.sdk.Utils.TraceNotifier;
 import it.near.sdk.Utils.ULog;
 
 /**

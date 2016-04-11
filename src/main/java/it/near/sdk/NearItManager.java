@@ -1,6 +1,7 @@
 package it.near.sdk;
 
 import android.app.Application;
+import android.content.Intent;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.Region;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.Beacons.AltBeaconMonitor;
-import it.near.sdk.Beacons.AltBeaconWrapper;
 import it.near.sdk.Beacons.NearRegionLogger;
 import it.near.sdk.Communication.NearItServer;
 import it.near.sdk.Models.Configuration;
@@ -29,9 +29,9 @@ public class NearItManager {
     private static final String TAG = "NearItManager";
     private static final String ENTER = "enter";
     private static final String LEAVE = "leave";
+    private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
     private static String APP_PACKAGE_NAME;
     private final NearItServer server;
-    private AltBeaconWrapper altBeaconWrapper;
 
     private AltBeaconMonitor monitor;
 
@@ -52,13 +52,12 @@ public class NearItManager {
         server = NearItServer.getInstance(application);
         refreshNearConfig();
 
-        // altBeaconWrapper = new AltBeaconWrapper(application);
         monitor = new AltBeaconMonitor(application);
 
     }
 
     public void setLogger(NearRegionLogger logger){
-        monitor.setLogger(logger);
+        // monitor.setLogger(logger);
     }
 
     public void refreshNearConfig() {
@@ -70,21 +69,14 @@ public class NearItManager {
         // altBeaconWrapper.startRanging();
         // altBeaconWrapper.configureScanner(getConfiguration());
 
-        /*Intent intent = new Intent(application, AltBeaconWrapper.class);
-        application.startService(intent);
-        application.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);*/
+
     }
 
     public void stopRanging(){
 
         // altBeaconWrapper.stopRangingAll();
 
-        /*if (mBound) {
-            application.unbindService(mConnection);
-            mBound = false;
-        }
-        Intent intent = new Intent(application, AltBeaconWrapper.class);
-        application.stopService(intent);*/
+
 
     }
 
@@ -113,29 +105,6 @@ public class NearItManager {
             }
         });
     }
-
-    private AltBeaconWrapper mService;
-    private boolean mBound;
-    /** Defines callbacks for service binding, passed to bindService() */
-    /*private ServiceConnection mConnection = new ServiceConnection() {
-
-        @Override
-        public void onServiceConnected(ComponentName className,
-                                       IBinder service) {
-            // We've bound to LocalService, cast the IBinder and get LocalService instance
-            AltBeaconWrapper.LocalBinder binder = (AltBeaconWrapper.LocalBinder) service;
-            mService = binder.getService();
-            mService.configureScanner(getConfiguration());
-            GlobalState.getInstance(application).setAltBeaconWrapper(mService);
-            mBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            mBound = false;
-        }
-    };*/
-
 
 
 
@@ -172,21 +141,23 @@ public class NearItManager {
         public void onEnterRegion(Region region) {
             // todo find correct content
             ULog.d(TAG, "Entered in region: " + region.toString());
-            Content content = getConfiguration().getContentList().get(0);
-            deliverRegionEvent(ENTER, region, content);
+            //Content content = getConfiguration().getContentList().get(0);
+            deliverRegionEvent(ENTER, region, null);
         }
 
         @Override
         public void onExitRegion(Region region) {
             ULog.d(TAG, "Exited in region: " + region.toString());
-            Content content = getConfiguration().getContentList().get(0);
-            deliverRegionEvent(LEAVE, region, content);
+            //Content content = getConfiguration().getContentList().get(0);
+            deliverRegionEvent(LEAVE, region, null);
         }
     };
 
     private void deliverRegionEvent(String event, Region region, Content content) {
-        ULog.d(TAG , "deliverEvent");
-        for (NearListener listener : nearListeners){
+
+        ULog.d(TAG , "deliverEvent to " + nearListeners.size() + " listeners" );
+
+        /*for (NearListener listener : nearListeners){
             if (listener != null){
                 if (event.equals(ENTER)){
                     listener.onRegionEntered(region, content);
@@ -194,6 +165,12 @@ public class NearItManager {
                     listener.onRegionExited(region, content);
                 }
             }
-        }
+        }*/
+
+        // also send the intent
+
+        Intent resultIntent = new Intent(REGION_MESSAGE_ACTION);
+        resultIntent.putExtra("event", event);
+        application.sendOrderedBroadcast(resultIntent, null);
     }
 }
