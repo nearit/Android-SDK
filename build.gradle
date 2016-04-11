@@ -65,10 +65,10 @@ bintray {
         name = 'it.near.sdk.core'
 
         version {
-            name = '0.0.3-alpha'
+            name = '0.0.5-alpha'
             desc = 'My test upload'
             released  = new Date()
-            vcsTag = '0.0.3-alpha'
+            vcsTag = '0.0.5-alpha'
         }
 
         licenses = ['MIT']
@@ -79,7 +79,7 @@ bintray {
 }
 
 group = 'it.near.sdk.core'
-version = '0.0.3-alpha'
+version = '0.0.5-alpha'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
@@ -90,11 +90,17 @@ dependencies {
     // compile 'org.altbeacon:android-beacon-library:2.7.1'
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile project(':android-beacon-library-2.8-beta1')
+    // compile(name:'android-beacon-library-2.8-beta1', ext:'aar')
+    // compile 'org.altbeacon:android-beacon-library@aar'
 }
+
 
 buildscript {
     repositories {
         jcenter()
+        flatDir{
+            dirs 'libs'
+        }
     }
     dependencies {
         classpath "io.realm:realm-gradle-plugin:0.88.2"
