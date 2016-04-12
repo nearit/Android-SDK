@@ -1,7 +1,5 @@
 package it.near.sdk.Beacons.Ranging;
 
-import it.near.sdk.Models.NearBeacon;
-
 /**
  * Created by cattaneostefano on 23/03/16.
  */

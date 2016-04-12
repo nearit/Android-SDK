@@ -24,7 +24,6 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
-import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Realm.wrapper.RealmWrapper;
 import it.near.sdk.Utils.ULog;
 
@@ -74,7 +73,6 @@ public class NearItServer {
     private void setUpMorpheusParser() {
         morpheus = new Morpheus();
         //register your resources
-        Deserializer.registerResourceClass("beacons", NearBeacon.class);
         Deserializer.registerResourceClass("contents", Content.class);
         Deserializer.registerResourceClass("matchings", Matching.class);
     }
@@ -98,7 +96,6 @@ public class NearItServer {
                 configuration.setMatchingList(matchings);
                 realmWrapper.saveList(matchings);
 
-                downloadBeacons(matchings);
                 downloadContents(matchings);
 
             }
@@ -111,28 +108,6 @@ public class NearItServer {
 
     }
 
-    private void downloadBeacons(List<Matching> matchings) {
-        configuration.setBeaconList(new ArrayList<NearBeacon>());
-        for (Matching matching : matchings){
-            requestQueue.add(new CustomJsonRequest(mContext, Constants.API.beacons + "/" + matching.getBeacon_id(), new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    ULog.d(TAG, "Beacon downloaded: " + response.toString());
-                    NearBeacon beacon = parse(response, NearBeacon.class);
-
-                    configuration.addBeacon(beacon);
-                    realmWrapper.save(beacon);
-
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    ULog.d(TAG, "error " + error.toString() );
-                }
-            }));
-        }
-
-    }
 
 
     private void downloadContents(List<Matching> matchings) {

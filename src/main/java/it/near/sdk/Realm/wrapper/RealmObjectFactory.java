@@ -4,7 +4,6 @@ import it.near.sdk.MorpheusNear.Resource;
 import io.realm.RealmObject;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
-import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Realm.BeaconRealm;
 import it.near.sdk.Realm.ContentRealm;
 import it.near.sdk.Realm.MatchingRealm;

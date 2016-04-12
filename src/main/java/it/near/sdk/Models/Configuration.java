@@ -13,7 +13,6 @@ public class Configuration {
 
     private static final String TAG = "Configuration";
     List<Matching> matchingList;
-    List<NearBeacon> beaconList;
     List<Content> contentList;
 
     public List<Matching> getMatchingList() {
@@ -24,9 +23,6 @@ public class Configuration {
         this.matchingList = matchingList;
     }
 
-    public List<NearBeacon> getBeaconList() {
-        return beaconList;
-    }
 
     public List<Content> getContentList() {
         return contentList;
@@ -36,27 +32,6 @@ public class Configuration {
         this.contentList = contentList;
     }
 
-    public void setBeaconList(List<NearBeacon> beaconList) {
-        this.beaconList = beaconList;
-    }
-
-    public void addBeacon(NearBeacon beacon) {
-        if (beaconList == null) {
-            beaconList = new ArrayList<NearBeacon>();
-        }
-        beaconList.add(beacon);
-    }
-
-    public boolean hasBeacon(org.altbeacon.beacon.Beacon beacon) {
-        if ( beaconList == null || beaconList.size()==0 ){
-            return false;
-        }
-        for (NearBeacon appBeacon : beaconList){
-            if (appBeacon.isLike(beacon))
-                return true;
-        }
-        return false;
-    }
 
     public void addContent(Content content) {
 
@@ -81,26 +56,8 @@ public class Configuration {
         }
 
         return false;
-
     }
 
-
-
-    // Those next three methods work on the assumption that there's only one matching for a beacon
-
-    public Content getContentFromBeacon(NearBeacon beacon) {
-        Matching matching = getMatchingFromBeacon(beacon);
-        return getContentFromId(matching.getContent_id());
-    }
-
-    public Matching getMatchingFromBeacon(NearBeacon beacon) {
-        for ( Matching m : matchingList ) {
-            if (m.getBeacon_id().equals(beacon.getId())){
-                return m;
-            }
-        }
-        return null;
-    }
 
     public Content getContentFromId(String content_id) {
         for (Content c : contentList){
