@@ -10,13 +10,17 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 
+import it.near.sdk.R;
+
 /**
  * Created by cattaneostefano on 11/04/16.
  */
 public class NearNotification {
 
     public static void send(Context _context, int _imgRes, String _title, String _message, Intent _resultIntent, int _code) {
-
+        if (_imgRes == 0){
+            _imgRes = R.drawable.ic_place_white_24dp;
+        }
         // imposto notifica di sistema
         Uri sound_notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(_context)

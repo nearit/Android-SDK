@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.R;
 
@@ -50,7 +51,7 @@ public class CustomJsonRequest extends JsonObjectRequest {
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map headers = new HashMap();
-        headers.put(Constants.Headers.accessToken, "bearer " + GlobalState.getInstance(mContext).getApiKey());
+        headers.put(Constants.Headers.accessToken, "bearer " + GlobalConfig.getInstance(mContext).getApiKey());
         headers.put(Constants.Headers.contentType, Constants.Headers.jsonApiHeader);
         headers.put(Constants.Headers.accept, Constants.Headers.jsonApiHeader);
         return headers;

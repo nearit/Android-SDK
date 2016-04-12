@@ -20,6 +20,17 @@ public class Constants {
         String image = "media/images";
         // todo add track path
         String track = "";
+        String recipes = "recipes";
+        String plugins = "plugins";
+
+        interface PLUGINS {
+            String beacon_forest =          plugins + "/beacon-forest";
+            String simple_notification =    plugins + "/simple-notification";
+            String content_notification =   plugins + "/content-notification";
+            String poll_notification =      plugins + "/poll-notification";
+        }
+
+
     }
 
 
