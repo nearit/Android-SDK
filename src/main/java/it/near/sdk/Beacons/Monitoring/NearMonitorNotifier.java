@@ -1,13 +1,11 @@
 package it.near.sdk.Beacons.Monitoring;
 
-import android.app.Application;
 import android.content.Context;
 
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 
-import it.near.sdk.Beacons.RegionListener;
 import it.near.sdk.Utils.ULog;
 
 /**

@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.near.sdk.Beacons.ProximityListener;
-import it.near.sdk.Beacons.Ranging.BeaconDynamicData;
 import it.near.sdk.Models.NearBeacon;
 
 /**

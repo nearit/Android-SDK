@@ -9,8 +9,8 @@ import org.altbeacon.beacon.Region;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.Beacons.AltBeaconMonitor;
-import it.near.sdk.Beacons.NearRegionLogger;
+import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
+import it.near.sdk.Beacons.Monitoring.NearRegionLogger;
 import it.near.sdk.Communication.NearItServer;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
@@ -45,7 +45,7 @@ public class NearItManager {
         initLifecycleMonitor();
         nearListeners = new ArrayList<>();
 
-        GlobalState.getInstance(application).setApiKey(apiKey);
+        GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
         server = NearItServer.getInstance(application);

@@ -1,27 +1,19 @@
 package it.near.sdk.Beacons.Monitoring;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.RemoteException;
-import android.support.v4.app.NotificationCompat;
 
-import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
-import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
 import java.util.ArrayList;
 
-import it.near.sdk.Beacons.NearRegionLogger;
 import it.near.sdk.Beacons.TestRegionCrafter;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Models.Content;
-import it.near.sdk.R;
 import it.near.sdk.Utils.ULog;
 
 /**

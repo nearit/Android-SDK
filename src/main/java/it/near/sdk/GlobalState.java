@@ -3,8 +3,8 @@ package it.near.sdk;
 import android.content.Context;
 
 import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
-import it.near.sdk.Beacons.NearMonitorNotifier;
-import it.near.sdk.Beacons.NearRangeNotifier;
+import it.near.sdk.Beacons.Monitoring.NearMonitorNotifier;
+import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Rules.NearNotifier;
 import it.near.sdk.Utils.TraceNotifier;
@@ -18,7 +18,7 @@ public class GlobalState {
     private static GlobalState mInstance = null;
 
     private Context mContext;
-    private String apiKey;
+
     private Configuration configuration;
     private NearRangeNotifier nearRangeNotifier;
     private TraceNotifier traceNotifier;
@@ -43,13 +43,6 @@ public class GlobalState {
         return mContext;
     }
 
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    public void setApiKey(String apiKey) {
-        this.apiKey = apiKey;
-    }
 
     public Configuration getConfiguration() {
         return configuration;
