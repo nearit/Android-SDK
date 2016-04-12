@@ -11,6 +11,7 @@ import io.realm.RealmConfiguration;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import it.near.sdk.Realm.MatchingRealm;
+import it.near.sdk.Realm.MyLibraryModule;
 
 
 /**
@@ -18,6 +19,9 @@ import it.near.sdk.Realm.MatchingRealm;
  */
 public class RealmWrapper {
 
+    private static final String SDK_DB_NAME = "NearSDK";
+    private static final String REALM_EXT = "realm";
+    private static final String SDK_DB_FILE_NAME = SDK_DB_NAME + "." + REALM_EXT;
     private static RealmWrapper mInstance = null;
 
     private static final String TAG = "RealmDB";
@@ -49,7 +53,7 @@ public class RealmWrapper {
     public RealmConfiguration getRealmConfiguration() {
         return realmConfiguration != null ?
                 realmConfiguration :
-                new RealmConfiguration.Builder(mContext).build();
+                new RealmConfiguration.Builder(mContext).name(SDK_DB_FILE_NAME).setModules(new MyLibraryModule()).build();
     }
 
     /**
