@@ -18,19 +18,4 @@ public interface NearListener {
      */
     public abstract void onContentToDisplay(Content content, Matching matching);
 
-    /**
-     * Notify listener of region entered and assigned content
-     *
-     *  @param content
-     * @param region
-     */
-    public abstract void onRegionEntered(Region region, Content content);
-
-    /**
-     * Notify listener of region exited and assigned content (mostly null)
-     *
-     * @param region
-     * @param content
-     */
-    public abstract void onRegionExited(Region region, Content content);
 }

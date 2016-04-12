@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons;
+package it.near.sdk.Beacons.Monitoring;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,8 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
 
 import java.util.ArrayList;
 
+import it.near.sdk.Beacons.NearRegionLogger;
+import it.near.sdk.Beacons.TestRegionCrafter;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.Content;
 import it.near.sdk.R;

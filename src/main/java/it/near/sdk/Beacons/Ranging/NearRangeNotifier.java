@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons;
+package it.near.sdk.Beacons.Ranging;
 
 import android.content.Context;
 

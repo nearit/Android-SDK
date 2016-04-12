@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons;
+package it.near.sdk.Beacons.Ranging;
 
 import it.near.sdk.Models.NearBeacon;
 

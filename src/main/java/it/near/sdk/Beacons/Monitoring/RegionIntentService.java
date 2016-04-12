@@ -1,9 +1,9 @@
-package it.near.sdk.Beacons;
+package it.near.sdk.Beacons.Monitoring;
 
 import android.app.IntentService;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.R;
 import it.near.sdk.Utils.NearNotification;
 
@@ -42,14 +42,14 @@ public class RegionIntentService extends IntentService {
         if (intent.getStringExtra("event").equals("enter")) {
 
             // targetIntent.putExtra("near_action" , null);
-            NearNotification.send(this, iconRes, "entro regione", "entra", targetIntent, NOTIFICATION_ID);
+            NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), "entro regione", "entra", targetIntent, NOTIFICATION_ID);
 
         }
 
         else if (intent.getStringExtra("event").equals("leave")) {
 
             // targetIntent.putExtra("near_action" , msg.getAction());
-            NearNotification.send(this, iconRes, "esco regione", "esci", targetIntent, NOTIFICATION_ID);
+            NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), "esco regione", "esci", targetIntent, NOTIFICATION_ID);
 
         }
 

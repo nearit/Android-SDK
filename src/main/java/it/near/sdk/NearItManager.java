@@ -45,7 +45,6 @@ public class NearItManager {
         initLifecycleMonitor();
         nearListeners = new ArrayList<>();
 
-
         GlobalState.getInstance(application).setApiKey(apiKey);
         GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
@@ -68,16 +67,10 @@ public class NearItManager {
     public void startRanging(){
         // altBeaconWrapper.startRanging();
         // altBeaconWrapper.configureScanner(getConfiguration());
-
-
     }
 
     public void stopRanging(){
-
         // altBeaconWrapper.stopRangingAll();
-
-
-
     }
 
     /**
@@ -156,16 +149,6 @@ public class NearItManager {
     private void deliverRegionEvent(String event, Region region, Content content) {
 
         ULog.d(TAG , "deliverEvent to " + nearListeners.size() + " listeners" );
-
-        /*for (NearListener listener : nearListeners){
-            if (listener != null){
-                if (event.equals(ENTER)){
-                    listener.onRegionEntered(region, content);
-                } else if (event.equals(LEAVE)){
-                    listener.onRegionExited(region, content);
-                }
-            }
-        }*/
 
         // also send the intent
 
