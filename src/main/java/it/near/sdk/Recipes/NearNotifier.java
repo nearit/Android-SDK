@@ -1,4 +1,4 @@
-package it.near.sdk.Rules;
+package it.near.sdk.Recipes;
 
 import org.altbeacon.beacon.Region;
 
