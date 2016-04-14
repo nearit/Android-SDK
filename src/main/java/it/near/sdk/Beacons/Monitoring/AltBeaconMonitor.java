@@ -11,7 +11,9 @@ import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import it.near.sdk.Beacons.BeaconForest.Beacon;
 import it.near.sdk.Beacons.TestRegionCrafter;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.ULog;
@@ -48,8 +50,24 @@ public class AltBeaconMonitor implements BootstrapNotifier {
 //        testRegions.add(kontaktRegion);
         beaconManager.setBackgroundBetweenScanPeriod(10000l);
         beaconManager.setBackgroundScanPeriod(2000l);
-        regionBootstrap = new RegionBootstrap( this, testRegions);
+        // regionBootstrap = new RegionBootstrap( this, testRegions);
     }
+
+    /**
+     * Start monitoring on the given regions and sets the notifier object to be notified on region enter and exit.
+     * When doing this, we stop monitoring on the region we were previously monitoring and we set the given notifier
+     * as the only notifier.
+     * @param regions
+     * @param notifier
+     */
+    public void startRadar(List<Region> regions, BootstrapNotifier notifier){
+        resetMonitoring();
+
+        beaconManager.setBackgroundBetweenScanPeriod(10000l);
+        beaconManager.setBackgroundScanPeriod(2000l);
+        regionBootstrap = new RegionBootstrap(notifier, regions);
+    }
+
 
     public void setLogger(NearRegionLogger logger){
         this.nearRegionLogger = logger;

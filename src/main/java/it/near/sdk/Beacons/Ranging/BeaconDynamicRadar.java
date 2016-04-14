@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import it.near.sdk.Models.NearBeacon;
+
 /**
  * Manage and calculate beacon distances from the user device.
  *

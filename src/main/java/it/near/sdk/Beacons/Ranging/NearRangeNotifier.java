@@ -78,9 +78,9 @@ public class NearRangeNotifier implements RangeNotifier {
         Configuration configuration = GlobalState.getInstance(context).getConfiguration();
         List<Beacon> appBeacons = new ArrayList<>();
         for (Beacon beacon : beacons){
-            if (configuration.hasBeacon(beacon)){
+            /*if (configuration.hasBeacon(beacon)){
                 appBeacons.add(beacon);
-            }
+            }*/
 
         }
         return appBeacons;

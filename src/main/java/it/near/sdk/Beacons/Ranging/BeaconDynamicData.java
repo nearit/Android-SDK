@@ -4,6 +4,8 @@ import org.altbeacon.beacon.Beacon;
 
 import java.util.ArrayList;
 
+import it.near.sdk.Models.NearBeacon;
+
 /**
  * Created by cattaneostefano on 22/03/16.
  */
