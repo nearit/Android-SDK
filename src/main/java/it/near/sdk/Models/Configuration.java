@@ -1,5 +1,7 @@
 package it.near.sdk.Models;
 
+import org.altbeacon.beacon.Beacon;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,4 +69,5 @@ public class Configuration {
         }
         return null;
     }
+
 }

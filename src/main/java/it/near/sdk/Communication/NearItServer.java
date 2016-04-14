@@ -73,8 +73,8 @@ public class NearItServer {
     private void setUpMorpheusParser() {
         morpheus = new Morpheus();
         //register your resources
-        Deserializer.registerResourceClass("contents", Content.class);
-        Deserializer.registerResourceClass("matchings", Matching.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("contents", Content.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("matchings", Matching.class);
     }
 
     public RequestQueue getRequestQueue() {
@@ -85,91 +85,10 @@ public class NearItServer {
         return configuration;
     }
 
-    public void downloadNearConfiguration(){
-        String filter = Filter.build().addFilter("active", "true").print();
-        requestQueue.add(new CustomJsonRequest(mContext, Constants.API.matchings + filter, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                ULog.d(TAG, "Matchings downloaded: " + response.toString());
-                List<Matching> matchings = parseList(response, Matching.class);
-
-                configuration.setMatchingList(matchings);
-                realmWrapper.saveList(matchings);
-
-                downloadContents(matchings);
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                ULog.d(TAG, "error " + error.toString() );
-            }
-        }));
-
-    }
 
 
 
-    private void downloadContents(List<Matching> matchings) {
-        configuration.setContentList(new ArrayList<Content>());
-        for (Matching matching : matchings) {
-            requestQueue.add(new CustomJsonRequest(mContext, Constants.API.contents + "/" + matching.getContent_id(), new Response.Listener<JSONObject>() {
 
-                @Override
-                public void onResponse(JSONObject response) {
-                    ULog.d(TAG, "Content downloaded" + response.toString());
-                    Content content = parse(response, Content.class);
-                    configuration.addContent(content);
-                    realmWrapper.save(content);
-                    resolveContentLinksAndSave(content);
-                    GlobalState.getInstance(mContext).setConfiguration(configuration);
-
-                }
-            },new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    ULog.d(TAG, "error " + error.toString() );
-                }
-            }));
-        }
-
-    }
-
-    private void resolveContentLinksAndSave(final Content content) {
-        content.setImageSets(new ArrayList<ImageSet>());
-        for (final String mediaId : content.getPhotoIds()){
-            requestQueue.add(new CustomJsonRequest(mContext, Constants.API.image + "/" + mediaId, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    ULog.d(TAG, "Image link downloaded " + response.toString());
-                    ImageSet set = new ImageSet();
-                    try {
-                        JSONObject data = response.getJSONObject("data");
-                        JSONObject attributes = data.getJSONObject("attributes");
-                        JSONObject image = attributes.getJSONObject("image");
-                        String fullLink = image.getString("url");
-                        set.setFullSize(fullLink);
-                        JSONObject max_1920 = image.getJSONObject("max_1920_jpg");
-                        String bigLink = max_1920.getString("url");
-                        set.setBigSize(bigLink);
-                        JSONObject square_300 = image.getJSONObject("square_300");
-                        String smallLink = square_300.getString("url");
-                        set.setSmallSize(smallLink);
-                        content.getImageSets().add(set);
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    ULog.d(TAG, "error " + error.toString() );
-                }
-            }));
-        }
-    }
 
 
 

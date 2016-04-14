@@ -6,7 +6,7 @@ import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Beacons.Monitoring.NearMonitorNotifier;
 import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Models.Configuration;
-import it.near.sdk.Rules.NearNotifier;
+import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.TraceNotifier;
 
 /**

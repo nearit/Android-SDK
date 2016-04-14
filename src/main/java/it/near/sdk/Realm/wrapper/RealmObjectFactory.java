@@ -1,5 +1,6 @@
 package it.near.sdk.Realm.wrapper;
 
+import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.MorpheusNear.Resource;
 import io.realm.RealmObject;
 import it.near.sdk.Models.Content;
