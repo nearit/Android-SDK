@@ -9,13 +9,18 @@ import org.altbeacon.beacon.Region;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
 import it.near.sdk.Beacons.Monitoring.NearRegionLogger;
 import it.near.sdk.Communication.NearItServer;
 import it.near.sdk.Models.Configuration;
 import it.near.sdk.Models.Content;
 import it.near.sdk.Models.Matching;
-import it.near.sdk.Rules.NearNotifier;
+import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
+import it.near.sdk.Reactions.PollNotification.PollNotificationReaction;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
+import it.near.sdk.Recipes.NearNotifier;
+import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.TraceNotifier;
@@ -32,6 +37,11 @@ public class NearItManager {
     private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
     private static String APP_PACKAGE_NAME;
     private final NearItServer server;
+    private ForestManager forest;
+    private RecipesManager recipesManager;
+    private SimpleNotificationReaction simpleNotification;
+    private ContentNotificationReaction contentNotification;
+    private PollNotificationReaction pollNotification;
 
     private AltBeaconMonitor monitor;
 
@@ -51,7 +61,22 @@ public class NearItManager {
         server = NearItServer.getInstance(application);
         refreshNearConfig();
 
+        plugInSetup();
+
+    }
+
+    private void plugInSetup() {
+        recipesManager = new RecipesManager(application);
+
         monitor = new AltBeaconMonitor(application);
+        forest = new ForestManager(application, monitor, recipesManager);
+
+        simpleNotification = new SimpleNotificationReaction(application);
+        recipesManager.addReaction(simpleNotification.getIngredientName(), simpleNotification);
+        contentNotification = new ContentNotificationReaction(application);
+        recipesManager.addReaction(contentNotification.getIngredientName(), contentNotification);
+        pollNotification = new PollNotificationReaction(application);
+        recipesManager.addReaction(pollNotification.getIngredientName(), pollNotification);
 
     }
 
@@ -60,7 +85,7 @@ public class NearItManager {
     }
 
     public void refreshNearConfig() {
-        server.downloadNearConfiguration();
+        // server.downloadNearConfiguration();
     }
 
 
