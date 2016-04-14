@@ -11,7 +11,7 @@ import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
  */
 public class Deserializer {
 
-  private static ArrayMap<String, Class> registeredClasses = new ArrayMap<>();
+  private ArrayMap<String, Class> registeredClasses = new ArrayMap<>();
 
   /**
    * Register your class for a JSON type.
@@ -23,7 +23,7 @@ public class Deserializer {
    * @param resourceClass Class for mapping.
    * @see Resource
    */
-  public static void registerResourceClass(String typeName, Class resourceClass) {
+  public void registerResourceClass(String typeName, Class resourceClass) {
     registeredClasses.put(typeName, resourceClass);
   }
 
@@ -128,11 +128,11 @@ public class Deserializer {
     return superClass;
   }
 
-  public static ArrayMap<String, Class> getRegisteredClasses() {
+  public ArrayMap<String, Class> getRegisteredClasses() {
     return registeredClasses;
   }
 
-  public static void setRegisteredClasses(ArrayMap<String, Class> registeredClasses) {
-    Deserializer.registeredClasses = registeredClasses;
+  public void setRegisteredClasses(ArrayMap<String, Class> registeredClasses) {
+    this.registeredClasses = registeredClasses;
   }
 }

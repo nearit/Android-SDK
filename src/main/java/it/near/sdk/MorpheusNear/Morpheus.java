@@ -21,15 +21,17 @@ import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
  * </pre>
  */
 public class Morpheus {
-  private Mapper mapper;
+  private final Mapper mapper;
+  private Factory factory;
 
   public Morpheus() {
-    mapper = new Mapper();
+    mapper = new Mapper(new Deserializer(), new AttributeMapper());
+    factory = new Factory();
+    factory.setMapper(mapper);
   }
 
-  public Morpheus(AttributeMapper attributeMapper) {
-    mapper = new Mapper(new Deserializer(), attributeMapper);
-    Factory.setMapper(mapper);
+  public Factory getFactory() {
+    return factory;
   }
 
   /**
@@ -59,7 +61,7 @@ public class Morpheus {
     //included
     try {
       JSONArray includedArray = jsonObject.getJSONArray("included");
-      jsonapiObject.setIncluded(Factory.newObjectFromJSONArray(includedArray, null));
+      jsonapiObject.setIncluded(factory.newObjectFromJSONArray(includedArray, null));
     } catch (JSONException e) {
       Logger.debug("JSON does not contain included");
     }
@@ -68,7 +70,7 @@ public class Morpheus {
     JSONArray dataArray = null;
     try {
       dataArray = jsonObject.getJSONArray("data");
-      jsonapiObject.setResources(Factory.newObjectFromJSONArray(dataArray, jsonapiObject.getIncluded()));
+      jsonapiObject.setResources(factory.newObjectFromJSONArray(dataArray, jsonapiObject.getIncluded()));
     } catch (JSONException e) {
       Logger.debug("JSON does not contain data array");
     }
@@ -77,7 +79,7 @@ public class Morpheus {
     JSONObject dataObject = null;
     try {
       dataObject = jsonObject.getJSONObject("data");
-      jsonapiObject.setResource(Factory.newObjectFromJSONObject(dataObject, jsonapiObject.getIncluded()));
+      jsonapiObject.setResource(factory.newObjectFromJSONObject(dataObject, jsonapiObject.getIncluded()));
     } catch (JSONException e) {
       Logger.debug("JSON does not contain data object");
     }

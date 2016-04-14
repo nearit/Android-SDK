@@ -14,8 +14,8 @@ import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
  */
 public class Factory {
 
-  private static Mapper mapper = new Mapper();
-  private static Deserializer deserializer = new Deserializer();
+  private Mapper mapper = new Mapper();
+  private Deserializer deserializer = new Deserializer();
 
   /**
    * Deserializes a json object of data to the registered class.
@@ -23,7 +23,7 @@ public class Factory {
    * @param dataObject JSONObject from data
    * @return Deserialized Object.
    */
-  public static Resource newObjectFromJSONObject(JSONObject dataObject, List<Resource> included) throws Exception {
+  public Resource newObjectFromJSONObject(JSONObject dataObject, List<Resource> included) throws Exception {
     Resource realObject = null;
 
     try {
@@ -73,7 +73,7 @@ public class Factory {
    * @param dataArray JSONArray of the data node.
    * @return List of deserialized objects.
    */
-  public static List<Resource> newObjectFromJSONArray(JSONArray dataArray, List<Resource> included) throws Exception {
+  public List<Resource> newObjectFromJSONArray(JSONArray dataArray, List<Resource> included) throws Exception {
     ArrayList<Resource> objects = new ArrayList<>();
 
     for (int i = 0; i < dataArray.length(); i++) {
@@ -102,7 +102,7 @@ public class Factory {
    * @param object JSONObject.
    * @return Name of the json type.
    */
-  public static String getTypeFromJson(JSONObject object) {
+  public String getTypeFromJson(JSONObject object) {
     String type = null;
     try {
       type = object.getString("type");
@@ -112,11 +112,16 @@ public class Factory {
     return type;
   }
 
-  public static void setDeserializer(Deserializer deserializer) {
-    Factory.deserializer = deserializer;
+  public Deserializer getDeserializer() {
+    return deserializer;
   }
 
-  public static void setMapper(Mapper mapper) {
-    Factory.mapper = mapper;
+  public void setDeserializer(Deserializer deserializer) {
+    this.deserializer = deserializer;
+  }
+
+  public void setMapper(Mapper mapper) {
+    this.mapper = mapper;
+    this.mapper.setFactory(this);
   }
 }

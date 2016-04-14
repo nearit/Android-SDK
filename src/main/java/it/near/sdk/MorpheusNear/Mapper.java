@@ -23,6 +23,7 @@ import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
  */
 public class Mapper {
 
+  private Factory factory;
   private Deserializer mDeserializer;
   private AttributeMapper mAttributeMapper;
 
@@ -159,7 +160,7 @@ public class Mapper {
       JSONObject relationDataObject = null;
       try {
         relationDataObject = relationJsonObject.getJSONObject("data");
-        Resource relationObject = Factory.newObjectFromJSONObject(relationDataObject, null);
+        Resource relationObject = factory.newObjectFromJSONObject(relationDataObject, null);
 
         relationObject = matchIncludedToRelation(relationObject, included);
 
@@ -172,7 +173,7 @@ public class Mapper {
       JSONArray relationDataArray = null;
       try {
         relationDataArray = relationJsonObject.getJSONArray("data");
-        List<Resource> relationArray = Factory.newObjectFromJSONArray(relationDataArray, null);
+        List<Resource> relationArray = factory.newObjectFromJSONArray(relationDataArray, null);
 
         relationArray = matchIncludedToRelation(relationArray, included);
 
@@ -340,5 +341,9 @@ public class Mapper {
 
   public AttributeMapper getAttributeMapper() {
     return mAttributeMapper;
+  }
+
+  public void setFactory(Factory factory) {
+    this.factory = factory;
   }
 }
