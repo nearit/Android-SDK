@@ -21,7 +21,7 @@ import it.near.sdk.Utils.ULog;
 /**
  * Created by cattaneostefano on 05/04/16.
  */
-public class AltBeaconMonitor implements BootstrapNotifier {
+public class AltBeaconMonitor {
 
     private static final String TAG = "AltBeaconMonitor";
     private final BeaconManager beaconManager;
@@ -68,7 +68,6 @@ public class AltBeaconMonitor implements BootstrapNotifier {
         regionBootstrap = new RegionBootstrap(notifier, regions);
     }
 
-
     public void setLogger(NearRegionLogger logger){
         this.nearRegionLogger = logger;
     }
@@ -84,38 +83,10 @@ public class AltBeaconMonitor implements BootstrapNotifier {
         }
     }
 
-    @Override
-    public Context getApplicationContext() {
-        return mContext.getApplicationContext();
-    }
-
-
-    @Override
-    public void didEnterRegion(Region region) {
-        String msg = "didEnterRegion: " + region.toString();
-        ULog.d(TAG , msg);
-        insideRegions.add(region);
-        safeLog(msg, insideRegions);
-        GlobalState.getInstance(mContext).getNearNotifier().onEnterRegion(region);
-    }
-
-    @Override
-    public void didExitRegion(Region region) {
-        String msg = "didExitRegion: " + region.toString();
-        ULog.d(TAG, msg);
-        insideRegions.remove(region);
-        safeLog(msg, insideRegions);
-        GlobalState.getInstance(mContext).getNearNotifier().onExitRegion(region);
-    }
-
     private void safeLog(String msg, ArrayList<Region> insideRegions) {
         if (nearRegionLogger != null){
             nearRegionLogger.log(msg, insideRegions);
         }
     }
 
-    @Override
-    public void didDetermineStateForRegion(int i, Region region) {
-        ULog.d(TAG, "didDetermineStateForRegion");
-    }
 }

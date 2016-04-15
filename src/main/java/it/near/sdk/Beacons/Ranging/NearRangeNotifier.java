@@ -12,9 +12,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Models.Configuration;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -75,7 +73,6 @@ public class NearRangeNotifier implements RangeNotifier {
      * @return
      */
     private List<Beacon> filterBeacons(Collection<Beacon> beacons) {
-        Configuration configuration = GlobalState.getInstance(context).getConfiguration();
         List<Beacon> appBeacons = new ArrayList<>();
         for (Beacon beacon : beacons){
             /*if (configuration.hasBeacon(beacon)){

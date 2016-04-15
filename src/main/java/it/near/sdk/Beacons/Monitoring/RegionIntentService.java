@@ -31,6 +31,8 @@ public class RegionIntentService extends IntentService {
 
 
         // creo notifica di sistema
+        String trigger = intent.getStringExtra("trigger-source");
+        String source = intent.getStringExtra("content-source");
 
         // creo intent per tap sulle push, apriro il launcher dell'App
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
@@ -39,19 +41,8 @@ public class RegionIntentService extends IntentService {
         // todo set dynamic notification icon
         int iconRes = R.drawable.ic_image_black_24dp;
 
-        if (intent.getStringExtra("event").equals("enter")) {
+        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), trigger, source, targetIntent, NOTIFICATION_ID);
 
-            // targetIntent.putExtra("near_action" , null);
-            NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), "entro regione", "entra", targetIntent, NOTIFICATION_ID);
-
-        }
-
-        else if (intent.getStringExtra("event").equals("leave")) {
-
-            // targetIntent.putExtra("near_action" , msg.getAction());
-            NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), "esco regione", "esci", targetIntent, NOTIFICATION_ID);
-
-        }
 
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.

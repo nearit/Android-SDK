@@ -14,13 +14,11 @@ public class Constants {
     }
 
     public interface API{
-        String matchings = "matchings";
         String beacons = "detectors/beacons";
-        String contents = "contents";
         String image = "media/images";
         // todo add track path
-        String track = "";
         String recipes = "recipes";
+        String recipes_include_flavors = recipes + "?include=pulse_flavor,operation_flavor,reaction_flavor";
         String plugins = "plugins";
 
         interface PLUGINS {

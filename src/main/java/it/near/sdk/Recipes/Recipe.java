@@ -110,8 +110,4 @@ public class Recipe extends Resource {
         this.reaction_flavor = reaction_flavor;
     }
 
-    public class PulseFlavor extends Resource {}
-    public class OperationFlavor extends Resource {}
-    public class ReactionFlavor extends Resource {}
-
 }
