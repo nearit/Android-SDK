@@ -1,11 +1,14 @@
 package it.near.sdk.Beacons.BeaconForest;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
@@ -13,7 +16,9 @@ import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -24,6 +29,7 @@ import it.near.sdk.MorpheusNear.Deserializer;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Recipes.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.ULog;
 
@@ -33,11 +39,15 @@ import it.near.sdk.Utils.ULog;
 public class ForestManager implements BootstrapNotifier {
 
     private static final String TAG = "ForestManager";
+    public static final String PREFS_SUFFIX = "NearBeacons";
     private static final String INGREDIENT_NAME = "beacon-forest";
     private static final String ENTER_REGION = "enter_region";
 
     private static ForestManager mInstance = null;
     private final RecipesManager recipesManager;
+    private final String PREFS_NAME;
+    private final SharedPreferences sp;
+    private final SharedPreferences.Editor editor;
 
     List<Beacon> beaconList;
     Context mContext;
@@ -53,6 +63,11 @@ public class ForestManager implements BootstrapNotifier {
 
         requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.start();
+
+        String PACK_NAME = mContext.getApplicationContext().getPackageName();
+        PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
+        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
+        editor = sp.edit();
 
         try {
             testObject = new JSONObject(test);
@@ -84,14 +99,38 @@ public class ForestManager implements BootstrapNotifier {
                 List<Beacon> beacons = parseList(response, Beacon.class);
                 beaconList = extractLeafs(beacons);
                 monitorBeacons(beaconList);
+                persistList(beaconList);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 ULog.d(TAG, "Error " + error);
+                try {
+                    beaconList = loadChachedList();
+                    if (beaconList!=null){
+                        monitorBeacons(beaconList);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }));
 
+    }
+
+    private void persistList(List<Beacon> beaconList) {
+        Gson gson = new Gson();
+        String listStringified = gson.toJson(beaconList);
+        ULog.d(TAG , "Persist: " + listStringified);
+        editor.putString(TAG , listStringified);
+        editor.apply();
+    }
+
+    private List<Beacon> loadChachedList() throws JSONException {
+        Gson gson = new Gson();
+        Type collectionType = new TypeToken<Collection<Beacon>>(){}.getType();
+        ArrayList<Beacon> beacons = gson.fromJson(sp.getString(TAG, ""), collectionType);
+        return beacons;
     }
 
     /**

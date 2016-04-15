@@ -89,6 +89,7 @@ dependencies {
     compile 'com.android.support:support-v4:22.0.0'
     // compile 'org.altbeacon:android-beacon-library:2.7.1'
     compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.google.code.gson:gson:2.6.2'
     compile project(':android-beacon-library-2.8-beta1')
     // compile(name:'android-beacon-library-2.8-beta1', ext:'aar')
     // compile 'org.altbeacon:android-beacon-library@aar'

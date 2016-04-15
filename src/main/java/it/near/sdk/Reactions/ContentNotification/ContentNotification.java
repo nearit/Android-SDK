@@ -1,5 +1,8 @@
 package it.near.sdk.Reactions.ContentNotification;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.SerializeName;
@@ -8,19 +11,20 @@ import it.near.sdk.MorpheusNear.Resource;
 /**
  * Created by cattaneostefano on 14/04/16.
  */
-public class ContentNotification extends Resource {
+public class ContentNotification extends Resource implements Parcelable {
     @SerializeName("text")
     String text;
     @SerializeName("content")
     String content;
     @SerializeName("video_link")
     String video_link;
-    @SerializeName("app_id")
-    String app_id;
-    @SerializeName("owner_id")
-    String owner_id;
+    @SerializeName("updated_at")
+    String updated_at;
     @SerializeName("images_ids")
     List<String> images_id;
+
+    public ContentNotification() {
+    }
 
     public String getText() {
         return text;
@@ -46,27 +50,56 @@ public class ContentNotification extends Resource {
         this.video_link = video_link;
     }
 
-    public String getApp_id() {
-        return app_id;
-    }
-
-    public void setApp_id(String app_id) {
-        this.app_id = app_id;
-    }
-
-    public String getOwner_id() {
-        return owner_id;
-    }
-
-    public void setOwner_id(String owner_id) {
-        this.owner_id = owner_id;
-    }
-
     public List<String> getImages_id() {
         return images_id;
     }
 
     public void setImages_id(List<String> images_id) {
         this.images_id = images_id;
+    }
+
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getText());
+        dest.writeString(getContent());
+        dest.writeString(getVideo_link());
+        dest.writeString(getUpdated_at());
+        dest.writeList(getImages_id());
+        dest.writeString(getId());
+    }
+
+    // Creator
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public ContentNotification createFromParcel(Parcel in) {
+            return new ContentNotification(in);
+        }
+
+        public ContentNotification[] newArray(int size) {
+            return new ContentNotification[size];
+        }
+    };
+
+    public ContentNotification(Parcel in) {
+        setText(in.readString());
+        setContent(in.readString());
+        setVideo_link(in.readString());
+        setUpdated_at(in.readString());
+        List<String> list = null;
+        in.readList(list, List.class.getClassLoader());
+        setImages_id(list);
+        setId(in.readString());
     }
 }
