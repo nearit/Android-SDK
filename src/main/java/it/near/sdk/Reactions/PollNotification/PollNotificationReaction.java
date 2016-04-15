@@ -1,21 +1,30 @@
 package it.near.sdk.Reactions.PollNotification;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.NearItManager;
+import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.PollNotification.PollNotification;
 import it.near.sdk.Reactions.Reaction;
+import it.near.sdk.Recipes.NearNotifier;
+import it.near.sdk.Recipes.Recipe;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -25,11 +34,21 @@ public class PollNotificationReaction extends Reaction {
     private static final String INGREDIENT_NAME = "poll-notification";
     private static final String SHOW_POLL_FLAVOR_NAME = "show_poll";
     private static final String TAG = "PollNotificationReaction";
+    public static final String PREFS_SUFFIX = "NearPollNot";
+    private final String PREFS_NAME;
+    private final SharedPreferences sp;
+    private final SharedPreferences.Editor editor;
     private List<PollNotification> pollList;
 
-    public PollNotificationReaction(Context mContext) {
-        super(mContext);
+    public PollNotificationReaction(Context mContext, NearNotifier nearNotifier) {
+        super(mContext, nearNotifier);
         setUpMorpheus();
+
+        String PACK_NAME = mContext.getApplicationContext().getPackageName();
+        PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
+        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
+        editor = sp.edit();
+
         try {
             testObject = new JSONObject(test);
         } catch (JSONException e) {
@@ -39,16 +58,28 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_flavor, String reaction_slice) {
+    protected void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe) {
         switch(reaction_flavor){
             case SHOW_POLL_FLAVOR_NAME:
-                showPoll(reaction_slice);
+                showPoll(reaction_slice, recipe);
                 break;
         }
     }
 
-    private void showPoll(String reaction_slice) {
+    private void showPoll(String reaction_slice, Recipe recipe) {
         ULog.d(TAG , "Show poll: " + reaction_slice);
+        PollNotification notification = getNotification(reaction_slice);
+        if (notification==null) return;
+        nearNotifier.deliverReaction(notification, recipe);
+    }
+
+    private PollNotification getNotification(String reaction_slice) {
+        for (PollNotification pn : pollList){
+            if (pn.getId().equals(reaction_slice)){
+                return pn;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -59,14 +90,35 @@ public class PollNotificationReaction extends Reaction {
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
                         pollList = parseList(response, PollNotification.class);
+                        persistList(pollList);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         ULog.d(TAG, "Error: " + error.toString());
+                        try {
+                            pollList = loadChachedList();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 })
         );
+    }
+
+    private void persistList(List<PollNotification> pollList) {
+        Gson gson = new Gson();
+        String listStringified = gson.toJson(pollList);
+        ULog.d(TAG , "Persist: " + listStringified);
+        editor.putString(TAG , listStringified);
+        editor.apply();
+    }
+
+    private List<PollNotification> loadChachedList() throws JSONException {
+        Gson gson = new Gson();
+        Type collectionType = new TypeToken<Collection<PollNotification>>(){}.getType();
+        ArrayList<PollNotification> contents = gson.fromJson(sp.getString(TAG, ""), collectionType);
+        return contents;
     }
 
     @Override

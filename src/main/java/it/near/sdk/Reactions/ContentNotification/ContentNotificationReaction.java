@@ -1,21 +1,30 @@
 package it.near.sdk.Reactions.ContentNotification;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import it.near.sdk.Beacons.BeaconForest.Beacon;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.NearItManager;
 import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.Reaction;
+import it.near.sdk.Recipes.NearNotifier;
+import it.near.sdk.Recipes.Recipe;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -25,11 +34,21 @@ public class ContentNotificationReaction extends Reaction {
     private static final String INGREDIENT_NAME = "content-notification";
     private static final String SHOW_CONTENT_FLAVOR_NAME = "show_content";
     private static final String TAG = "ContentNotificationReaction";
+    public static final String PREFS_SUFFIX = "NearContentNot";
+    private final String PREFS_NAME;
+    private final SharedPreferences sp;
+    private final SharedPreferences.Editor editor;
     private List<ContentNotification> contentNotificationList;
 
-    public ContentNotificationReaction(Context context) {
-        super(context);
+    public ContentNotificationReaction(Context context, NearNotifier nearNotifier) {
+        super(context, nearNotifier);
         setUpMorpheus();
+
+        String PACK_NAME = mContext.getApplicationContext().getPackageName();
+        PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
+        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
+        editor = sp.edit();
+
         try {
             testObject = new JSONObject(test);
         } catch (JSONException e) {
@@ -39,16 +58,28 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     @Override
-    public void handleReaction(String reaction_flavor, String reaction_slice) {
+    public void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe) {
         switch (reaction_flavor){
             case SHOW_CONTENT_FLAVOR_NAME:
-                showContent(reaction_slice);
+                showContent(reaction_slice, recipe);
                 break;
         }
     }
 
-    private void showContent(String reaction_slice) {
+    private void showContent(String reaction_slice, Recipe recipe) {
         ULog.d(TAG, "Show content: " + reaction_slice);
+        ContentNotification notification = getNotification(reaction_slice);
+        if (notification == null) return;
+        nearNotifier.deliverReaction(notification, recipe);
+    }
+
+    private ContentNotification getNotification(String reaction_slice) {
+        for ( ContentNotification cn : contentNotificationList){
+            if (cn.getId().equals(reaction_slice)){
+                return cn;
+            }
+        }
+        return null;
     }
 
     public void refreshConfig() {
@@ -58,14 +89,35 @@ public class ContentNotificationReaction extends Reaction {
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
                         contentNotificationList = parseList(response, ContentNotification.class);
+                        persistList(contentNotificationList);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         ULog.d(TAG, "Error: " + error.toString());
+                        try {
+                            contentNotificationList = loadChachedList();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 })
         );
+    }
+
+    private void persistList(List<ContentNotification> contentNotificationList) {
+        Gson gson = new Gson();
+        String listStringified = gson.toJson(contentNotificationList);
+        ULog.d(TAG , "Persist: " + listStringified);
+        editor.putString(TAG , listStringified);
+        editor.apply();
+    }
+
+    private List<ContentNotification> loadChachedList() throws JSONException {
+        Gson gson = new Gson();
+        Type collectionType = new TypeToken<Collection<ContentNotification>>(){}.getType();
+        ArrayList<ContentNotification> contents = gson.fromJson(sp.getString(TAG, ""), collectionType);
+        return contents;
     }
 
     @Override

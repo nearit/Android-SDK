@@ -16,6 +16,9 @@ import it.near.sdk.MorpheusNear.Deserializer;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.NearItManager;
+import it.near.sdk.Recipes.NearNotifier;
+import it.near.sdk.Recipes.Recipe;
 
 /**
  * Created by cattaneostefano on 14/04/16.
@@ -24,10 +27,12 @@ public abstract class Reaction {
     public List<String> supportedFlavors = null;
     protected RequestQueue requestQueue;
     protected Context mContext;
+    protected NearNotifier nearNotifier;
     protected Morpheus morpheus;
 
-    public Reaction(Context mContext) {
+    public Reaction(Context mContext, NearNotifier nearNotifier) {
         this.mContext = mContext;
+        this.nearNotifier = nearNotifier;
         requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.start();
     }
@@ -48,11 +53,11 @@ public abstract class Reaction {
         return supportedFlavors;
     }
 
-    public void handleReaction(String reaction_ingredient, String reaction_flavor, String reaction_slice){
-        if (!getIngredientName().equals(reaction_ingredient)){
+    public void handleReaction(Recipe recipe){
+        if (!getIngredientName().equals(recipe.getReaction_ingredient_id())){
             return;
         }
-        handleReaction(reaction_flavor, reaction_slice);
+        handleReaction(recipe.getReaction_flavor().getId(), recipe.getReaction_slice_id(), recipe);
     }
 
     protected <T> List<T> parseList(JSONObject json, Class<T> clazz) {
@@ -76,6 +81,6 @@ public abstract class Reaction {
     public abstract void refreshConfig();
     public abstract String getIngredientName();
     protected abstract HashMap<String,Class> getModelHashMap();
-    protected abstract void handleReaction(String reaction_flavor, String reaction_slice);
+    protected abstract void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe);
 
 }
