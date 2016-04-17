@@ -35,7 +35,7 @@ public class PollNotificationReaction extends Reaction {
         super(mContext, nearNotifier);
         setUpMorpheus();
 
-        setUpSharedPreferences(PREFS_SUFFIX);
+        initSharedPreferences(PREFS_SUFFIX);
 
         try {
             testObject = new JSONObject(test);

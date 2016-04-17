@@ -31,6 +31,16 @@ import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Manages a beacon forest, the plugin for monitoring regions structured in a tree.
+ * This region structure was made up to enable background monitoring of more than 20 regions on iOS.
+ * In this plugin every region is specified by ProximityUUID, minor and major. It the current implementation every region is a beacon.
+ *
+ * In our current plugin representation:
+ * - this is a "pulse" plugin
+ * - the ingredient name (the name of the plugin) is: beacon-forest
+ * - the only supported flavor is: enter_region
+ * - the slice is the id of a region
+ *
  * Created by cattaneostefano on 13/04/16.
  */
 public class ForestManager implements BootstrapNotifier {
@@ -81,7 +91,7 @@ public class ForestManager implements BootstrapNotifier {
     /**
      * Set up Morpheus parser. Morpheus parses jsonApi encoded resources
      * https://github.com/xamoom/Morpheus
-     * We didn't actually use this library due to its minSdkVersion. We instead imported its code and adapted it.
+     * We didn't actually use this library due to its minSdkVersion. We instead imported its code and adapted it. And then fixed it.
      */
     private void setUpMorpheusParser() {
         morpheus = new Morpheus();
@@ -89,6 +99,7 @@ public class ForestManager implements BootstrapNotifier {
 
         morpheus.getFactory().getDeserializer().registerResourceClass("beacons", Beacon.class);
     }
+
 
     public void refreshConfig(){
 
@@ -134,7 +145,7 @@ public class ForestManager implements BootstrapNotifier {
     }
 
     /**
-     * Cr
+     * Creates a list of AltBeacon regions from Near Regions
      * @param beacons
      */
     private void monitorBeacons(List<Beacon> beacons) {
@@ -205,10 +216,6 @@ public class ForestManager implements BootstrapNotifier {
         }
     }
 
-    private void firePulse(String flavor, String pulseSlice) {
-        recipesManager.gotPulse(INGREDIENT_NAME, flavor, pulseSlice);
-    }
-
     private String getPulseFromRegion(Region region) {
         for (Beacon beacon : beaconList){
             if (beacon.getUuid().equals(region.getId1().toString()) &&
@@ -218,6 +225,10 @@ public class ForestManager implements BootstrapNotifier {
             }
         }
         return null;
+    }
+
+    private void firePulse(String flavor, String pulseSlice) {
+        recipesManager.gotPulse(INGREDIENT_NAME, flavor, pulseSlice);
     }
 
     @Override

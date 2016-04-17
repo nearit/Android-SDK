@@ -35,7 +35,7 @@ public class SimpleNotificationReaction extends Reaction {
         super(context, nearNotifier);
         setUpMorpheus();
 
-        setUpSharedPreferences(PREFS_SUFFIX);
+        initSharedPreferences(PREFS_SUFFIX);
 
         try {
             testObject = new JSONObject(test);

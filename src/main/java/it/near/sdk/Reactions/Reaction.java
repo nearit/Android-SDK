@@ -23,6 +23,7 @@ import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Superclass for plugins of type "reaction".
  * Created by cattaneostefano on 14/04/16.
  */
 public abstract class Reaction {
@@ -39,12 +40,16 @@ public abstract class Reaction {
     public Reaction(Context mContext, NearNotifier nearNotifier) {
         this.mContext = mContext;
         this.nearNotifier = nearNotifier;
+        // static GSON object for de/serialization of objects to/from JSON
         gson = new Gson();
         PACK_NAME = mContext.getApplicationContext().getPackageName();
         requestQueue = Volley.newRequestQueue(mContext);
         requestQueue.start();
     }
 
+    /**
+     * set up the jsonapi parser for parsing only related to this plugin
+     */
     public void setUpMorpheus(){
         HashMap<String, Class> classes = getModelHashMap();
         morpheus = new Morpheus();
@@ -53,7 +58,12 @@ public abstract class Reaction {
         }
     }
 
-    protected void setUpSharedPreferences(String prefsNameSuffix) {
+    /**
+     * Initialize SharedPreferences.
+     * The preference name is formed by our plugin name and the package name of the app, to avoid conflicts.
+     * @param prefsNameSuffix
+     */
+    protected void initSharedPreferences(String prefsNameSuffix) {
         String PREFS_NAME = PACK_NAME + prefsNameSuffix;
         sp = mContext.getSharedPreferences(PREFS_NAME, 0);
         editor = sp.edit();
@@ -67,6 +77,10 @@ public abstract class Reaction {
         return supportedFlavors;
     }
 
+    /**
+     * Method called by the recipe manager to trigger a reaction.
+     * @param recipe
+     */
     public void handleReaction(Recipe recipe){
         if (!getIngredientName().equals(recipe.getReaction_ingredient_id())){
             return;
@@ -74,6 +88,13 @@ public abstract class Reaction {
         handleReaction(recipe.getReaction_flavor().getId(), recipe.getReaction_slice_id(), recipe);
     }
 
+    /**
+     * Utility for parsing lists
+     * @param json
+     * @param clazz
+     * @param <T>
+     * @return
+     */
     protected <T> List<T> parseList(JSONObject json, Class<T> clazz) {
         JSONAPIObject jsonapiObject = null;
         try {
@@ -91,6 +112,11 @@ public abstract class Reaction {
         return returnList;
     }
 
+    /**
+     * Utility to persist lists in the SharedPreferences.
+     * @param key
+     * @param list
+     */
     protected void persistList(String key, List list){
         String persistedString = gson.toJson(list);
         ULog.d(key, "Persist: " + persistedString);
@@ -109,9 +135,17 @@ public abstract class Reaction {
         return sp.getString(key,"");
     }
 
+    /**
+     * Build supported flavors
+     */
     public abstract void buildFlavors();
     public abstract void refreshConfig();
     public abstract String getIngredientName();
+
+    /**
+     * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
+     * @return
+     */
     protected abstract HashMap<String,Class> getModelHashMap();
     protected abstract void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe);
 

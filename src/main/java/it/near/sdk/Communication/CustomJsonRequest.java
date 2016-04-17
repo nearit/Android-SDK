@@ -16,6 +16,8 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.R;
 
 /**
+ * Creates a JsonObjectRequest (from the volley library) subclass with the proper headers.
+ * Also includes appending of the relative path to the host.
  * Created by cattaneostefano on 16/03/16.
  */
 public class CustomJsonRequest extends JsonObjectRequest {
@@ -48,6 +50,11 @@ public class CustomJsonRequest extends JsonObjectRequest {
         this.mContext = context;
     }
 
+    /**
+     * Build header for every call
+     * @return
+     * @throws AuthFailureError
+     */
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map headers = new HashMap();
@@ -57,6 +64,12 @@ public class CustomJsonRequest extends JsonObjectRequest {
         return headers;
     }
 
+    /**
+     * Appends a path to the host
+     * @param context
+     * @param url
+     * @return
+     */
     private static String composeUrl(Context context, String url) {
         String baseUrl = context.getResources().getString(R.string.API_BASE_URL);
         return baseUrl + url;

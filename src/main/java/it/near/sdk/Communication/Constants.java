@@ -13,6 +13,8 @@ public class Constants {
         String jsonApiHeader = "application/vnd.api+json";
     }
 
+    // -------------------- PATHS --------------------------
+    // might put them in resources
     public interface API{
         String beacons = "detectors/beacons";
         String image = "media/images";
