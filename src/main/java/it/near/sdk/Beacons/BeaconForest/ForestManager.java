@@ -19,17 +19,14 @@ import org.json.JSONObject;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
-import it.near.sdk.MorpheusNear.Deserializer;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Recipes.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.ULog;
 
@@ -76,7 +73,7 @@ public class ForestManager implements BootstrapNotifier {
         }
         refreshConfig();
     }
-
+ 
 
     /**
      * Set up Morpheus parser. Morpheus parses jsonApi encoded resources

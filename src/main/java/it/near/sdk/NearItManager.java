@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Parcelable;
 
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.Region;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,7 @@ import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
 import it.near.sdk.Reactions.PollNotification.PollNotificationReaction;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
-import it.near.sdk.Recipes.Recipe;
+import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;

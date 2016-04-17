@@ -21,11 +21,14 @@ import java.util.List;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
-import it.near.sdk.MorpheusNear.Deserializer;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.Reaction;
+import it.near.sdk.Recipes.Models.OperationFlavor;
+import it.near.sdk.Recipes.Models.PulseFlavor;
+import it.near.sdk.Recipes.Models.ReactionFlavor;
+import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.ULog;
 
 /**
