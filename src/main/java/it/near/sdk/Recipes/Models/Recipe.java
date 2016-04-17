@@ -1,8 +1,10 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.Recipes.Models;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Recipes.Models.PulseFlavor;
+import it.near.sdk.Recipes.Models.ReactionFlavor;
 
 /**
  * Created by cattaneostefano on 13/04/16.

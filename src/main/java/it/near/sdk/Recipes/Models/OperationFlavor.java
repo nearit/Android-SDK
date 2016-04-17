@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.Recipes.Models;
 
 import it.near.sdk.MorpheusNear.Resource;
 
