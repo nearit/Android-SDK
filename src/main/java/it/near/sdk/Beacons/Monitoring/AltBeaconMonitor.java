@@ -60,11 +60,11 @@ public class AltBeaconMonitor {
      * @param regions
      * @param notifier
      */
-    public void startRadar(List<Region> regions, BootstrapNotifier notifier){
+    public void startRadar(long backBetweenPeriod, long backScanPeriod ,List<Region> regions, BootstrapNotifier notifier){
         resetMonitoring();
 
-        beaconManager.setBackgroundBetweenScanPeriod(10000l);
-        beaconManager.setBackgroundScanPeriod(2000l);
+        beaconManager.setBackgroundBetweenScanPeriod(backBetweenPeriod);
+        beaconManager.setBackgroundScanPeriod(backScanPeriod);
         regionBootstrap = new RegionBootstrap(notifier, regions);
     }
 

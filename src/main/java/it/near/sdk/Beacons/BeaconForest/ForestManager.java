@@ -46,6 +46,9 @@ public class ForestManager implements BootstrapNotifier {
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
+    private long backgroundBetweenScanPeriod = 8000l;
+    private long backgroundScanPeriod = 1000l;
+
     List<Beacon> beaconList;
     Context mContext;
     private Morpheus morpheus;
@@ -142,7 +145,7 @@ public class ForestManager implements BootstrapNotifier {
                     Identifier.fromInt(beacon.getMajor()), Identifier.fromInt(beacon.getMinor()));
             regionsToMonitor.add(region);
         }
-        monitor.startRadar(regionsToMonitor, this);
+        monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionsToMonitor, this);
     }
 
     /**
