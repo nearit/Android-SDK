@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.util.List;
 
+import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
 
@@ -22,6 +23,10 @@ public class ContentNotification extends Resource implements Parcelable {
     String updated_at;
     @SerializeName("images_ids")
     List<String> images_id;
+    @Relationship("image")
+    List<Image> images;
+
+    List<ImageSet> images_links;
 
     public ContentNotification() {
     }
@@ -64,6 +69,22 @@ public class ContentNotification extends Resource implements Parcelable {
 
     public void setUpdated_at(String updated_at) {
         this.updated_at = updated_at;
+    }
+
+    public List<ImageSet> getImages_links() {
+        return images_links;
+    }
+
+    public void setImages_links(List<ImageSet> images_links) {
+        this.images_links = images_links;
+    }
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
     }
 
     @Override

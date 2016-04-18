@@ -78,6 +78,7 @@ public class ContentNotificationReaction extends Reaction {
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
                         contentNotificationList = parseList(response, ContentNotification.class);
+                        formatLinks(contentNotificationList);
                         persistList(TAG, contentNotificationList);
                     }
                 }, new Response.ErrorListener() {
@@ -94,9 +95,30 @@ public class ContentNotificationReaction extends Reaction {
         );
     }
 
+
     private ArrayList<ContentNotification> loadList() throws JSONException {
         String cachedString = loadCachedString(TAG);
         return gson.fromJson(cachedString , new TypeToken<Collection<ContentNotification>>(){}.getType());
+    }
+
+    private void formatLinks(List<ContentNotification> notifications){
+        for (ContentNotification notification : notifications) {
+            List<Image> images = notification.getImages();
+            List<ImageSet> imageSets = new ArrayList<>();
+            for (Image image : images) {
+                ImageSet imageSet = new ImageSet();
+                HashMap<String, Object> map = image.getImage();
+                imageSet.setFullSize((String) map.get("url"));
+                try {
+                    imageSet.setBigSize(((JSONObject)map.get("max_1920_jpg")).getString("url"));
+                    imageSet.setSmallSize(((JSONObject)map.get("square_300")).getString("url"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                imageSets.add(imageSet);
+            }
+            notification.setImages_links(imageSets);
+        }
     }
 
     @Override
@@ -118,7 +140,7 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     JSONObject testObject;
-    String test = "{\"data\":[{\"id\":\"2b2bf055-e432-40a4-a5b8-7ea5f0fdd506\",\"type\":\"notifications\",\"attributes\":{\"text\":\"Tap to see content\",\"content\":\"Aut est et perspiciatis eos iure consectetur. Culpa dignissimos excepturi modi doloremque possimus. Porro a molestiae ut omnis amet ipsa quaerat.\",\"images_ids\":[],\"video_link\":null,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\"}}]}";
+    String test = "{\"data\":[{\"id\":\"2b2bf055-e432-40a4-a5b8-7ea5f0fdd506\",\"type\":\"notifications\",\"attributes\":{\"text\":\"Tap to see content\",\"content\":null,\"images_ids\":[],\"video_link\":null,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\",\"updated_at\":\"2016-04-13T14:59:18.171Z\",\"created_at\":\"2016-04-13T14:59:18.171Z\"}}]}";
 
 
 }
