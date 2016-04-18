@@ -118,7 +118,7 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     JSONObject testObject;
-    String test = "{\"data\":[{\"id\":\"2b2bf055-e432-40a4-a5b8-7ea5f0fdd506\",\"type\":\"c-notifications\",\"attributes\":{\"text\":\"Tap to see content\",\"content\":\"Aut est et perspiciatis eos iure consectetur. Culpa dignissimos excepturi modi doloremque possimus. Porro a molestiae ut omnis amet ipsa quaerat.\",\"images_ids\":[],\"video_link\":null,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\"}}]}";
+    String test = "{\"data\":[{\"id\":\"2b2bf055-e432-40a4-a5b8-7ea5f0fdd506\",\"type\":\"notifications\",\"attributes\":{\"text\":\"Tap to see content\",\"content\":\"Aut est et perspiciatis eos iure consectetur. Culpa dignissimos excepturi modi doloremque possimus. Porro a molestiae ut omnis amet ipsa quaerat.\",\"images_ids\":[],\"video_link\":null,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\"}}]}";
 
 
 }
