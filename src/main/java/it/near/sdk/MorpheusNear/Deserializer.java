@@ -67,6 +67,8 @@ public class Deserializer {
       Logger.debug("Field " + fieldName + " not found.");
     } catch (IllegalAccessException e) {
       Logger.debug("Could not access " + field.getName() + " field");
+    } catch (IllegalArgumentException e) {
+      Logger.debug("The field " + field.getName() + " may be null");
     }
 
     return resourceObject;

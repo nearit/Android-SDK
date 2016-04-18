@@ -1,4 +1,4 @@
-package it.near.sdk.Models;
+package it.near.sdk.Reactions.ContentNotification;
 
 import java.io.Serializable;
 
