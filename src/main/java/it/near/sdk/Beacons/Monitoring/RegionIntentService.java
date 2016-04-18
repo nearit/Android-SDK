@@ -38,8 +38,9 @@ public class RegionIntentService extends IntentService {
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
+        targetIntent.putExtras(intent.getExtras());
+
         // todo set dynamic notification icon
-        int iconRes = R.drawable.ic_image_black_24dp;
 
         NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), trigger, source, targetIntent, NOTIFICATION_ID);
 
