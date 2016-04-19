@@ -99,6 +99,18 @@ public class NearItManager {
         });
     }
 
+    public void setNotificationImage(int imgRes){
+        GlobalConfig.getInstance(application).setNotificationImage(imgRes);
+    }
+
+    public void refreshConfigs(){
+        recipesManager.refreshConfig();
+        forest.refreshConfig();
+        simpleNotification.refreshConfig();
+        contentNotification.refreshConfig();
+        recipesManager.refreshConfig();
+    }
+
     public void setTraceNotifier(TraceNotifier notifier){
         GlobalState.getInstance(application).setTraceNotifier(notifier);
     }

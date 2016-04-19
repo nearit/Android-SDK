@@ -2,5 +2,4 @@
 <resources>
     <string name="API_BASE_URL">https://sandbox-api.nearit.com/</string>
 
-
 </resources>

@@ -78,7 +78,7 @@ public class ContentNotificationReaction extends Reaction {
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
                         contentNotificationList = parseList(response, ContentNotification.class);
-                        formatLinks(contentNotificationList);
+                        // formatLinks(contentNotificationList);
                         persistList(TAG, contentNotificationList);
                     }
                 }, new Response.ErrorListener() {
