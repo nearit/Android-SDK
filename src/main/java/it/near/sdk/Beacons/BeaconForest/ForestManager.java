@@ -228,6 +228,7 @@ public class ForestManager implements BootstrapNotifier {
     }
 
     private void firePulse(String flavor, String pulseSlice) {
+        ULog.d(TAG, "firePulse!");
         recipesManager.gotPulse(INGREDIENT_NAME, flavor, pulseSlice);
     }
 
