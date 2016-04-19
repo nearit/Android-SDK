@@ -65,10 +65,10 @@ bintray {
         name = 'it.near.sdk.core'
 
         version {
-            name = '0.0.7-alpha'
+            name = '0.0.8-alpha'
             desc = 'My test upload'
             released  = new Date()
-            vcsTag = '0.0.7-alpha'
+            vcsTag = '0.0.8-alpha'
         }
 
         licenses = ['MIT']
@@ -79,7 +79,7 @@ bintray {
 }
 
 group = 'it.near.sdk.core'
-version = '0.0.7-alpha'
+version = '0.0.8-alpha'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
