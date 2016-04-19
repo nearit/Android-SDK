@@ -1,6 +1,7 @@
 package it.near.sdk.Reactions.ContentNotification;
 
 import android.content.Context;
+import android.support.v4.util.ArrayMap;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -73,12 +74,12 @@ public class ContentNotificationReaction extends Reaction {
 
     public void refreshConfig() {
         requestQueue.add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.content_notification + "/notifications", new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, Constants.API.PLUGINS.content_notification + "/notifications?include=images", new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
                         contentNotificationList = parseList(response, ContentNotification.class);
-                        // formatLinks(contentNotificationList);
+                        formatLinks(contentNotificationList);
                         persistList(TAG, contentNotificationList);
                     }
                 }, new Response.ErrorListener() {
@@ -107,7 +108,7 @@ public class ContentNotificationReaction extends Reaction {
             List<ImageSet> imageSets = new ArrayList<>();
             for (Image image : images) {
                 ImageSet imageSet = new ImageSet();
-                HashMap<String, Object> map = image.getImage();
+                ArrayMap<String, Object> map = image.getImage();
                 imageSet.setFullSize((String) map.get("url"));
                 try {
                     imageSet.setBigSize(((JSONObject)map.get("max_1920_jpg")).getString("url"));
@@ -130,6 +131,7 @@ public class ContentNotificationReaction extends Reaction {
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
         map.put("notifications", ContentNotification.class);
+        map.put("images", Image.class);
         return map;
     }
 

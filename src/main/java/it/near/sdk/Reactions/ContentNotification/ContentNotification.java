@@ -3,6 +3,7 @@ package it.near.sdk.Reactions.ContentNotification;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
@@ -23,7 +24,7 @@ public class ContentNotification extends Resource implements Parcelable {
     String updated_at;
     @SerializeName("images_ids")
     List<String> images_id;
-    @Relationship("image")
+    @Relationship("images")
     List<Image> images;
 
     List<ImageSet> images_links;
@@ -94,12 +95,12 @@ public class ContentNotification extends Resource implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getText());
-        dest.writeString(getContent());
-        dest.writeString(getVideo_link());
-        dest.writeString(getUpdated_at());
-        dest.writeList(getImages_id());
+        dest.writeString(text);
+        dest.writeString(content);
+        dest.writeString(video_link);
+        dest.writeString(updated_at);
         dest.writeString(getId());
+        dest.writeTypedList(getImages_links());
     }
 
     // Creator
@@ -118,9 +119,12 @@ public class ContentNotification extends Resource implements Parcelable {
         setContent(in.readString());
         setVideo_link(in.readString());
         setUpdated_at(in.readString());
-        List<String> list = null;
+        /*List<String> list = null;
         in.readList(list, List.class.getClassLoader());
-        setImages_id(list);
+        setImages_id(list);*/
         setId(in.readString());
+        List<ImageSet> list = new ArrayList<ImageSet>();
+        in.readTypedList(list, ImageSet.CREATOR);
+        setImages_links(list);
     }
 }

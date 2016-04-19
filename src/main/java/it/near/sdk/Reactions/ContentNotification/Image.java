@@ -1,5 +1,9 @@
 package it.near.sdk.Reactions.ContentNotification;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.support.v4.util.ArrayMap;
+
 import java.util.HashMap;
 
 import it.near.sdk.MorpheusNear.Annotations.SerializeName;
@@ -10,13 +14,17 @@ import it.near.sdk.MorpheusNear.Resource;
  */
 public class Image extends Resource {
     @SerializeName("image")
-    HashMap<String, Object> image;
+    ArrayMap<String, Object> image;
 
-    public HashMap<String, Object> getImage() {
+    public Image() {
+    }
+
+    public ArrayMap<String, Object> getImage() {
         return image;
     }
 
-    public void setImage(HashMap<String, Object> image) {
+    public void setImage(ArrayMap<String, Object> image) {
         this.image = image;
     }
+
 }
