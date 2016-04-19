@@ -15,16 +15,6 @@
         <!-- region messages -->
         <service android:name=".Beacons.Monitoring.RegionIntentService" />
 
-        <!-- MESSAGGI INGRESSO/USCITA DALLA REGION -->
-        <receiver android:name=".Beacons.Monitoring.RegionBroadcastReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </receiver>
-
     </application>
 
 </manifest>
