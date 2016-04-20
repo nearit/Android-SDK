@@ -11,7 +11,9 @@ import java.util.List;
 
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
+import it.near.sdk.Reactions.Action;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
+import it.near.sdk.Reactions.PollNotification.PollAction;
 import it.near.sdk.Reactions.PollNotification.PollNotificationReaction;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
@@ -146,5 +148,19 @@ public class NearItManager {
         resultIntent.putExtra("trigger-item", recipe.getPulse_slice_id());
 
         application.sendOrderedBroadcast(resultIntent, null);
+    }
+
+    /**
+     * Sends an action to the SDK, that might delegate it to other plugins, based on its type.
+     * @param action
+     * @return true if the action was a recognized action, false otherwise.
+     */
+    public boolean sendAction(Action action){
+        switch (action.getIngredient()){
+            case PollAction.INGREDIENT_NAME:
+                pollNotification.sendAction((PollAction)action);
+                return true;
+        }
+        return false;
     }
 }
