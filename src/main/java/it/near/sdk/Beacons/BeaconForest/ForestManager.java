@@ -24,6 +24,7 @@ import java.util.List;
 import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
@@ -62,7 +63,6 @@ public class ForestManager implements BootstrapNotifier {
     List<Beacon> beaconList;
     Context mContext;
     private Morpheus morpheus;
-    private RequestQueue requestQueue;
     private AltBeaconMonitor monitor;
 
     public ForestManager(Context mContext, AltBeaconMonitor monitor, RecipesManager recipesManager) {
@@ -70,9 +70,6 @@ public class ForestManager implements BootstrapNotifier {
         this.monitor = monitor;
         this.recipesManager = recipesManager;
         setUpMorpheusParser();
-
-        requestQueue = Volley.newRequestQueue(mContext);
-        requestQueue.start();
 
         String PACK_NAME = mContext.getApplicationContext().getPackageName();
         PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
@@ -103,27 +100,28 @@ public class ForestManager implements BootstrapNotifier {
 
     public void refreshConfig(){
 
-        requestQueue.add(new CustomJsonRequest(mContext, Constants.API.PLUGINS.beacon_forest + "/beacons", new Response.Listener<JSONObject>() {
+        GlobalState.getInstance(mContext).getRequestQueue().add(
+                new CustomJsonRequest(mContext, Constants.API.PLUGINS.beacon_forest + "/beacons", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                ULog.d(TAG, response.toString());
-                List<Beacon> beacons = parseList(response, Beacon.class);
-                beaconList = extractLeafs(beacons);
-                monitorBeacons(beaconList);
-                persistList(beaconList);
+                    ULog.d(TAG, response.toString());
+                    List<Beacon> beacons = parseList(response, Beacon.class);
+                    beaconList = extractLeafs(beacons);
+                    monitorBeacons(beaconList);
+                    persistList(beaconList);
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                ULog.d(TAG, "Error " + error);
-                try {
-                    beaconList = loadChachedList();
-                    if (beaconList!=null){
-                        monitorBeacons(beaconList);
+                    ULog.d(TAG, "Error " + error);
+                    try {
+                        beaconList = loadChachedList();
+                        if (beaconList!=null){
+                            monitorBeacons(beaconList);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
             }
         }));
 

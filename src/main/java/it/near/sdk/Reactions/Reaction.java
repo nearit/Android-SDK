@@ -32,7 +32,6 @@ public abstract class Reaction {
     protected SharedPreferences sp;
     protected SharedPreferences.Editor editor;
     protected static String PACK_NAME;
-    protected RequestQueue requestQueue;
     protected Context mContext;
     protected NearNotifier nearNotifier;
     protected Morpheus morpheus;
@@ -43,8 +42,6 @@ public abstract class Reaction {
         // static GSON object for de/serialization of objects to/from JSON
         gson = new Gson();
         PACK_NAME = mContext.getApplicationContext().getPackageName();
-        requestQueue = Volley.newRequestQueue(mContext);
-        requestQueue.start();
     }
 
     /**

@@ -2,6 +2,9 @@ package it.near.sdk;
 
 import android.content.Context;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Beacons.Monitoring.NearMonitorNotifier;
 import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
@@ -15,6 +18,7 @@ public class GlobalState {
     private static final String TAG = "GlobalState";
 
     private static GlobalState mInstance = null;
+    private final RequestQueue requestQueue;
 
     private Context mContext;
 
@@ -27,6 +31,8 @@ public class GlobalState {
 
     public GlobalState(Context mContext) {
         this.mContext = mContext;
+        requestQueue = Volley.newRequestQueue(mContext);
+        requestQueue.start();
     }
 
     public static GlobalState getInstance(Context context){
@@ -40,6 +46,8 @@ public class GlobalState {
     public Context getmContext() {
         return mContext;
     }
+
+    public RequestQueue getRequestQueue(){ return requestQueue; }
 
     public NearRangeNotifier getNearRangeNotifier() {
         return nearRangeNotifier;

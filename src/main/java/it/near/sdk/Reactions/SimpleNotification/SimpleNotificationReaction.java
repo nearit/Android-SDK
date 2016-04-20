@@ -16,6 +16,7 @@ import java.util.List;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.GlobalState;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -72,12 +73,13 @@ public class SimpleNotificationReaction extends Reaction {
     }
 
     public void refreshConfig() {
-        requestQueue.add(new CustomJsonRequest(mContext, Constants.API.PLUGINS.simple_notification + "/notifications", new Response.Listener<JSONObject>() {
+        GlobalState.getInstance(mContext).getRequestQueue().add(
+                new CustomJsonRequest(mContext, Constants.API.PLUGINS.simple_notification + "/notifications", new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                ULog.d(TAG, response.toString());
-                notificationList = parseList(response, SimpleNotification.class);
-                persistList(TAG, notificationList);
+                    ULog.d(TAG, response.toString());
+                    notificationList = parseList(response, SimpleNotification.class);
+                    persistList(TAG, notificationList);
             }
         }, new Response.ErrorListener() {
             @Override

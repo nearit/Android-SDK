@@ -22,6 +22,7 @@ import java.util.List;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.Filter;
+import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
@@ -39,7 +40,6 @@ public class RecipesManager {
     private static final String TAG = "RecipesManager";
     public static final String PREFS_SUFFIX = "NearRecipes";
     public final String PREFS_NAME;
-    private final RequestQueue requestQueue;
     private final SharedPreferences sp;
     private Context mContext;
     private Morpheus morpheus;
@@ -49,8 +49,6 @@ public class RecipesManager {
 
     public RecipesManager(Context context) {
         this.mContext = context;
-        requestQueue = Volley.newRequestQueue(mContext);
-        requestQueue.start();
 
         String PACK_NAME = mContext.getApplicationContext().getPackageName();
         PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
@@ -85,12 +83,13 @@ public class RecipesManager {
 
     public void refreshConfig(){
         Filter filter = Filter.build().addFilter("active","true");
-        requestQueue.add(new CustomJsonRequest(mContext, Constants.API.recipes_include_flavors + filter.print(), new Response.Listener<JSONObject>() {
+        GlobalState.getInstance(mContext).getRequestQueue().add(
+                new CustomJsonRequest(mContext, Constants.API.recipes_include_flavors + filter.print(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                ULog.d(TAG, response.toString());
-                recipes = parseList(response, Recipe.class);
-                persistList(recipes);
+                    ULog.d(TAG, response.toString());
+                    recipes = parseList(response, Recipe.class);
+                    persistList(recipes);
             }
         }, new Response.ErrorListener() {
             @Override

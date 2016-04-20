@@ -17,6 +17,7 @@ import java.util.List;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.GlobalState;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -73,7 +74,7 @@ public class PollNotificationReaction extends Reaction {
 
     @Override
     public void refreshConfig() {
-        requestQueue.add(
+        GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, Constants.API.PLUGINS.poll_notification + "/notifications", new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -125,7 +126,7 @@ public class PollNotificationReaction extends Reaction {
         try {
             String answerBody = action.toJsonAPI();
             ULog.d(TAG, "Answer" + answerBody);
-            requestQueue.add(new CustomJsonRequest(mContext, Request.Method.POST, Constants.API.PLUGINS.poll_notification + "/notifications/" +
+            GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, Constants.API.PLUGINS.poll_notification + "/notifications/" +
                     action.getId() + "/answers", answerBody , new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

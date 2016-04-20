@@ -17,6 +17,7 @@ import java.util.List;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.GlobalState;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -73,7 +74,7 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     public void refreshConfig() {
-        requestQueue.add(
+        GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, Constants.API.PLUGINS.content_notification + "/notifications?include=images", new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
