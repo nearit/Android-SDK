@@ -29,6 +29,7 @@ import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Recipes.RecipesManager;
+import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -105,7 +106,7 @@ public class ForestManager implements BootstrapNotifier {
             @Override
             public void onResponse(JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    List<Beacon> beacons = parseList(response, Beacon.class);
+                    List<Beacon> beacons = NearUtils.parseList(morpheus, response, Beacon.class);
                     beaconList = extractLeafs(beacons);
                     monitorBeacons(beaconList);
                     persistList(beaconList);
@@ -178,23 +179,6 @@ public class ForestManager implements BootstrapNotifier {
             list.addAll(parseTree(beacon));
         }
         return list;
-    }
-
-    private <T> List<T> parseList(JSONObject json, Class<T> clazz) {
-        JSONAPIObject jsonapiObject = null;
-        try {
-            jsonapiObject = morpheus.parse(json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<T> returnList = new ArrayList<T>();
-
-        for (Resource r : jsonapiObject.getResources()){
-            returnList.add((T) r);
-        }
-
-        return returnList;
     }
 
 

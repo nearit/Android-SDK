@@ -55,7 +55,6 @@ public class NearItManager {
         GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
-
         plugInSetup();
 
     }

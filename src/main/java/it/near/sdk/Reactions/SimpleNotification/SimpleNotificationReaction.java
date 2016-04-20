@@ -20,6 +20,7 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -78,7 +79,7 @@ public class SimpleNotificationReaction extends Reaction {
             @Override
             public void onResponse(JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    notificationList = parseList(response, SimpleNotification.class);
+                    notificationList = NearUtils.parseList(morpheus, response, SimpleNotification.class);
                     persistList(TAG, notificationList);
             }
         }, new Response.ErrorListener() {

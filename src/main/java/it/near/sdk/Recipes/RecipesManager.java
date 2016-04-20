@@ -31,6 +31,7 @@ import it.near.sdk.Recipes.Models.OperationFlavor;
 import it.near.sdk.Recipes.Models.PulseFlavor;
 import it.near.sdk.Recipes.Models.ReactionFlavor;
 import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -88,7 +89,7 @@ public class RecipesManager {
             @Override
             public void onResponse(JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    recipes = parseList(response, Recipe.class);
+                    recipes = NearUtils.parseList(morpheus, response, Recipe.class);
                     persistList(recipes);
             }
         }, new Response.ErrorListener() {
@@ -117,23 +118,6 @@ public class RecipesManager {
         Type collectionType = new TypeToken<Collection<Recipe>>(){}.getType();
         ArrayList<Recipe> recipes = gson.fromJson(sp.getString(TAG, ""), collectionType);
         return recipes;
-    }
-
-    private <T> List<T> parseList(JSONObject json, Class<T> clazz) {
-        JSONAPIObject jsonapiObject = null;
-        try {
-            jsonapiObject = morpheus.parse(json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<T> returnList = new ArrayList<T>();
-
-        for (Resource r : jsonapiObject.getResources()){
-            returnList.add((T) r);
-        }
-
-        return returnList;
     }
 
     public void gotPulse(String pulse_ingredient, String pulse_flavor, String pulse_slice){
