@@ -3,7 +3,10 @@ package it.near.sdk.Reactions.PollNotification;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 import it.near.sdk.Reactions.Action;
+import it.near.sdk.Utils.NearUtils;
 
 /**
  * Created by cattaneostefano on 20/04/16.
@@ -35,18 +38,9 @@ public class PollAction extends Action{
     }
 
     public String toJsonAPI() throws JSONException {
-        JSONObject attributesObj = new JSONObject();
-
-        attributesObj.put(ATTRIBUTE_ANSWER, this.answer);
-        attributesObj.put(ATTRIBUTE_ID, this.id);
-
-        JSONObject dataObject = new JSONObject();
-        dataObject.put("type", RES_TYPE);
-        dataObject.put("attributes", attributesObj);
-
-        JSONObject outerObj = new JSONObject();
-        outerObj.put("data", dataObject);
-
-        return outerObj.toString();
+        HashMap<String, Object> attributeMap = new HashMap<>();
+        attributeMap.put(ATTRIBUTE_ANSWER, this.answer);
+        attributeMap.put(ATTRIBUTE_ID, this.id);
+        return NearUtils.toJsonAPI(RES_TYPE, attributeMap);
     }
 }
