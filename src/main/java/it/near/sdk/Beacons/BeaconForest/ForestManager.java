@@ -17,13 +17,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
@@ -193,9 +198,29 @@ public class ForestManager implements BootstrapNotifier {
     @Override
     public void didEnterRegion(Region region) {
         String pulseSlice = getPulseFromRegion(region);
+        trackRegionEnter(pulseSlice);
         if (pulseSlice != null){
             firePulse(ENTER_REGION, pulseSlice);
         }
+    }
+
+    private void trackRegionEnter(String regionSlice) {
+        try {
+            NearNetworkUtil.sendTrack(mContext, Constants.API.PLUGINS.beacon_forest + "/trackings" ,buildTrackBody(regionSlice));
+        } catch (JSONException e) {
+            ULog.d(TAG, "Unable to send track: " +  e.toString());
+        }
+    }
+
+    private String buildTrackBody(String regionSlice) throws JSONException {
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("beacon_id" , regionSlice);
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        Date now = new Date(System.currentTimeMillis());
+        String formatted = sdf.format(now);
+        map.put("tracked_at", formatted);
+        map.put("platform", "android");
+        return NearUtils.toJsonAPI("trackings", map);
     }
 
     private String getPulseFromRegion(Region region) {
