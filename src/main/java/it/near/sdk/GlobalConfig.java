@@ -18,6 +18,10 @@ public class GlobalConfig {
     private String appId;
     private final String SENDERID = "senderid";
     private String senderId;
+    private final String DEVICETOKEN = "devicetoken";
+    private String deviceToken;
+    private static final String INSTALLATIONID = "installationid";
+    private String installationId;
     private final String NOTIFICATIONIMAGE = "notification_image";
     private int notificationImage = 0;
     private SharedPreferences sp;
@@ -59,37 +63,71 @@ public class GlobalConfig {
 
     public String getApiKey() {
         if (apiKey == null){
-            apiKey = sp.getString(APIKEY, null);
+            apiKey = getLocalString(APIKEY);
         }
         return apiKey;
     }
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
-        editor.putString(APIKEY, apiKey).apply();
+        setLocalString(APIKEY, apiKey);
     }
 
     public String getAppId() {
         if (appId == null){
-            appId = sp.getString(APPID, null);
+            appId = getLocalString(APPID);
         }
         return appId;
     }
 
     public void setAppId(String appId) {
         this.appId = appId;
-        editor.putString(APPID, appId);
+        setLocalString(APPID, appId);
+    }
+
+
+    public String getSenderId() {
+        if (senderId == null){
+            senderId = getLocalString(SENDERID);
+        }
+        return senderId;
     }
 
     public void setSenderId(String senderId) {
         this.senderId = senderId;
-        editor.putString(SENDERID, senderId).apply();
+        setLocalString(SENDERID, senderId);
     }
 
-    public String getSenderId() {
-        if (senderId == null){
-            senderId = sp.getString(SENDERID, null);
+    public String getDeviceToken() {
+        if (deviceToken == null){
+            deviceToken = getLocalString(DEVICETOKEN);
         }
-        return senderId;
+        return deviceToken;
     }
+
+    public void setDeviceToken(String deviceToken) {
+        this.deviceToken = deviceToken;
+        setLocalString(DEVICETOKEN, deviceToken);
+    }
+
+    public String getInstallationId() {
+        if (installationId == null){
+            installationId = getLocalString(INSTALLATIONID);
+        }
+        return installationId;
+    }
+
+    public void setInstallationId(String installationId){
+        this.installationId = installationId;
+        setLocalString(INSTALLATIONID, installationId);
+    }
+
+    private void setLocalString(String name, String value){
+        editor.putString(name, value).apply();
+    }
+
+    private String getLocalString(String name){
+        return sp.getString(name, null);
+    }
+
 }
