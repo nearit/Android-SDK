@@ -16,6 +16,8 @@ public class GlobalConfig {
     private String apiKey;
     private final String APPID = "appid";
     private String appId;
+    private final String SENDERID = "senderid";
+    private String senderId;
     private final String NOTIFICATIONIMAGE = "notification_image";
     private int notificationImage = 0;
     private SharedPreferences sp;
@@ -77,5 +79,17 @@ public class GlobalConfig {
     public void setAppId(String appId) {
         this.appId = appId;
         editor.putString(APPID, appId);
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+        editor.putString(SENDERID, senderId).apply();
+    }
+
+    public String getSenderId() {
+        if (senderId == null){
+            senderId = sp.getString(SENDERID, null);
+        }
+        return senderId;
     }
 }

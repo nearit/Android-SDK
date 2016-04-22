@@ -11,6 +11,7 @@ import java.util.List;
 
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
+import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Action;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
 import it.near.sdk.Reactions.PollNotification.PollAction;
@@ -40,6 +41,7 @@ public class NearItManager {
     private SimpleNotificationReaction simpleNotification;
     private ContentNotificationReaction contentNotification;
     private PollNotificationReaction pollNotification;
+    private PushManager pushManager;
 
     private AltBeaconMonitor monitor;
 
@@ -61,6 +63,7 @@ public class NearItManager {
 
     }
 
+
     private void plugInSetup() {
         recipesManager = new RecipesManager(application);
 
@@ -75,6 +78,12 @@ public class NearItManager {
 
         pollNotification = new PollNotificationReaction(application, nearNotifier);
         recipesManager.addReaction(pollNotification.getIngredientName(), pollNotification);
+
+    }
+
+    public void setPushSenderId(String senderId){
+
+        pushManager = new PushManager(application, senderId, recipesManager);
 
     }
 

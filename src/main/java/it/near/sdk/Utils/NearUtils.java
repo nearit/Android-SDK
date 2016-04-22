@@ -1,6 +1,11 @@
 package it.near.sdk.Utils;
 
+import android.content.Context;
 import android.util.Base64;
+import android.util.Log;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +24,8 @@ import it.near.sdk.MorpheusNear.Resource;
  * Created by cattaneostefano on 20/04/16.
  */
 public class NearUtils {
+
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
         JSONAPIObject jsonapiObject = null;
@@ -92,5 +99,19 @@ public class NearUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    public static boolean checkPlayServices(Context context) {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            return false;
+        }
+        return true;
     }
 }
