@@ -10,6 +10,7 @@ public class GlobalConfig {
     private static GlobalConfig mInstance = null;
     private Context mContext;
     private String apiKey;
+    private String appId;
     private int notificationImage = 0;
 
     public GlobalConfig(Context mContext) {
@@ -39,5 +40,13 @@ public class GlobalConfig {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

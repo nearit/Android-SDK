@@ -20,6 +20,7 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
+import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.TraceNotifier;
 import it.near.sdk.Utils.ULog;
@@ -53,6 +54,7 @@ public class NearItManager {
         nearListeners = new ArrayList<>();
 
         GlobalConfig.getInstance(application).setApiKey(apiKey);
+        GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
         GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
         plugInSetup();

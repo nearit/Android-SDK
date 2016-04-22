@@ -1,8 +1,11 @@
 package it.near.sdk.Utils;
 
+import android.util.Base64;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,4 +54,43 @@ public class NearUtils {
         return outerObj.toString();
     }
 
+    public static String decodeString(String encoded) {
+        byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
+        String decodedString = "";
+        try {
+            decodedString = new String(dataDec, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return decodedString;
+    }
+
+
+    public static String fetchAppIdFrom(String apiKey) {
+        String secondSegment = substringBetween(apiKey, ".",".");
+        String decodedAK = decodeString(secondSegment);
+        String appId = "";
+        try {
+            JSONObject jwt = new JSONObject(decodedAK);
+            JSONObject account = jwt.getJSONObject("data").getJSONObject("account");
+            appId = account.getString("id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return appId;
+    }
+
+    public static String substringBetween(String str, String open, String close) {
+        if (str == null || open == null || close == null) {
+            return null;
+        }
+        int start = str.indexOf(open);
+        if (start != -1) {
+            int end = str.indexOf(close, start + open.length());
+            if (end != -1) {
+                return str.substring(start + open.length(), end);
+            }
+        }
+        return null;
+    }
 }
