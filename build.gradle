@@ -2,6 +2,8 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
+
+
 android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
@@ -9,8 +11,8 @@ android {
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 0
+        versionName "0.1.4-beta"
         multiDexEnabled true
     }
     buildTypes {
@@ -65,10 +67,10 @@ bintray {
         name = 'it.near.sdk.core'
 
         version {
-            name = '0.1.3-beta'
+            name = '0.1.4-beta'
             desc = 'My test upload'
             released  = new Date()
-            vcsTag = '0.1.3-beta'
+            vcsTag = '0.1.4-beta'
         }
 
         licenses = ['MIT']
@@ -79,7 +81,7 @@ bintray {
 }
 
 group = 'it.near.sdk.core'
-version = '0.1.3-beta'
+version = '0.1.4-beta'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
