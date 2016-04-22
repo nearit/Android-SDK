@@ -44,7 +44,11 @@ public class NearUtils {
         return returnList;
     }
 
-    public static String toJsonAPI(String type, HashMap<String, Object> map) throws JSONException {
+    public static String toJsonAPI(String type, HashMap<String, Object> map) throws JSONException{
+        return toJsonAPI(type, null, map);
+    }
+
+    public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
         JSONObject attributesObj = new JSONObject();
 
         for (Map.Entry<String, Object> entry : map.entrySet() ){
@@ -52,6 +56,9 @@ public class NearUtils {
         }
 
         JSONObject dataObject = new JSONObject();
+        if (id != null){
+            dataObject.put("id", id);
+        }
         dataObject.put("type", type);
         dataObject.put("attributes", attributesObj);
 

@@ -30,6 +30,8 @@ import com.google.android.gms.iid.InstanceID;
 
 import java.io.IOException;
 
+import it.near.sdk.Communication.NearInstallation;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.R;
 
 public class RegistrationIntentService extends IntentService {
@@ -85,7 +87,7 @@ public class RegistrationIntentService extends IntentService {
     }
 
     /**
-     * Persist registration to third-party servers.
+     * Persist registration to NearIt servers.
      *
      * Modify this method to associate the user's GCM registration token with any server-side account
      * maintained by your application.
@@ -94,6 +96,8 @@ public class RegistrationIntentService extends IntentService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
+        GlobalConfig.getInstance(this.getApplicationContext()).setDeviceToken(token);
+        NearInstallation.registerInstallation(this.getApplicationContext());
     }
 
     /**

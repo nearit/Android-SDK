@@ -22,6 +22,7 @@ public class Constants {
         String recipes = "recipes";
         String recipes_include_flavors = recipes + "?include=pulse_flavor,operation_flavor,reaction_flavor";
         String plugins = "plugins";
+        String installations = "installations";
 
         interface PLUGINS {
             String beacon_forest =          plugins + "/beacon-forest";

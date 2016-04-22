@@ -20,6 +20,13 @@
             android:exported="false">
         </service>
 
+        <service
+            android:name=".Push.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
 
 
     </application>
