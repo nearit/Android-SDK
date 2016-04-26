@@ -7,6 +7,7 @@ import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
@@ -25,6 +26,7 @@ public class AltBeaconMonitor {
 
     private static final String TAG = "AltBeaconMonitor";
     private final BeaconManager beaconManager;
+    private final BackgroundPowerSaver backgroundPowerSaver;
     Context mContext;
     private RegionBootstrap regionBootstrap;
     private NearRegionLogger nearRegionLogger;
@@ -51,6 +53,7 @@ public class AltBeaconMonitor {
         beaconManager.setBackgroundBetweenScanPeriod(10000l);
         beaconManager.setBackgroundScanPeriod(2000l);
         // regionBootstrap = new RegionBootstrap( this, testRegions);
+        backgroundPowerSaver = new BackgroundPowerSaver(context.getApplicationContext());
     }
 
     /**
