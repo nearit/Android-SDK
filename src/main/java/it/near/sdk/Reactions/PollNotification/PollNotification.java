@@ -71,6 +71,7 @@ public class PollNotification extends Resource implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getText());
         dest.writeString(getQuestion());
         dest.writeString(getChoice_1());
         dest.writeString(getChoice_2());
@@ -91,6 +92,7 @@ public class PollNotification extends Resource implements Parcelable{
     };
 
     public PollNotification(Parcel in){
+        setText(in.readString());
         setQuestion(in.readString());
         setChoice_1(in.readString());
         setChoice_2(in.readString());
