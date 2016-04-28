@@ -5,14 +5,14 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "22.0.1"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 0
-        versionName "0.1.4-beta"
+        versionName "0.1.8-beta"
         multiDexEnabled true
     }
     buildTypes {
@@ -66,13 +66,6 @@ bintray {
         repo = 'maven'
         name = 'it.near.sdk.core'
 
-        version {
-            name = '0.1.4-beta'
-            desc = 'My test upload'
-            released  = new Date()
-            vcsTag = '0.1.4-beta'
-        }
-
         licenses = ['MIT']
         vcsUrl = 'https://github.com/catt-stefano/near-sdk-core.git'
         websiteUrl = 'https://github.com/catt-stefano/near-sdk-core'
@@ -81,14 +74,14 @@ bintray {
 }
 
 group = 'it.near.sdk.core'
-version = '0.1.4-beta'
+version = '0.1.8-beta'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:support-annotations:22.2.0'
-    javadocDeps 'com.android.support:support-annotations:22.2.0'
-    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:support-annotations:23.3.0'
+    javadocDeps 'com.android.support:support-annotations:23.3.0'
+    compile 'com.android.support:support-v4:23.3.0'
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.altbeacon:android-beacon-library:2.8.1'
