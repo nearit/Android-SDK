@@ -65,6 +65,7 @@ public class PollNotificationReaction extends Reaction {
     }
 
     private PollNotification getNotification(String reaction_slice) {
+        if (pollList == null) return null;
         for (PollNotification pn : pollList){
             if (pn.getId().equals(reaction_slice)){
                 return pn;
