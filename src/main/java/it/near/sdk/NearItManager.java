@@ -1,6 +1,7 @@
 package it.near.sdk;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 
@@ -93,8 +94,8 @@ public class NearItManager {
      * @return true if the device has bluetooth enabled, false otherwise
      * @throws RuntimeException when the device doesn't have the essential BLE compatibility
      */
-    public boolean verifyBluetooth() throws RuntimeException{
-        return BeaconManager.getInstanceForApplication(application).checkAvailability();
+    public static boolean verifyBluetooth(Context context) throws RuntimeException{
+        return BeaconManager.getInstanceForApplication(context.getApplicationContext()).checkAvailability();
     }
 
     private void initLifecycleMonitor() {
