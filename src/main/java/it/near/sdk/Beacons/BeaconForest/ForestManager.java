@@ -65,6 +65,7 @@ public class ForestManager implements BootstrapNotifier {
 
     private long backgroundBetweenScanPeriod = 8000l;
     private long backgroundScanPeriod = 1000l;
+    private long regionExitPeriod = 30000l;
 
     List<Beacon> beaconList;
     Context mContext;
@@ -160,7 +161,7 @@ public class ForestManager implements BootstrapNotifier {
                     Identifier.fromInt(beacon.getMajor()), Identifier.fromInt(beacon.getMinor()));
             regionsToMonitor.add(region);
         }
-        monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionsToMonitor, this);
+        monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
     }
 
     /**

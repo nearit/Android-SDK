@@ -12,7 +12,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 0
-        versionName "0.1.9-beta"
+        versionName "0.1.10-beta"
         multiDexEnabled true
     }
     buildTypes {
@@ -74,7 +74,7 @@ bintray {
 }
 
 group = 'it.near.sdk.core'
-version = '0.1.9-beta'
+version = '0.1.10-beta'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')

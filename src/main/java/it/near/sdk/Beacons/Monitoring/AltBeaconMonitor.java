@@ -60,14 +60,16 @@ public class AltBeaconMonitor {
      * Start monitoring on the given regions and sets the notifier object to be notified on region enter and exit.
      * When doing this, we stop monitoring on the region we were previously monitoring and we set the given notifier
      * as the only notifier.
+     * @param regionExitPeriod
      * @param regions
      * @param notifier
      */
-    public void startRadar(long backBetweenPeriod, long backScanPeriod ,List<Region> regions, BootstrapNotifier notifier){
+    public void startRadar(long backBetweenPeriod, long backScanPeriod, long regionExitPeriod, List<Region> regions, BootstrapNotifier notifier){
         resetMonitoring();
 
         beaconManager.setBackgroundBetweenScanPeriod(backBetweenPeriod);
         beaconManager.setBackgroundScanPeriod(backScanPeriod);
+        beaconManager.setRegionExitPeriod(regionExitPeriod);
         regionBootstrap = new RegionBootstrap(notifier, regions);
     }
 
