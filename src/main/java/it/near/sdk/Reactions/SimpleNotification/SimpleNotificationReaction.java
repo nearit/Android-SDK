@@ -65,6 +65,7 @@ public class SimpleNotificationReaction extends Reaction {
     }
 
     private SimpleNotification getNotification(String reaction_slice){
+        if (notificationList==null) return null;
         for (SimpleNotification sn : notificationList){
             if (sn.getId().equals(reaction_slice)){
                 return sn;

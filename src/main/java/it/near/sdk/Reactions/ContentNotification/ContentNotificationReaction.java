@@ -66,6 +66,7 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     private ContentNotification getNotification(String reaction_slice) {
+        if (contentNotificationList == null) return null;
         for ( ContentNotification cn : contentNotificationList){
             if (cn.getId().equals(reaction_slice)){
                 return cn;
