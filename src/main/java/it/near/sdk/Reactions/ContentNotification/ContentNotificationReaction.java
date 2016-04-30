@@ -77,7 +77,8 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     public void refreshConfig() {
-        /*Uri path = Uri.parse(Constants.API.PLUGINS.content_notification + "/notifications").buildUpon()
+        /*Uri path = Uri.parse(Constants.API.PLUGINS.content_notification).buildUpon()
+                .appendPath("notifications")
                 .appendQueryParameter("include", "images")
                 .appendQueryParameter("filter[app_id]", "dds")
                 .appendQueryParameter("filter[sdsaf]", "safaf").build();*/
