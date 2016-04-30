@@ -1,6 +1,7 @@
 package it.near.sdk.Reactions.ContentNotification;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.util.ArrayMap;
 
 import com.android.volley.Response;
@@ -76,6 +77,10 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     public void refreshConfig() {
+        /*Uri path = Uri.parse(Constants.API.PLUGINS.content_notification + "/notifications").buildUpon()
+                .appendQueryParameter("include", "images")
+                .appendQueryParameter("filter[app_id]", "dds")
+                .appendQueryParameter("filter[sdsaf]", "safaf").build();*/
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, Constants.API.PLUGINS.content_notification + "/notifications?include=images", new Response.Listener<JSONObject>() {
                     @Override
