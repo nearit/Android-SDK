@@ -20,49 +20,43 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.ULog;
 
 /**
- * @author cattaneostefano
+ * Monitor for AltBeacon regions. It sets the format of the bluetooth package
+ * 
+ * @author cattaneostefano.
  */
 public class AltBeaconMonitor {
 
     private static final String TAG = "AltBeaconMonitor";
     private final BeaconManager beaconManager;
     private final BackgroundPowerSaver backgroundPowerSaver;
-    Context mContext;
+    private Context mContext;
     private RegionBootstrap regionBootstrap;
     private NearRegionLogger nearRegionLogger;
-    private ArrayList<Region> insideRegions;
 
     public AltBeaconMonitor(Context context) {
         this.mContext = context;
 
-        ULog.d(TAG, "Constructor called");
         beaconManager = BeaconManager.getInstanceForApplication(context.getApplicationContext());
         beaconManager.getBeaconParsers().clear();
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        // TODO turn back off
         BeaconManager.setDebug(true);
 
-        insideRegions = new ArrayList<>();
-
-        ArrayList<Region> testRegions = TestRegionCrafter.getTestRegions(mContext);
-
-        Region emitterRegion = new Region("Region", Identifier.parse("ACFD065E-C3C0-11E3-9BBE-1A514932AC01"), Identifier.fromInt(2009), null);
-        testRegions.add(emitterRegion);
-//        Region kontaktRegion = new Region("Kontakt", Identifier.parse("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), Identifier.fromInt(452), null);
-//        testRegions.add(kontaktRegion);
-        beaconManager.setBackgroundBetweenScanPeriod(10000l);
-        beaconManager.setBackgroundScanPeriod(2000l);
-        // regionBootstrap = new RegionBootstrap( this, testRegions);
         backgroundPowerSaver = new BackgroundPowerSaver(context.getApplicationContext());
     }
 
     /**
      * Start monitoring on the given regions and sets the notifier object to be notified on region enter and exit.
      * When doing this, we stop monitoring on the region we were previously monitoring and we set the given notifier
-     * as the only notifier.
-     * @param regionExitPeriod
-     * @param regions
-     * @param notifier
+     * as the only notifier. The notifier will be called even after app termination and device restart, as soon as
+     * a registered region is scanned.
+     *
+     * @param backBetweenPeriod period between scans in milliseconds
+     * @param backScanPeriod scan length in milliseconds
+     * @param regionExitPeriod milliseconds to wait before confirming region exit
+     * @param regions list of regions to monitor
+     * @param notifier background region notifier
      */
     public void startRadar(long backBetweenPeriod, long backScanPeriod, long regionExitPeriod, List<Region> regions, BootstrapNotifier notifier){
         resetMonitoring();
@@ -73,10 +67,9 @@ public class AltBeaconMonitor {
         regionBootstrap = new RegionBootstrap(notifier, regions);
     }
 
-    public void setLogger(NearRegionLogger logger){
-        this.nearRegionLogger = logger;
-    }
-
+    /**
+     * Stop monitoring all regions previously registered.
+     */
     private void resetMonitoring() {
         ArrayList<Region> monitoredRegions = (ArrayList<Region>) beaconManager.getMonitoredRegions();
         for (Region region : monitoredRegions){
@@ -85,12 +78,6 @@ public class AltBeaconMonitor {
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
-        }
-    }
-
-    private void safeLog(String msg, ArrayList<Region> insideRegions) {
-        if (nearRegionLogger != null){
-            nearRegionLogger.log(msg, insideRegions);
         }
     }
 

@@ -63,9 +63,9 @@ public class ForestManager implements BootstrapNotifier {
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
-    private long backgroundBetweenScanPeriod = 8000l;
-    private long backgroundScanPeriod = 1000l;
-    private long regionExitPeriod = 30000l;
+    private static final long backgroundBetweenScanPeriod = 8000l;
+    private static final long backgroundScanPeriod = 1000l;
+    private static final long regionExitPeriod = 30000l;
 
     private List<Beacon> beaconList;
     private Context mContext;
