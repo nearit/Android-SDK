@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.io.Serializable;
 
 /**
- * Created by cattaneostefano on 31/03/16.
+ * @author cattaneostefano
  */
 public class ImageSet implements Parcelable{
     String fullSize;

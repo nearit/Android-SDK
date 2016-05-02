@@ -35,7 +35,7 @@ import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 13/04/16.
+ * @author cattaneostefano
  */
 public class RecipesManager {
     private static final String TAG = "RecipesManager";

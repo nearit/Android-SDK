@@ -7,7 +7,7 @@ import it.near.sdk.Reactions.PollNotification.PollNotification;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
 /**
- * Created by cattaneostefano on 19/04/16.
+ * @author cattaneostefano
  */
 public interface CoreContentsListener {
     public abstract void getPollNotification(Intent intent, PollNotification notification, String content_source, String content_type, String trigger_source, String trigger_type, String trigger_item);

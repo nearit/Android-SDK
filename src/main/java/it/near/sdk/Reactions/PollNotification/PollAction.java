@@ -9,7 +9,7 @@ import it.near.sdk.Reactions.Action;
 import it.near.sdk.Utils.NearUtils;
 
 /**
- * Created by cattaneostefano on 20/04/16.
+ * @author cattaneostefano
  */
 public class PollAction extends Action{
     public static final String INGREDIENT_NAME = "PollAction";

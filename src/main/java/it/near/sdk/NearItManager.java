@@ -28,7 +28,7 @@ import it.near.sdk.Utils.TraceNotifier;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 15/03/16.
+ * @author cattaneostefano
  */
 public class NearItManager {
 

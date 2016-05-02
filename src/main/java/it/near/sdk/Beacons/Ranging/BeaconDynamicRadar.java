@@ -13,7 +13,7 @@ import it.near.sdk.Models.NearBeacon;
 /**
  * Manage and calculate beacon distances from the user device.
  *
- * Created by cattaneostefano on 22/03/16.
+ * @author cattaneostefano
  */
 public class BeaconDynamicRadar {
 

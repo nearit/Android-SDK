@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * String stringToAppendToPath = filter.print();
  *
- * Created by cattaneostefano on 17/03/16.
+ * @author cattaneostefano
  */
 public class Filter {
 

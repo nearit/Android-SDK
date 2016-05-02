@@ -12,7 +12,7 @@ import it.near.sdk.R;
 
 /**
  * Craft a list of region from the test_beacon resource file
- * Created by cattaneostefano on 05/04/16.
+ * @author cattaneostefano
  */
 public class TestRegionCrafter {
 

@@ -13,7 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import it.near.sdk.R;
 
 /**
- * Created by cattaneostefano on 11/04/16.
+ * @author cattaneostefano
  */
 public class NearNotification {
 

@@ -1,7 +1,7 @@
 package it.near.sdk.Utils;
 
 /**
- * Created by cattaneostefano on 21/03/16.
+ * @author cattaneostefano
  */
 public interface TraceNotifier {
     public void trace(String trace);

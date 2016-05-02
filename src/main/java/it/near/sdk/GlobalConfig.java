@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 import it.near.sdk.Communication.Constants;
 
 /**
- * Created by cattaneostefano on 12/04/16.
+ * @author cattaneostefano
  */
 public class GlobalConfig {
 

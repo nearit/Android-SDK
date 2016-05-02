@@ -8,7 +8,7 @@ import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
 
 /**
- * Created by cattaneostefano on 22/04/16.
+ * @author cattaneostefano
  */
 public class PushManager {
 

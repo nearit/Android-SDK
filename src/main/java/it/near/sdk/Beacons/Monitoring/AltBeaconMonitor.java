@@ -20,7 +20,7 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 05/04/16.
+ * @author cattaneostefano
  */
 public class AltBeaconMonitor {
 

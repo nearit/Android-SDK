@@ -24,7 +24,7 @@ import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 14/04/16.
+ * @author cattaneostefano
  */
 public class SimpleNotificationReaction extends Reaction {
     private static final String INGREDIENT_NAME = "simple-notification";

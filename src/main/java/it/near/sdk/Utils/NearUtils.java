@@ -21,7 +21,7 @@ import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
- * Created by cattaneostefano on 20/04/16.
+ * @author cattaneostefano
  */
 public class NearUtils {
 

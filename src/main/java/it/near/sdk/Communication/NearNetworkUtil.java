@@ -12,7 +12,7 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 20/04/16.
+ * @author cattaneostefano
  */
 public class NearNetworkUtil {
     public static final String TAG = "NearNetworkUtil";

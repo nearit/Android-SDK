@@ -16,7 +16,7 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 18/03/16.
+ * @author cattaneostefano
  */
 public class NearRangeNotifier implements RangeNotifier {
     private static final String TAG = "NearRangeNotifier";

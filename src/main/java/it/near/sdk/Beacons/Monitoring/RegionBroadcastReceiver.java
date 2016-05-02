@@ -11,7 +11,7 @@ import it.near.sdk.Reactions.PollNotification.PollNotification;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
 /**
- * Created by cattaneostefano on 11/04/16.
+ * @author cattaneostefano
  */
 public class RegionBroadcastReceiver extends WakefulBroadcastReceiver {
 

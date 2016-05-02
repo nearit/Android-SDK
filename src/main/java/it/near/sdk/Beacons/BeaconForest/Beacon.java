@@ -7,7 +7,10 @@ import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
- * Created by cattaneostefano on 12/04/16.
+ * Representation of a Beacon. In this plugin a beacon will represent a region.
+ * Beacons of the Forest Manager are organized in a tree-like structure, therefore a beacon can have children.
+ *
+ * @author cattaneostefano
  */
 public class Beacon extends Resource {
 

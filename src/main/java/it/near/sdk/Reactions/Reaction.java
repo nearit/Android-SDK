@@ -24,7 +24,7 @@ import it.near.sdk.Utils.ULog;
 
 /**
  * Superclass for plugins of type "reaction".
- * Created by cattaneostefano on 14/04/16.
+ * @author cattaneostefano
  */
 public abstract class Reaction {
     public List<String> supportedFlavors = null;

@@ -12,7 +12,7 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.TraceNotifier;
 
 /**
- * Created by cattaneostefano on 15/03/16.
+ * @author cattaneostefano
  */
 public class GlobalState {
     private static final String TAG = "GlobalState";

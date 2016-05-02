@@ -9,7 +9,7 @@ import org.altbeacon.beacon.startup.BootstrapNotifier;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 04/04/16.
+ * @author cattaneostefano
  */
 public class NearMonitorNotifier implements MonitorNotifier, BootstrapNotifier {
     private static final String TAG = "NearMonitorNotifier";

@@ -8,7 +8,7 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Created by cattaneostefano on 22/04/16.
+ * @author cattaneostefano
  */
 public class MyInstanceIDListenerService extends InstanceIDListenerService {
 

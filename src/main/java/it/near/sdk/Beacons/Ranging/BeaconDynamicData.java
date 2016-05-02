@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import it.near.sdk.Models.NearBeacon;
 
 /**
- * Created by cattaneostefano on 22/03/16.
+ * @author cattaneostefano
  */
 public class BeaconDynamicData implements Comparable<BeaconDynamicData>{
 

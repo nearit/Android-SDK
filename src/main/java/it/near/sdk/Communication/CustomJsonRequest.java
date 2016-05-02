@@ -18,7 +18,7 @@ import it.near.sdk.R;
 /**
  * Creates a JsonObjectRequest (from the volley library) subclass with the proper headers.
  * Also includes appending of the relative path to the host.
- * Created by cattaneostefano on 16/03/16.
+ * @author cattaneostefano
  */
 public class CustomJsonRequest extends JsonObjectRequest {
     private Context mContext;

@@ -1,7 +1,7 @@
 package it.near.sdk;
 
 /**
- * Created by cattaneostefano on 24/03/16.
+ * @author cattaneostefano
  */
 public interface NearListener {
 

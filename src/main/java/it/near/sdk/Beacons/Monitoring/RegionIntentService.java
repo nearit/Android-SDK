@@ -12,7 +12,7 @@ import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 import it.near.sdk.Utils.NearNotification;
 
 /**
- * Created by cattaneostefano on 11/04/16.
+ * @author cattaneostefano
  */
 public class RegionIntentService extends IntentService {
 

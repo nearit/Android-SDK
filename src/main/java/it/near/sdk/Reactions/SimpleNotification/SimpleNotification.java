@@ -8,7 +8,7 @@ import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.PollNotification.PollNotification;
 
 /**
- * Created by cattaneostefano on 14/04/16.
+ * @author cattaneostefano
  */
 public class SimpleNotification extends Resource implements Parcelable {
 

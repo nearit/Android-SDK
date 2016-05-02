@@ -7,7 +7,7 @@ import it.near.sdk.Recipes.Models.PulseFlavor;
 import it.near.sdk.Recipes.Models.ReactionFlavor;
 
 /**
- * Created by cattaneostefano on 13/04/16.
+ * @author cattaneostefano
  */
 public class Recipe extends Resource {
 
