@@ -8,18 +8,24 @@ import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
 
 /**
+ * Manager for push notifications.
+ *
  * @author cattaneostefano
  */
 public class PushManager {
 
     String senderId;
     Context mContext;
-    RecipesManager recipesManager;
 
-    public PushManager(Context mContext, String senderId, RecipesManager recipesManager) {
+    /**
+     * Default constructor. Checks play services presence and register the device on GCM.
+     *
+     * @param mContext the app context.
+     * @param senderId the senderId of the Android project.
+     */
+    public PushManager(Context mContext, String senderId) {
         this.senderId = senderId;
         this.mContext = mContext;
-        this.recipesManager = recipesManager;
         GlobalConfig.getInstance(mContext).setSenderId(senderId);
 
         if (NearUtils.checkPlayServices(mContext)) {

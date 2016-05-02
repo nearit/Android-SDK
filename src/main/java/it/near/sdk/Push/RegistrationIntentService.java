@@ -32,8 +32,13 @@ import java.io.IOException;
 
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.R;
 
+/**
+ * Handle request to register an app installation on Near servers.
+ * Tries to obtain a deviceToken and triggers communication with the server.
+ *
+ * @author cattaneostefano
+ */
 public class RegistrationIntentService extends IntentService {
 
     private static final String TAG = "RegIntentService";
@@ -42,6 +47,9 @@ public class RegistrationIntentService extends IntentService {
     public static final String REGISTRATION_COMPLETE = "registrationComplete";
     public static final String SENDER_ID = "senderid";
 
+    /**
+     * Default constructor.
+     */
     public RegistrationIntentService() {
         super(TAG);
     }
@@ -64,7 +72,6 @@ public class RegistrationIntentService extends IntentService {
             // [END get_token]
             Log.i(TAG, "GCM Registration Token: " + token);
 
-            // TODO: Implement this method to send any registration to your app's servers.
             sendRegistrationToServer(token);
 
             // Subscribe to topic channels

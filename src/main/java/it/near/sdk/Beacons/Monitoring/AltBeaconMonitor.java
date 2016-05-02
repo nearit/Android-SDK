@@ -20,8 +20,8 @@ import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Monitor for AltBeacon regions. It sets the format of the bluetooth package
- * 
+ * Monitor for AltBeacon regions. It sets the format of the bluetooth package and holds the background powersaver.
+ *
  * @author cattaneostefano.
  */
 public class AltBeaconMonitor {
@@ -31,13 +31,13 @@ public class AltBeaconMonitor {
     private final BackgroundPowerSaver backgroundPowerSaver;
     private Context mContext;
     private RegionBootstrap regionBootstrap;
-    private NearRegionLogger nearRegionLogger;
 
     public AltBeaconMonitor(Context context) {
         this.mContext = context;
 
         beaconManager = BeaconManager.getInstanceForApplication(context.getApplicationContext());
         beaconManager.getBeaconParsers().clear();
+        // set beacon layout for iBeacons
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         // TODO turn back off

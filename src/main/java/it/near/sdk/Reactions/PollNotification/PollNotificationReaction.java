@@ -77,7 +77,7 @@ public class PollNotificationReaction extends Reaction {
     @Override
     public void refreshConfig() {
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.poll_notification + "/notifications", new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, Constants.API.PLUGINS.POLL_NOTIFICATION_LIST, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());

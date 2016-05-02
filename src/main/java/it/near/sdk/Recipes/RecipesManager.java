@@ -85,7 +85,7 @@ public class RecipesManager {
     public void refreshConfig(){
         Filter filter = Filter.build().addFilter("active","true");
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.recipes_include_flavors + filter.print(), new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, Constants.API.RECIPES_PATH_WITH_FLAVORS + filter.print(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                     ULog.d(TAG, response.toString());

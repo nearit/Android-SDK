@@ -16,6 +16,11 @@ import it.near.sdk.R;
  */
 public class TestRegionCrafter {
 
+    /**
+     * Return the test region crafted from the test file
+     * @param context
+     * @return
+     */
     public static ArrayList<Region> getTestRegions(Context context){
 
         /*ArrayList<Region> testRegions = new ArrayList<>();

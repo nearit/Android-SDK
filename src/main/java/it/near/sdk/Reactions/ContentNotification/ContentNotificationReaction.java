@@ -83,7 +83,7 @@ public class ContentNotificationReaction extends Reaction {
                 .appendQueryParameter("filter[app_id]", "dds")
                 .appendQueryParameter("filter[sdsaf]", "safaf").build();*/
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.content_notification + "/notifications?include=images", new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, Constants.API.PLUGINS.CONTENT_NOTIFICATION_LIST_WITH_IMAGES, new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());

@@ -13,6 +13,8 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 
 /**
+ * Service that receives push notification.
+ *
  * @author cattaneostefano
  */
 public class MyGcmListenerService extends GcmListenerService {

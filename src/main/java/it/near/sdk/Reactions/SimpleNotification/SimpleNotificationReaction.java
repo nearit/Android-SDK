@@ -76,7 +76,7 @@ public class SimpleNotificationReaction extends Reaction {
 
     public void refreshConfig() {
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.simple_notification + "/notifications", new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, Constants.API.PLUGINS.SIMPLE_NOTIFICATION_LIST, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                     ULog.d(TAG, response.toString());

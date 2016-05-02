@@ -77,7 +77,7 @@ public class ForestManager implements BootstrapNotifier {
      *
      * @param context App context.
      * @param monitor SDK beacon monitor.
-     * @param recipesManager SDK global recipes manager.
+     * @param recipesManager SDK global RECIPES_PATH manager.
      */
     public ForestManager(Context context, AltBeaconMonitor monitor, RecipesManager recipesManager) {
         this.mContext = context;
@@ -118,7 +118,7 @@ public class ForestManager implements BootstrapNotifier {
      */
     public void refreshConfig(){
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.beacon_forest + "/beacons", new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, Constants.API.PLUGINS.BEACON_FOREST_BEACONS, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                     ULog.d(TAG, response.toString());
@@ -243,7 +243,7 @@ public class ForestManager implements BootstrapNotifier {
      */
     private void trackRegionEnter(String regionSlice) {
         try {
-            NearNetworkUtil.sendTrack(mContext, Constants.API.PLUGINS.beacon_forest + "/trackings" ,buildTrackBody(regionSlice));
+            NearNetworkUtil.sendTrack(mContext, Constants.API.PLUGINS.BEACON_FOREST_TRACKINGS, buildTrackBody(regionSlice));
         } catch (JSONException e) {
             ULog.d(TAG, "Unable to send track: " +  e.toString());
         }
@@ -283,7 +283,7 @@ public class ForestManager implements BootstrapNotifier {
     }
 
     /**
-     * Notify the recipes manager of the occurance of a registered pulse.
+     * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
      * @param flavor the flavor of the pulse to notify
      * @param pulseSlice the region identifier of the pulse
      */

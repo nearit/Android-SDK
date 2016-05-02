@@ -11,7 +11,7 @@ import java.util.Map;
  * Filter filter = Filter.build().addFilter("active", "true")
  *                              .addFilter("app_id", "nevienrvjfndbkvjnfdbijsnfi");
  *
- * String stringToAppendToPath = filter.print();
+ * String stringToAppendToPath = filter.print();  // output = ?filter[active]=true&filter[app_id]=nevienrvjfndbkvjnfdbijsnfi
  *
  * @author cattaneostefano
  */
@@ -24,6 +24,12 @@ public class Filter {
         valueMap = new HashMap<>();
     }
 
+    /**
+     * Add a filter name-value String pair
+     * @param name filter name
+     * @param value filter value/s
+     * @return
+     */
     public Filter addFilter(String name, String value){
         if (name != null && value != null) {
             valueMap.put(name, value);
@@ -31,6 +37,10 @@ public class Filter {
         return this;
     }
 
+    /**
+     * Print a jsonAPI filter query section with a leading '?'
+     * @return query parameters section
+     */
     public String print(){
         if ( valueMap.size() != 0 ){
             filter = "?";
@@ -42,7 +52,10 @@ public class Filter {
         return filter;
     }
 
-
+    /**
+     * Return an empty filter instance
+     * @return filter instance
+     */
     public static Filter build(){
         return new Filter();
     }

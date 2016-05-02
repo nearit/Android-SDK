@@ -8,6 +8,9 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Handles token refreshes. When a new device token is obtained it triggers a remote registration.
+ * It either creates or update an installation.
+ *
  * @author cattaneostefano
  */
 public class MyInstanceIDListenerService extends InstanceIDListenerService {

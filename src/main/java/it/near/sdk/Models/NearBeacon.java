@@ -4,6 +4,7 @@ import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
+ * Beacon model for ranging use.
  * @author cattaneostefano
  */
 public class NearBeacon extends Resource {
