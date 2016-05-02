@@ -5,15 +5,19 @@ import java.util.Map;
 
 /**
  * Utility for building a filter to be used with our jsonApi-conformant API's
- * http://jsonapi.org/recommendations/#filtering
  *
  * Sample usage:
+ * <pre>
+ * {@code
  * Filter filter = Filter.build().addFilter("active", "true")
- *                              .addFilter("app_id", "nevienrvjfndbkvjnfdbijsnfi");
+ *                  .addFilter("app_id", "nevienrvjfndbkvjnfdbijsnfi");
  *
  * String stringToAppendToPath = filter.print();  // output = ?filter[active]=true&filter[app_id]=nevienrvjfndbkvjnfdbijsnfi
+ * }
+ * </pre>
  *
  * @author cattaneostefano
+ * @see <a href="http://jsonapi.org/format/1.0/">jsonAPI 1.0 specifications</a>
  */
 public class Filter {
 

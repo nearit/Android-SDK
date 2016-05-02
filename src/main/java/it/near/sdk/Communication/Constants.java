@@ -23,7 +23,7 @@ public class Constants {
 
     // -------------------- PATHS --------------------------
 
-    /** Strings for urls */
+    /** Url strings */
     public interface API{
 
         // ---------- Recipes paths ----------
@@ -33,6 +33,7 @@ public class Constants {
         String PLUGINGS_ROOT = "plugins";
         String INSTALLATIONS_PATH = "installations";
 
+        /** Plugin specific url strings */
         interface PLUGINS {
             // ---------- beacon forest ----------
             String BEACON_FOREST_PATH =         PLUGINGS_ROOT + "/beacon-forest";
