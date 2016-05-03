@@ -98,7 +98,7 @@ public class CustomJsonRequest extends JsonObjectRequest {
 
     /**
      * Return headers for HTTP calls
-     * @return
+     * @return a map of headers
      * @throws AuthFailureError
      */
     @Override
@@ -114,7 +114,7 @@ public class CustomJsonRequest extends JsonObjectRequest {
      * Appends a path to the host
      * @param context
      * @param url
-     * @return
+     * @return the complete path
      */
     private static String composeUrl(Context context, String url) {
         String baseUrl = context.getResources().getString(R.string.API_BASE_URL);

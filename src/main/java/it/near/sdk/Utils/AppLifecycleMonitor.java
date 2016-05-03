@@ -9,11 +9,10 @@ import java.util.Vector;
 
 
 /**
- * Created by claudiosuardi on 03/02/15.
  *
- * Permette di monitorare il ciclo di vita di un'App, stabilendo se Ã¨ in background o meno.
- * Tramite l'observer Ã¨ possibile ricevere gli eventi relativi al cambio di stato.
+ * Monitor and determine app background/foreground state.
  *
+ * @author claudiosuardi
  */
 public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbacks {
 

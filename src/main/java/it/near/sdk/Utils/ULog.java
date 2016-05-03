@@ -4,7 +4,7 @@ import android.content.pm.ApplicationInfo;
 import android.util.Log;
 
 /**
- * Created by Riccardo on 06/07/15.
+ * @author riccardomoro
  */
 public class ULog {
 

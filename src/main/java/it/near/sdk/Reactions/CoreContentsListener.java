@@ -7,6 +7,8 @@ import it.near.sdk.Reactions.PollNotification.PollNotification;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
 /**
+ * Interface for being notified of core content types.
+ *
  * @author cattaneostefano
  */
 public interface CoreContentsListener {

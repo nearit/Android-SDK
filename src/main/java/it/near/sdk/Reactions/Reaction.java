@@ -58,7 +58,7 @@ public abstract class Reaction {
     /**
      * Initialize SharedPreferences.
      * The preference name is formed by our plugin name and the package name of the app, to avoid conflicts.
-     * @param prefsNameSuffix
+     * @param prefsNameSuffix suffix for shared parameters
      */
     protected void initSharedPreferences(String prefsNameSuffix) {
         String PREFS_NAME = PACK_NAME + prefsNameSuffix;
@@ -76,7 +76,7 @@ public abstract class Reaction {
 
     /**
      * Method called by the recipe manager to trigger a reaction.
-     * @param recipe
+     * @param recipe matched recipe
      */
     public void handleReaction(Recipe recipe){
         if (!getIngredientName().equals(recipe.getReaction_ingredient_id())){
@@ -87,10 +87,10 @@ public abstract class Reaction {
 
     /**
      * Utility for parsing lists
-     * @param json
-     * @param clazz
-     * @param <T>
-     * @return
+     * @param json json to parse
+     * @param clazz Object class of list objects
+     * @param <T> generic type
+     * @return List of Objects
      */
     protected <T> List<T> parseList(JSONObject json, Class<T> clazz) {
         JSONAPIObject jsonapiObject = null;

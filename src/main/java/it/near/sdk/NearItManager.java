@@ -28,6 +28,20 @@ import it.near.sdk.Utils.TraceNotifier;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
+ * This class starts all the plugins manually and initialize global values like the apiKey and the push senderId.
+ * To be able to use beacon technology, make sure to ask for the proper permission in the manifest or runtime, depending on your targeted API.
+ *
+ * <pre>
+ * {@code
+ *
+ * // inside the custom Application onCreate method
+ * nearItManager = new NearItManager(this, getResources().getString(R.string.api_key));
+ * nearItManager.setSenderId(R.string.sender_id);
+ *
+ * }
+ * </pre>
+ *
  * @author cattaneostefano
  */
 public class NearItManager {
@@ -46,15 +60,16 @@ public class NearItManager {
 
     private AltBeaconMonitor monitor;
 
-    private List<NearListener> nearListeners;
-
     Application application;
 
+    /**
+     * Default constructor.
+     * @param application the application object
+     * @param apiKey the apiKey string
+     */
     public NearItManager(Application application, String apiKey) {
-        ULog.d(TAG, "NearItManager constructor");
         this.application = application;
         initLifecycleMonitor();
-        nearListeners = new ArrayList<>();
 
         GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
@@ -82,14 +97,16 @@ public class NearItManager {
 
     }
 
+    /**
+     * Set the senderId for the push notifications
+     * @param senderId
+     */
     public void setPushSenderId(String senderId){
-
-        pushManager = new PushManager(application, senderId, recipesManager);
-
+        pushManager = new PushManager(application, senderId);
     }
 
     /**
-     * Checks the device capabilities to detect beacons
+     * Checks the device capacity to detect beacons
      *
      * @return true if the device has bluetooth enabled, false otherwise
      * @throws RuntimeException when the device doesn't have the essential BLE compatibility
@@ -112,26 +129,24 @@ public class NearItManager {
         });
     }
 
+    /**
+     * Set a notification image. Refer to the Android guidelines to determine the best image for a notification
+     * @param imgRes the resource int of the image
+     * @see <a href="http://developer.android.com/design/patterns/notifications.html">jsonAPI 1.0 specifications</a>
+     */
     public void setNotificationImage(int imgRes){
         GlobalConfig.getInstance(application).setNotificationImage(imgRes);
     }
 
+    /**
+     * Force the refresh of all SDK configurations.
+     */
     public void refreshConfigs(){
         recipesManager.refreshConfig();
         forest.refreshConfig();
         simpleNotification.refreshConfig();
         contentNotification.refreshConfig();
         recipesManager.refreshConfig();
-    }
-
-    public void setTraceNotifier(TraceNotifier notifier){
-        GlobalState.getInstance(application).setTraceNotifier(notifier);
-    }
-
-
-    public void addContentListener(NearListener listener){
-        ULog.d(TAG , "AddListener");
-        nearListeners.add(listener);
     }
 
 

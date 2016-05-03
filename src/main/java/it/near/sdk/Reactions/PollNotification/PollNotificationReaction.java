@@ -1,6 +1,7 @@
 package it.near.sdk.Reactions.PollNotification;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -128,8 +129,8 @@ public class PollNotificationReaction extends Reaction {
         try {
             String answerBody = action.toJsonAPI();
             ULog.d(TAG, "Answer" + answerBody);
-            GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, Constants.API.PLUGINS.poll_notification + "/notifications/" +
-                    action.getId() + "/answers", answerBody , new Response.Listener<JSONObject>() {
+            Uri path = Uri.parse(Constants.API.PLUGINS.POLL_NOTIFICATION_LIST).buildUpon().appendPath(action.getId()).appendPath("answers").build();
+            GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     ULog.d(TAG, "Answer sent successfully");

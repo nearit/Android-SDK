@@ -21,12 +21,21 @@ import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
+ * Near utilities
  * @author cattaneostefano
  */
 public class NearUtils {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
+    /**
+     * Parse a list
+     * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
+     * @param json json to parse
+     * @param clazz class of the list object
+     * @param <T> generic type
+     * @return list of objects
+     */
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
         JSONAPIObject jsonapiObject = null;
         try {
@@ -44,10 +53,25 @@ public class NearUtils {
         return returnList;
     }
 
+    /**
+     * Turns an hashmap of values to a jsonapi resource string.
+     * @param type the type of the jsonapi resource.
+     * @param map values map.
+     * @return codified string.
+     * @throws JSONException
+     */
     public static String toJsonAPI(String type, HashMap<String, Object> map) throws JSONException{
         return toJsonAPI(type, null, map);
     }
 
+    /**
+     * Turns an hasmap of values to a jsonapi resource string. ALso sets the id.
+     * @param type the type of the jsonapi resource.
+     * @param id id of the resource.
+     * @param map values map.
+     * @return codified string.
+     * @throws JSONException
+     */
     public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
         JSONObject attributesObj = new JSONObject();
 
@@ -68,6 +92,11 @@ public class NearUtils {
         return outerObj.toString();
     }
 
+    /**
+     * Decode base 64 string
+     * @param encoded encoded string
+     * @return decoded string
+     */
     public static String decodeString(String encoded) {
         byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
         String decodedString = "";
@@ -80,6 +109,11 @@ public class NearUtils {
     }
 
 
+    /**
+     * Compute app Id from the Apptoken (apikey)
+     * @param apiKey token
+     * @return the App Id as defined in our servers
+     */
     public static String fetchAppIdFrom(String apiKey) {
         String secondSegment = substringBetween(apiKey, ".",".");
         String decodedAK = decodeString(secondSegment);
@@ -94,6 +128,13 @@ public class NearUtils {
         return appId;
     }
 
+    /**
+     * String utility method
+     * @param str initial string
+     * @param open
+     * @param close
+     * @return
+     */
     public static String substringBetween(String str, String open, String close) {
         if (str == null || open == null || close == null) {
             return null;
@@ -112,6 +153,9 @@ public class NearUtils {
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
+     *
+     * @param context the app context
+     * @return whether play services are available
      */
     public static boolean checkPlayServices(Context context) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();

@@ -6,12 +6,15 @@ import android.content.SharedPreferences;
 import it.near.sdk.Communication.Constants;
 
 /**
+ * Class containing global configuration. It saves all configuration strings on disk.
+ *
  * @author cattaneostefano
  */
 public class GlobalConfig {
 
     private static GlobalConfig mInstance = null;
     private Context mContext;
+    // ---------- Value string and string keys ----------
     private final String APIKEY = "apikey";
     private String apiKey;
     private final String APPID = "appid";
@@ -25,6 +28,7 @@ public class GlobalConfig {
     private final String NOTIFICATIONIMAGE = "notification_image";
     private int notificationImage = 0;
     private SharedPreferences sp;
+    // ---------- suffix for sharedpreferences ----------
     private String prefsNameSuffix = "NearConfig";
     private SharedPreferences.Editor editor;
 

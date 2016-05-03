@@ -11,6 +11,8 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.TraceNotifier;
 
 /**
+ * Class with global instances. Used internally.
+ *
  * @author cattaneostefano
  */
 public class GlobalState {

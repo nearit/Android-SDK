@@ -2,6 +2,7 @@ package it.near.sdk.Beacons.BeaconForest;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -235,8 +236,9 @@ public class ForestManager implements BootstrapNotifier {
 
     @Override
     public void didDetermineStateForRegion(int i, Region region) {
-
+        Log.d(TAG, "determine region:" + region.toString() + " state: " + i);
     }
+
     /**
      * Send tracking data to the Forest beacon APIs about a region enter (every beacon is a region).
      * @param regionSlice the beacon identifier

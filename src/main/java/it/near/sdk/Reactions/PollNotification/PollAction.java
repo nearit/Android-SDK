@@ -9,6 +9,8 @@ import it.near.sdk.Reactions.Action;
 import it.near.sdk.Utils.NearUtils;
 
 /**
+ * Action for submitting a poll answer.
+ *
  * @author cattaneostefano
  */
 public class PollAction extends Action{
@@ -19,6 +21,11 @@ public class PollAction extends Action{
     String id;
     int answer;
 
+    /**
+     * Default constructor
+     * @param id poll identifier
+     * @param answer answer number, can be either 1 or 2
+     */
     public PollAction(String id, int answer) {
         this.id = id;
         this.answer = answer;

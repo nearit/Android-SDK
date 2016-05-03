@@ -1,7 +1,7 @@
 package it.near.sdk.Utils;
 
 /**
- * Created by claudiosuardi on 10/02/15.
+ * @author claudiosuardi
  */
 public abstract class OnLifecycleEventListener {
     public abstract void onForeground();
