@@ -3,6 +3,27 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 
+/*
+ * Gets the version name from the latest Git tag
+ */
+def getVersionName = {
+    def stdout = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'describe', '--tags'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        println("Can't get version from git: " + e);
+        return "adhoc"
+    }
+}
+
+allprojects{
+    version = "${getVersionName()}"
+}
 
 android {
     compileSdkVersion 23
@@ -12,7 +33,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 0
-        versionName "0.1.10-beta"
+        versionName version
         multiDexEnabled true
     }
     buildTypes {
@@ -22,6 +43,8 @@ android {
         }
     }
 }
+
+
 
 configurations {
     javadocDeps
@@ -74,7 +97,6 @@ bintray {
 }
 
 group = 'it.near.sdk.core'
-version = '0.1.10-beta'
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
