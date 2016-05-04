@@ -66,7 +66,7 @@ public class ForestManager implements BootstrapNotifier {
 
     private static final long backgroundBetweenScanPeriod = 8000l;
     private static final long backgroundScanPeriod = 1000l;
-    private static final long regionExitPeriod = 30000l;
+    private static final long regionExitPeriod = 48000l;
 
     private List<Beacon> beaconList;
     private Context mContext;
