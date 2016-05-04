@@ -1,11 +1,15 @@
 package it.near.sdk.Beacons.Monitoring;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.RemoteException;
 
+import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
@@ -24,13 +28,14 @@ import it.near.sdk.Utils.ULog;
  *
  * @author cattaneostefano.
  */
-public class AltBeaconMonitor {
+public class AltBeaconMonitor implements BeaconConsumer {
 
     private static final String TAG = "AltBeaconMonitor";
     private final BeaconManager beaconManager;
-    private final BackgroundPowerSaver backgroundPowerSaver;
+    private BackgroundPowerSaver backgroundPowerSaver;
     private Context mContext;
     private RegionBootstrap regionBootstrap;
+    private List<Region> regionsToRange = new ArrayList<>();
 
     public AltBeaconMonitor(Context context) {
         this.mContext = context;
@@ -43,7 +48,7 @@ public class AltBeaconMonitor {
         // TODO turn back off
         BeaconManager.setDebug(true);
 
-        backgroundPowerSaver = new BackgroundPowerSaver(context.getApplicationContext());
+        //backgroundPowerSaver = new BackgroundPowerSaver(context.getApplicationContext());
     }
 
     /**
@@ -67,6 +72,16 @@ public class AltBeaconMonitor {
         regionBootstrap = new RegionBootstrap(notifier, regions);
     }
 
+    public void startExpBGRanging(long backBetweenPeriod, long backScanPeriod, long regionExitPeriod, List<Region> regions, RangeNotifier notifier){
+        //beaconManager.setForegroundBetweenScanPeriod(backBetweenPeriod);
+        //beaconManager.setForegroundScanPeriod(backScanPeriod);
+        //beaconManager.setRegionExitPeriod(regionExitPeriod);
+        beaconManager.setRangeNotifier(notifier);
+        regionsToRange = regions;
+        beaconManager.bind(this);
+
+    }
+
     /**
      * Stop monitoring all regions previously registered.
      */
@@ -81,4 +96,43 @@ public class AltBeaconMonitor {
         }
     }
 
+    @Override
+    public void onBeaconServiceConnect() {
+        ULog.d(TAG, "onBeacpnServiceConnect()");
+        resetRanging();
+        resetMonitoring();
+        for (Region region : regionsToRange) {
+            try {
+                beaconManager.startRangingBeaconsInRegion(region);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void resetRanging() {
+        List<Region> regions = (List<Region>) beaconManager.getRangedRegions();
+        for (Region region : regions) {
+            try {
+                beaconManager.stopRangingBeaconsInRegion(region);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Override
+    public Context getApplicationContext() {
+        return mContext.getApplicationContext();
+    }
+
+    @Override
+    public void unbindService(ServiceConnection serviceConnection) {
+        mContext.unbindService(serviceConnection);
+    }
+
+    @Override
+    public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
+        return mContext.bindService(intent,serviceConnection,i);
+    }
 }

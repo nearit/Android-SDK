@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.json.JSONException;
@@ -25,10 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
+import it.near.sdk.Beacons.Ranging.BeaconDynamicData;
+import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
+import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalState;
+import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
@@ -51,7 +56,7 @@ import it.near.sdk.Utils.ULog;
  *
  * @author cattaneostefano
  */
-public class ForestManager implements BootstrapNotifier {
+public class ForestManager implements BootstrapNotifier, RangeNotifier {
 
     private static final String TAG = "ForestManager";
     private static final String PREFS_SUFFIX = "NearBeacons";
@@ -64,14 +69,15 @@ public class ForestManager implements BootstrapNotifier {
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
-    private static final long backgroundBetweenScanPeriod = 8000l;
-    private static final long backgroundScanPeriod = 1000l;
+    private static final long backgroundBetweenScanPeriod = 10000l;
+    private static final long backgroundScanPeriod = 1500l;
     private static final long regionExitPeriod = 30000l;
 
     private List<Beacon> beaconList;
     private Context mContext;
     private Morpheus morpheus;
     private AltBeaconMonitor monitor;
+    private NearRangeNotifier rangeNotifier;
 
     /**
      * Constructor.
@@ -84,6 +90,7 @@ public class ForestManager implements BootstrapNotifier {
         this.mContext = context;
         this.monitor = monitor;
         this.recipesManager = recipesManager;
+        rangeNotifier = new NearRangeNotifier(context);
         setUpMorpheusParser();
 
         String PACK_NAME = context.getApplicationContext().getPackageName();
@@ -175,13 +182,16 @@ public class ForestManager implements BootstrapNotifier {
      */
     private void ConvertToAltBeaconFormat(List<Beacon> beacons) {
         List<Region> regionsToMonitor = new ArrayList<>();
+        List<NearBeacon> beaconsToRange = new ArrayList<>();
         for (Beacon beacon : beacons){
             String uniqueId = "Region" + Integer.toString(beacon.getMajor()) + Integer.toString(beacon.getMinor());
             Region region = new Region(uniqueId, Identifier.parse(beacon.getUuid()),
                     Identifier.fromInt(beacon.getMajor()), Identifier.fromInt(beacon.getMinor()));
             regionsToMonitor.add(region);
         }
-        monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
+        // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
+        // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
+        monitor.startExpBGRanging(0l, 1000l, regionExitPeriod, regionsToMonitor, rangeNotifier);
     }
 
     /**
@@ -294,4 +304,11 @@ public class ForestManager implements BootstrapNotifier {
         recipesManager.gotPulse(INGREDIENT_NAME, flavor, pulseSlice);
     }
 
+    @Override
+    public void didRangeBeaconsInRegion(Collection<org.altbeacon.beacon.Beacon> collection, Region region) {
+        ULog.d(TAG, "beacons ranged: " + collection.size() + " data: " + region.toString());
+        for (org.altbeacon.beacon.Beacon beacon : collection) {
+            ULog.d(TAG, "distance: " + beacon.getDistance());
+        }
+    }
 }
