@@ -30,7 +30,7 @@ import it.near.sdk.Utils.ULog;
 public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, RangeNotifier {
 
     private static final String TAG = "AltBeaconMonitor";
-    private static final double DEFAULT_THRESHOLD = 0.5;
+    private static final float DEFAULT_THRESHOLD = 0.5f;
     private final BeaconManager beaconManager;
     private BackgroundPowerSaver backgroundPowerSaver;
     private Context mContext;
@@ -38,7 +38,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     private List<Region> regionsToRange = new ArrayList<>();
     private List<Region> regionsToMonitor;
     private BootstrapNotifier outerNotifier;
-    private double threshold = DEFAULT_THRESHOLD;
+    private float threshold = DEFAULT_THRESHOLD;
 
     public AltBeaconMonitor(Context context) {
         this.mContext = context;
@@ -64,7 +64,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
      * @param regionExitPeriod milliseconds to wait before confirming region exit
      * @param regions list of regions to monitor
      */
-    public void startRadar(long backBetweenPeriod, long backScanPeriod, long regionExitPeriod, double threshold, List<Region> superRegions, List<Region> regions, BootstrapNotifier outerNotifier){
+    public void startRadar(long backBetweenPeriod, long backScanPeriod, long regionExitPeriod, float threshold, List<Region> superRegions, List<Region> regions, BootstrapNotifier outerNotifier){
         this.outerNotifier = outerNotifier;
         if (threshold != 0) this.threshold = threshold;
         resetMonitoring();

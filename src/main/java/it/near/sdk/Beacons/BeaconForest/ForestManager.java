@@ -34,6 +34,7 @@ import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.MorpheusNear.Morpheus;
@@ -194,7 +195,8 @@ public class ForestManager implements BootstrapNotifier {
         // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
         // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
         List<Region> superRegions = computeSuperRegions(regionsToMonitor);
-        monitor.startRadar(20000l, 2000l, regionExitPeriod, 0, superRegions, regionsToMonitor, this);
+        double threshold = GlobalConfig.getInstance(getApplicationContext()).getThreshold();
+        monitor.startRadar(20000l, 2000l, regionExitPeriod, threshold, superRegions, regionsToMonitor, this);
     }
 
     private List<Region> computeSuperRegions(List<Region> regionsToMonitor) {

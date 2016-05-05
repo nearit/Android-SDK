@@ -27,9 +27,11 @@ public class GlobalConfig {
     private String installationId;
     private final String NOTIFICATIONIMAGE = "notification_image";
     private int notificationImage = 0;
-    private SharedPreferences sp;
+    private final String THRESHOLD = "threshold";
+    private float threshold = 0;
     // ---------- suffix for sharedpreferences ----------
     private String prefsNameSuffix = "NearConfig";
+    private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
     public GlobalConfig(Context mContext) {
@@ -102,6 +104,18 @@ public class GlobalConfig {
         setLocalString(SENDERID, senderId);
     }
 
+    public double getThreshold() {
+        if (threshold == 0){
+            threshold = sp.getFloat(THRESHOLD, 0);
+        }
+        return threshold;
+    }
+
+    public void setThreshold(float threshold) {
+        this.threshold = threshold;
+        editor.putFloat(THRESHOLD, threshold).apply();
+    }
+
     public String getDeviceToken() {
         if (deviceToken == null){
             deviceToken = getLocalString(DEVICETOKEN);
@@ -133,5 +147,6 @@ public class GlobalConfig {
     private String getLocalString(String name){
         return sp.getString(name, null);
     }
+
 
 }
