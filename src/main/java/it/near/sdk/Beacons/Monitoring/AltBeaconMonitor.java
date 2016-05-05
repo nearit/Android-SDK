@@ -174,10 +174,14 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
 
     @Override
     public void didExitRegion(Region region) {
-        try {
-            beaconManager.stopMonitoringBeaconsInRegion(region);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if (region.getUniqueId().startsWith("super")){
+            resetRanging();
+        } else {
+            try {
+                beaconManager.stopMonitoringBeaconsInRegion(region);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
     }
 
