@@ -188,7 +188,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         ULog.d(TAG, "beacons ranged: " + collection.size() + " data: " + region.toString());
         for (org.altbeacon.beacon.Beacon beacon : collection) {
             ULog.d(TAG, "distance: " + beacon.getDistance());
-            if (beacon.getDistance() < 0.48)
+            if (beacon.getDistance() < 0.5)
                 try {
                     beaconManager.startMonitoringBeaconsInRegion(region);
                 } catch (RemoteException e) {
