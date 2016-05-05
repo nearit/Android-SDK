@@ -194,7 +194,7 @@ public class ForestManager implements BootstrapNotifier {
         // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
         // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
         List<Region> superRegions = computeSuperRegions(regionsToMonitor);
-        monitor.startRadar(20000l, 2000l, regionExitPeriod, superRegions, regionsToMonitor, this);
+        monitor.startRadar(20000l, 2000l, regionExitPeriod, 0, superRegions, regionsToMonitor, this);
     }
 
     private List<Region> computeSuperRegions(List<Region> regionsToMonitor) {
