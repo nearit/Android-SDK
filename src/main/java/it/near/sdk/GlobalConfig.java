@@ -104,7 +104,7 @@ public class GlobalConfig {
         setLocalString(SENDERID, senderId);
     }
 
-    public double getThreshold() {
+    public float getThreshold() {
         if (threshold == 0){
             threshold = sp.getFloat(THRESHOLD, 0);
         }
