@@ -10,12 +10,14 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.altbeacon.beacon.Identifier;
+import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -56,7 +58,7 @@ import it.near.sdk.Utils.ULog;
  *
  * @author cattaneostefano
  */
-public class ForestManager implements BootstrapNotifier, RangeNotifier {
+public class ForestManager implements BootstrapNotifier {
 
     private static final String TAG = "ForestManager";
     private static final String PREFS_SUFFIX = "NearBeacons";
@@ -191,7 +193,23 @@ public class ForestManager implements BootstrapNotifier, RangeNotifier {
         }
         // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
         // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
-        monitor.startExpBGRanging(0l, 1000l, regionExitPeriod, regionsToMonitor, rangeNotifier);
+        List<Region> superRegions = computeSuperRegions(regionsToMonitor);
+        monitor.startRadar(20000l, 2000l, regionExitPeriod, superRegions, regionsToMonitor, this);
+    }
+
+    private List<Region> computeSuperRegions(List<Region> regionsToMonitor) {
+        ArrayList<String> proximityUUIDs = new ArrayList<>();
+        for (Region region : regionsToMonitor) {
+            String UUID = region.getId1().toString();
+            if (!proximityUUIDs.contains(UUID)){
+                proximityUUIDs.add(UUID);
+            }
+        }
+        List<Region> superRegions = new ArrayList<Region>();
+        for (String proximityUUID : proximityUUIDs) {
+            superRegions.add(new Region("super-" + proximityUUID, Identifier.parse(proximityUUID),null,null));
+        }
+        return superRegions;
     }
 
     /**
@@ -304,11 +322,4 @@ public class ForestManager implements BootstrapNotifier, RangeNotifier {
         recipesManager.gotPulse(INGREDIENT_NAME, flavor, pulseSlice);
     }
 
-    @Override
-    public void didRangeBeaconsInRegion(Collection<org.altbeacon.beacon.Beacon> collection, Region region) {
-        ULog.d(TAG, "beacons ranged: " + collection.size() + " data: " + region.toString());
-        for (org.altbeacon.beacon.Beacon beacon : collection) {
-            ULog.d(TAG, "distance: " + beacon.getDistance());
-        }
-    }
 }
