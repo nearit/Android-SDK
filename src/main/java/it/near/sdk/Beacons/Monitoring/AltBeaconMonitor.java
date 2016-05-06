@@ -36,7 +36,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     private Context mContext;
     private RegionBootstrap regionBootstrap;
     private List<Region> regionsToRange = new ArrayList<>();
-    private List<Region> regionsToMonitor;
+    private List<Region> regionsImIn = new ArrayList<>();
     private BootstrapNotifier outerNotifier;
     private float threshold = DEFAULT_THRESHOLD;
 
@@ -67,19 +67,20 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     public void startRadar(long backBetweenPeriod, long backScanPeriod, long regionExitPeriod, float threshold, List<Region> superRegions, List<Region> regions, BootstrapNotifier outerNotifier){
         this.outerNotifier = outerNotifier;
         if (threshold != 0) this.threshold = threshold;
-        resetMonitoring();
-        setMonitoring(superRegions);
+        // resetMonitoring();
+        // setMonitoring(superRegions);
+        ULog.d(TAG, "startRadar");
         regionsToRange = regions;
         beaconManager.setBackgroundBetweenScanPeriod(backBetweenPeriod);
         beaconManager.setBackgroundScanPeriod(backScanPeriod);
         beaconManager.setForegroundBetweenScanPeriod(backBetweenPeriod);
         beaconManager.setForegroundScanPeriod(backScanPeriod);
         beaconManager.setRegionExitPeriod(regionExitPeriod);
-        regionBootstrap = new RegionBootstrap(this, regions);
+        regionBootstrap = new RegionBootstrap(this, superRegions);
     }
 
     public void startExpBGRanging(){
-        resetRanging();
+        ULog.d(TAG, "startExpRanging");
         setRanging(regionsToRange);
         beaconManager.setRangeNotifier(this);
         beaconManager.bind(this);
@@ -168,15 +169,21 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         } else {
             String regionString = region.getUniqueId();
             ULog.d(TAG, "enter in " + regionString);
-            outerNotifier.didEnterRegion(region);
+            if (!regionsImIn.contains(region)){
+                regionsImIn.add(region);
+                outerNotifier.didEnterRegion(region);
+            }
         }
     }
 
     @Override
     public void didExitRegion(Region region) {
         if (region.getUniqueId().startsWith("super")){
+            ULog.d(TAG, "exit from super region");
             resetRanging();
+            regionsImIn.clear();
         } else {
+            ULog.d(TAG, "exit from region " + region.getUniqueId());
             try {
                 beaconManager.stopMonitoringBeaconsInRegion(region);
             } catch (RemoteException e) {
@@ -196,8 +203,10 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         for (org.altbeacon.beacon.Beacon beacon : collection) {
             ULog.d(TAG, "distance: " + beacon.getDistance());
             if (beacon.getDistance() < threshold)
+                ULog.d(TAG, "start Monitoring normal region " + region.getUniqueId());
                 try {
                     beaconManager.startMonitoringBeaconsInRegion(region);
+                    beaconManager.getMonitoringNotifier().didEnterRegion(region);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
