@@ -24,6 +24,14 @@ public class SimpleNotification extends Resource implements Parcelable {
         return text;
     }
 
+    public String getUpdated_at() {
+        return updated_at;
+    }
+
+    public void setUpdated_at(String updated_at) {
+        this.updated_at = updated_at;
+    }
+
     public void setText(String text) {
         this.text = text;
     }
