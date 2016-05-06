@@ -45,6 +45,7 @@ public class SimpleNotification extends Resource implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(getText());
+        dest.writeString(getUpdated_at());
         dest.writeString(getId());
     }
 
@@ -62,6 +63,7 @@ public class SimpleNotification extends Resource implements Parcelable {
 
     public SimpleNotification(Parcel in) {
         setText(in.readString());
+        setUpdated_at(in.readString());
         setId(in.readString());
     }
 }
