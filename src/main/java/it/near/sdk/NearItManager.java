@@ -146,7 +146,7 @@ public class NearItManager {
         forest.refreshConfig();
         simpleNotification.refreshConfig();
         contentNotification.refreshConfig();
-        recipesManager.refreshConfig();
+        pollNotification.refreshConfig();
     }
 
 
