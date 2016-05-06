@@ -99,10 +99,16 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
 
     /**
      * Stop monitoring all regions previously registered.
+     * @param alsoSuper
      */
-    private void resetMonitoring() {
+    private void resetMonitoring(boolean alsoSuper) {
         ArrayList<Region> monitoredRegions = (ArrayList<Region>) beaconManager.getMonitoredRegions();
         for (Region region : monitoredRegions){
+            if (region.getUniqueId().startsWith("super")){
+                if (!alsoSuper){
+                    continue;
+                }
+            }
             try {
                 beaconManager.stopMonitoringBeaconsInRegion(region);
             } catch (RemoteException e) {
@@ -115,7 +121,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     public void onBeaconServiceConnect() {
         ULog.d(TAG, "onBeacpnServiceConnect()");
         resetRanging();
-        resetMonitoring();
+        resetMonitoring(false);
         for (Region region : regionsToRange) {
             try {
                 beaconManager.startRangingBeaconsInRegion(region);
