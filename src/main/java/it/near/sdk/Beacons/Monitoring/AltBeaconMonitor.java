@@ -184,6 +184,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
             regionsImIn.clear();
         } else {
             ULog.d(TAG, "exit from region " + region.getUniqueId());
+            regionsImIn.remove(region);
             try {
                 beaconManager.stopMonitoringBeaconsInRegion(region);
             } catch (RemoteException e) {
