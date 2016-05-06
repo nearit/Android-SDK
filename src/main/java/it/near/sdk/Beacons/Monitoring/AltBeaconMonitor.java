@@ -55,16 +55,22 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     }
 
     /**
-     * Start monitoring on the given regions and sets the notifier object to be notified on region enter and exit.
-     * When doing this, we stop monitoring on the region we were previously monitoring and we set the given notifier
-     * as the only notifier. The notifier will be called even after app termination and device restart, as soon as
-     * a registered region is scanned.
-     *  @param backBetweenPeriod period between scans in milliseconds
-     * @param backScanPeriod scan length in milliseconds
-     * @param regionExitPeriod milliseconds to wait before confirming region exit
-     * @param regions list of regions to monitor
+     * Starts the Near region scanner. The AltBeacon backgroundMode won't match the app background status.
+     * They are simply used to set two different scan parameter sets.
+     * The Scanning will be in background mode when we are outside all super region and in foreground mode when we are
+     * inside one super region.
+     *
+     * @param backBetweenPeriod period between background scans.
+     * @param backScanPeriod background scan length.
+     * @param foreBetweenPeriod period between foreground scans.
+     * @param foreScanPeriod foreground scan length.
+     * @param regionExitPeriod time to wait before notifying a region exits.
+     * @param threshold minimum "distance" in ranging before considering the device inside the region.
+     * @param superRegions list of super regions to always monitor.
+     * @param regions list of normal regions.
+     * @param outerNotifier monitor notifier for normal region entry
      */
-    public void startRadar(long backBetweenPeriod, long backScanPeriod, long regionExitPeriod, float threshold, List<Region> superRegions, List<Region> regions, BootstrapNotifier outerNotifier){
+    public void startRadar(long backBetweenPeriod, long backScanPeriod, long foreBetweenPeriod, long foreScanPeriod, long regionExitPeriod, float threshold, List<Region> superRegions, List<Region> regions, BootstrapNotifier outerNotifier){
         this.outerNotifier = outerNotifier;
         if (threshold != 0) this.threshold = threshold;
         // resetMonitoring();
@@ -73,14 +79,19 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         regionsToRange = regions;
         beaconManager.setBackgroundBetweenScanPeriod(backBetweenPeriod);
         beaconManager.setBackgroundScanPeriod(backScanPeriod);
-        beaconManager.setForegroundBetweenScanPeriod(backBetweenPeriod);
-        beaconManager.setForegroundScanPeriod(backScanPeriod);
+        beaconManager.setForegroundBetweenScanPeriod(foreBetweenPeriod);
+        beaconManager.setForegroundScanPeriod(foreScanPeriod);
+        beaconManager.setBackgroundMode(true);
         beaconManager.setRegionExitPeriod(regionExitPeriod);
         regionBootstrap = new RegionBootstrap(this, superRegions);
     }
 
+    /**
+     * Set regions to range and connects to beaconservice.
+     */
     public void startExpBGRanging(){
         ULog.d(TAG, "startExpRanging");
+        beaconManager.setBackgroundMode(false);
         setRanging(regionsToRange);
         beaconManager.setRangeNotifier(this);
         beaconManager.bind(this);
@@ -120,8 +131,11 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     @Override
     public void onBeaconServiceConnect() {
         ULog.d(TAG, "onBeacpnServiceConnect()");
-        resetRanging();
+        // Since we probably just entered a super region we stop monitoring all normal regions
         resetMonitoring(false);
+        // We stop all previous ranging
+        resetRanging();
+        // and start ranging normal regions
         for (Region region : regionsToRange) {
             try {
                 beaconManager.startRangingBeaconsInRegion(region);
@@ -131,6 +145,9 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         }
     }
 
+    /**
+     * Stop ranging all regions.
+     */
     private void resetRanging() {
         List<Region> regions = (List<Region>) beaconManager.getRangedRegions();
         for (Region region : regions) {
@@ -157,6 +174,10 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         return mContext.bindService(intent,serviceConnection,i);
     }
 
+    /**
+     * Start monitoring regions.
+     * @param regions regions to monitor.
+     */
     public void setMonitoring(List<Region> regions) {
         for (Region region : regions) {
             try {
@@ -170,12 +191,16 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     @Override
     public void didEnterRegion(Region region) {
         if (region.getUniqueId().startsWith("super")){
+            // We enterd a super regions so we start ranging for normal regions
             ULog.d(TAG, "enter in superRegion");
+            // Multiple calls to this shouldn't be dangerous
             startExpBGRanging();
         } else {
+            // We entered a normal region
             String regionString = region.getUniqueId();
             ULog.d(TAG, "enter in " + regionString);
             if (!regionsImIn.contains(region)){
+                // we add it to the regions we are in, and notify the outside
                 regionsImIn.add(region);
                 outerNotifier.didEnterRegion(region);
             }
@@ -185,13 +210,21 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     @Override
     public void didExitRegion(Region region) {
         if (region.getUniqueId().startsWith("super")){
+            // We exited a super region, so we stop ranging the normal regions
+            // TODO what if there are multiple super regions? maintaing a list of super regions we are in brings back all V1 problems
             ULog.d(TAG, "exit from super region");
+            // stop ranging
             resetRanging();
             regionsImIn.clear();
         } else {
+            // We exited a normal region
             ULog.d(TAG, "exit from region " + region.getUniqueId());
+            // we exit from the region
+            // TODO mantain this list too?
             regionsImIn.remove(region);
             try {
+                // we stop monitoring the region we just exited
+                // we will start monitoring this region once the ranging set the region as near
                 beaconManager.stopMonitoringBeaconsInRegion(region);
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -212,7 +245,9 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
             if (beacon.getDistance() < threshold)
                 ULog.d(TAG, "start Monitoring normal region " + region.getUniqueId());
                 try {
+                    // we are close to the region so we start monitoring
                     beaconManager.startMonitoringBeaconsInRegion(region);
+                    // and we immediately trigger the entry
                     beaconManager.getMonitoringNotifier().didEnterRegion(region);
                 } catch (RemoteException e) {
                     e.printStackTrace();

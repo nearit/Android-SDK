@@ -135,7 +135,7 @@ public class ForestManager implements BootstrapNotifier {
                     ULog.d(TAG, response.toString());
                     List<Beacon> beacons = NearUtils.parseList(morpheus, response, Beacon.class);
                     beaconList = parseTree(beacons);
-                    ConvertToAltBeaconFormat(beaconList);
+                    startRadarOnBeacons(beaconList);
                     persistList(beaconList);
             }
         }, new Response.ErrorListener() {
@@ -145,7 +145,7 @@ public class ForestManager implements BootstrapNotifier {
                     try {
                         beaconList = loadChachedList();
                         if (beaconList!=null){
-                            ConvertToAltBeaconFormat(beaconList);
+                            startRadarOnBeacons(beaconList);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -180,12 +180,12 @@ public class ForestManager implements BootstrapNotifier {
     }
 
     /**
-     * Creates a list of AltBeacon regions from Near Regions.
+     * Creates a list of AltBeacon regions from Near Regions and starts the radar.
+     *
      * @param beacons the list to convert
      */
-    private void ConvertToAltBeaconFormat(List<Beacon> beacons) {
+    private void startRadarOnBeacons(List<Beacon> beacons) {
         List<Region> regionsToMonitor = new ArrayList<>();
-        List<NearBeacon> beaconsToRange = new ArrayList<>();
         for (Beacon beacon : beacons){
             String uniqueId = "Region" + Integer.toString(beacon.getMajor()) + Integer.toString(beacon.getMinor());
             Region region = new Region(uniqueId, Identifier.parse(beacon.getUuid()),
@@ -196,9 +196,15 @@ public class ForestManager implements BootstrapNotifier {
         // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
         List<Region> superRegions = computeSuperRegions(regionsToMonitor);
         float threshold = GlobalConfig.getInstance(getApplicationContext()).getThreshold();
-        monitor.startRadar(20000l, 2000l, regionExitPeriod, threshold, superRegions, regionsToMonitor, this);
+        monitor.startRadar(20000l, 2000l, 90000l, 2000l, regionExitPeriod, threshold, superRegions, regionsToMonitor, this);
     }
 
+    /**
+     * Creates the superRegions from the regions. There is one super region for each distinct proximityUUID
+     *
+     * @param regionsToMonitor all the regions to monitor.
+     * @return the list of super regions.
+     */
     private List<Region> computeSuperRegions(List<Region> regionsToMonitor) {
         ArrayList<String> proximityUUIDs = new ArrayList<>();
         for (Region region : regionsToMonitor) {
