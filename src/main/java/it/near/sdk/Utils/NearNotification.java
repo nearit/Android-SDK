@@ -32,7 +32,7 @@ public class NearNotification {
                 .setContentText(_message);
 
         // imposto azione notifica
-        PendingIntent resultPendingIntent = PendingIntent.getActivity(_context, (int) (System.currentTimeMillis() / 1024), _resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent resultPendingIntent = PendingIntent.getActivity(_context, (int) (System.currentTimeMillis() % Integer.MAX_VALUE), _resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(resultPendingIntent);
         NotificationManager mNotificationManager = (NotificationManager) _context.getSystemService(Context.NOTIFICATION_SERVICE);
 
