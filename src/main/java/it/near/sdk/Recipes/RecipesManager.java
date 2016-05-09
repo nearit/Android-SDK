@@ -2,6 +2,7 @@ package it.near.sdk.Recipes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -96,14 +97,18 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
-        Filter filter = Filter.build().addFilter("active","true");
+        // TODO turn strings to constants
+        final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
+                .appendQueryParameter("include", "pulse_flavor,operation_flavor,reaction_flavor")
+                .appendQueryParameter("filter[active]", "true").build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.RECIPES_PATH_WITH_FLAVORS + filter.print(), new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, uri.toString(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                    ULog.d(TAG, response.toString());
-                    recipes = NearUtils.parseList(morpheus, response, Recipe.class);
-                    persistList(recipes);
+                ULog.d(TAG, uri.toString());
+                ULog.d(TAG, response.toString());
+                recipes = NearUtils.parseList(morpheus, response, Recipe.class);
+                persistList(recipes);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -174,6 +179,8 @@ public class RecipesManager {
      */
     public boolean processRecipe(String id) {
         // todo download recipe
+        Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
+                .appendEncodedPath(id).build();
         // inside receiver, parse the response to know what reaction plugin to use
         // than fire the reaction
         // if we got a network error, return false
