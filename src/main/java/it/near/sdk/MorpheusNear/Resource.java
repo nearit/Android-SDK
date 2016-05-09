@@ -10,8 +10,6 @@ import android.support.v4.util.ArrayMap;
  * public class Article extends Resource { ... }
  * }</pre>
  *
- * @see {@link it.near.sdk.MorpheusNear.Annotations.SerializeName}
- * @see {@link it.near.sdk.MorpheusNear.Annotations.Relationship}
  */
 public class Resource {
   private String Id;

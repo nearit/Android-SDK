@@ -157,7 +157,7 @@ public class RecipesManager {
 
     /**
      * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
-     * 
+     *
      * @param recipe the recipe to trigger.
      */
     public void gotRecipe(Recipe recipe){

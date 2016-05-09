@@ -15,7 +15,7 @@ import java.util.List;
  * AttributeMapper is used to map the json:api attribute node to
  * your object fields.
  *
- * You can create your own AttributeMapper and set it via {@link Morpheus#Morpheus(AttributeMapper)}.
+ * You can create your own AttributeMapper and set it via {@link AttributeMapper}.
  */
 public class AttributeMapper {
   private Deserializer mDeserializer;
@@ -30,8 +30,8 @@ public class AttributeMapper {
 
   /**
    * Will map the attributes of the JSONAPI attribute object.
-   * JSONArrays will get mapped as List<Object>.
-   * JSONObject will get mapped as ArrayMap<String, Object>.
+   * JSONArrays will get mapped as a List of Object.
+   * JSONObject will get mapped as {@code ArrayMap<String, Object>}.
    * Everything else will get mapped without changes.
    *
    * @param jsonApiResource Object extended with {@link Resource} that will get the field set.

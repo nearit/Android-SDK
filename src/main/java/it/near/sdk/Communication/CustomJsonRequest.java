@@ -99,7 +99,6 @@ public class CustomJsonRequest extends JsonObjectRequest {
     /**
      * Return headers for HTTP calls
      * @return a map of headers
-     * @throws AuthFailureError
      */
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
