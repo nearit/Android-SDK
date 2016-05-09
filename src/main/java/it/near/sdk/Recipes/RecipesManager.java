@@ -35,6 +35,8 @@ import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Menage recipes download, caching and direct calling.
+ *
  * @author cattaneostefano
  */
 public class RecipesManager {
@@ -90,6 +92,9 @@ public class RecipesManager {
         return recipes;
     }
 
+    /**
+     * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
+     */
     public void refreshConfig(){
         Filter filter = Filter.build().addFilter("active","true");
         GlobalState.getInstance(mContext).getRequestQueue().add(
@@ -128,6 +133,14 @@ public class RecipesManager {
         return recipes;
     }
 
+    /**
+     * Tries to trigger a recipe, stating the ingredient, flavor and slice of the pulse.
+     * If nothing matches, nothing happens.
+     *
+     * @param pulse_ingredient the ingredient of the pulse.
+     * @param pulse_flavor the flavor of the pulse.
+     * @param pulse_slice the slice of the pulse.
+     */
     public void gotPulse(String pulse_ingredient, String pulse_flavor, String pulse_slice){
         List<Recipe> matchingRecipes = new ArrayList<>();
         for (Recipe recipe : recipes){
@@ -142,7 +155,11 @@ public class RecipesManager {
         gotRecipe(winnerRecipe);
     }
 
-
+    /**
+     * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
+     * 
+     * @param recipe the recipe to trigger.
+     */
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
         ULog.d(TAG , stringRecipe);
