@@ -215,6 +215,9 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
             ULog.d(TAG, "exit from super region");
             // stop ranging
             resetRanging();
+            for(int i=regionsImIn.size()-1;i>=0;i--){
+                didExitRegion(regionsImIn.get(i));
+            }
             regionsImIn.clear();
         } else {
             // We exited a normal region
@@ -229,6 +232,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
+            outerNotifier.didExitRegion(region);
         }
     }
 
