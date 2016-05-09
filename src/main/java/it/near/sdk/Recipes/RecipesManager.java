@@ -82,6 +82,14 @@ public class RecipesManager {
         reactions.put(ingredient, reaction);
     }
 
+    /**
+     * return the list of recipes
+     * @return the list of recipes
+     */
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
     public void refreshConfig(){
         Filter filter = Filter.build().addFilter("active","true");
         GlobalState.getInstance(mContext).getRequestQueue().add(
@@ -134,7 +142,8 @@ public class RecipesManager {
         gotRecipe(winnerRecipe);
     }
 
-    private void gotRecipe(Recipe recipe){
+
+    public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
         ULog.d(TAG , stringRecipe);
         Reaction reaction = reactions.get(recipe.getReaction_ingredient_id());

@@ -106,6 +106,14 @@ public class NearItManager {
     }
 
     /**
+     * Return the recipes manager
+     * @return the recipes manager
+     */
+    public RecipesManager getRecipesManager() {
+        return recipesManager;
+    }
+
+    /**
      * Checks the device capacity to detect beacons
      *
      * @return true if the device has bluetooth enabled, false otherwise
