@@ -166,4 +166,17 @@ public class RecipesManager {
         Reaction reaction = reactions.get(recipe.getReaction_ingredient_id());
         reaction.handleReaction(recipe);
     }
+
+    /**
+     * Process a recipe from it's id. Typically called for processing a push recipe.
+     * @param id recipe id.
+     * @return true if the recipe was found, false otherwise.
+     */
+    public boolean processRecipe(String id) {
+        // todo download recipe
+        // inside receiver, parse the response to know what reaction plugin to use
+        // than fire the reaction
+        // if we got a network error, return false
+        return true;
+    }
 }

@@ -82,6 +82,7 @@ public class NearItManager {
 
     private void plugInSetup() {
         recipesManager = new RecipesManager(application);
+        GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
         monitor = new AltBeaconMonitor(application);
         forest = new ForestManager(application, monitor, recipesManager);

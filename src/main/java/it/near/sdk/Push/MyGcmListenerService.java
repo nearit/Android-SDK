@@ -12,6 +12,8 @@ import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
+import it.near.sdk.GlobalState;
+
 /**
  * Service that receives push notification.
  *
@@ -34,6 +36,11 @@ public class MyGcmListenerService extends GcmListenerService {
         String message = data.getString("message");
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
+
+        // TODO parse id from push
+        String id = "";
+
+        GlobalState.getInstance(getApplicationContext()).getRecipesManager().processRecipe(id);
 
         // [START_EXCLUDE]
         /**
