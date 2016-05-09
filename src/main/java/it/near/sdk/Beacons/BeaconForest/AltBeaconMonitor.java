@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons.Monitoring;
+package it.near.sdk.Beacons.BeaconForest;
 
 import android.content.Context;
 import android.content.Intent;
