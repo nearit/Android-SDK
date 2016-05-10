@@ -13,13 +13,13 @@ public class Recipe extends Resource {
     String name;
     @SerializeName("pulse_plugin_id")
     String pulse_plugin_id;
-    @SerializeName("pulse_bundle")
+    @Relationship("pulse_bundle")
     PulseBundle pulse_bundle;
     @Relationship("pulse_action")
     PulseAction pulse_action;
     @SerializeName("reaction_plugin_id")
     String reaction_plugin_id;
-    @SerializeName("reaction_bundle")
+    @Relationship("reaction_bundle")
     ReactionBundle reaction_bundle;
     @Relationship("reaction_action")
     ReactionAction reaction_action;
