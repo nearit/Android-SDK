@@ -171,6 +171,8 @@ public class NearItManager {
         ULog.d(TAG, "deliver Event: " + parcelable.toString());
 
         Intent resultIntent = new Intent(REGION_MESSAGE_ACTION);
+        // set recipe id
+        resultIntent.putExtra("recipe_id", recipe.getId());
         // set contet to show
         resultIntent.putExtra("content", parcelable);
         // set the content type so the app can cast the parcelable to correct content
