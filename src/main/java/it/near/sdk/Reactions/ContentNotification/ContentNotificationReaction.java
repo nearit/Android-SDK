@@ -1,7 +1,6 @@
 package it.near.sdk.Reactions.ContentNotification;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.v4.util.ArrayMap;
 
 import com.android.volley.Response;
@@ -29,8 +28,8 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class ContentNotificationReaction extends Reaction {
-    private static final String INGREDIENT_NAME = "content-notification";
-    private static final String SHOW_CONTENT_FLAVOR_NAME = "show_content";
+    private static final String PLUGIN_NAME = "content-notification";
+    private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentNotificationReaction";
     public static final String PREFS_SUFFIX = "NearContentNot";
     private List<ContentNotification> contentNotificationList;
@@ -51,25 +50,25 @@ public class ContentNotificationReaction extends Reaction {
 
 
     @Override
-    public void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe) {
-        switch (reaction_flavor){
-            case SHOW_CONTENT_FLAVOR_NAME:
-                showContent(reaction_slice, recipe);
+    public void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+        switch (reaction_action){
+            case SHOW_CONTENT_ACTION_NAME:
+                showContent(reaction_bundle, recipe);
                 break;
         }
     }
 
-    private void showContent(String reaction_slice, Recipe recipe) {
-        ULog.d(TAG, "Show content: " + reaction_slice);
-        ContentNotification notification = getNotification(reaction_slice);
+    private void showContent(String reaction_bundle, Recipe recipe) {
+        ULog.d(TAG, "Show content: " + reaction_bundle);
+        ContentNotification notification = getNotification(reaction_bundle);
         if (notification == null) return;
         nearNotifier.deliverReaction(notification, recipe);
     }
 
-    private ContentNotification getNotification(String reaction_slice) {
+    private ContentNotification getNotification(String reaction_bundle) {
         if (contentNotificationList == null) return null;
         for ( ContentNotification cn : contentNotificationList){
-            if (cn.getId().equals(reaction_slice)){
+            if (cn.getId().equals(reaction_bundle)){
                 return cn;
             }
         }
@@ -132,8 +131,8 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     @Override
-    public String getIngredientName() {
-        return INGREDIENT_NAME;
+    public String getPluginName() {
+        return PLUGIN_NAME;
     }
 
     @Override
@@ -145,9 +144,9 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     @Override
-    public void buildFlavors() {
-        supportedFlavors = new ArrayList<String>();
-        supportedFlavors.add(SHOW_CONTENT_FLAVOR_NAME);
+    public void buildActions() {
+        supportedActions = new ArrayList<String>();
+        supportedActions.add(SHOW_CONTENT_ACTION_NAME);
     }
 
     JSONObject testObject;

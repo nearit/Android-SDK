@@ -27,8 +27,8 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class SimpleNotificationReaction extends Reaction {
-    private static final String INGREDIENT_NAME = "simple-notification";
-    private static final String SHOW_NOTIFICATION_FLAVOR_NAME = "show_notification";
+    private static final String PLUGIN_NAME = "simple-notification";
+    private static final String SHOW_ACTION_NAME = "show_notification";
     private static final String TAG = "SimpleNotificationReaction";
     public static final String PREFS_SUFFIX = "NearSimpleNot";
     private List<SimpleNotification> notificationList;
@@ -49,25 +49,25 @@ public class SimpleNotificationReaction extends Reaction {
 
 
     @Override
-    public void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe) {
-        switch(reaction_flavor){
-            case SHOW_NOTIFICATION_FLAVOR_NAME:
-                showNotification(reaction_slice, recipe);
+    public void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+        switch(reaction_action){
+            case SHOW_ACTION_NAME:
+                showNotification(reaction_bundle, recipe);
                 break;
         }
     }
 
-    private void showNotification(String reaction_slice, Recipe recipe) {
-        ULog.d(TAG, "Show notification: " + reaction_slice);
-        SimpleNotification notification = getNotification(reaction_slice);
+    private void showNotification(String reaction_bundle, Recipe recipe) {
+        ULog.d(TAG, "Show notification: " + reaction_bundle);
+        SimpleNotification notification = getNotification(reaction_bundle);
         if (notification == null) return;
         nearNotifier.deliverReaction(notification, recipe);
     }
 
-    private SimpleNotification getNotification(String reaction_slice){
+    private SimpleNotification getNotification(String reaction_bundle){
         if (notificationList==null) return null;
         for (SimpleNotification sn : notificationList){
-            if (sn.getId().equals(reaction_slice)){
+            if (sn.getId().equals(reaction_bundle)){
                 return sn;
             }
         }
@@ -102,8 +102,8 @@ public class SimpleNotificationReaction extends Reaction {
     }
 
     @Override
-    public String getIngredientName() {
-        return INGREDIENT_NAME;
+    public String getPluginName() {
+        return PLUGIN_NAME;
     }
 
     @Override
@@ -114,9 +114,9 @@ public class SimpleNotificationReaction extends Reaction {
     }
 
     @Override
-    public void buildFlavors() {
-        supportedFlavors = new ArrayList<String>();
-        supportedFlavors.add(SHOW_NOTIFICATION_FLAVOR_NAME);
+    public void buildActions() {
+        supportedActions = new ArrayList<String>();
+        supportedActions.add(SHOW_ACTION_NAME);
     }
 
     JSONObject testObject;

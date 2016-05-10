@@ -5,7 +5,7 @@ import it.near.sdk.MorpheusNear.Resource;
 /**
  * @author cattaneostefano
  */
-public class ReactionFlavor extends Resource {
-    public ReactionFlavor() {
+public class ReactionAction extends Resource {
+    public ReactionAction() {
     }
 }

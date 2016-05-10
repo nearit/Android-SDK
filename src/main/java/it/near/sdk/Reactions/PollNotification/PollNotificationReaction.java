@@ -29,8 +29,8 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class PollNotificationReaction extends Reaction {
-    private static final String INGREDIENT_NAME = "poll-notification";
-    private static final String SHOW_POLL_FLAVOR_NAME = "show_poll";
+    private static final String PLUGIN_NAME = "poll-notification";
+    private static final String SHOW_POLL_ACTION_NAME = "show_poll";
     private static final String TAG = "PollNotificationReaction";
     public static final String PREFS_SUFFIX = "NearPollNot";
     private List<PollNotification> pollList;
@@ -50,25 +50,25 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe) {
-        switch(reaction_flavor){
-            case SHOW_POLL_FLAVOR_NAME:
-                showPoll(reaction_slice, recipe);
+    protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+        switch(reaction_action){
+            case SHOW_POLL_ACTION_NAME:
+                showPoll(reaction_bundle, recipe);
                 break;
         }
     }
 
-    private void showPoll(String reaction_slice, Recipe recipe) {
-        ULog.d(TAG , "Show poll: " + reaction_slice);
-        PollNotification notification = getNotification(reaction_slice);
+    private void showPoll(String reaction_bundle, Recipe recipe) {
+        ULog.d(TAG , "Show poll: " + reaction_bundle);
+        PollNotification notification = getNotification(reaction_bundle);
         if (notification==null) return;
         nearNotifier.deliverReaction(notification, recipe);
     }
 
-    private PollNotification getNotification(String reaction_slice) {
+    private PollNotification getNotification(String reaction_bundle) {
         if (pollList == null) return null;
         for (PollNotification pn : pollList){
-            if (pn.getId().equals(reaction_slice)){
+            if (pn.getId().equals(reaction_bundle)){
                 return pn;
             }
         }
@@ -105,14 +105,14 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
-    public void buildFlavors() {
-        supportedFlavors = new ArrayList<String>();
-        supportedFlavors.add(SHOW_POLL_FLAVOR_NAME);
+    public void buildActions() {
+        supportedActions = new ArrayList<String>();
+        supportedActions.add(SHOW_POLL_ACTION_NAME);
     }
 
     @Override
-    public String getIngredientName() {
-        return INGREDIENT_NAME;
+    public String getPluginName() {
+        return PLUGIN_NAME;
     }
 
     @Override

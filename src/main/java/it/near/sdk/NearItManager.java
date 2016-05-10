@@ -88,13 +88,13 @@ public class NearItManager {
         forest = new ForestManager(application, monitor, recipesManager);
 
         simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
-        recipesManager.addReaction(simpleNotification.getIngredientName(), simpleNotification);
+        recipesManager.addReaction(simpleNotification.getPluginName(), simpleNotification);
 
         contentNotification = new ContentNotificationReaction(application, nearNotifier);
-        recipesManager.addReaction(contentNotification.getIngredientName(), contentNotification);
+        recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
 
         pollNotification = new PollNotificationReaction(application, nearNotifier);
-        recipesManager.addReaction(pollNotification.getIngredientName(), pollNotification);
+        recipesManager.addReaction(pollNotification.getPluginName(), pollNotification);
 
     }
 
@@ -191,7 +191,7 @@ public class NearItManager {
      * @return true if the action was a recognized action, false otherwise.
      */
     public boolean sendAction(Action action){
-        switch (action.getIngredient()){
+        switch (action.getPlugin()){
             case PollAction.INGREDIENT_NAME:
                 pollNotification.sendAction((PollAction)action);
                 return true;

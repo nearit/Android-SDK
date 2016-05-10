@@ -14,7 +14,7 @@ import it.near.sdk.Utils.NearUtils;
  * @author cattaneostefano
  */
 public class PollAction extends Action{
-    public static final String INGREDIENT_NAME = "PollAction";
+    public static final String PLUGIN_NAME = "PollAction";
     private static final String ATTRIBUTE_ANSWER = "answer";
     private static final String ATTRIBUTE_ID = "notification_id";
     private static final String RES_TYPE = "answers";
@@ -40,8 +40,8 @@ public class PollAction extends Action{
     }
 
     @Override
-    public String getIngredient() {
-        return INGREDIENT_NAME;
+    public String getPlugin() {
+        return PLUGIN_NAME;
     }
 
     public String toJsonAPI() throws JSONException {

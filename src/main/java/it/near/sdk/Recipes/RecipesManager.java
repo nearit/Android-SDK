@@ -24,13 +24,13 @@ import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.Filter;
 import it.near.sdk.GlobalState;
-import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.Reaction;
-import it.near.sdk.Recipes.Models.OperationFlavor;
-import it.near.sdk.Recipes.Models.PulseFlavor;
-import it.near.sdk.Recipes.Models.ReactionFlavor;
+import it.near.sdk.Recipes.Models.OperationAction;
+import it.near.sdk.Recipes.Models.PulseAction;
+import it.near.sdk.Recipes.Models.PulseBundle;
+import it.near.sdk.Recipes.Models.ReactionAction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
@@ -76,9 +76,11 @@ public class RecipesManager {
         morpheus = new Morpheus();
         // register your resources
         morpheus.getFactory().getDeserializer().registerResourceClass("recipes", Recipe.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_flavors", PulseFlavor.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("operation_flavor", OperationFlavor.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_flavors", ReactionFlavor.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_actions", PulseAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("operation_actions", OperationAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_actions", ReactionAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_bundles", PulseBundle.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
     }
 
     public void addReaction(String ingredient, Reaction reaction){
