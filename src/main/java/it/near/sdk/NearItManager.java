@@ -175,12 +175,12 @@ public class NearItManager {
         // set contet to show
         resultIntent.putExtra("content", parcelable);
         // set the content type so the app can cast the parcelable to correct content
-        resultIntent.putExtra("content-source", recipe.getReaction_ingredient_id());
-        resultIntent.putExtra("content-type", recipe.getReaction_flavor().getId());
-        // set the trigger info
-        resultIntent.putExtra("trigger-source", recipe.getPulse_ingredient_id());
-        resultIntent.putExtra("trigger-type", recipe.getPulse_flavor().getId());
-        resultIntent.putExtra("trigger-item", recipe.getPulse_slice_id());
+        resultIntent.putExtra("content-plugin", recipe.getReaction_plugin_id());
+        resultIntent.putExtra("content-action", recipe.getReaction_action().getId());
+        // set the pulse info
+        resultIntent.putExtra("pulse-plugin", recipe.getPulse_plugin_id());
+        resultIntent.putExtra("pulse-action", recipe.getPulse_action().getId());
+        resultIntent.putExtra("pulse-bundle", recipe.getPulse_bundle().getId());
 
         application.sendOrderedBroadcast(resultIntent, null);
     }
@@ -192,7 +192,7 @@ public class NearItManager {
      */
     public boolean sendAction(Action action){
         switch (action.getPlugin()){
-            case PollAction.INGREDIENT_NAME:
+            case PollAction.PLUGIN_NAME:
                 pollNotification.sendAction((PollAction)action);
                 return true;
         }

@@ -45,9 +45,9 @@ import it.near.sdk.Utils.ULog;
  *
  * In our current plugin representation:
  * - this is a "pulse" plugin
- * - the ingredient name (the name of the plugin) is: beacon-forest
- * - the only supported flavor is: enter_region
- * - the slice is the id of a region
+ * - the plugin name is: beacon-forest
+ * - the only supported action is: enter_region
+ * - the bundle is the id of a region
  *
  * @author cattaneostefano
  */
@@ -55,7 +55,7 @@ public class ForestManager implements BootstrapNotifier {
 
     private static final String TAG = "ForestManager";
     private static final String PREFS_SUFFIX = "NearBeacons";
-    private static final String INGREDIENT_NAME = "beacon-forest";
+    private static final String PLUGIN_NAME = "beacon-forest";
     private static final String ENTER_REGION = "enter_region";
 
     private static ForestManager mInstance = null;
@@ -222,10 +222,10 @@ public class ForestManager implements BootstrapNotifier {
 
     @Override
     public void didEnterRegion(Region region) {
-        String pulseSlice = getPulseFromRegion(region);
-        trackRegionEnter(pulseSlice);
-        if (pulseSlice != null){
-            firePulse(ENTER_REGION, pulseSlice);
+        String pulseBundle = getPulseFromRegion(region);
+        trackRegionEnter(pulseBundle);
+        if (pulseBundle != null){
+            firePulse(ENTER_REGION, pulseBundle);
         }
     }
 
@@ -241,11 +241,11 @@ public class ForestManager implements BootstrapNotifier {
 
     /**
      * Send tracking data to the Forest beacon APIs about a region enter (every beacon is a region).
-     * @param regionSlice the beacon identifier
+     * @param regionBundle the beacon identifier
      */
-    private void trackRegionEnter(String regionSlice) {
+    private void trackRegionEnter(String regionBundle) {
         try {
-            NearNetworkUtil.sendTrack(mContext, Constants.API.PLUGINS.BEACON_FOREST_TRACKINGS, buildTrackBody(regionSlice));
+            NearNetworkUtil.sendTrack(mContext, Constants.API.PLUGINS.BEACON_FOREST_TRACKINGS, buildTrackBody(regionBundle));
         } catch (JSONException e) {
             ULog.d(TAG, "Unable to send track: " +  e.toString());
         }
@@ -253,13 +253,13 @@ public class ForestManager implements BootstrapNotifier {
 
     /**
      * Compute the HTTP request body from the region identifier in jsonAPI format.
-     * @param regionSlice the region identifier
+     * @param regionBundle the region identifier
      * @return the correctly formed body
      * @throws JSONException
      */
-    private String buildTrackBody(String regionSlice) throws JSONException {
+    private String buildTrackBody(String regionBundle) throws JSONException {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("beacon_id" , regionSlice);
+        map.put("beacon_id" , regionBundle);
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Date now = new Date(System.currentTimeMillis());
         String formatted = sdf.format(now);
@@ -286,12 +286,12 @@ public class ForestManager implements BootstrapNotifier {
 
     /**
      * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
-     * @param flavor the flavor of the pulse to notify
-     * @param pulseSlice the region identifier of the pulse
+     * @param pulseAction the action of the pulse to notify
+     * @param pulseBundle the region identifier of the pulse
      */
-    private void firePulse(String flavor, String pulseSlice) {
+    private void firePulse(String pulseAction, String pulseBundle) {
         ULog.d(TAG, "firePulse!");
-        recipesManager.gotPulse(INGREDIENT_NAME, flavor, pulseSlice);
+        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
     }
 
 }

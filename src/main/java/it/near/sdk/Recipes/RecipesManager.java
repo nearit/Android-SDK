@@ -83,8 +83,8 @@ public class RecipesManager {
         morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
     }
 
-    public void addReaction(String ingredient, Reaction reaction){
-        reactions.put(ingredient, reaction);
+    public void addReaction(String plugin, Reaction reaction){
+        reactions.put(plugin, reaction);
     }
 
     /**
@@ -101,7 +101,7 @@ public class RecipesManager {
     public void refreshConfig(){
         // TODO turn strings to constants
         final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendQueryParameter("include", "pulse_flavor,operation_flavor,reaction_flavor")
+                .appendQueryParameter("include", "pulse_action,operation_action,reaction_action")
                 .appendQueryParameter("filter[active]", "true").build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, uri.toString(), new Response.Listener<JSONObject>() {
@@ -141,19 +141,19 @@ public class RecipesManager {
     }
 
     /**
-     * Tries to trigger a recipe, stating the ingredient, flavor and slice of the pulse.
+     * Tries to trigger a recipe, stating the plugin, action and bundle of the pulse.
      * If nothing matches, nothing happens.
      *
-     * @param pulse_ingredient the ingredient of the pulse.
-     * @param pulse_flavor the flavor of the pulse.
-     * @param pulse_slice the slice of the pulse.
+     * @param pulse_plugin the plugin of the pulse.
+     * @param pulse_action the action of the pulse.
+     * @param pulse_bundle the bundle of the pulse.
      */
-    public void gotPulse(String pulse_ingredient, String pulse_flavor, String pulse_slice){
+    public void gotPulse(String pulse_plugin, String pulse_action, String pulse_bundle){
         List<Recipe> matchingRecipes = new ArrayList<>();
         for (Recipe recipe : recipes){
-             if ( recipe.getPulse_ingredient_id().equals(pulse_ingredient) &&
-                  recipe.getPulse_flavor().getId().equals(pulse_flavor) &&
-                  recipe.getPulse_slice_id().equals(pulse_slice) ) {
+             if ( recipe.getPulse_plugin_id().equals(pulse_plugin) &&
+                  recipe.getPulse_action().getId().equals(pulse_action) &&
+                  recipe.getPulse_bundle().equals(pulse_bundle) ) {
                  matchingRecipes.add(recipe);
              }
         }
@@ -170,7 +170,7 @@ public class RecipesManager {
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
         ULog.d(TAG , stringRecipe);
-        Reaction reaction = reactions.get(recipe.getReaction_ingredient_id());
+        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
 

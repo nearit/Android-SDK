@@ -25,8 +25,8 @@ public class Recipe extends Resource {
     ReactionAction reaction_action;
     /*@SerializeName("operation_plugin_id")
     String operation_plugin_id;
-    @SerializeName("operation_slice_id")
-    String operation_slice_id;*/
+    @SerializeName("operation_bundle_id")
+    String operation_bundle_id;*/
     /*@Relationship("operation_action")
     OperationAction operation_action;*/
 
@@ -62,12 +62,12 @@ public class Recipe extends Resource {
         this.operation_plugin_id = operation_plugin_id;
     }
 
-    public String getOperation_slice_id() {
-        return operation_slice_id;
+    public String getOperation_bundle_id() {
+        return operation_bundle_id;
     }
 
-    public void setOperation_slice_id(String operation_slice_id) {
-        this.operation_slice_id = operation_slice_id;
+    public void setOperation_bundle_id(String operation_bundle_id) {
+        this.operation_bundle_id = operation_bundle_id;
     }*/
 
     public String getReaction_plugin_id() {

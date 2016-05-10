@@ -28,7 +28,6 @@ public class Constants {
 
         // ---------- Recipes paths ----------
         String RECIPES_PATH = "recipes";
-        String RECIPES_PATH_WITH_FLAVORS = RECIPES_PATH + "?include=pulse_flavor,operation_flavor,reaction_flavor";
 
         String PLUGINGS_ROOT = "plugins";
         String INSTALLATIONS_PATH = "installations";
