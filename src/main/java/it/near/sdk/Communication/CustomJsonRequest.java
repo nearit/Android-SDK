@@ -1,6 +1,7 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
@@ -117,7 +118,8 @@ public class CustomJsonRequest extends JsonObjectRequest {
      */
     private static String composeUrl(Context context, String url) {
         String baseUrl = context.getResources().getString(R.string.API_NEW_BASE_URL);
-        return baseUrl + url;
+        Uri completeUri = Uri.parse(baseUrl).buildUpon().appendPath(url).build();
+        return completeUri.toString();
     }
 
 }
