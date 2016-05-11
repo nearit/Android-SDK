@@ -29,6 +29,9 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class PollNotificationReaction extends Reaction {
+    // ---------- poll notification plugin ----------
+    public static final String POLL_NOTIFICATION =          "poll-notification";
+    public static final String POLL_NOTIFICATION_RESOURCE = "polls";
     private static final String PLUGIN_NAME = "poll-notification";
     private static final String SHOW_POLL_ACTION_NAME = "show_poll";
     private static final String TAG = "PollNotificationReaction";
@@ -77,8 +80,11 @@ public class PollNotificationReaction extends Reaction {
 
     @Override
     public void refreshConfig() {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(POLL_NOTIFICATION)
+                    .appendPath(POLL_NOTIFICATION_RESOURCE).build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.POLL_NOTIFICATION_LIST, new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
@@ -129,7 +135,11 @@ public class PollNotificationReaction extends Reaction {
         try {
             String answerBody = action.toJsonAPI();
             ULog.d(TAG, "Answer" + answerBody);
-            Uri path = Uri.parse(Constants.API.PLUGINS.POLL_NOTIFICATION_LIST).buildUpon().appendPath(action.getId()).appendPath("answers").build();
+            Uri path = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(POLL_NOTIFICATION)
+                    .appendPath(POLL_NOTIFICATION_RESOURCE)
+                    .appendPath(action.getId())
+                    .appendPath("answers").build();
             GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

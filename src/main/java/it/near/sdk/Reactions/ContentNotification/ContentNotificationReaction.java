@@ -1,6 +1,7 @@
 package it.near.sdk.Reactions.ContentNotification;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v4.util.ArrayMap;
 
 import com.android.volley.Response;
@@ -28,6 +29,9 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class ContentNotificationReaction extends Reaction {
+    // ---------- content notification plugin ----------
+    public static final String CONTENT_NOTIFICATION_PATH =      "content-notification";
+    public static final String CONTENT_NOTIFICATION_RESOURCE =  "contents";
     private static final String PLUGIN_NAME = "content-notification";
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentNotificationReaction";
@@ -76,13 +80,12 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     public void refreshConfig() {
-        /*Uri path = Uri.parse(Constants.API.PLUGINS.content_notification).buildUpon()
-                .appendPath("notifications")
-                .appendQueryParameter("include", "images")
-                .appendQueryParameter("filter[app_id]", "dds")
-                .appendQueryParameter("filter[sdsaf]", "safaf").build();*/
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(CONTENT_NOTIFICATION_PATH)
+                    .appendPath(CONTENT_NOTIFICATION_RESOURCE)
+                    .appendQueryParameter("include", "images").build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.CONTENT_NOTIFICATION_LIST_WITH_IMAGES, new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());

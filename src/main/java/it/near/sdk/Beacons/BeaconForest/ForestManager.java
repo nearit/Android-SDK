@@ -2,6 +2,7 @@ package it.near.sdk.Beacons.BeaconForest;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 
 import com.android.volley.Response;
@@ -52,6 +53,11 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class ForestManager implements BootstrapNotifier {
+
+    // ---------- beacon forest ----------
+    public static final String BEACON_FOREST_PATH =         "beacon-forest";
+    public static final String BEACON_FOREST_TRACKINGS =    "trackings";
+    public static final String BEACON_FOREST_BEACONS =      "beacons";
 
     private static final String TAG = "ForestManager";
     private static final String PREFS_SUFFIX = "NearBeacons";
@@ -118,8 +124,11 @@ public class ForestManager implements BootstrapNotifier {
      *
      */
     public void refreshConfig(){
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(BEACON_FOREST_PATH)
+                    .appendPath(BEACON_FOREST_BEACONS).build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.BEACON_FOREST_BEACONS, new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                     ULog.d(TAG, response.toString());
@@ -245,7 +254,10 @@ public class ForestManager implements BootstrapNotifier {
      */
     private void trackRegionEnter(String regionBundle) {
         try {
-            NearNetworkUtil.sendTrack(mContext, Constants.API.PLUGINS.BEACON_FOREST_TRACKINGS, buildTrackBody(regionBundle));
+            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                        .appendPath(BEACON_FOREST_PATH)
+                        .appendPath(BEACON_FOREST_TRACKINGS).build();
+            NearNetworkUtil.sendTrack(mContext, url.toString(), buildTrackBody(regionBundle));
         } catch (JSONException e) {
             ULog.d(TAG, "Unable to send track: " +  e.toString());
         }

@@ -118,8 +118,7 @@ public class CustomJsonRequest extends JsonObjectRequest {
      */
     private static String composeUrl(Context context, String url) {
         String baseUrl = context.getResources().getString(R.string.API_NEW_BASE_URL);
-        Uri completeUri = Uri.parse(baseUrl).buildUpon().appendPath(url).build();
-        return completeUri.toString();
+        return baseUrl + url;
     }
 
 }
