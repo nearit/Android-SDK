@@ -8,7 +8,6 @@ import it.near.sdk.R;
 import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.PollNotification.PollNotification;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 import it.near.sdk.Utils.NearNotification;
 
 /**
@@ -72,32 +71,30 @@ public class RegionIntentService extends IntentService {
      */
     protected boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
 
-        String content_source = intent.getExtras().getString("content-source");
-        String content_type = intent.getExtras().getString("content-type");
+        String content_plugin = intent.getExtras().getString("content-plugin");
+        String content_action = intent.getExtras().getString("content-action");
 
-        String trigger_source = intent.getExtras().getString("trigger-source");
-        String trigger_type = intent.getExtras().getString("trigger-type");
-        String trigger_item = intent.getExtras().getString("trigger-item");
+        String pulse_plugin = intent.getExtras().getString("pulse-plugin");
+        String pulse_action = intent.getExtras().getString("pulse-action");
+        String pulse_bundle = intent.getExtras().getString("pulse-bundle");
 
-        SimpleNotification s_notif;
         ContentNotification c_notif;
         PollNotification p_notif;
 
         boolean coreContent = false;
-        switch (content_source) {
-            case "simple-notification" :
-                s_notif = (SimpleNotification) intent.getParcelableExtra("content");
-                listener.gotSimpleNotification(intent, s_notif, content_source, content_type, trigger_source, trigger_type, trigger_item);
-                coreContent = true;
-                break;
+        switch (content_plugin) {
             case "content-notification" :
                 c_notif = (ContentNotification) intent.getParcelableExtra("content");
-                listener.getContentNotification(intent, c_notif, content_source, content_type, trigger_source, trigger_type, trigger_item);
+                if (c_notif.isSimpleNotification()){
+                    listener.gotSimpleNotification(intent, "notif", content_plugin, content_action, pulse_plugin, pulse_action, pulse_bundle);
+                } else {
+                    listener.getContentNotification(intent, c_notif, content_plugin, content_action, pulse_plugin, pulse_action, pulse_bundle);
+                }
                 coreContent = true;
                 break;
             case "poll-notification" :
                 p_notif = (PollNotification) intent.getParcelableExtra("content");
-                listener.getPollNotification(intent, p_notif, content_source, content_type, trigger_source, trigger_type, trigger_item);
+                listener.getPollNotification(intent, p_notif, content_plugin, content_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
         }

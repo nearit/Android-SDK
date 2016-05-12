@@ -102,7 +102,7 @@ public class RecipesManager {
         // TODO turn strings to constants
         final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendQueryParameter("filter[active]", "true")
-                .appendQueryParameter("include", new String[]{"pulse_action", "operation_action", "reaction_action"}).build();
+                .appendQueryParameter("include", "pulse_action,operation_action,reaction_action").build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, uri.toString(), new Response.Listener<JSONObject>() {
             @Override
@@ -153,7 +153,7 @@ public class RecipesManager {
         for (Recipe recipe : recipes){
              if ( recipe.getPulse_plugin_id().equals(pulse_plugin) &&
                   recipe.getPulse_action().getId().equals(pulse_action) &&
-                  recipe.getPulse_bundle().equals(pulse_bundle) ) {
+                  recipe.getPulse_bundle().getId().equals(pulse_bundle) ) {
                  matchingRecipes.add(recipe);
              }
         }

@@ -141,7 +141,7 @@ public class ContentNotificationReaction extends Reaction {
     @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
-        map.put("notifications", ContentNotification.class);
+        map.put("contents", ContentNotification.class);
         map.put("images", Image.class);
         return map;
     }

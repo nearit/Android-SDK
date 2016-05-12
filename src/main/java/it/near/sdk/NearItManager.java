@@ -14,7 +14,6 @@ import it.near.sdk.Reactions.Action;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
 import it.near.sdk.Reactions.PollNotification.PollAction;
 import it.near.sdk.Reactions.PollNotification.PollNotificationReaction;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
@@ -49,7 +48,6 @@ public class NearItManager {
     private static String APP_PACKAGE_NAME;
     private ForestManager forest;
     private RecipesManager recipesManager;
-    private SimpleNotificationReaction simpleNotification;
     private ContentNotificationReaction contentNotification;
     private PollNotificationReaction pollNotification;
     private PushManager pushManager;
@@ -82,9 +80,6 @@ public class NearItManager {
 
         monitor = new AltBeaconMonitor(application);
         forest = new ForestManager(application, monitor, recipesManager);
-
-        simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
-        recipesManager.addReaction(simpleNotification.getPluginName(), simpleNotification);
 
         contentNotification = new ContentNotificationReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
@@ -154,7 +149,6 @@ public class NearItManager {
     public void refreshConfigs(){
         recipesManager.refreshConfig();
         forest.refreshConfig();
-        simpleNotification.refreshConfig();
         contentNotification.refreshConfig();
         pollNotification.refreshConfig();
     }

@@ -8,7 +8,6 @@ import android.util.Log;
 
 import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.PollNotification.PollNotification;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
 /**
  * WakefulBroadcastReceiver to receive region messages. This receiver should be initiated in the manifest to use the default implementation

@@ -11,6 +11,8 @@ public class Recipe extends Resource {
 
     @SerializeName("name")
     String name;
+    @SerializeName("notification")
+    String notification;
     @SerializeName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
@@ -36,6 +38,14 @@ public class Recipe extends Resource {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getNotification() {
+        return notification;
+    }
+
+    public void setNotification(String notification) {
+        this.notification = notification;
     }
 
     public String getPulse_plugin_id() {
