@@ -24,10 +24,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
+import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;
@@ -64,14 +65,15 @@ public class ForestManager implements BootstrapNotifier {
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
-    private static final long backgroundBetweenScanPeriod = 8000l;
-    private static final long backgroundScanPeriod = 1000l;
-    private static final long regionExitPeriod = 48000l;
+    private static final long backgroundBetweenScanPeriod = 10000l;
+    private static final long backgroundScanPeriod = 1500l;
+    private static final long regionExitPeriod = 30000l;
 
     private List<Beacon> beaconList;
     private Context mContext;
     private Morpheus morpheus;
     private AltBeaconMonitor monitor;
+    private NearRangeNotifier rangeNotifier;
 
     /**
      * Constructor.
@@ -84,6 +86,7 @@ public class ForestManager implements BootstrapNotifier {
         this.mContext = context;
         this.monitor = monitor;
         this.recipesManager = recipesManager;
+        rangeNotifier = new NearRangeNotifier(context);
         setUpMorpheusParser();
 
         String PACK_NAME = context.getApplicationContext().getPackageName();
@@ -125,7 +128,7 @@ public class ForestManager implements BootstrapNotifier {
                     ULog.d(TAG, response.toString());
                     List<Beacon> beacons = NearUtils.parseList(morpheus, response, Beacon.class);
                     beaconList = parseTree(beacons);
-                    ConvertToAltBeaconFormat(beaconList);
+                    startRadarOnBeacons(beaconList);
                     persistList(beaconList);
             }
         }, new Response.ErrorListener() {
@@ -135,7 +138,7 @@ public class ForestManager implements BootstrapNotifier {
                     try {
                         beaconList = loadChachedList();
                         if (beaconList!=null){
-                            ConvertToAltBeaconFormat(beaconList);
+                            startRadarOnBeacons(beaconList);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -170,10 +173,11 @@ public class ForestManager implements BootstrapNotifier {
     }
 
     /**
-     * Creates a list of AltBeacon regions from Near Regions.
+     * Creates a list of AltBeacon regions from Near Regions and starts the radar.
+     *
      * @param beacons the list to convert
      */
-    private void ConvertToAltBeaconFormat(List<Beacon> beacons) {
+    private void startRadarOnBeacons(List<Beacon> beacons) {
         List<Region> regionsToMonitor = new ArrayList<>();
         for (Beacon beacon : beacons){
             String uniqueId = "Region" + Integer.toString(beacon.getMajor()) + Integer.toString(beacon.getMinor());
@@ -181,7 +185,32 @@ public class ForestManager implements BootstrapNotifier {
                     Identifier.fromInt(beacon.getMajor()), Identifier.fromInt(beacon.getMinor()));
             regionsToMonitor.add(region);
         }
-        monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
+        // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
+        // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
+        List<Region> superRegions = computeSuperRegions(regionsToMonitor);
+        float threshold = GlobalConfig.getInstance(getApplicationContext()).getThreshold();
+        monitor.startRadar(60000l, 2000l, 20000l, 2000l, regionExitPeriod, threshold, superRegions, regionsToMonitor, this);
+    }
+
+    /**
+     * Creates the superRegions from the regions. There is one super region for each distinct proximityUUID
+     *
+     * @param regionsToMonitor all the regions to monitor.
+     * @return the list of super regions.
+     */
+    private List<Region> computeSuperRegions(List<Region> regionsToMonitor) {
+        ArrayList<String> proximityUUIDs = new ArrayList<>();
+        for (Region region : regionsToMonitor) {
+            String UUID = region.getId1().toString();
+            if (!proximityUUIDs.contains(UUID)){
+                proximityUUIDs.add(UUID);
+            }
+        }
+        List<Region> superRegions = new ArrayList<Region>();
+        for (String proximityUUID : proximityUUIDs) {
+            superRegions.add(new Region("super-" + proximityUUID, Identifier.parse(proximityUUID),null,null));
+        }
+        return superRegions;
     }
 
     /**

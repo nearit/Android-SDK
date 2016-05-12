@@ -4,6 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
 
 /**
@@ -61,7 +63,8 @@ public class Morpheus {
     //included
     try {
       JSONArray includedArray = jsonObject.getJSONArray("included");
-      jsonapiObject.setIncluded(factory.newObjectFromJSONArray(includedArray, null));
+      List<Resource> included = factory.newObjectFromJSONArray(includedArray, null);
+      jsonapiObject.setIncluded(included);
     } catch (JSONException e) {
       Logger.debug("JSON does not contain included");
     }

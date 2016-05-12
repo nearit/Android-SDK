@@ -7,11 +7,8 @@ import android.os.Parcelable;
 
 import org.altbeacon.beacon.BeaconManager;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
-import it.near.sdk.Beacons.Monitoring.AltBeaconMonitor;
+import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Action;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
@@ -24,7 +21,6 @@ import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.OnLifecycleEventListener;
-import it.near.sdk.Utils.TraceNotifier;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -144,6 +140,11 @@ public class NearItManager {
      */
     public void setNotificationImage(int imgRes){
         GlobalConfig.getInstance(application).setNotificationImage(imgRes);
+    }
+
+
+    public void setThreshold(float threshold) {
+        GlobalConfig.getInstance(application).setThreshold(threshold);
     }
 
     /**

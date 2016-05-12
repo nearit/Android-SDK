@@ -28,13 +28,13 @@ public class NearRangeNotifier implements RangeNotifier {
 
     @Override
     public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-        beacons = filterBeacons(beacons);
+        // beacons = filterBeacons(beacons);
 
-        Collections.sort((List<Beacon>) beacons, distanceComparator);
+        // Collections.sort((List<Beacon>) beacons, distanceComparator);
         ULog.d(TAG, "didRangeBeaconsInRegion " + beacons.size() + " region: " + region.toString());
         if (beacons.size() > 0) {
             logList(beacons);
-            traceList(beacons);
+            // traceList(beacons);
 
             BeaconDynamicRadar radar = GlobalState.getInstance(context).getBeaconDynamicRadar();
             if (radar!=null){
