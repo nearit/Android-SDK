@@ -99,7 +99,10 @@ public class Factory {
         Logger.debug("Was not able to get dataArray["+i+"] as JSONObject.");
       }
       try {
-        mapper.mapRelations(objects.get(i), jsonObject.getJSONObject("relationships"), objects);
+        List<Resource> res = new ArrayList<>();
+        if (included!=null) res.addAll(included);
+        res.addAll(objects);
+        mapper.mapRelations(objects.get(i), jsonObject.getJSONObject("relationships"), res);
       } catch (Exception e) {
         Logger.debug("JSON data does not contain relationships");
       }
