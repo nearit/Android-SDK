@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.Models.NearBeacon;
+import it.near.sdk.Utils.ULog;
 
 /**
  * Manage and calculate beacon distances from the user device.
@@ -25,7 +26,7 @@ public class BeaconDynamicRadar {
     private Context context;
     private ProximityListener proximityListener;
 
-    public BeaconDynamicRadar(Context context, List<NearBeacon> beacons, ProximityListener proximityListener){
+    public BeaconDynamicRadar(Context context, List<Beacon> beacons, ProximityListener proximityListener){
         this.context = context;
         this.proximityListener = proximityListener;
         beaconsDistances = new ArrayList<>();
@@ -39,11 +40,11 @@ public class BeaconDynamicRadar {
      * For every beacon create beacon dynamic data
      * @param beacons
      */
-    public void initBeaconDynamicData(List<NearBeacon> beacons){
+    public void initBeaconDynamicData(List<Beacon> beacons){
         // for every beacon, create a BeaconDynamicData
-        for (NearBeacon beacon : beacons){
+        for (Beacon beacon : beacons){
             BeaconDynamicData dynData = new BeaconDynamicData();
-            dynData.setBeaconConfig(beacon);
+            dynData.setAltBeacon(beacon);
             beaconsDistances.add(dynData);
         }
     }
@@ -76,23 +77,31 @@ public class BeaconDynamicRadar {
         }
 
         if ( closestBeacon==null && currentDynamicBeacon != null) {
-            leaveBeacon(currentDynamicBeacon.getBeaconConfig());
+            // leaveBeacon(currentDynamicBeacon.getBeaconConfig());
             currentDynamicBeacon = null;
         } else if (currentDynamicBeacon != null
                 && closestBeacon != null
                 && closestBeacon.getAltBeacon().getId3().toInt() != currentDynamicBeacon.getAltBeacon().getId3().toInt()) {
             double actualDifference = currentDynamicBeacon.getAverage() - closestBeacon.getAverage();
             if (actualDifference > minDifference) {
-                leaveBeacon(currentDynamicBeacon.getBeaconConfig());
+                // leaveBeacon(currentDynamicBeacon.getBeaconConfig());
                 currentDynamicBeacon = null;
             }
         }
 
         if (inRangeBeacons.size() > 0 && currentDynamicBeacon == null) {
             currentDynamicBeacon = closestBeacon;
-            enterBeacon(currentDynamicBeacon.getBeaconConfig());
+            // enterBeacon(currentDynamicBeacon.getBeaconConfig());
         }
 
+        logInRangeBeacons(inRangeBeacons);
+
+    }
+
+    private void logInRangeBeacons(ArrayList<BeaconDynamicData> inRangeBeacons) {
+        for (BeaconDynamicData inRangeBeacon : inRangeBeacons) {
+            ULog.d(TAG, inRangeBeacon.toString());
+        }
     }
 
     /**
@@ -105,11 +114,14 @@ public class BeaconDynamicRadar {
             if (dynBeacon.hasMinumumData()) {
 
                 int avgProximityValue = NearBeacon.distanceToProximity(dynBeacon.getAverage()); // trasformo la distanza media in metri in proximity
-                int requestedProximityValue = Integer.valueOf(dynBeacon.getBeaconConfig().getRange());
+                // int requestedProximityValue = Integer.valueOf(dynBeacon.getBeaconConfig().getRange());
                 dynBeacon.setCurrentProximity(avgProximityValue);
-
-                if ( avgProximityValue <= requestedProximityValue )
+                if (dynBeacon.getAverage() <= 2){
                     inRangeBeacons.add(dynBeacon);
+                }
+
+//                if ( avgProximityValue <= requestedProximityValue )
+//                    inRangeBeacons.add(dynBeacon);
             }
         }
         return inRangeBeacons;
@@ -127,9 +139,9 @@ public class BeaconDynamicRadar {
 
     BeaconDynamicData findDynamicBeacon(Beacon _beacon) {
         for (BeaconDynamicData data : beaconsDistances) {
-            if (_beacon.getId2().toInt() == Integer.valueOf(data.getBeaconConfig().getMajor())
-                    && _beacon.getId3().toInt() == Integer.valueOf(data.getBeaconConfig().getMinor())
-                    && _beacon.getId1().toString().equals(data.getBeaconConfig().getProximity_uuid()))
+            if (_beacon.getId2().toInt() == data.getAltBeacon().getId2().toInt()
+                    && _beacon.getId3().toInt() == data.getAltBeacon().getId3().toInt()
+                    && _beacon.getId1().toString().equals(data.getAltBeacon().getId1().toString()))
                 return data;
         }
         return null;

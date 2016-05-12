@@ -13,7 +13,7 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData>{
 
     private ArrayList<Double> distances;
     private double average;
-    private NearBeacon beaconConfig;
+    // private NearBeacon beaconConfig;
     private Beacon altBeacon;
 
     private int currentProximity;
@@ -38,13 +38,13 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData>{
         this.average = average;
     }
 
-    public NearBeacon getBeaconConfig() {
-        return beaconConfig;
-    }
-
-    public void setBeaconConfig(NearBeacon beaconConfig) {
-        this.beaconConfig = beaconConfig;
-    }
+//    public NearBeacon getBeaconConfig() {
+//        return beaconConfig;
+//    }
+//
+//    public void setBeaconConfig(NearBeacon beaconConfig) {
+//        this.beaconConfig = beaconConfig;
+//    }
 
     public Beacon getAltBeacon() {
         return altBeacon;
