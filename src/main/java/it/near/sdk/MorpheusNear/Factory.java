@@ -90,6 +90,23 @@ public class Factory {
         throw e;
       }
     }
+    for (int i = 0; i < dataArray.length(); i++) {
+      JSONObject jsonObject = null;
+
+      try {
+        jsonObject = dataArray.getJSONObject(i);
+      } catch (JSONException e) {
+        Logger.debug("Was not able to get dataArray["+i+"] as JSONObject.");
+      }
+      try {
+        List<Resource> res = new ArrayList<>();
+        if (included!=null) res.addAll(included);
+        res.addAll(objects);
+        mapper.mapRelations(objects.get(i), jsonObject.getJSONObject("relationships"), res);
+      } catch (Exception e) {
+        Logger.debug("JSON data does not contain relationships");
+      }
+    }
 
     return objects;
   }
