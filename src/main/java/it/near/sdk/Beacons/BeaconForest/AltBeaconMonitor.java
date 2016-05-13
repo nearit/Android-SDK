@@ -104,6 +104,9 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         beaconManager.setRegionExitPeriod(regionExitPeriod);
         beaconManager.setBackgroundMode(!loadInsideState());
         regionBootstrap = new RegionBootstrap(this, superRegions);
+        if (loadInsideState()){
+            startExpBGRanging();
+        }
     }
 
     /**
