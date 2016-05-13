@@ -3,6 +3,7 @@ package it.near.sdk.Beacons.BeaconForest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.RemoteException;
 
 import org.altbeacon.beacon.Beacon;
@@ -31,6 +32,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
 
     private static final String TAG = "AltBeaconMonitor";
     private static final float DEFAULT_THRESHOLD = 0.5f;
+    private static final String INSIDE_STATE = "inside_state";
     private final BeaconManager beaconManager;
     private BackgroundPowerSaver backgroundPowerSaver;
     private Context mContext;
@@ -39,6 +41,9 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
     private List<Region> regionsImIn = new ArrayList<>();
     private BootstrapNotifier outerNotifier;
     private float threshold = DEFAULT_THRESHOLD;
+    private boolean areWeInside;
+    private String prefsNameSuffix = "AltMonitor";
+    private SharedPreferences sp;
 
     public AltBeaconMonitor(Context context) {
         this.mContext = context;
@@ -51,7 +56,22 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         // TODO turn back off
         BeaconManager.setDebug(true);
 
+        String PACK_NAME = mContext.getApplicationContext().getPackageName();
+        String PREFS_NAME = PACK_NAME + prefsNameSuffix;
+        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
+
+        areWeInside = loadInsideState();
+
         //backgroundPowerSaver = new BackgroundPowerSaver(context.getApplicationContext());
+    }
+
+    private boolean loadInsideState() {
+        return sp.getBoolean(INSIDE_STATE, false);
+    }
+
+    private void setInsideState(boolean insideState){
+        SharedPreferences.Editor editor = sp.edit();
+        editor.putBoolean(INSIDE_STATE, insideState).apply();
     }
 
     /**
@@ -82,6 +102,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         beaconManager.setForegroundBetweenScanPeriod(foreBetweenPeriod);
         beaconManager.setForegroundScanPeriod(foreScanPeriod);
         beaconManager.setRegionExitPeriod(regionExitPeriod);
+        beaconManager.setBackgroundMode(!loadInsideState());
         regionBootstrap = new RegionBootstrap(this, superRegions);
     }
 
@@ -90,6 +111,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
      */
     public void startExpBGRanging(){
         ULog.d(TAG, "startExpRanging");
+        setInsideState(true);
         beaconManager.setBackgroundMode(false);
         setRanging(regionsToRange);
         beaconManager.setRangeNotifier(this);
@@ -195,6 +217,8 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
             // Multiple calls to this shouldn't be dangerous
             startExpBGRanging();
         } else {
+            setInsideState(true);
+            beaconManager.setBackgroundMode(false);
             // We entered a normal region
             String regionString = region.getUniqueId();
             ULog.d(TAG, "enter in " + regionString);
@@ -218,6 +242,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
                 didExitRegion(regionsImIn.get(i));
             }
             regionsImIn.clear();
+            setInsideState(false);
             beaconManager.setBackgroundMode(true);
         } else {
             // We exited a normal region
