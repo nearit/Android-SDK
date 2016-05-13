@@ -81,7 +81,6 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         beaconManager.setBackgroundScanPeriod(backScanPeriod);
         beaconManager.setForegroundBetweenScanPeriod(foreBetweenPeriod);
         beaconManager.setForegroundScanPeriod(foreScanPeriod);
-        beaconManager.setBackgroundMode(true);
         beaconManager.setRegionExitPeriod(regionExitPeriod);
         regionBootstrap = new RegionBootstrap(this, superRegions);
     }
