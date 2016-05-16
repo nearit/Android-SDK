@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -85,14 +86,12 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
      * @param foreBetweenPeriod period between foreground scans.
      * @param foreScanPeriod foreground scan length.
      * @param regionExitPeriod time to wait before notifying a region exits.
-     * @param threshold minimum "distance" in ranging before considering the device inside the region.
      * @param superRegions list of super regions to always monitor.
      * @param regions list of normal regions.
      * @param outerNotifier monitor notifier for normal region entry
      */
-    public void startRadar(long backBetweenPeriod, long backScanPeriod, long foreBetweenPeriod, long foreScanPeriod, long regionExitPeriod, float threshold, List<Region> superRegions, List<Region> regions, BootstrapNotifier outerNotifier){
+    public void startRadar(long backBetweenPeriod, long backScanPeriod, long foreBetweenPeriod, long foreScanPeriod, long regionExitPeriod, List<Region> superRegions, List<Region> regions, BootstrapNotifier outerNotifier){
         this.outerNotifier = outerNotifier;
-        if (threshold != 0) this.threshold = threshold;
         // resetMonitoring();
         // setMonitoring(superRegions);
         ULog.d(TAG, "startRadar");
@@ -113,6 +112,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
      * Set regions to range and connects to beaconservice.
      */
     public void startExpBGRanging(){
+        this.threshold = GlobalConfig.getInstance(getApplicationContext()).getThreshold();
         ULog.d(TAG, "startExpRanging");
         setInsideState(true);
         beaconManager.setBackgroundMode(false);
@@ -266,7 +266,6 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
 
     @Override
     public void didDetermineStateForRegion(int i, Region region) {
-
     }
 
     @Override
