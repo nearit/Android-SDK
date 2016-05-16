@@ -191,6 +191,10 @@ public class RecipesManager {
             @Override
             public void onResponse(JSONObject response) {
                 ULog.d(TAG, response.toString());
+                Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
+                ULog.d(TAG, recipe.toString());
+                // TODO get the reaction action to know which plugin can handle the push
+                // TODO carry-on the included section of the response to the reaction so it can parse the content
             }
         }, new Response.ErrorListener() {
             @Override
