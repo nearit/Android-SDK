@@ -14,6 +14,8 @@ import java.util.HashMap;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.GlobalState;
+import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
 
 /**
@@ -76,5 +78,12 @@ public class PushManager {
         map.put("timestamp", formatted);
         return map;
     }
+
+    public void processPush(String push_id, String recipe_id) {
+        trackPush(push_id, PushManager.PUSH_RECEIVED_ACTION);
+        getRecipesManager().processRecipe(recipe_id);
+    }
+
+    private RecipesManager getRecipesManager(){return GlobalState.getInstance(mContext.getApplicationContext()).getRecipesManager();}
 
 }

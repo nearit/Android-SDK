@@ -182,8 +182,23 @@ public class RecipesManager {
     public boolean processRecipe(String id) {
         // todo download recipe
         Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendEncodedPath(id).build();
+                .appendEncodedPath(id)
+                .appendQueryParameter("include", "reaction_action,reaction_bundle")
+                .build();
 
+        GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(
+                mContext, uri.toString(), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                ULog.d(TAG, response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }
+        ));
         // inside receiver, parse the response to know what reaction plugin to use
         // than fire the reaction
         // if we got a network error, return false

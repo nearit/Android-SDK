@@ -34,10 +34,7 @@ public class MyGcmListenerService extends GcmListenerService {
         String recipe_id = data.getString("recipe_id");
         String push_id = data.getString("push_id");
 
-        // TODO track received push
-        getPushManager().trackPush(push_id, PushManager.PUSH_RECEIVED_ACTION);
-
-        getRecipesManager().processRecipe(recipe_id);
+        getPushManager().processPush(push_id, recipe_id);
 
         // [START_EXCLUDE]
         /**
@@ -58,7 +55,6 @@ public class MyGcmListenerService extends GcmListenerService {
     private PushManager getPushManager() { return GlobalState.getInstance(getApplicationContext()).getPushManager(); }
     // [END receive_message]
 
-    private RecipesManager getRecipesManager(){return GlobalState.getInstance(getApplicationContext()).getRecipesManager();}
 
 }
 
