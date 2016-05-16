@@ -95,6 +95,7 @@ public class NearItManager {
      */
     public void setPushSenderId(String senderId){
         pushManager = new PushManager(application, senderId);
+        GlobalState.getInstance(application).setPushManager(pushManager);
     }
 
     /**

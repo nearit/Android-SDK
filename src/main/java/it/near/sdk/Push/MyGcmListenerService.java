@@ -1,18 +1,12 @@
 package it.near.sdk.Push;
 
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
 import it.near.sdk.GlobalState;
+import it.near.sdk.Recipes.RecipesManager;
 
 /**
  * Service that receives push notification.
@@ -37,10 +31,13 @@ public class MyGcmListenerService extends GcmListenerService {
         Log.d(TAG, "From: " + from);
         Log.d(TAG, "Message: " + message);
 
-        // TODO parse id from push
-        String id = "";
+        String recipe_id = data.getString("recipe_id");
+        String push_id = data.getString("push_id");
 
-        GlobalState.getInstance(getApplicationContext()).getRecipesManager().processRecipe(id);
+        // TODO track received push
+        getPushManager().trackPush(push_id, PushManager.PUSH_RECEIVED_ACTION);
+
+        getRecipesManager().processRecipe(recipe_id);
 
         // [START_EXCLUDE]
         /**
@@ -57,7 +54,11 @@ public class MyGcmListenerService extends GcmListenerService {
         // sendNotification(message);
         // [END_EXCLUDE]
     }
+
+    private PushManager getPushManager() { return GlobalState.getInstance(getApplicationContext()).getPushManager(); }
     // [END receive_message]
+
+    private RecipesManager getRecipesManager(){return GlobalState.getInstance(getApplicationContext()).getRecipesManager();}
 
 }
 

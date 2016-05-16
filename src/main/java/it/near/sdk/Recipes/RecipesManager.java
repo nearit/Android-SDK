@@ -183,6 +183,7 @@ public class RecipesManager {
         // todo download recipe
         Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id).build();
+
         // inside receiver, parse the response to know what reaction plugin to use
         // than fire the reaction
         // if we got a network error, return false
