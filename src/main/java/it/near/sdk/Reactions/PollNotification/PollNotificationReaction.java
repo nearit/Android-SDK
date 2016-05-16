@@ -65,7 +65,7 @@ public class PollNotificationReaction extends Reaction {
         ULog.d(TAG , "Show poll: " + reaction_bundle);
         PollNotification notification = getNotification(reaction_bundle);
         if (notification==null) return;
-        nearNotifier.deliverReaction(notification, recipe);
+        nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
     }
 
     private PollNotification getNotification(String reaction_bundle) {

@@ -45,6 +45,7 @@ public class NearItManager {
     private static final String ENTER = "enter";
     private static final String LEAVE = "leave";
     private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
+    private static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
     private static String APP_PACKAGE_NAME;
     private ForestManager forest;
     private RecipesManager recipesManager;
@@ -156,18 +157,22 @@ public class NearItManager {
 
 
     private NearNotifier nearNotifier = new NearNotifier() {
+        @Override
+        public void deliverBackgroundRegionReaction(Parcelable parcelable, Recipe recipe) {
+            deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION);
+        }
 
         @Override
-        public void deliverReaction(Parcelable parcelable, Recipe recipe) {
-            deliverRegionEvent(parcelable, recipe);
+        public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe) {
+            deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION);
         }
     };
 
 
-    private void deliverRegionEvent(Parcelable parcelable, Recipe recipe){
+    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action){
         ULog.d(TAG, "deliver Event: " + parcelable.toString());
 
-        Intent resultIntent = new Intent(REGION_MESSAGE_ACTION);
+        Intent resultIntent = new Intent(action);
         // set recipe id
         resultIntent.putExtra("recipe_id", recipe.getId());
         // set notification text

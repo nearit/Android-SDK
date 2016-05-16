@@ -66,7 +66,7 @@ public class ContentNotificationReaction extends Reaction {
         ULog.d(TAG, "Show content: " + reaction_bundle);
         ContentNotification notification = getNotification(reaction_bundle);
         if (notification == null) return;
-        nearNotifier.deliverReaction(notification, recipe);
+        nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
     }
 
     private ContentNotification getNotification(String reaction_bundle) {
