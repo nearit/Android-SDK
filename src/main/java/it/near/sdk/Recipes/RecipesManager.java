@@ -183,7 +183,7 @@ public class RecipesManager {
         // todo download recipe
         Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
-                .appendQueryParameter("include", "reaction_action,reaction_bundle")
+                .appendQueryParameter("include", "reaction_bundle")
                 .build();
 
         GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(
