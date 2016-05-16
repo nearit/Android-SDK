@@ -73,6 +73,7 @@ public class RegionIntentService extends IntentService {
 
         String content_plugin = intent.getExtras().getString("content-plugin");
         String content_action = intent.getExtras().getString("content-action");
+        String notif = intent.getExtras().getString("notif");
 
         String pulse_plugin = intent.getExtras().getString("pulse-plugin");
         String pulse_action = intent.getExtras().getString("pulse-action");
@@ -86,7 +87,7 @@ public class RegionIntentService extends IntentService {
             case "content-notification" :
                 c_notif = (ContentNotification) intent.getParcelableExtra("content");
                 if (c_notif.isSimpleNotification()){
-                    listener.gotSimpleNotification(intent, "notif", content_plugin, content_action, pulse_plugin, pulse_action, pulse_bundle);
+                    listener.gotSimpleNotification(intent, notif, content_plugin, content_action, pulse_plugin, pulse_action, pulse_bundle);
                 } else {
                     listener.getContentNotification(intent, c_notif, content_plugin, content_action, pulse_plugin, pulse_action, pulse_bundle);
                 }
