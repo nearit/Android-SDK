@@ -1,5 +1,7 @@
 package it.near.sdk.Recipes.Models;
 
+import android.support.v4.util.ArrayMap;
+
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
@@ -12,7 +14,7 @@ public class Recipe extends Resource {
     @SerializeName("name")
     String name;
     @SerializeName("notification")
-    String notification;
+    ArrayMap<String, Object> notification;
     @SerializeName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
@@ -40,11 +42,11 @@ public class Recipe extends Resource {
         this.name = name;
     }
 
-    public String getNotification() {
+    public ArrayMap<String, Object> getNotification() {
         return notification;
     }
 
-    public void setNotification(String notification) {
+    public void setNotification(ArrayMap<String, Object> notification) {
         this.notification = notification;
     }
 
@@ -120,4 +122,17 @@ public class Recipe extends Resource {
         this.reaction_action = reaction_action;
     }
 
+    public String getNotificationTitle() {
+        if (getNotification().containsKey("title")){
+            return getNotification().get("title").toString();
+        }
+        return null;
+    }
+
+    public String getNotificationBody() {
+        if (getNotification().containsKey("body")){
+            return getNotification().get("body").toString();
+        }
+        return null;
+    }
 }

@@ -31,7 +31,7 @@ public abstract class BaseIntentService extends IntentService {
 
         String reaction_plugin = intent.getExtras().getString("reaction-plugin");
         String reaction_action = intent.getExtras().getString("reaction-action");
-        String notif = intent.getExtras().getString("notif");
+        String notif_body = intent.getExtras().getString("notif_body");
 
         String pulse_plugin = intent.getExtras().getString("pulse-plugin");
         String pulse_action = intent.getExtras().getString("pulse-action");
@@ -46,15 +46,15 @@ public abstract class BaseIntentService extends IntentService {
             case "content-notification" :
                 c_notif = (ContentNotification) intent.getParcelableExtra("content");
                 if (c_notif.isSimpleNotification()){
-                    listener.gotSimpleNotification(intent, notif, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                    listener.gotSimpleNotification(intent, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 } else {
-                    listener.getContentNotification(intent, c_notif, notif, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                    listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 }
                 coreContent = true;
                 break;
             case "poll-notification" :
                 p_notif = (PollNotification) intent.getParcelableExtra("content");
-                listener.getPollNotification(intent, p_notif, notif, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                listener.getPollNotification(intent, p_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
         }

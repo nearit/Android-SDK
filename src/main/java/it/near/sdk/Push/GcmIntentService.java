@@ -37,8 +37,11 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
-        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), appName, notifText, targetIntent, PUSH_NOTIFICATION_ID);
+        String notif_title = intent.getStringExtra("notif_title");
+        if (notif_title == null) {
+            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        }
+        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
     }
 
     @Override
@@ -47,8 +50,11 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
-        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), appName, notifText, targetIntent, PUSH_NOTIFICATION_ID);
+        String notif_title = intent.getStringExtra("notif_title");
+        if (notif_title == null) {
+            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        }
+        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
 
     }
 
@@ -58,7 +64,10 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
-        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), appName, notification, targetIntent, PUSH_NOTIFICATION_ID);
+        String notif_title = intent.getStringExtra("notif_title");
+        if (notif_title == null) {
+            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        }
+        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notification, targetIntent, PUSH_NOTIFICATION_ID);
     }
 }

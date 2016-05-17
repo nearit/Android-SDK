@@ -180,7 +180,8 @@ public class NearItManager {
         // set recipe id
         resultIntent.putExtra("recipe_id", recipe.getId());
         // set notification text
-        resultIntent.putExtra("notif", recipe.getNotification());
+        resultIntent.putExtra("notif_title", recipe.getNotificationTitle());
+        resultIntent.putExtra("notif_body", recipe.getNotificationBody());
         // set contet to show
         resultIntent.putExtra("content", parcelable);
         // set the content type so the app can cast the parcelable to correct content
