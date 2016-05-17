@@ -9,6 +9,7 @@ import org.altbeacon.beacon.BeaconManager;
 
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
+import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
 import it.near.sdk.Reactions.Event;
@@ -202,6 +203,9 @@ public class NearItManager {
         switch (event.getPlugin()){
             case PollEvent.PLUGIN_NAME:
                 pollNotification.sendEvent((PollEvent)event);
+                return true;
+            case OpenPushEvent.PLUGIN_NAME:
+                pushManager.sendEvent((OpenPushEvent) event);
                 return true;
         }
         return false;

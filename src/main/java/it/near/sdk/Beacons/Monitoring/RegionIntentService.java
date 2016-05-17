@@ -48,16 +48,16 @@ public class RegionIntentService extends BaseIntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String trigger = intent.getStringExtra("trigger-source");
-        String source = intent.getStringExtra("content-source");
+        String source = intent.getStringExtra("notif");
 
         // create simple intent to open app launcher
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
+        String appName = getApplicationInfo().loadLabel(getPackageManager()).toString();
         // sends system notification
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), trigger, source, targetIntent, NOTIFICATION_ID);
+        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), appName, source, targetIntent, NOTIFICATION_ID);
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         RegionBroadcastReceiver.completeWakefulIntent(intent);

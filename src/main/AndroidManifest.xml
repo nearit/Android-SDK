@@ -35,6 +35,16 @@
         <service android:name=".Push.GcmIntentService"
             android:exported="false"/>
 
+        <receiver
+            android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+
         <service
             android:name=".Push.GCMRegistration.MyInstanceIDListenerService"
             android:exported="false">

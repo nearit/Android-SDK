@@ -8,7 +8,7 @@ import it.near.sdk.Reactions.Event;
  * @author cattaneostefano.
  */
 public class OpenPushEvent extends Event{
-    private static final String PLUGIN_NAME = "OpenPush";
+    public static final String PLUGIN_NAME = "OpenPush";
 
     String id;
 
