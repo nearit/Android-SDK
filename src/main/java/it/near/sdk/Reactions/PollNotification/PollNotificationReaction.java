@@ -19,6 +19,7 @@ import java.util.List;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalState;
+import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -29,8 +30,11 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class PollNotificationReaction extends Reaction {
-    private static final String INGREDIENT_NAME = "poll-notification";
-    private static final String SHOW_POLL_FLAVOR_NAME = "show_poll";
+    // ---------- poll notification plugin ----------
+    public static final String POLL_NOTIFICATION =          "poll-notification";
+    public static final String POLL_NOTIFICATION_RESOURCE = "polls";
+    private static final String PLUGIN_NAME = "poll-notification";
+    private static final String SHOW_POLL_ACTION_NAME = "show_poll";
     private static final String TAG = "PollNotificationReaction";
     public static final String PREFS_SUFFIX = "NearPollNot";
     private List<PollNotification> pollList;
@@ -50,25 +54,36 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe) {
-        switch(reaction_flavor){
-            case SHOW_POLL_FLAVOR_NAME:
-                showPoll(reaction_slice, recipe);
+    protected String getResTypeName() {
+        return "polls";
+    }
+
+    @Override
+    protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+        switch(reaction_action){
+            case SHOW_POLL_ACTION_NAME:
+                showPoll(reaction_bundle, recipe);
                 break;
         }
     }
 
-    private void showPoll(String reaction_slice, Recipe recipe) {
-        ULog.d(TAG , "Show poll: " + reaction_slice);
-        PollNotification notification = getNotification(reaction_slice);
-        if (notification==null) return;
-        nearNotifier.deliverReaction(notification, recipe);
+    @Override
+    protected void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response) {
+        PollNotification pollNotification = NearUtils.parseElement(morpheus, reaction_bundle, PollNotification.class);
+        nearNotifier.deliverBackgroundPushReaction(pollNotification, recipe, push_id);
     }
 
-    private PollNotification getNotification(String reaction_slice) {
+    private void showPoll(String reaction_bundle, Recipe recipe) {
+        ULog.d(TAG , "Show poll: " + reaction_bundle);
+        PollNotification notification = getNotification(reaction_bundle);
+        if (notification==null) return;
+        nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
+    }
+
+    private PollNotification getNotification(String reaction_bundle) {
         if (pollList == null) return null;
         for (PollNotification pn : pollList){
-            if (pn.getId().equals(reaction_slice)){
+            if (pn.getId().equals(reaction_bundle)){
                 return pn;
             }
         }
@@ -77,8 +92,11 @@ public class PollNotificationReaction extends Reaction {
 
     @Override
     public void refreshConfig() {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(POLL_NOTIFICATION)
+                    .appendPath(POLL_NOTIFICATION_RESOURCE).build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.POLL_NOTIFICATION_LIST, new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
@@ -105,31 +123,35 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
-    public void buildFlavors() {
-        supportedFlavors = new ArrayList<String>();
-        supportedFlavors.add(SHOW_POLL_FLAVOR_NAME);
+    public void buildActions() {
+        supportedActions = new ArrayList<String>();
+        supportedActions.add(SHOW_POLL_ACTION_NAME);
     }
 
     @Override
-    public String getIngredientName() {
-        return INGREDIENT_NAME;
+    public String getPluginName() {
+        return PLUGIN_NAME;
     }
 
     @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
-        map.put("notifications", PollNotification.class);
+        map.put("polls", PollNotification.class);
         return map;
     }
 
     JSONObject testObject;
     String test = "{\"data\":[{\"id\":\"5db0d8a4-d17a-4c2d-8d48-cf459aeab4e5\",\"type\":\"notifications\",\"attributes\":{\"text\":\"Poll - Tap to answer\",\"question\":\"How you doing?\",\"choice_1\":\"Fine, thx\",\"choice_2\":\"No good..\",\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\"}}]}";
 
-    public void sendAction(PollAction action) {
+    public void sendEvent(PollEvent event) {
         try {
-            String answerBody = action.toJsonAPI();
+            String answerBody = event.toJsonAPI();
             ULog.d(TAG, "Answer" + answerBody);
-            Uri path = Uri.parse(Constants.API.PLUGINS.POLL_NOTIFICATION_LIST).buildUpon().appendPath(action.getId()).appendPath("answers").build();
+            Uri path = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(POLL_NOTIFICATION)
+                    .appendPath(POLL_NOTIFICATION_RESOURCE)
+                    .appendPath(event.getId())
+                    .appendPath("answers").build();
             GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {

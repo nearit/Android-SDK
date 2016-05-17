@@ -9,12 +9,12 @@ import org.altbeacon.beacon.BeaconManager;
 
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
+import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
-import it.near.sdk.Reactions.Action;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
-import it.near.sdk.Reactions.PollNotification.PollAction;
+import it.near.sdk.Reactions.Event;
+import it.near.sdk.Reactions.PollNotification.PollEvent;
 import it.near.sdk.Reactions.PollNotification.PollNotificationReaction;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
@@ -46,10 +46,10 @@ public class NearItManager {
     private static final String ENTER = "enter";
     private static final String LEAVE = "leave";
     private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
+    private static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
     private static String APP_PACKAGE_NAME;
     private ForestManager forest;
     private RecipesManager recipesManager;
-    private SimpleNotificationReaction simpleNotification;
     private ContentNotificationReaction contentNotification;
     private PollNotificationReaction pollNotification;
     private PushManager pushManager;
@@ -78,18 +78,16 @@ public class NearItManager {
 
     private void plugInSetup() {
         recipesManager = new RecipesManager(application);
+        GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
         monitor = new AltBeaconMonitor(application);
         forest = new ForestManager(application, monitor, recipesManager);
 
-        simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
-        recipesManager.addReaction(simpleNotification.getIngredientName(), simpleNotification);
-
         contentNotification = new ContentNotificationReaction(application, nearNotifier);
-        recipesManager.addReaction(contentNotification.getIngredientName(), contentNotification);
+        recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
 
         pollNotification = new PollNotificationReaction(application, nearNotifier);
-        recipesManager.addReaction(pollNotification.getIngredientName(), pollNotification);
+        recipesManager.addReaction(pollNotification.getPluginName(), pollNotification);
 
     }
 
@@ -99,6 +97,7 @@ public class NearItManager {
      */
     public void setPushSenderId(String senderId){
         pushManager = new PushManager(application, senderId);
+        GlobalState.getInstance(application).setPushManager(pushManager);
     }
 
     /**
@@ -153,49 +152,61 @@ public class NearItManager {
     public void refreshConfigs(){
         recipesManager.refreshConfig();
         forest.refreshConfig();
-        simpleNotification.refreshConfig();
         contentNotification.refreshConfig();
         pollNotification.refreshConfig();
     }
 
 
     private NearNotifier nearNotifier = new NearNotifier() {
+        @Override
+        public void deliverBackgroundRegionReaction(Parcelable parcelable, Recipe recipe) {
+            deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION, null);
+        }
 
         @Override
-        public void deliverReaction(Parcelable parcelable, Recipe recipe) {
-            deliverRegionEvent(parcelable, recipe);
+        public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id) {
+            deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION, push_id);
         }
     };
 
 
-    private void deliverRegionEvent(Parcelable parcelable, Recipe recipe){
+    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
         ULog.d(TAG, "deliver Event: " + parcelable.toString());
 
-        Intent resultIntent = new Intent(REGION_MESSAGE_ACTION);
+        Intent resultIntent = new Intent(action);
+        if (action.equals(PUSH_MESSAGE_ACTION)){
+            resultIntent.putExtra("push_id", pushId);
+        }
         // set recipe id
         resultIntent.putExtra("recipe_id", recipe.getId());
+        // set notification text
+        resultIntent.putExtra("notif_title", recipe.getNotificationTitle());
+        resultIntent.putExtra("notif_body", recipe.getNotificationBody());
         // set contet to show
         resultIntent.putExtra("content", parcelable);
         // set the content type so the app can cast the parcelable to correct content
-        resultIntent.putExtra("content-source", recipe.getReaction_ingredient_id());
-        resultIntent.putExtra("content-type", recipe.getReaction_flavor().getId());
-        // set the trigger info
-        resultIntent.putExtra("trigger-source", recipe.getPulse_ingredient_id());
-        resultIntent.putExtra("trigger-type", recipe.getPulse_flavor().getId());
-        resultIntent.putExtra("trigger-item", recipe.getPulse_slice_id());
+        resultIntent.putExtra("reaction-plugin", recipe.getReaction_plugin_id());
+        resultIntent.putExtra("reaction-action", recipe.getReaction_action().getId());
+        // set the pulse info
+        resultIntent.putExtra("pulse-plugin", recipe.getPulse_plugin_id());
+        resultIntent.putExtra("pulse-action", recipe.getPulse_action().getId());
+        resultIntent.putExtra("pulse-bundle", recipe.getPulse_bundle().getId());
 
         application.sendOrderedBroadcast(resultIntent, null);
     }
 
     /**
      * Sends an action to the SDK, that might delegate it to other plugins, based on its type.
-     * @param action
+     * @param event the event to send.
      * @return true if the action was a recognized action, false otherwise.
      */
-    public boolean sendAction(Action action){
-        switch (action.getIngredient()){
-            case PollAction.INGREDIENT_NAME:
-                pollNotification.sendAction((PollAction)action);
+    public boolean sendEvent(Event event){
+        switch (event.getPlugin()){
+            case PollEvent.PLUGIN_NAME:
+                pollNotification.sendEvent((PollEvent)event);
+                return true;
+            case OpenPushEvent.PLUGIN_NAME:
+                pushManager.sendEvent((OpenPushEvent) event);
                 return true;
         }
         return false;

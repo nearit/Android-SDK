@@ -1,11 +1,8 @@
 package it.near.sdk.Reactions.PollNotification;
 
 import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
-
-import it.near.sdk.Reactions.Action;
+import it.near.sdk.Reactions.Event;
 import it.near.sdk.Utils.NearUtils;
 
 /**
@@ -13,8 +10,8 @@ import it.near.sdk.Utils.NearUtils;
  *
  * @author cattaneostefano
  */
-public class PollAction extends Action{
-    public static final String INGREDIENT_NAME = "PollAction";
+public class PollEvent extends Event{
+    public static final String PLUGIN_NAME = "PollEvent";
     private static final String ATTRIBUTE_ANSWER = "answer";
     private static final String ATTRIBUTE_ID = "notification_id";
     private static final String RES_TYPE = "answers";
@@ -22,11 +19,11 @@ public class PollAction extends Action{
     int answer;
 
     /**
-     * Default constructor
-     * @param id poll identifier
-     * @param answer answer number, can be either 1 or 2
+     * Default constructor.
+     * @param id poll identifier.
+     * @param answer answer number, can be either 1 or 2.
      */
-    public PollAction(String id, int answer) {
+    public PollEvent(String id, int answer) {
         this.id = id;
         this.answer = answer;
     }
@@ -40,8 +37,8 @@ public class PollAction extends Action{
     }
 
     @Override
-    public String getIngredient() {
-        return INGREDIENT_NAME;
+    public String getPlugin() {
+        return PLUGIN_NAME;
     }
 
     public String toJsonAPI() throws JSONException {

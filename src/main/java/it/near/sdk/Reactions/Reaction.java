@@ -3,10 +3,9 @@ package it.near.sdk.Reactions;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +26,8 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public abstract class Reaction {
-    public List<String> supportedFlavors = null;
+    private static final String TAG = "Reaction";
+    public List<String> supportedActions = null;
     protected static Gson gson = null;
     protected SharedPreferences sp;
     protected SharedPreferences.Editor editor;
@@ -67,11 +67,11 @@ public abstract class Reaction {
     }
 
 
-    public List<String> getSupportedFlavors() {
-        if (supportedFlavors == null){
-            buildFlavors();
+    public List<String> getSupportedActions() {
+        if (supportedActions == null){
+            buildActions();
         }
-        return supportedFlavors;
+        return supportedActions;
     }
 
     /**
@@ -79,10 +79,39 @@ public abstract class Reaction {
      * @param recipe matched recipe
      */
     public void handleReaction(Recipe recipe){
-        if (!getIngredientName().equals(recipe.getReaction_ingredient_id())){
+        if (!getPluginName().equals(recipe.getReaction_plugin_id())){
             return;
         }
-        handleReaction(recipe.getReaction_flavor().getId(), recipe.getReaction_slice_id(), recipe);
+        handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle().getId(), recipe);
+    }
+
+    public void handlePushReaction(Recipe recipe,String push_id, JSONObject response){
+        JSONObject reaction_bundle = fetchReactionBundle(response);
+        try {
+            reaction_bundle.put("type", getResTypeName());
+            ULog.d(TAG, "");
+            JSONObject outerObject = new JSONObject();
+            outerObject.put("data", reaction_bundle);
+            handlePushReaction(recipe,push_id, outerObject, response);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private JSONObject fetchReactionBundle(JSONObject response) {
+        try {
+            JSONArray includedObject = response.getJSONArray("included");
+            for (int i = 0; i < includedObject.length(); i++){
+                JSONObject obj = (JSONObject) includedObject.get(i);
+                if (obj.getString("type").equals("reaction_bundles")){
+                    return obj;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -133,17 +162,20 @@ public abstract class Reaction {
     }
 
     /**
-     * Build supported flavors
+     * Build supported actions
      */
-    public abstract void buildFlavors();
+    public abstract void buildActions();
     public abstract void refreshConfig();
-    public abstract String getIngredientName();
+    public abstract String getPluginName();
 
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
      * @return
      */
     protected abstract HashMap<String,Class> getModelHashMap();
-    protected abstract void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe);
+    protected abstract void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe);
+    protected abstract void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response);
+    protected abstract String getResTypeName();
+
 
 }

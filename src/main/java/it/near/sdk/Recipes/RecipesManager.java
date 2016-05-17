@@ -2,6 +2,7 @@ package it.near.sdk.Recipes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.Uri;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -23,13 +24,13 @@ import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.Filter;
 import it.near.sdk.GlobalState;
-import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.Reaction;
-import it.near.sdk.Recipes.Models.OperationFlavor;
-import it.near.sdk.Recipes.Models.PulseFlavor;
-import it.near.sdk.Recipes.Models.ReactionFlavor;
+import it.near.sdk.Recipes.Models.OperationAction;
+import it.near.sdk.Recipes.Models.PulseAction;
+import it.near.sdk.Recipes.Models.PulseBundle;
+import it.near.sdk.Recipes.Models.ReactionAction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
@@ -75,13 +76,15 @@ public class RecipesManager {
         morpheus = new Morpheus();
         // register your resources
         morpheus.getFactory().getDeserializer().registerResourceClass("recipes", Recipe.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_flavors", PulseFlavor.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("operation_flavor", OperationFlavor.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_flavors", ReactionFlavor.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_actions", PulseAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("operation_actions", OperationAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_actions", ReactionAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_bundles", PulseBundle.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
     }
 
-    public void addReaction(String ingredient, Reaction reaction){
-        reactions.put(ingredient, reaction);
+    public void addReaction(String plugin, Reaction reaction){
+        reactions.put(plugin, reaction);
     }
 
     /**
@@ -96,14 +99,19 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
-        Filter filter = Filter.build().addFilter("active","true");
+        // TODO turn strings to constants
+        final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
+                .appendQueryParameter("filter[active]", "true")
+                .appendQueryParameter("include", "pulse_action,operation_action,reaction_action")
+                .build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.RECIPES_PATH_WITH_FLAVORS + filter.print(), new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, uri.toString(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                    ULog.d(TAG, response.toString());
-                    recipes = NearUtils.parseList(morpheus, response, Recipe.class);
-                    persistList(recipes);
+                ULog.d(TAG, uri.toString());
+                ULog.d(TAG, response.toString());
+                recipes = NearUtils.parseList(morpheus, response, Recipe.class);
+                persistList(recipes);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -134,19 +142,20 @@ public class RecipesManager {
     }
 
     /**
-     * Tries to trigger a recipe, stating the ingredient, flavor and slice of the pulse.
+     * Tries to trigger a recipe, stating the plugin, action and bundle of the pulse.
      * If nothing matches, nothing happens.
      *
-     * @param pulse_ingredient the ingredient of the pulse.
-     * @param pulse_flavor the flavor of the pulse.
-     * @param pulse_slice the slice of the pulse.
+     * @param pulse_plugin the plugin of the pulse.
+     * @param pulse_action the action of the pulse.
+     * @param pulse_bundle the bundle of the pulse.
      */
-    public void gotPulse(String pulse_ingredient, String pulse_flavor, String pulse_slice){
+    public void gotPulse(String pulse_plugin, String pulse_action, String pulse_bundle){
         List<Recipe> matchingRecipes = new ArrayList<>();
+        if (recipes == null) return;
         for (Recipe recipe : recipes){
-             if ( recipe.getPulse_ingredient_id().equals(pulse_ingredient) &&
-                  recipe.getPulse_flavor().getId().equals(pulse_flavor) &&
-                  recipe.getPulse_slice_id().equals(pulse_slice) ) {
+             if ( recipe.getPulse_plugin_id().equals(pulse_plugin) &&
+                  recipe.getPulse_action().getId().equals(pulse_action) &&
+                  recipe.getPulse_bundle().getId().equals(pulse_bundle) ) {
                  matchingRecipes.add(recipe);
              }
         }
@@ -163,7 +172,45 @@ public class RecipesManager {
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
         ULog.d(TAG , stringRecipe);
-        Reaction reaction = reactions.get(recipe.getReaction_ingredient_id());
+        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
+    }
+
+    /**
+     * Process a recipe from it's id. Typically called for processing a push recipe.
+     * @param id recipe id.
+     * @return true if the recipe was found, false otherwise.
+     */
+    public boolean processRecipe(final String id) {
+        // todo download recipe
+        Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
+                .appendEncodedPath(id)
+                .appendQueryParameter("include", "reaction_bundle")
+                .build();
+
+        GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(
+                mContext, uri.toString(), new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                ULog.d(TAG, response.toString());
+                Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
+                ULog.d(TAG, recipe.toString());
+                // TODO get the reaction action to know which plugin can handle the push
+                // TODO carry-on the included section of the response to the reaction so it can parse the content
+                String reactionPluginName = recipe.getReaction_plugin_id();
+                Reaction reaction = reactions.get(reactionPluginName);
+                reaction.handlePushReaction(recipe, id, response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        }
+        ));
+        // inside receiver, parse the response to know what reaction plugin to use
+        // than fire the reaction
+        // if we got a network error, return false
+        return true;
     }
 }

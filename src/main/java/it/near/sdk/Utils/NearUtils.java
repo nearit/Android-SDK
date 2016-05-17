@@ -29,12 +29,12 @@ public class NearUtils {
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
 
     /**
-     * Parse a list
+     * Parse a list.
      * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
-     * @param json json to parse
-     * @param clazz class of the list object
-     * @param <T> generic type
-     * @return list of objects
+     * @param json json to parse.
+     * @param clazz class of the list object.
+     * @param <T> generic type.
+     * @return list of objects.
      */
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
         JSONAPIObject jsonapiObject = null;
@@ -51,6 +51,24 @@ public class NearUtils {
         }
 
         return returnList;
+    }
+
+    /**
+     * Parse an object.
+     * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
+     * @param json json to parse.
+     * @param clazz class of the object.
+     * @param <T> generic type.
+     * @return casted object.
+     */
+    public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz){
+        JSONAPIObject jsonapiObject = null;
+        try {
+            jsonapiObject = morpheus.parse(json.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return (T) jsonapiObject.getResource();
     }
 
     /**

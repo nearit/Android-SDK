@@ -127,4 +127,11 @@ public class ContentNotification extends Resource implements Parcelable {
         in.readTypedList(list, ImageSet.CREATOR);
         setImages_links(list);
     }
+
+    public boolean isSimpleNotification() {
+        return content == null &&
+                images == null &&
+                text == null &&
+                video_link == null;
+    }
 }

@@ -1,10 +1,11 @@
-package it.near.sdk.Push;
+package it.near.sdk.Push.GCMRegistration;
 
 import android.content.Intent;
 
 import com.google.android.gms.iid.InstanceIDListenerService;
 
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.Push.GCMRegistration.RegistrationIntentService;
 import it.near.sdk.Utils.ULog;
 
 /**

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package it.near.sdk.Push;
+package it.near.sdk.Push.GCMRegistration;
 
 import android.app.IntentService;
 import android.content.Intent;

@@ -1,10 +1,10 @@
 package it.near.sdk.Recipes.Models;
 
+import android.support.v4.util.ArrayMap;
+
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Recipes.Models.PulseFlavor;
-import it.near.sdk.Recipes.Models.ReactionFlavor;
 
 /**
  * @author cattaneostefano
@@ -13,24 +13,26 @@ public class Recipe extends Resource {
 
     @SerializeName("name")
     String name;
-    @SerializeName("pulse_ingredient_id")
-    String pulse_ingredient_id;
-    @SerializeName("pulse_slice_id")
-    String pulse_slice_id;
-    /*@SerializeName("operation_ingredient_id")
-    String operation_ingredient_id;
-    @SerializeName("operation_slice_id")
-    String operation_slice_id;*/
-    @SerializeName("reaction_ingredient_id")
-    String reaction_ingredient_id;
-    @SerializeName("reaction_slice_id")
-    String reaction_slice_id;
-    @Relationship("pulse_flavor")
-    PulseFlavor pulse_flavor;
-    /*@Relationship("operation_flavor")
-    OperationFlavor operation_flavor;*/
-    @Relationship("reaction_flavor")
-    ReactionFlavor reaction_flavor;
+    @SerializeName("notification")
+    ArrayMap<String, Object> notification;
+    @SerializeName("pulse_plugin_id")
+    String pulse_plugin_id;
+    @Relationship("pulse_bundle")
+    PulseBundle pulse_bundle;
+    @Relationship("pulse_action")
+    PulseAction pulse_action;
+    @SerializeName("reaction_plugin_id")
+    String reaction_plugin_id;
+    @Relationship("reaction_bundle")
+    ReactionBundle reaction_bundle;
+    @Relationship("reaction_action")
+    ReactionAction reaction_action;
+    /*@SerializeName("operation_plugin_id")
+    String operation_plugin_id;
+    @SerializeName("operation_bundle_id")
+    String operation_bundle_id;*/
+    /*@Relationship("operation_action")
+    OperationAction operation_action;*/
 
     public String getName() {
         return name;
@@ -40,76 +42,97 @@ public class Recipe extends Resource {
         this.name = name;
     }
 
-    public String getPulse_ingredient_id() {
-        return pulse_ingredient_id;
+    public ArrayMap<String, Object> getNotification() {
+        return notification;
     }
 
-    public void setPulse_ingredient_id(String pulse_ingredient_id) {
-        this.pulse_ingredient_id = pulse_ingredient_id;
+    public void setNotification(ArrayMap<String, Object> notification) {
+        this.notification = notification;
     }
 
-    public String getPulse_slice_id() {
-        return pulse_slice_id;
+    public String getPulse_plugin_id() {
+        return pulse_plugin_id;
     }
 
-    public void setPulse_slice_id(String pulse_slice_id) {
-        this.pulse_slice_id = pulse_slice_id;
+    public void setPulse_plugin_id(String pulse_plugin_id) {
+        this.pulse_plugin_id = pulse_plugin_id;
     }
 
-    /*public String getOperation_ingredient_id() {
-        return operation_ingredient_id;
+    public PulseBundle getPulse_bundle() {
+        return pulse_bundle;
     }
 
-    public void setOperation_ingredient_id(String operation_ingredient_id) {
-        this.operation_ingredient_id = operation_ingredient_id;
+    public void setPulse_bundle(PulseBundle pulse_bundle) {
+        this.pulse_bundle = pulse_bundle;
     }
 
-    public String getOperation_slice_id() {
-        return operation_slice_id;
+    /*public String getOperation_plugin_id() {
+        return operation_plugin_id;
     }
 
-    public void setOperation_slice_id(String operation_slice_id) {
-        this.operation_slice_id = operation_slice_id;
+    public void setOperation_plugin_id(String operation_plugin_id) {
+        this.operation_plugin_id = operation_plugin_id;
+    }
+
+    public String getOperation_bundle_id() {
+        return operation_bundle_id;
+    }
+
+    public void setOperation_bundle_id(String operation_bundle_id) {
+        this.operation_bundle_id = operation_bundle_id;
     }*/
 
-    public String getReaction_ingredient_id() {
-        return reaction_ingredient_id;
+    public String getReaction_plugin_id() {
+        return reaction_plugin_id;
     }
 
-    public void setReaction_ingredient_id(String reaction_ingredient_id) {
-        this.reaction_ingredient_id = reaction_ingredient_id;
+    public void setReaction_plugin_id(String reaction_plugin_id) {
+        this.reaction_plugin_id = reaction_plugin_id;
     }
 
-    public String getReaction_slice_id() {
-        return reaction_slice_id;
+    public ReactionBundle getReaction_bundle() {
+        return reaction_bundle;
     }
 
-    public void setReaction_slice_id(String reaction_slice_id) {
-        this.reaction_slice_id = reaction_slice_id;
+    public void setReaction_bundle(ReactionBundle reaction_bundle) {
+        this.reaction_bundle = reaction_bundle;
     }
 
-    public PulseFlavor getPulse_flavor() {
-        return pulse_flavor;
+    public PulseAction getPulse_action() {
+        return pulse_action;
     }
 
-    public void setPulse_flavor(PulseFlavor pulse_flavor) {
-        this.pulse_flavor = pulse_flavor;
+    public void setPulse_action(PulseAction pulse_action) {
+        this.pulse_action = pulse_action;
     }
 
-    /*public OperationFlavor getOperation_flavor() {
-        return operation_flavor;
+    /*public OperationAction getOperation_action() {
+        return operation_action;
     }
 
-    public void setOperation_flavor(OperationFlavor operation_flavor) {
-        this.operation_flavor = operation_flavor;
+    public void setOperation_action(OperationAction operation_action) {
+        this.operation_action = operation_action;
     }*/
 
-    public ReactionFlavor getReaction_flavor() {
-        return reaction_flavor;
+    public ReactionAction getReaction_action() {
+        return reaction_action;
     }
 
-    public void setReaction_flavor(ReactionFlavor reaction_flavor) {
-        this.reaction_flavor = reaction_flavor;
+    public void setReaction_action(ReactionAction reaction_action) {
+        this.reaction_action = reaction_action;
     }
 
+    public String getNotificationTitle() {
+        if (getNotification().containsKey("title")){
+            return getNotification().get("title").toString();
+        }
+        return null;
+    }
+
+    public String getNotificationBody() {
+        if (getNotification().containsKey("body")){
+            return getNotification().get("body").toString();
+        }
+        return null;
+    }
 }

@@ -8,7 +8,7 @@ import it.near.sdk.R;
 import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.PollNotification.PollNotification;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
+import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
 
 /**
@@ -23,7 +23,7 @@ import it.near.sdk.Utils.NearNotification;
  * </pre>
  * @author cattaneostefano
  */
-public class RegionIntentService extends IntentService {
+public class RegionIntentService extends BaseIntentService {
 
     private static String TAG = "RegionIntentService";
     /**
@@ -48,61 +48,24 @@ public class RegionIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String trigger = intent.getStringExtra("trigger-source");
-        String source = intent.getStringExtra("content-source");
+        String notif_title = intent.getStringExtra("notif_title");
+        String notif_body = intent.getStringExtra("notif_body");
 
         // create simple intent to open app launcher
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
+        if (notif_title == null) {
+            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        }
         // sends system notification
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), trigger, source, targetIntent, NOTIFICATION_ID);
+        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notif_body, targetIntent, NOTIFICATION_ID);
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         RegionBroadcastReceiver.completeWakefulIntent(intent);
     }
 
-
-    /**
-     * Utility method for extensions of this class. It notifies the listener if the intent contains a recognized core content.
-     * @param intent The intent to analyze.
-     * @param listener Contains a callback method for each content type.
-     * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
-     */
-    protected boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
-
-        String content_source = intent.getExtras().getString("content-source");
-        String content_type = intent.getExtras().getString("content-type");
-
-        String trigger_source = intent.getExtras().getString("trigger-source");
-        String trigger_type = intent.getExtras().getString("trigger-type");
-        String trigger_item = intent.getExtras().getString("trigger-item");
-
-        SimpleNotification s_notif;
-        ContentNotification c_notif;
-        PollNotification p_notif;
-
-        boolean coreContent = false;
-        switch (content_source) {
-            case "simple-notification" :
-                s_notif = (SimpleNotification) intent.getParcelableExtra("content");
-                listener.gotSimpleNotification(intent, s_notif, content_source, content_type, trigger_source, trigger_type, trigger_item);
-                coreContent = true;
-                break;
-            case "content-notification" :
-                c_notif = (ContentNotification) intent.getParcelableExtra("content");
-                listener.getContentNotification(intent, c_notif, content_source, content_type, trigger_source, trigger_type, trigger_item);
-                coreContent = true;
-                break;
-            case "poll-notification" :
-                p_notif = (PollNotification) intent.getParcelableExtra("content");
-                listener.getPollNotification(intent, p_notif, content_source, content_type, trigger_source, trigger_type, trigger_item);
-                coreContent = true;
-                break;
-        }
-        return coreContent;
-    }
 
 
 }

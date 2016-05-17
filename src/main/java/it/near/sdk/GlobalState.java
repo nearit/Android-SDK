@@ -7,7 +7,9 @@ import com.android.volley.toolbox.Volley;
 
 import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
+import it.near.sdk.Push.PushManager;
 import it.near.sdk.Recipes.NearNotifier;
+import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.TraceNotifier;
 
 /**
@@ -23,10 +25,11 @@ public class GlobalState {
 
     private Context mContext;
 
-    private NearRangeNotifier nearRangeNotifier;
     private TraceNotifier traceNotifier;
     private BeaconDynamicRadar beaconDynamicRadar;
     private NearNotifier nearNotifier;
+    private RecipesManager recipesManager;
+    private PushManager pushManager;
 
 
     public GlobalState(Context mContext) {
@@ -49,13 +52,6 @@ public class GlobalState {
 
     public RequestQueue getRequestQueue(){ return requestQueue; }
 
-    public NearRangeNotifier getNearRangeNotifier() {
-        return nearRangeNotifier;
-    }
-
-    public void setNearRangeNotifier(NearRangeNotifier nearRangeNotifier) {
-        this.nearRangeNotifier = nearRangeNotifier;
-    }
 
     public TraceNotifier getTraceNotifier() {
         return traceNotifier;
@@ -71,6 +67,22 @@ public class GlobalState {
 
     public void setBeaconDynamicRadar(BeaconDynamicRadar beaconDynamicRadar) {
         this.beaconDynamicRadar = beaconDynamicRadar;
+    }
+
+    public RecipesManager getRecipesManager() {
+        return recipesManager;
+    }
+
+    public void setRecipesManager(RecipesManager recipesManager) {
+        this.recipesManager = recipesManager;
+    }
+
+    public PushManager getPushManager() {
+        return pushManager;
+    }
+
+    public void setPushManager(PushManager pushManager) {
+        this.pushManager = pushManager;
     }
 
     public void setNearNotifier(NearNotifier nearNotifier) {

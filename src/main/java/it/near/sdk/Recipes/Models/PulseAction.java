@@ -6,7 +6,7 @@ import it.near.sdk.Reactions.Reaction;
 /**
  * @author cattaneostefano
  */
-public class PulseFlavor extends Resource {
-    public PulseFlavor() {
+public class PulseAction extends Resource {
+    public PulseAction() {
     }
 }

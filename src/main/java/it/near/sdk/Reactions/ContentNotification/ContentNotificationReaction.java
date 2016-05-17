@@ -29,8 +29,11 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public class ContentNotificationReaction extends Reaction {
-    private static final String INGREDIENT_NAME = "content-notification";
-    private static final String SHOW_CONTENT_FLAVOR_NAME = "show_content";
+    // ---------- content notification plugin ----------
+    public static final String CONTENT_NOTIFICATION_PATH =      "content-notification";
+    public static final String CONTENT_NOTIFICATION_RESOURCE =  "contents";
+    private static final String PLUGIN_NAME = "content-notification";
+    private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentNotificationReaction";
     public static final String PREFS_SUFFIX = "NearContentNot";
     private List<ContentNotification> contentNotificationList;
@@ -49,27 +52,38 @@ public class ContentNotificationReaction extends Reaction {
         refreshConfig();
     }
 
+    @Override
+    protected String getResTypeName() {
+        return "contents";
+    }
+
 
     @Override
-    public void handleReaction(String reaction_flavor, String reaction_slice, Recipe recipe) {
-        switch (reaction_flavor){
-            case SHOW_CONTENT_FLAVOR_NAME:
-                showContent(reaction_slice, recipe);
+    public void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+        switch (reaction_action){
+            case SHOW_CONTENT_ACTION_NAME:
+                showContent(reaction_bundle, recipe);
                 break;
         }
     }
 
-    private void showContent(String reaction_slice, Recipe recipe) {
-        ULog.d(TAG, "Show content: " + reaction_slice);
-        ContentNotification notification = getNotification(reaction_slice);
-        if (notification == null) return;
-        nearNotifier.deliverReaction(notification, recipe);
+    @Override
+    protected void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response) {
+        ContentNotification contentNotification = NearUtils.parseElement(morpheus, reaction_bundle, ContentNotification.class);
+        nearNotifier.deliverBackgroundPushReaction(contentNotification, recipe, push_id);
     }
 
-    private ContentNotification getNotification(String reaction_slice) {
+    private void showContent(String reaction_bundle, Recipe recipe) {
+        ULog.d(TAG, "Show content: " + reaction_bundle);
+        ContentNotification notification = getNotification(reaction_bundle);
+        if (notification == null) return;
+        nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
+    }
+
+    private ContentNotification getNotification(String reaction_bundle) {
         if (contentNotificationList == null) return null;
         for ( ContentNotification cn : contentNotificationList){
-            if (cn.getId().equals(reaction_slice)){
+            if (cn.getId().equals(reaction_bundle)){
                 return cn;
             }
         }
@@ -77,13 +91,12 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     public void refreshConfig() {
-        /*Uri path = Uri.parse(Constants.API.PLUGINS.content_notification).buildUpon()
-                .appendPath("notifications")
-                .appendQueryParameter("include", "images")
-                .appendQueryParameter("filter[app_id]", "dds")
-                .appendQueryParameter("filter[sdsaf]", "safaf").build();*/
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(CONTENT_NOTIFICATION_PATH)
+                    .appendPath(CONTENT_NOTIFICATION_RESOURCE)
+                    .appendQueryParameter("include", "images").build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Constants.API.PLUGINS.CONTENT_NOTIFICATION_LIST_WITH_IMAGES, new Response.Listener<JSONObject>() {
+                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
@@ -132,22 +145,22 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     @Override
-    public String getIngredientName() {
-        return INGREDIENT_NAME;
+    public String getPluginName() {
+        return PLUGIN_NAME;
     }
 
     @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
-        map.put("notifications", ContentNotification.class);
+        map.put("contents", ContentNotification.class);
         map.put("images", Image.class);
         return map;
     }
 
     @Override
-    public void buildFlavors() {
-        supportedFlavors = new ArrayList<String>();
-        supportedFlavors.add(SHOW_CONTENT_FLAVOR_NAME);
+    public void buildActions() {
+        supportedActions = new ArrayList<String>();
+        supportedActions.add(SHOW_CONTENT_ACTION_NAME);
     }
 
     JSONObject testObject;
