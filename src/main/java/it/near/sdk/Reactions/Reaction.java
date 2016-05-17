@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +26,7 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public abstract class Reaction {
+    private static final String TAG = "Reaction";
     public List<String> supportedActions = null;
     protected static Gson gson = null;
     protected SharedPreferences sp;
@@ -81,6 +83,35 @@ public abstract class Reaction {
             return;
         }
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle().getId(), recipe);
+    }
+
+    public void handlePushReaction(Recipe recipe, JSONObject response){
+        JSONObject reaction_bundle = fetchReactionBundle(response);
+        try {
+            reaction_bundle.put("type", getResTypeName());
+            ULog.d(TAG, "");
+            JSONObject outerObject = new JSONObject();
+            outerObject.put("data", reaction_bundle);
+            handlePushReaction(recipe, outerObject, response);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private JSONObject fetchReactionBundle(JSONObject response) {
+        try {
+            JSONArray includedObject = response.getJSONArray("included");
+            for (int i = 0; i < includedObject.length(); i++){
+                JSONObject obj = (JSONObject) includedObject.get(i);
+                if (obj.getString("type").equals("reaction_bundles")){
+                    return obj;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -143,5 +174,8 @@ public abstract class Reaction {
      */
     protected abstract HashMap<String,Class> getModelHashMap();
     protected abstract void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe);
+    protected abstract void handlePushReaction(Recipe recipe, JSONObject reaction_bundle, JSONObject response);
+    protected abstract String getResTypeName();
+
 
 }

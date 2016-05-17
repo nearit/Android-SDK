@@ -52,6 +52,11 @@ public class ContentNotificationReaction extends Reaction {
         refreshConfig();
     }
 
+    @Override
+    protected String getResTypeName() {
+        return "contents";
+    }
+
 
     @Override
     public void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
@@ -60,6 +65,12 @@ public class ContentNotificationReaction extends Reaction {
                 showContent(reaction_bundle, recipe);
                 break;
         }
+    }
+
+    @Override
+    protected void handlePushReaction(Recipe recipe, JSONObject reaction_bundle, JSONObject response) {
+        ContentNotification contentNotification = NearUtils.parseElement(morpheus, reaction_bundle, ContentNotification.class);
+        nearNotifier.deliverBackgroundPushReaction(contentNotification, recipe);
     }
 
     private void showContent(String reaction_bundle, Recipe recipe) {

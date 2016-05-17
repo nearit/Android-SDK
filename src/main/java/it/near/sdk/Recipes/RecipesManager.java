@@ -195,6 +195,9 @@ public class RecipesManager {
                 ULog.d(TAG, recipe.toString());
                 // TODO get the reaction action to know which plugin can handle the push
                 // TODO carry-on the included section of the response to the reaction so it can parse the content
+                String reactionPluginName = recipe.getReaction_plugin_id();
+                Reaction reaction = reactions.get(reactionPluginName);
+                reaction.handlePushReaction(recipe, response);
             }
         }, new Response.ErrorListener() {
             @Override

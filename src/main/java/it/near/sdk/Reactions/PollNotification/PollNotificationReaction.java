@@ -19,6 +19,7 @@ import java.util.List;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalState;
+import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -53,12 +54,23 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
+    protected String getResTypeName() {
+        return "polls";
+    }
+
+    @Override
     protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
         switch(reaction_action){
             case SHOW_POLL_ACTION_NAME:
                 showPoll(reaction_bundle, recipe);
                 break;
         }
+    }
+
+    @Override
+    protected void handlePushReaction(Recipe recipe, JSONObject reaction_bundle, JSONObject response) {
+        PollNotification pollNotification = NearUtils.parseElement(morpheus, reaction_bundle, PollNotification.class);
+        nearNotifier.deliverBackgroundPushReaction(pollNotification, recipe);
     }
 
     private void showPoll(String reaction_bundle, Recipe recipe) {
