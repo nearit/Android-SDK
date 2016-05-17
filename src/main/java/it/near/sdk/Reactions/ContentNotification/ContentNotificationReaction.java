@@ -68,9 +68,9 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     @Override
-    protected void handlePushReaction(Recipe recipe, JSONObject reaction_bundle, JSONObject response) {
+    protected void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response) {
         ContentNotification contentNotification = NearUtils.parseElement(morpheus, reaction_bundle, ContentNotification.class);
-        nearNotifier.deliverBackgroundPushReaction(contentNotification, recipe);
+        nearNotifier.deliverBackgroundPushReaction(contentNotification, recipe, push_id);
     }
 
     private void showContent(String reaction_bundle, Recipe recipe) {

@@ -102,7 +102,8 @@ public class RecipesManager {
         // TODO turn strings to constants
         final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendQueryParameter("filter[active]", "true")
-                .appendQueryParameter("include", "pulse_action,operation_action,reaction_action").build();
+                .appendQueryParameter("include", "pulse_action,operation_action,reaction_action")
+                .build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, uri.toString(), new Response.Listener<JSONObject>() {
             @Override
@@ -150,6 +151,7 @@ public class RecipesManager {
      */
     public void gotPulse(String pulse_plugin, String pulse_action, String pulse_bundle){
         List<Recipe> matchingRecipes = new ArrayList<>();
+        if (recipes == null) return;
         for (Recipe recipe : recipes){
              if ( recipe.getPulse_plugin_id().equals(pulse_plugin) &&
                   recipe.getPulse_action().getId().equals(pulse_action) &&
@@ -179,7 +181,7 @@ public class RecipesManager {
      * @param id recipe id.
      * @return true if the recipe was found, false otherwise.
      */
-    public boolean processRecipe(String id) {
+    public boolean processRecipe(final String id) {
         // todo download recipe
         Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
@@ -197,7 +199,7 @@ public class RecipesManager {
                 // TODO carry-on the included section of the response to the reaction so it can parse the content
                 String reactionPluginName = recipe.getReaction_plugin_id();
                 Reaction reaction = reactions.get(reactionPluginName);
-                reaction.handlePushReaction(recipe, response);
+                reaction.handlePushReaction(recipe, id, response);
             }
         }, new Response.ErrorListener() {
             @Override

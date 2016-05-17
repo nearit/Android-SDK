@@ -10,9 +10,9 @@ import org.altbeacon.beacon.BeaconManager;
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
 import it.near.sdk.Push.PushManager;
-import it.near.sdk.Reactions.Action;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
-import it.near.sdk.Reactions.PollNotification.PollAction;
+import it.near.sdk.Reactions.Event;
+import it.near.sdk.Reactions.PollNotification.PollEvent;
 import it.near.sdk.Reactions.PollNotification.PollNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -159,20 +159,23 @@ public class NearItManager {
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
         public void deliverBackgroundRegionReaction(Parcelable parcelable, Recipe recipe) {
-            deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION);
+            deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION, null);
         }
 
         @Override
-        public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe) {
-            deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION);
+        public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id) {
+            deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION, push_id);
         }
     };
 
 
-    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action){
+    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
         ULog.d(TAG, "deliver Event: " + parcelable.toString());
 
         Intent resultIntent = new Intent(action);
+        if (action.equals(PUSH_MESSAGE_ACTION)){
+            resultIntent.putExtra("push_id", pushId);
+        }
         // set recipe id
         resultIntent.putExtra("recipe_id", recipe.getId());
         // set notification text
@@ -180,8 +183,8 @@ public class NearItManager {
         // set contet to show
         resultIntent.putExtra("content", parcelable);
         // set the content type so the app can cast the parcelable to correct content
-        resultIntent.putExtra("content-plugin", recipe.getReaction_plugin_id());
-        resultIntent.putExtra("content-action", recipe.getReaction_action().getId());
+        resultIntent.putExtra("reaction-plugin", recipe.getReaction_plugin_id());
+        resultIntent.putExtra("reaction-action", recipe.getReaction_action().getId());
         // set the pulse info
         resultIntent.putExtra("pulse-plugin", recipe.getPulse_plugin_id());
         resultIntent.putExtra("pulse-action", recipe.getPulse_action().getId());
@@ -192,13 +195,13 @@ public class NearItManager {
 
     /**
      * Sends an action to the SDK, that might delegate it to other plugins, based on its type.
-     * @param action
+     * @param event the event to send.
      * @return true if the action was a recognized action, false otherwise.
      */
-    public boolean sendAction(Action action){
-        switch (action.getPlugin()){
-            case PollAction.PLUGIN_NAME:
-                pollNotification.sendAction((PollAction)action);
+    public boolean sendEvent(Event event){
+        switch (event.getPlugin()){
+            case PollEvent.PLUGIN_NAME:
+                pollNotification.sendEvent((PollEvent)event);
                 return true;
         }
         return false;

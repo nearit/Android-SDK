@@ -15,6 +15,7 @@ import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
+import it.near.sdk.Push.GCMRegistration.RegistrationIntentService;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
 
@@ -86,4 +87,7 @@ public class PushManager {
 
     private RecipesManager getRecipesManager(){return GlobalState.getInstance(mContext.getApplicationContext()).getRecipesManager();}
 
+    public void sendEvent(OpenPushEvent event){
+        trackPush(event.getId(), PUSH_OPENED_ACTION);
+    }
 }

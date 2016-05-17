@@ -68,9 +68,9 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
-    protected void handlePushReaction(Recipe recipe, JSONObject reaction_bundle, JSONObject response) {
+    protected void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response) {
         PollNotification pollNotification = NearUtils.parseElement(morpheus, reaction_bundle, PollNotification.class);
-        nearNotifier.deliverBackgroundPushReaction(pollNotification, recipe);
+        nearNotifier.deliverBackgroundPushReaction(pollNotification, recipe, push_id);
     }
 
     private void showPoll(String reaction_bundle, Recipe recipe) {
@@ -136,21 +136,21 @@ public class PollNotificationReaction extends Reaction {
     @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
-        map.put("notifications", PollNotification.class);
+        map.put("polls", PollNotification.class);
         return map;
     }
 
     JSONObject testObject;
     String test = "{\"data\":[{\"id\":\"5db0d8a4-d17a-4c2d-8d48-cf459aeab4e5\",\"type\":\"notifications\",\"attributes\":{\"text\":\"Poll - Tap to answer\",\"question\":\"How you doing?\",\"choice_1\":\"Fine, thx\",\"choice_2\":\"No good..\",\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\"}}]}";
 
-    public void sendAction(PollAction action) {
+    public void sendEvent(PollEvent event) {
         try {
-            String answerBody = action.toJsonAPI();
+            String answerBody = event.toJsonAPI();
             ULog.d(TAG, "Answer" + answerBody);
             Uri path = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(POLL_NOTIFICATION)
                     .appendPath(POLL_NOTIFICATION_RESOURCE)
-                    .appendPath(action.getId())
+                    .appendPath(event.getId())
                     .appendPath("answers").build();
             GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
                 @Override

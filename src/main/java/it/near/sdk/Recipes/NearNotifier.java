@@ -9,5 +9,5 @@ import it.near.sdk.Recipes.Models.Recipe;
  */
 public interface NearNotifier {
     public abstract void deliverBackgroundRegionReaction(Parcelable parcelable, Recipe recipe);
-    public abstract void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe);
+    public abstract void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id);
 }

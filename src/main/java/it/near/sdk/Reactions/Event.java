@@ -1,9 +1,9 @@
 package it.near.sdk.Reactions;
 
 /**
- * Base class for actions
+ * Base class for events
  * @author cattaneostefano
  */
-public abstract class Action {
+public abstract class Event {
     public abstract String getPlugin();
 }

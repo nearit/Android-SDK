@@ -85,14 +85,14 @@ public abstract class Reaction {
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle().getId(), recipe);
     }
 
-    public void handlePushReaction(Recipe recipe, JSONObject response){
+    public void handlePushReaction(Recipe recipe,String push_id, JSONObject response){
         JSONObject reaction_bundle = fetchReactionBundle(response);
         try {
             reaction_bundle.put("type", getResTypeName());
             ULog.d(TAG, "");
             JSONObject outerObject = new JSONObject();
             outerObject.put("data", reaction_bundle);
-            handlePushReaction(recipe, outerObject, response);
+            handlePushReaction(recipe,push_id, outerObject, response);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -174,7 +174,7 @@ public abstract class Reaction {
      */
     protected abstract HashMap<String,Class> getModelHashMap();
     protected abstract void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe);
-    protected abstract void handlePushReaction(Recipe recipe, JSONObject reaction_bundle, JSONObject response);
+    protected abstract void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response);
     protected abstract String getResTypeName();
 
 
