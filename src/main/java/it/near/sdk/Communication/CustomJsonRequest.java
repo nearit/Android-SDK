@@ -1,7 +1,6 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
-import android.net.Uri;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -14,7 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
+import it.near.sdk.Operation.UserDataNotifier;
+import it.near.sdk.Operation.NearItUserProfile;
 import it.near.sdk.R;
 
 /**

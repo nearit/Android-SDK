@@ -1,6 +1,5 @@
 package it.near.sdk.Operation;
 
-import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 
@@ -24,19 +23,19 @@ import it.near.sdk.Utils.ULog;
  * Class containing methods to create a new profile and to add values to the profile for user segmentation.
  * @author cattaneostefano.
  */
-public class UserProfile {
+public class NearItUserProfile {
 
     private static final String PLUGIN_NAME = "congrego";
     private static final String PROFILE_RES_TYPE = "profiles";
     private static final String DATA_POINTS_RES_TYPE = "data_points";
-    private static final String TAG = "UserProfile";
+    private static final String TAG = "NearItUserProfile";
 
     /**
      * Create a new profile and saves the profile identifier internally. After a profile is created, it's possible to add properties to it.
      * @param context the application context.
      * @param listener interface for success or failure on profile creation.
      */
-    public static void CreateNewProfile(Context context, final ProfileCreationListener listener){
+    public static void createNewProfile(Context context, final ProfileCreationListener listener){
         String requestBody = null;
         try {
             requestBody = buildProfileCreationRequestBody(context);
@@ -60,6 +59,8 @@ public class UserProfile {
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, "got profile: " + response.toString());
                         // TODO what to do with profile response
+                        // TODO parse it
+                        // TODO save profile id in the globalconfig
                         listener.onProfileCreated();
                     }
                 },
@@ -69,9 +70,7 @@ public class UserProfile {
                         listener.onProfileCreationError("volley network error: " + error.toString());
                     }
                 }
-
         ));
-
     }
 
     private static String buildProfileCreationRequestBody(Context context) throws JSONException {
@@ -83,16 +82,16 @@ public class UserProfile {
     }
 
     /**
-     * Create or update a new data point, a key/value couple representing a property used in profile segmentation.
+     * Create or update user data, a key/value couple used in profile segmentation.
      * @param context the application context.
-     * @param key the name of the property.
-     * @param value the value of the property for the current user.
+     * @param key the name of the data field.
+     * @param value the value of the data field for the current user.
      * @param listener interface for success or failure on property creation.
      */
-    public static void SetDataPoint(Context context, String key, String value, final DataPointNotifier listener){
+    public static void setUserData(Context context, String key, String value, final UserDataNotifier listener){
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
-            listener.onDataPointNotSetError("Profile didn't exists");
+            listener.onDataNotSetError("Profile didn't exists");
             return;
         }
 
@@ -104,7 +103,7 @@ public class UserProfile {
             reqBody = NearUtils.toJsonAPI("data_points", map);
         } catch (JSONException e) {
             e.printStackTrace();
-            listener.onDataPointNotSetError("Request creation error");
+            listener.onDataNotSetError("Request creation error");
         }
 
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
@@ -122,13 +121,13 @@ public class UserProfile {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, "datapoint created: " + response.toString());
-                        listener.onDataPointCreated();
+                        listener.onDataCreated();
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        listener.onDataPointNotSetError("volley network error: " + error.toString());
+                        listener.onDataNotSetError("volley network error: " + error.toString());
                     }
                 }
         ));
