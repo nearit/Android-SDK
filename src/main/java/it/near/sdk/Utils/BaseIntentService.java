@@ -45,11 +45,7 @@ public abstract class BaseIntentService extends IntentService {
         switch (reaction_plugin) {
             case "content-notification" :
                 c_notif = (ContentNotification) intent.getParcelableExtra("content");
-                if (c_notif.isSimpleNotification()){
-                    listener.gotSimpleNotification(intent, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
-                } else {
-                    listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
-                }
+                listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "poll-notification" :
