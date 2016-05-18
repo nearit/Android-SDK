@@ -23,7 +23,9 @@ public class GlobalConfig {
     private String deviceToken;
     private static final String INSTALLATIONID = "installationid";
     private String installationId;
-    public final String PROXIMITYIMAGE = "notification_image";
+    private static final String PROFILE_ID = "profileId";
+    private String profileId;
+    private final String NOTIFICATIONIMAGE = "notification_image";
     private int notificationImage = 0;
     private final String THRESHOLD = "threshold";
     private float threshold = 0;
@@ -136,6 +138,18 @@ public class GlobalConfig {
     public void setInstallationId(String installationId){
         this.installationId = installationId;
         setLocalString(INSTALLATIONID, installationId);
+    }
+
+    public String getProfileId(){
+        if (profileId == null){
+            profileId = getLocalString(PROFILE_ID);
+        }
+        return profileId;
+    }
+
+    public void setProfileId(String profileId){
+        this.profileId = profileId;
+        setLocalString(PROFILE_ID, profileId);
     }
 
     private void setLocalString(String name, String value){
