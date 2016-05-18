@@ -13,5 +13,4 @@ import it.near.sdk.Reactions.PollNotification.PollNotification;
 public interface CoreContentsListener {
     public abstract void getPollNotification(Intent intent, PollNotification notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle);
     public abstract void getContentNotification(Intent intent,ContentNotification notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle);
-    public abstract void gotSimpleNotification(Intent intent,String notification, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle);
 }
