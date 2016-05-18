@@ -58,16 +58,4 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
 
     }
 
-    @Override
-    public void gotSimpleNotification(Intent intent, String notification, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
-        Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
-        targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        targetIntent.putExtras(intent.getExtras());
-        String notif_title = intent.getStringExtra("notif_title");
-        if (notif_title == null) {
-            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        }
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notification, targetIntent, PUSH_NOTIFICATION_ID);
-    }
 }
