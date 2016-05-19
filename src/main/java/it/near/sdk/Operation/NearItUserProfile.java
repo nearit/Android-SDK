@@ -35,7 +35,12 @@ public class NearItUserProfile {
      * @param context the application context.
      * @param listener interface for success or failure on profile creation.
      */
-    public static void createNewProfile(Context context, final ProfileCreationListener listener){
+    public static void createNewProfile(final Context context, final ProfileCreationListener listener){
+        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        if (profileId != null){
+            listener.onProfileCreated(false, profileId);
+        }
+
         String requestBody = null;
         try {
             requestBody = buildProfileCreationRequestBody(context);
@@ -58,10 +63,16 @@ public class NearItUserProfile {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, "got profile: " + response.toString());
-                        // TODO what to do with profile response
-                        // TODO parse it
-                        // TODO save profile id in the globalconfig
-                        listener.onProfileCreated();
+
+                        String profileId = null;
+                        try {
+                            profileId = response.getJSONObject("data").getString("id");
+                            GlobalConfig.getInstance(context).setProfileId(profileId);
+                            listener.onProfileCreated(true, profileId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            listener.onProfileCreationError("unknown server format");
+                        }
                     }
                 },
                 new Response.ErrorListener() {
