@@ -50,7 +50,8 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 
 ## Advanced topics ##
 
-* Region scanning is set at 1 second of scan every 8 seconds.
+* Region scanning is set to a scan every 60 seconds when outside your beacons range. As soon as beacons are picked up, it switches to 20 seconds.
+* You can set the minimum parameter for determine the distance upon which the SDK must detect beacons recipes with the method *setThreshold(floatParam)* or the *NearItManager*. The default value is *0.5f*
 * The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_COARSE_LOCATION permissions at runtime. Look in the sample to see a common pattern on how-to obtain this permission.
 * You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of the *NearItManager*
 
