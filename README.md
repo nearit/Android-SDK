@@ -52,25 +52,22 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 
 * Region scanning is set to a scan every 60 seconds when outside your beacons range. As soon as beacons are picked up, it switches to 20 seconds.
 * You can set the minimum parameter for determine the distance upon which the SDK must detect beacons recipes with the method *setThreshold(floatParam)* or the *NearItManager*. The default value is *0.5f*
-* The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_COARSE_LOCATION permissions at runtime. Look in the sample to see a common pattern on how-to obtain this permission.
+* The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_COARSE_LOCATION permissions at runtime.
 * You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of the *NearItManager*
 
 ### Built-in region background receivers ###
 
 If you want to be notified when a user enters a region using the built-in background region notifications put this in your app manifest.
-(The content of the notification text is not user friendly, so this functionality should be used for debug purpose only, for the moment)
 ```
 #!xml
 <!-- built in region receivers -->
-        <service android:name="it.near.sdk.Beacons.Monitoring.RegionIntentService" />
-
-        <receiver android:name="it.near.sdk.Beacons.Monitoring.RegionBroadcastReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="it.near.sdk.permission.REGION_MESSAGE"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </receiver>
+<receiver android:name="it.near.sdk.Beacons.Monitoring.RegionBroadcastReceiver"
+    android:exported="false">
+    <intent-filter>
+        <action android:name="it.near.sdk.permission.REGION_MESSAGE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+    </intent-filter>
+</receiver>
 ```
 
 ### Custom background behavior ###
@@ -105,7 +102,7 @@ nearItManager.sendEvent(new PollEvent(poll_id, answer);
 NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
 
-To enable push notification (they might be required by certain plugins), add this permission to your app *manifest*
+To enable push notification, add this permission to your app *manifest*
 ```
 # !xml
 <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
