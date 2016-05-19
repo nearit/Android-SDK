@@ -164,3 +164,37 @@ And add them to your manifest
     </intent-filter>
 </receiver>
 ```
+
+### User profilation ###
+
+To register an user on our platform call this method
+```
+# !java
+NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
+    @Override
+    public void onProfileCreated() {
+        // your profile was created
+    }
+                                            
+    @Override
+    public void onProfileCreationError(String error) {
+        // there was an error
+    }
+});
+```
+
+After the profile is created set user data
+```
+# !java
+NearItUserProfile.setUserData(context, "name", "John", new UserDataNotifier() {
+    @Override
+    public void onDataCreated() {
+        // data was set/created                                                
+    }
+                                                       
+    @Override
+    public void onDataNotSetError(String error) {
+        // there was an error                        
+    }
+});
+```
