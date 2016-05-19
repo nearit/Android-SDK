@@ -10,12 +10,12 @@ It is currently in **beta**.
 * Beacon detection with app in the foreground.
 * Content delivery
 * Beacon monitoring with app in the background.
-* Different types of contents
+* Different types of contents.
+* Push Notification
 
 ## Coming soon ##
 
 * Different type of detectors
-* Push Notification
 * User Segmentation
 
 ## Behaviour ##
@@ -31,7 +31,7 @@ To start using the SDK, include this in your app *build.gradle*
 # !java
 
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:0.1.4-beta'
+    compile 'it.near.sdk.core:nearitsdk:0.2.3'
 }
 ```
 
@@ -102,9 +102,9 @@ nearItManager.sendEvent(new PollEvent(poll_id, answer);
 ### Enable Push Notifications ###
 
 NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
-When a user taps on it, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle.
-To enable push notification (they might be required by certain plugins), add this permission to your app *manifest*
+When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
 
+To enable push notification (they might be required by certain plugins), add this permission to your app *manifest*
 ```
 # !xml
 <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
@@ -114,8 +114,13 @@ To enable push notification (they might be required by certain plugins), add thi
 <uses-permission android:name="<YOUR_APP_PACKAGE_NAME>.permission.C2D_MESSAGE" />
 ```
 
-Add this receiver in the *application* tag of your app *manifest*
+Set your push senderId
+```
+# !java
+nearItManager.setPushSenderId("your-app-sender-id");
+```
 
+Add this receiver in the *application* tag of your app *manifest*
 ```
 # !xml
 <application ...>
@@ -134,7 +139,6 @@ Add this receiver in the *application* tag of your app *manifest*
 
 Every push notification tracks itself as received when the SDK receives it.
 If you want to track notification taps, simply do
-
 ```
 # !java
 // the push_id will be included in the extras bundle of the intent
@@ -161,38 +165,4 @@ And add them to your manifest
         <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
 </receiver>
-```
-
-### User profilation ###
-
-To register an user on our platform call this method
-```
-# !java
-NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
-    @Override
-    public void onProfileCreated() {
-        // your profile was created
-    }
-                                            
-    @Override
-    public void onProfileCreationError(String error) {
-        // there was an error
-    }
-});
-```
-
-After the profile is created set user data
-```
-# !java
-NearItUserProfile.setUserData(context, "name", "John", new UserDataNotifier() {
-    @Override
-    public void onDataCreated() {
-        // data was set/created                                                
-    }
-                                                       
-    @Override
-    public void onDataNotSetError(String error) {
-        // there was an error                        
-    }
-});
 ```
