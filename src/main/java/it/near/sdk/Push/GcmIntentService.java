@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.R;
 import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.PollNotification.PollNotification;
@@ -41,7 +42,7 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         if (notif_title == null) {
             notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
+        NearNotification.send(this, R.drawable.ic_send_white_24dp, notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
     }
 
     @Override
@@ -54,7 +55,7 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         if (notif_title == null) {
             notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
+        NearNotification.send(this, R.drawable.ic_send_white_24dp, notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
 
     }
 

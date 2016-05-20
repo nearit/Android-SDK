@@ -3,8 +3,6 @@ package it.near.sdk;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import it.near.sdk.Communication.Constants;
-
 /**
  * Class containing global configuration. It saves all configuration strings on disk.
  *
@@ -25,7 +23,7 @@ public class GlobalConfig {
     private String deviceToken;
     private static final String INSTALLATIONID = "installationid";
     private String installationId;
-    private final String NOTIFICATIONIMAGE = "notification_image";
+    public final String PROXIMITYIMAGE = "notification_image";
     private int notificationImage = 0;
     private final String THRESHOLD = "threshold";
     private float threshold = 0;
@@ -56,14 +54,14 @@ public class GlobalConfig {
 
     public int getNotificationImage() {
         if (notificationImage == 0){
-            notificationImage = sp.getInt(NOTIFICATIONIMAGE, 0);
+            notificationImage = sp.getInt(PROXIMITYIMAGE, 0);
         }
         return notificationImage;
     }
 
     public void setNotificationImage(int notificationImage) {
         this.notificationImage = notificationImage;
-        editor.putInt(NOTIFICATIONIMAGE, notificationImage).apply();
+        editor.putInt(PROXIMITYIMAGE, notificationImage).apply();
     }
 
 
