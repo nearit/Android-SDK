@@ -125,9 +125,7 @@ task uploadDocs << {
                 classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
                 classpath: configurations.ftpAntTask.asPath)
         ftp(server: ftpHost, userid: ftpUser, password: ftpPassword, remoteDir: ftpDir) {
-            fileset(dir: 'build/docs/javadoc/') {
-                include(name: "*")
-            }
+            fileset(dir: 'build/docs/javadoc/')
         }
     }
 }
