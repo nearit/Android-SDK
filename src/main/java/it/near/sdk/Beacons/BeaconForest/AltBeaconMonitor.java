@@ -273,6 +273,7 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
         ULog.d(TAG, "beacons ranged: " + collection.size() + " data: " + region.toString());
         for (org.altbeacon.beacon.Beacon beacon : collection) {
             ULog.d(TAG, "distance: " + beacon.getDistance());
+            log(region, collection);
             if (beacon.getDistance() < threshold)
                 ULog.d(TAG, "start Monitoring normal region " + region.getUniqueId());
                 try {
@@ -283,6 +284,16 @@ public class AltBeaconMonitor implements BeaconConsumer, BootstrapNotifier, Rang
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
+        }
+    }
+
+    private void log(Region region, Collection<Beacon> collection) {
+        if (collection != null && collection.size()>0){
+            String log = region.getUniqueId() + " " + collection.iterator().next().getDistance();
+            Intent intent = new Intent();
+            intent.setAction(mContext.getPackageName() + "log");
+            intent.putExtra("log", log);
+            mContext.sendBroadcast(intent);
         }
     }
 }

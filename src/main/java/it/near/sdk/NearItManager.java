@@ -1,8 +1,10 @@
 package it.near.sdk;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Parcelable;
 
 import org.altbeacon.beacon.BeaconManager;
@@ -19,6 +21,7 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
+import it.near.sdk.Utils.NearSimpleLogger;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.ULog;
@@ -53,10 +56,12 @@ public class NearItManager {
     private ContentNotificationReaction contentNotification;
     private PollNotificationReaction pollNotification;
     private PushManager pushManager;
+    private NearSimpleLogger logger;
 
     private AltBeaconMonitor monitor;
 
     Application application;
+
 
     /**
      * Default constructor.
@@ -73,6 +78,16 @@ public class NearItManager {
 
         plugInSetup();
 
+        registerLogReceiver();
+    }
+
+
+    public void setLogger(NearSimpleLogger logger) {
+        this.logger = logger;
+    }
+
+    public void removeLogger(NearSimpleLogger logger) {
+        this.logger = null;
     }
 
 
@@ -89,6 +104,13 @@ public class NearItManager {
         pollNotification = new PollNotificationReaction(application, nearNotifier);
         recipesManager.addReaction(pollNotification.getPluginName(), pollNotification);
 
+    }
+
+
+    private void registerLogReceiver() {
+        String filter = application.getPackageName() + "log";
+        IntentFilter intentFilter = new IntentFilter(filter);
+        application.registerReceiver(logReceiver, intentFilter);
     }
 
     /**
@@ -211,4 +233,14 @@ public class NearItManager {
         }
         return false;
     }
+
+    private BroadcastReceiver logReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String log = intent.getStringExtra("log");
+            if (logger != null){
+                logger.log(log);
+            }
+        }
+    };
 }
