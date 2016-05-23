@@ -81,12 +81,18 @@ public class NearItManager {
         registerLogReceiver();
     }
 
-
+    /**
+     * Set logger for beacon distance information.
+     * @param logger logs beacon data.
+     */
     public void setLogger(NearSimpleLogger logger) {
         this.logger = logger;
     }
 
-    public void removeLogger(NearSimpleLogger logger) {
+    /**
+     * Remove the beacon logger.
+     */
+    public void removeLogger() {
         this.logger = null;
     }
 
