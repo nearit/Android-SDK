@@ -86,6 +86,7 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
+
     pkg {
         repo = 'maven'
         name = 'it.near.sdk.core'
@@ -95,6 +96,40 @@ bintray {
         websiteUrl = 'https://github.com/catt-stefano/near-sdk-core'
     }
     configurations = ['archives']
+}
+
+repositories{
+    mavenCentral()
+}
+
+configurations {
+    ftpAntTask
+}
+
+dependencies{
+    ftpAntTask ("org.apache.ant:ant-commons-net:1.8.4") {
+        module("commons-net:commons-net:1.4.1") {
+            dependencies "oro:oro:2.0.8:jar"
+        }
+    }
+}
+
+
+task uploadDocs << {
+    def ftpHost = properties.getProperty("docs.ftp.host")
+    def ftpDir = properties.getProperty("docs.ftp.dir")
+    def ftpUser = properties.getProperty("docs.ftp.user")
+    def ftpPassword = properties.getProperty("docs.ftp.password")
+    ant {
+        taskdef(name: 'ftp',
+                classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
+                classpath: configurations.ftpAntTask.asPath)
+        ftp(server: ftpHost, userid: ftpUser, password: ftpPassword, remoteDir: ftpDir) {
+            fileset(dir: 'build/docs/javadoc/') {
+                include(name: "*")
+            }
+        }
+    }
 }
 
 group = 'it.near.sdk.core'
