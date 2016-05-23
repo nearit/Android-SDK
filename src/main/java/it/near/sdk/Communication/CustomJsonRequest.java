@@ -13,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Operation.UserDataNotifier;
-import it.near.sdk.Operation.NearItUserProfile;
 import it.near.sdk.R;
 
 /**
@@ -125,7 +123,7 @@ public class CustomJsonRequest extends JsonObjectRequest {
      * @return the complete path
      */
     private static String composeUrl(Context context, String url) {
-        String baseUrl = context.getResources().getString(R.string.API_NEW_BASE_URL);
+        String baseUrl = context.getResources().getString(R.string.API_BASE_URL);
         return baseUrl + url;
     }
 
