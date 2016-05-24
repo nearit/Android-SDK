@@ -15,7 +15,6 @@ import java.util.Objects;
  * public class Article extends Resource { ... }
  * }</pre>
  *
- * @see com.google.gson.annotations.SerializedName
  */
 public class Resource {
   private String Id;
