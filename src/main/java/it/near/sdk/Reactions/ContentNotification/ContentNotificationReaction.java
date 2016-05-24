@@ -6,6 +6,7 @@ import android.support.v4.util.ArrayMap;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
@@ -132,12 +133,8 @@ public class ContentNotificationReaction extends Reaction {
                 ImageSet imageSet = new ImageSet();
                 HashMap<String, Object> map = image.getImage();
                 imageSet.setFullSize((String) map.get("url"));
-                try {
-                    imageSet.setBigSize(((JSONObject)map.get("max_1920_jpg")).getString("url"));
-                    imageSet.setSmallSize(((JSONObject)map.get("square_300")).getString("url"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                imageSet.setBigSize(((LinkedTreeMap<String, Object>)map.get("max_1920_jpg")).get("url").toString());
+                imageSet.setSmallSize(((LinkedTreeMap<String, Object>)map.get("square_300")).get("url").toString());
                 imageSets.add(imageSet);
             }
             notification.setImages_links(imageSets);

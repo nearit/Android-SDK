@@ -15,6 +15,9 @@ public class Factory {
   private Mapper mapper = new Mapper();
   private Deserializer deserializer = new Deserializer();
 
+  public Factory() {
+  }
+
   /**
    * Deserializes a json object of data to the registered class.
    *
@@ -41,7 +44,7 @@ public class Factory {
     try {
       realObject = mapper.mapAttributes(realObject, dataObject.getJSONObject("attributes"));
     } catch (Exception e) {
-      e.printStackTrace();
+      // e.printStackTrace();
       Logger.debug("JSON data does not contain attributes");
     }
 

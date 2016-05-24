@@ -16,7 +16,6 @@ import java.util.Objects;
  * }</pre>
  *
  * @see com.google.gson.annotations.SerializedName
- * @see at.rags.morpheus.Annotations.Relationship
  */
 public class Resource {
   private String Id;

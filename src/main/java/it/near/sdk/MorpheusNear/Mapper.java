@@ -133,7 +133,9 @@ public class Mapper {
       if (isRelation) {
         continue;
       }
-
+      if (field.isSynthetic()){
+        continue;
+      }
       mAttributeMapper.mapAttributeToObject(object, attributesJsonObject, field, jsonFieldName);
     }
 

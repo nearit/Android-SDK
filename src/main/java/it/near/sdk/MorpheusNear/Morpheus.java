@@ -24,6 +24,8 @@ public class Morpheus {
 
   public Morpheus() {
     mapper = new Mapper();
+    factory = new Factory();
+    factory.setMapper(mapper);
   }
 
   public Morpheus(AttributeMapper attributeMapper) {
