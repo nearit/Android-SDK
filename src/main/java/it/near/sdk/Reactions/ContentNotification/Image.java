@@ -2,28 +2,28 @@ package it.near.sdk.Reactions.ContentNotification;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.v4.util.ArrayMap;
+
+import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 
-import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
  * @author cattaneostefano
  */
 public class Image extends Resource {
-    @SerializeName("image")
-    ArrayMap<String, Object> image;
+    @SerializedName("image")
+    HashMap<String, Object> image;
 
     public Image() {
     }
 
-    public ArrayMap<String, Object> getImage() {
+    public HashMap<String, Object> getImage() {
         return image;
     }
 
-    public void setImage(ArrayMap<String, Object> image) {
+    public void setImage(HashMap<String, Object> image) {
         this.image = image;
     }
 

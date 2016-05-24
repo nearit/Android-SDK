@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JSONAPIObject;
+import it.near.sdk.MorpheusNear.JsonApiObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Recipes.NearNotifier;
@@ -122,7 +122,7 @@ public abstract class Reaction {
      * @return List of Objects
      */
     protected <T> List<T> parseList(JSONObject json, Class<T> clazz) {
-        JSONAPIObject jsonapiObject = null;
+        JsonApiObject jsonapiObject = null;
         try {
             jsonapiObject = morpheus.parse(json.toString());
         } catch (Exception e) {

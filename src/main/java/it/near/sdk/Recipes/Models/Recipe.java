@@ -1,9 +1,11 @@
 package it.near.sdk.Recipes.Models;
 
-import android.support.v4.util.ArrayMap;
+
+import com.google.gson.annotations.SerializedName;
+
+import java.util.HashMap;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
@@ -11,25 +13,25 @@ import it.near.sdk.MorpheusNear.Resource;
  */
 public class Recipe extends Resource {
 
-    @SerializeName("name")
+    @SerializedName("name")
     String name;
-    @SerializeName("notification")
-    ArrayMap<String, Object> notification;
-    @SerializeName("pulse_plugin_id")
+    @SerializedName("notification")
+    HashMap<String, Object> notification;
+    @SerializedName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
     PulseBundle pulse_bundle;
     @Relationship("pulse_action")
     PulseAction pulse_action;
-    @SerializeName("reaction_plugin_id")
+    @SerializedName("reaction_plugin_id")
     String reaction_plugin_id;
     @Relationship("reaction_bundle")
     ReactionBundle reaction_bundle;
     @Relationship("reaction_action")
     ReactionAction reaction_action;
-    /*@SerializeName("operation_plugin_id")
+    /*@SerializedName("operation_plugin_id")
     String operation_plugin_id;
-    @SerializeName("operation_bundle_id")
+    @SerializedName("operation_bundle_id")
     String operation_bundle_id;*/
     /*@Relationship("operation_action")
     OperationAction operation_action;*/
@@ -42,11 +44,11 @@ public class Recipe extends Resource {
         this.name = name;
     }
 
-    public ArrayMap<String, Object> getNotification() {
+    public HashMap<String, Object> getNotification() {
         return notification;
     }
 
-    public void setNotification(ArrayMap<String, Object> notification) {
+    public void setNotification(HashMap<String, Object> notification) {
         this.notification = notification;
     }
 

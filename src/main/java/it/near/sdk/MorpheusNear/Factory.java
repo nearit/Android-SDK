@@ -7,8 +7,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
-
 /**
  * Factory to create and map {@link Resource}.
  */
@@ -21,7 +19,9 @@ public class Factory {
    * Deserializes a json object of data to the registered class.
    *
    * @param dataObject JSONObject from data
+   * @param included {@literal List<Resource>} from includes to automatic match them.
    * @return Deserialized Object.
+   * @throws Exception when deserializer is not able to create instance.
    */
   public Resource newObjectFromJSONObject(JSONObject dataObject, List<Resource> included) throws Exception {
     Resource realObject = null;
@@ -53,7 +53,7 @@ public class Factory {
 
     try {
       assert realObject != null;
-      realObject.setMeta(mapper.getAttributeMapper().createArrayMapFromJSONObject(dataObject.getJSONObject("meta")));
+      realObject.setMeta(mapper.getAttributeMapper().createMapFromJSONObject(dataObject.getJSONObject("meta")));
     } catch (Exception e) {
       Logger.debug("JSON data does not contain meta");
     }
@@ -71,7 +71,9 @@ public class Factory {
    * Loops through data objects and deserializes them.
    *
    * @param dataArray JSONArray of the data node.
+   * @param included {@literal List<Resource>} from includes to automatic match them.
    * @return List of deserialized objects.
+   * @throws Exception when deserializer is not able to create instance.
    */
   public List<Resource> newObjectFromJSONArray(JSONArray dataArray, List<Resource> included) throws Exception {
     ArrayList<Resource> objects = new ArrayList<>();
@@ -108,6 +110,7 @@ public class Factory {
       }
     }
 
+
     return objects;
   }
 
@@ -119,7 +122,7 @@ public class Factory {
    * @param object JSONObject.
    * @return Name of the json type.
    */
-  public String getTypeFromJson(JSONObject object) {
+  public  String getTypeFromJson(JSONObject object) {
     String type = null;
     try {
       type = object.getString("type");
@@ -129,16 +132,18 @@ public class Factory {
     return type;
   }
 
+  public void setDeserializer(Deserializer deserializer) {
+    this.deserializer = deserializer;
+  }
+
   public Deserializer getDeserializer() {
     return deserializer;
   }
 
-  public void setDeserializer(Deserializer deserializer) {
-    this.deserializer = deserializer;
-  }
 
   public void setMapper(Mapper mapper) {
     this.mapper = mapper;
     this.mapper.setFactory(this);
   }
+
 }

@@ -82,6 +82,7 @@ artifacts {
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
+// Upload to bintray
 
 bintray {
     user = properties.getProperty("bintray.user")
@@ -98,14 +99,14 @@ bintray {
     configurations = ['archives']
 }
 
+// Upload docs on ftp
+
 repositories{
     mavenCentral()
 }
-
 configurations {
     ftpAntTask
 }
-
 dependencies{
     ftpAntTask ("org.apache.ant:ant-commons-net:1.8.4") {
         module("commons-net:commons-net:1.4.1") {
@@ -113,8 +114,6 @@ dependencies{
         }
     }
 }
-
-
 task uploadDocs << {
     def ftpHost = properties.getProperty("docs.ftp.host")
     def ftpDir = properties.getProperty("docs.ftp.dir")
@@ -152,9 +151,4 @@ buildscript {
             dirs 'libs'
         }
     }
-    dependencies {
-        classpath "io.realm:realm-gradle-plugin:0.88.2"
-    }
 }
-
-apply plugin: 'realm-android'

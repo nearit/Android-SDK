@@ -1,6 +1,7 @@
 package it.near.sdk.Models;
 
-import it.near.sdk.MorpheusNear.Annotations.SerializeName;
+import com.google.gson.annotations.SerializedName;
+
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
@@ -9,17 +10,17 @@ import it.near.sdk.MorpheusNear.Resource;
  */
 public class NearBeacon extends Resource {
 
-    @SerializeName("name")
+    @SerializedName("name")
     String name;
-    @SerializeName("major")
+    @SerializedName("major")
     Integer major;
-    @SerializeName("proximity_uuid")
+    @SerializedName("proximity_uuid")
     String proximity_uuid;
-    @SerializeName("range")
+    @SerializedName("range")
     Integer range;
-    @SerializeName("minor")
+    @SerializedName("minor")
     Integer minor;
-    @SerializeName("color")
+    @SerializedName("color")
     String color;
 
     public String getName() {

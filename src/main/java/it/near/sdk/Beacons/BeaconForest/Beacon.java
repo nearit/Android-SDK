@@ -1,9 +1,10 @@
 package it.near.sdk.Beacons.BeaconForest;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
@@ -14,13 +15,13 @@ import it.near.sdk.MorpheusNear.Resource;
  */
 public class Beacon extends Resource {
 
-    @SerializeName("uuid")
+    @SerializedName("uuid")
     String uuid;
-    @SerializeName("minor")
+    @SerializedName("minor")
     int minor;
-    @SerializeName("major")
+    @SerializedName("major")
     int major;
-    @SerializeName("name")
+    @SerializedName("name")
     String name;
     @Relationship("children")
     private List<Beacon> children;

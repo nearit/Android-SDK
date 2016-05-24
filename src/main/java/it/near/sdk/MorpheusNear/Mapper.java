@@ -1,10 +1,11 @@
 package it.near.sdk.MorpheusNear;
 
+import com.google.gson.annotations.SerializedName;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -12,8 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
+
 
 /**
  * Mapper will map all different top-level members and will
@@ -23,9 +24,9 @@ import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
  */
 public class Mapper {
 
-  private Factory factory;
   private Deserializer mDeserializer;
   private AttributeMapper mAttributeMapper;
+  private Factory factory;
 
   public Mapper() {
     mDeserializer = new Deserializer();
@@ -47,37 +48,37 @@ public class Mapper {
   public Links mapLinks(JSONObject linksJsonObject) {
     Links links = new Links();
     try {
-      links.selfLink = linksJsonObject.getString("self");
+      links.setSelfLink(linksJsonObject.getString("self"));
     } catch (JSONException e) {
       Logger.debug("JSON link does not contain self");
     }
 
     try {
-      links.related = linksJsonObject.getString("related");
+      links.setRelated(linksJsonObject.getString("related"));
     } catch (JSONException e) {
       Logger.debug("JSON link does not contain related");
     }
 
     try {
-      links.first = linksJsonObject.getString("first");
+      links.setFirst(linksJsonObject.getString("first"));
     } catch (JSONException e) {
       Logger.debug("JSON link does not contain first");
     }
 
     try {
-      links.last = linksJsonObject.getString("last");
+      links.setLast(linksJsonObject.getString("last"));
     } catch (JSONException e) {
       Logger.debug("JSON link does not contain last");
     }
 
     try {
-      links.prev = linksJsonObject.getString("prev");
+      links.setPrev(linksJsonObject.getString("prev"));
     } catch (JSONException e) {
       Logger.debug("JSON link does not contain prev");
     }
 
     try {
-      links.next = linksJsonObject.getString("next");
+      links.setNext(linksJsonObject.getString("next"));
     } catch (JSONException e) {
       Logger.debug("JSON link does not contain next");
     }
@@ -111,13 +112,17 @@ public class Mapper {
    * @return Object with mapped fields.
    */
   public Resource mapAttributes(Resource object, JSONObject attributesJsonObject) {
+    if (attributesJsonObject == null) {
+      return object;
+    }
+
     for (Field field : object.getClass().getDeclaredFields()) {
       // get the right attribute name
       String jsonFieldName = field.getName();
       boolean isRelation = false;
       for (Annotation annotation : field.getAnnotations()) {
-        if (annotation.annotationType() == SerializeName.class) {
-          SerializeName serializeName = (SerializeName) annotation;
+        if (annotation.annotationType() == SerializedName.class) {
+          SerializedName serializeName = (SerializedName) annotation;
           jsonFieldName = serializeName.value();
         }
         if (annotation.annotationType() == Relationship.class) {
@@ -140,7 +145,9 @@ public class Mapper {
    *
    * @param object Real object to map.
    * @param jsonObject JSONObject.
+   * @param included List of included resources.
    * @return Real object with relations.
+   * @throws Exception when deserializer is not able to create instance.
    */
   public Resource mapRelations(Resource object, JSONObject jsonObject,
                                        List<Resource> included) throws Exception {
@@ -195,6 +202,10 @@ public class Mapper {
    * @return Relation of included resource.
    */
   public Resource matchIncludedToRelation(Resource object, List<Resource> included) {
+    if (included == null) {
+      return object;
+    }
+
     for (Resource resource : included) {
       if (object.getId().equals(resource.getId()) && object.getClass().equals(resource.getClass())) {
         return resource;
@@ -295,7 +306,7 @@ public class Mapper {
       }
 
       try {
-        error.setMeta(mAttributeMapper.createArrayMapFromJSONObject(errorJsonObject.getJSONObject("meta")));
+        error.setMeta(mAttributeMapper.createMapFromJSONObject(errorJsonObject.getJSONObject("meta")));
       } catch (JSONException e) {
         Logger.debug("JSON object does not contain JSONObject meta");
       }
@@ -319,8 +330,8 @@ public class Mapper {
     for (Field field : clazz.getDeclaredFields()) {
       String fieldName = field.getName();
       for (Annotation annotation : field.getDeclaredAnnotations()) {
-        if (annotation.annotationType() == SerializeName.class) {
-          SerializeName serializeName = (SerializeName)annotation;
+        if (annotation.annotationType() == SerializedName.class) {
+          SerializedName serializeName = (SerializedName)annotation;
           fieldName = serializeName.value();
         }
         if (annotation.annotationType() == Relationship.class) {
@@ -346,4 +357,5 @@ public class Mapper {
   public void setFactory(Factory factory) {
     this.factory = factory;
   }
+
 }

@@ -3,26 +3,27 @@ package it.near.sdk.Reactions.ContentNotification;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Annotations.SerializeName;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
  * @author cattaneostefano
  */
 public class ContentNotification extends Resource implements Parcelable {
-    @SerializeName("text")
+    @SerializedName("text")
     String text;
-    @SerializeName("content")
+    @SerializedName("content")
     String content;
-    @SerializeName("video_link")
+    @SerializedName("video_link")
     String video_link;
-    @SerializeName("updated_at")
+    @SerializedName("updated_at")
     String updated_at;
-    @SerializeName("images_ids")
+    @SerializedName("images_ids")
     List<String> images_id;
     @Relationship("images")
     List<Image> images;

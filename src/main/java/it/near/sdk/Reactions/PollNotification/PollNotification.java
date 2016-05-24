@@ -3,22 +3,23 @@ package it.near.sdk.Reactions.PollNotification;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import it.near.sdk.MorpheusNear.Annotations.SerializeName;
+import com.google.gson.annotations.SerializedName;
+
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
  * @author cattaneostefano
  */
 public class PollNotification extends Resource implements Parcelable{
-    @SerializeName("text")
+    @SerializedName("text")
     String text;
-    @SerializeName("question")
+    @SerializedName("question")
     String question;
-    @SerializeName("choice_1")
+    @SerializedName("choice_1")
     String choice_1;
-    @SerializeName("choice_2")
+    @SerializedName("choice_2")
     String choice_2;
-    @SerializeName("updated_at")
+    @SerializedName("updated_at")
     String updated_at;
 
     public PollNotification() {

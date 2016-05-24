@@ -1,6 +1,11 @@
 package it.near.sdk.MorpheusNear;
 
-import android.support.v4.util.ArrayMap;
+import android.os.Parcel;
+import android.os.Parcelable;
+import android.util.ArrayMap;
+
+import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Extend this resource to your custom Object you want to map.
@@ -10,19 +15,22 @@ import android.support.v4.util.ArrayMap;
  * public class Article extends Resource { ... }
  * }</pre>
  *
+ * @see com.google.gson.annotations.SerializedName
+ * @see at.rags.morpheus.Annotations.Relationship
  */
 public class Resource {
   private String Id;
-
   private Links links;
+  private HashMap<String, Object> meta;
 
-  private ArrayMap<String, Object> meta;
+  public Resource() {
+  }
 
-  public ArrayMap<String, Object> getMeta() {
+  public HashMap<String, Object> getMeta() {
     return meta;
   }
 
-  public void setMeta(ArrayMap<String, Object> meta) {
+  public void setMeta(HashMap<String, Object> meta) {
     this.meta = meta;
   }
 
@@ -43,12 +51,3 @@ public class Resource {
   }
 }
 
-class Links {
-  public String selfLink;
-  public String related;
-  public String first;
-  public String last;
-  public String prev;
-  public String next;
-  public String about;
-}

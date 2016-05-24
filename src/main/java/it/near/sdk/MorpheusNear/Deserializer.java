@@ -1,8 +1,9 @@
 package it.near.sdk.MorpheusNear;
 
-import android.support.v4.util.ArrayMap;
+import android.util.ArrayMap;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
 
 import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
 
@@ -11,7 +12,7 @@ import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
  */
 public class Deserializer {
 
-  private ArrayMap<String, Class> registeredClasses = new ArrayMap<>();
+  private static HashMap<String, Class> registeredClasses = new HashMap<>();
 
   /**
    * Register your class for a JSON type.
@@ -23,7 +24,7 @@ public class Deserializer {
    * @param resourceClass Class for mapping.
    * @see Resource
    */
-  public void registerResourceClass(String typeName, Class resourceClass) {
+  public static void registerResourceClass(String typeName, Class resourceClass) {
     registeredClasses.put(typeName, resourceClass);
   }
 
@@ -39,10 +40,10 @@ public class Deserializer {
   public Resource createObjectFromString(String resourceName) throws InstantiationException, IllegalAccessException, NotExtendingResourceException {
     Class objectClass = registeredClasses.get(resourceName);
     try {
-      return (Resource)objectClass.newInstance();
-    } catch (InstantiationException e ) {
+      return (Resource) objectClass.newInstance();
+    } catch (InstantiationException e) {
       throw e;
-    } catch (IllegalAccessException e){
+    } catch(IllegalAccessException e) {
       throw e;
     } catch (ClassCastException e) {
       throw new NotExtendingResourceException(objectClass + " is not inheriting Resource");
@@ -68,7 +69,7 @@ public class Deserializer {
     } catch (IllegalAccessException e) {
       Logger.debug("Could not access " + field.getName() + " field");
     } catch (IllegalArgumentException e) {
-      Logger.debug("The field " + field.getName() + " may be null");
+      // Logger.debug("The field " + field.getName() + " may be null");
     }
 
     return resourceObject;
@@ -130,11 +131,11 @@ public class Deserializer {
     return superClass;
   }
 
-  public ArrayMap<String, Class> getRegisteredClasses() {
+  public static HashMap<String, Class> getRegisteredClasses() {
     return registeredClasses;
   }
 
-  public void setRegisteredClasses(ArrayMap<String, Class> registeredClasses) {
-    this.registeredClasses = registeredClasses;
+  public static void setRegisteredClasses(HashMap<String, Class> registeredClasses) {
+    Deserializer.registeredClasses = registeredClasses;
   }
 }

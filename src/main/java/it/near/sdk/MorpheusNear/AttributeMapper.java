@@ -1,13 +1,19 @@
 package it.near.sdk.MorpheusNear;
 
-import android.support.v4.util.ArrayMap;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,7 +21,7 @@ import java.util.List;
  * AttributeMapper is used to map the json:api attribute node to
  * your object fields.
  *
- * You can create your own AttributeMapper and set it via {@link AttributeMapper}.
+ * You can create your own AttributeMapper and set it via {@link Morpheus#Morpheus(AttributeMapper)}.
  */
 public class AttributeMapper {
   private Deserializer mDeserializer;
@@ -30,8 +36,8 @@ public class AttributeMapper {
 
   /**
    * Will map the attributes of the JSONAPI attribute object.
-   * JSONArrays will get mapped as a List of Object.
-   * JSONObject will get mapped as {@code ArrayMap<String, Object>}.
+   * JSONArrays will get mapped as {@literal List<Object>}.
+   * JSONObject will get mapped as {@literal ArrayMap<String, Object>}.
    * Everything else will get mapped without changes.
    *
    * @param jsonApiResource Object extended with {@link Resource} that will get the field set.
@@ -42,11 +48,12 @@ public class AttributeMapper {
   public void mapAttributeToObject(Resource jsonApiResource, JSONObject attributesJsonObject, Field field, String jsonFieldName) {
     try {
       if (attributesJsonObject.get(jsonFieldName).getClass() == JSONArray.class) {
-        List<Object> list = createListFromJSONArray(attributesJsonObject.getJSONArray(jsonFieldName));
+        List<Object> list = createListFromJSONArray(attributesJsonObject.getJSONArray(jsonFieldName), field);
         mDeserializer.setField(jsonApiResource, field.getName(), list);
       } else if (attributesJsonObject.get(jsonFieldName).getClass() == JSONObject.class) {
-        JSONObject objectForMap = attributesJsonObject.getJSONObject(jsonFieldName);
-        mDeserializer.setField(jsonApiResource, field.getName(), createArrayMapFromJSONObject(objectForMap));
+        Gson gson = new Gson();
+        Object obj = gson.fromJson(attributesJsonObject.get(jsonFieldName).toString(), field.getType());
+        mDeserializer.setField(jsonApiResource, field.getName(), obj);
       } else {
         mDeserializer.setField(jsonApiResource, field.getName(), attributesJsonObject.get(jsonFieldName));
       }
@@ -61,26 +68,40 @@ public class AttributeMapper {
    * @param jsonArray JSONArray with values.
    * @return List<Object> of JSONArray values.
    */
-  private List<Object> createListFromJSONArray(JSONArray jsonArray) {
-    List<Object> attributeAsList = new ArrayList<>();
-    for (int i = 0; jsonArray.length() > i; i++) {
-      try {
-        attributeAsList.add(jsonArray.get(i));
-      } catch (JSONException e) {
-        Logger.debug("JSONArray does not contain Object at index " + i);
+  private List<Object> createListFromJSONArray(JSONArray jsonArray, Field field) {
+    Type genericFieldType = field.getGenericType();
+    List<Object> objectArrayList = new ArrayList<>();
+
+    if(genericFieldType instanceof ParameterizedType) {
+      ParameterizedType aType = (ParameterizedType) genericFieldType;
+      Type[] fieldArgTypes = aType.getActualTypeArguments();
+      for (Type fieldArgType : fieldArgTypes) {
+        final Class fieldArgClass = (Class) fieldArgType;
+        System.out.println("fieldArgClass = " + fieldArgClass);
+
+        for (int i = 0; jsonArray.length() > i; i++) {
+          Object obj = null;
+          try {
+            obj = new Gson().fromJson(jsonArray.get(i).toString(), fieldArgClass);
+          } catch (JSONException e) {
+            Logger.debug("JSONArray does not contain index " + i + ".");
+          }
+          objectArrayList.add(obj);
+        }
       }
     }
-    return attributeAsList;
+
+    return objectArrayList;
   }
 
   /**
    * Will loop through JSONObject and return values as arrayMap.
    *
    * @param jsonObject JSONObject for meta.
-   * @return ArrayMap with meta values.
+   * @return HashMap with meta values.
    */
-  public ArrayMap<String, Object> createArrayMapFromJSONObject(JSONObject jsonObject) {
-    ArrayMap<String, Object> metaMap = new ArrayMap<>();
+  public HashMap<String, Object> createMapFromJSONObject(JSONObject jsonObject) {
+    HashMap<String, Object> metaMap = new HashMap<>();
 
     for(Iterator<String> iter = jsonObject.keys(); iter.hasNext();) {
       String key = iter.next();

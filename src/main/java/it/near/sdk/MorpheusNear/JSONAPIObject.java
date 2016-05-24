@@ -1,16 +1,17 @@
 package it.near.sdk.MorpheusNear;
 
-import android.support.v4.util.ArrayMap;
+import android.util.ArrayMap;
 
-import java.lang.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
-public class JSONAPIObject {
+public class JsonApiObject {
 
   private Resource resource;
   private List<Resource> resources;
   private List<Resource> included;
-  private ArrayMap<String, Object> meta;
+  private HashMap<String, Object> meta;
   private List<Error> errors;
   private Links links;
 
@@ -40,11 +41,11 @@ public class JSONAPIObject {
     this.included = included;
   }
 
-  public ArrayMap<String, Object> getMeta() {
+  public HashMap<String, Object> getMeta() {
     return meta;
   }
 
-  public void setMeta(ArrayMap<String, Object> meta) {
+  public void setMeta(HashMap<String, Object> meta) {
     this.meta = meta;
   }
 

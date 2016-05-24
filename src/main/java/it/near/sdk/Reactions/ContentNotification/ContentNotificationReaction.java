@@ -130,7 +130,7 @@ public class ContentNotificationReaction extends Reaction {
             List<ImageSet> imageSets = new ArrayList<>();
             for (Image image : images) {
                 ImageSet imageSet = new ImageSet();
-                ArrayMap<String, Object> map = image.getImage();
+                HashMap<String, Object> map = image.getImage();
                 imageSet.setFullSize((String) map.get("url"));
                 try {
                     imageSet.setBigSize(((JSONObject)map.get("max_1920_jpg")).getString("url"));

@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JSONAPIObject;
+import it.near.sdk.MorpheusNear.JsonApiObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 
@@ -37,7 +37,7 @@ public class NearUtils {
      * @return list of objects.
      */
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
-        JSONAPIObject jsonapiObject = null;
+        JsonApiObject jsonapiObject = null;
         try {
             jsonapiObject = morpheus.parse(json.toString());
         } catch (Exception e) {
@@ -62,7 +62,7 @@ public class NearUtils {
      * @return casted object.
      */
     public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz){
-        JSONAPIObject jsonapiObject = null;
+        JsonApiObject jsonapiObject = null;
         try {
             jsonapiObject = morpheus.parse(json.toString());
         } catch (Exception e) {
