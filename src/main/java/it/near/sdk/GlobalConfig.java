@@ -56,14 +56,14 @@ public class GlobalConfig {
 
     public int getNotificationImage() {
         if (notificationImage == 0){
-            notificationImage = sp.getInt(PROXIMITYIMAGE, 0);
+            notificationImage = sp.getInt(NOTIFICATIONIMAGE, 0);
         }
         return notificationImage;
     }
 
     public void setNotificationImage(int notificationImage) {
         this.notificationImage = notificationImage;
-        editor.putInt(PROXIMITYIMAGE, notificationImage).apply();
+        editor.putInt(NOTIFICATIONIMAGE, notificationImage).apply();
     }
 
 
