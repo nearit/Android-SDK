@@ -99,7 +99,6 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
-        // TODO turn strings to constants
         final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendQueryParameter("filter[active]", "true")
                 .build();
@@ -181,7 +180,7 @@ public class RecipesManager {
      * @return true if the recipe was found, false otherwise.
      */
     public boolean processRecipe(final String id) {
-        // todo download recipe
+        // TODO use new evaluation endpoint for single recipes
         Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
                 .appendQueryParameter("include", "reaction_bundle")
@@ -194,8 +193,6 @@ public class RecipesManager {
                 ULog.d(TAG, response.toString());
                 Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
                 ULog.d(TAG, recipe.toString());
-                // TODO get the reaction action to know which plugin can handle the push
-                // TODO carry-on the included section of the response to the reaction so it can parse the content
                 String reactionPluginName = recipe.getReaction_plugin_id();
                 Reaction reaction = reactions.get(reactionPluginName);
                 reaction.handlePushReaction(recipe, id, response);
