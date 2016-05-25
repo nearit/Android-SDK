@@ -85,35 +85,6 @@ public abstract class Reaction {
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle().getId(), recipe);
     }
 
-    public void handlePushReaction(Recipe recipe,String push_id, JSONObject response){
-        JSONObject reaction_bundle = fetchReactionBundle(response);
-        try {
-            reaction_bundle.put("type", getResTypeName());
-            ULog.d(TAG, "");
-            JSONObject outerObject = new JSONObject();
-            outerObject.put("data", reaction_bundle);
-            handlePushReaction(recipe,push_id, outerObject, response);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private JSONObject fetchReactionBundle(JSONObject response) {
-        try {
-            JSONArray includedObject = response.getJSONArray("included");
-            for (int i = 0; i < includedObject.length(); i++){
-                JSONObject obj = (JSONObject) includedObject.get(i);
-                if (obj.getString("type").equals("reaction_bundles")){
-                    return obj;
-                }
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     /**
      * Utility for parsing lists
      * @param json json to parse
@@ -174,7 +145,7 @@ public abstract class Reaction {
      */
     protected abstract HashMap<String,Class> getModelHashMap();
     protected abstract void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe);
-    protected abstract void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response);
+    public abstract void handlePushReaction(Recipe recipe, String push_id, String bundle_id);
     protected abstract String getResTypeName();
 
 

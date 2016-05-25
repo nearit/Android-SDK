@@ -68,9 +68,27 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
-    protected void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response) {
-        PollNotification pollNotification = NearUtils.parseElement(morpheus, reaction_bundle, PollNotification.class);
-        nearNotifier.deliverBackgroundPushReaction(pollNotification, recipe, push_id);
+    public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
+        //TODO download single resource
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(POLL_NOTIFICATION)
+                .appendPath(POLL_NOTIFICATION_RESOURCE)
+                .appendPath(bundle_id).build();
+        GlobalState.getInstance(mContext).getRequestQueue().add(
+                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ULog.d(TAG, response.toString());
+                        PollNotification content = NearUtils.parseElement(morpheus, response, PollNotification.class);
+                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        ULog.d(TAG, "Error downloading push content: " + error.toString());
+                    }
+                })
+        );
     }
 
     private void showPoll(String reaction_bundle, Recipe recipe) {

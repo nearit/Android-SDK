@@ -69,9 +69,29 @@ public class ContentNotificationReaction extends Reaction {
     }
 
     @Override
-    protected void handlePushReaction(Recipe recipe,String push_id, JSONObject reaction_bundle, JSONObject response) {
-        ContentNotification contentNotification = NearUtils.parseElement(morpheus, reaction_bundle, ContentNotification.class);
-        nearNotifier.deliverBackgroundPushReaction(contentNotification, recipe, push_id);
+    public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
+        //TODO download single resource
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(CONTENT_NOTIFICATION_PATH)
+                .appendPath(CONTENT_NOTIFICATION_RESOURCE)
+                .appendPath(bundle_id)
+                .appendQueryParameter("include", "images").build();
+        GlobalState.getInstance(mContext).getRequestQueue().add(
+                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ULog.d(TAG, response.toString());
+                        ContentNotification content = NearUtils.parseElement(morpheus, response, ContentNotification.class);
+                        formatLinks(content);
+                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        ULog.d(TAG, "Error downloading push content: " + error.toString());
+                    }
+                })
+        );
     }
 
     private void showContent(String reaction_bundle, Recipe recipe) {
@@ -127,18 +147,22 @@ public class ContentNotificationReaction extends Reaction {
 
     private void formatLinks(List<ContentNotification> notifications){
         for (ContentNotification notification : notifications) {
-            List<Image> images = notification.getImages();
-            List<ImageSet> imageSets = new ArrayList<>();
-            for (Image image : images) {
-                ImageSet imageSet = new ImageSet();
-                HashMap<String, Object> map = image.getImage();
-                imageSet.setFullSize((String) map.get("url"));
-                imageSet.setBigSize(((LinkedTreeMap<String, Object>)map.get("max_1920_jpg")).get("url").toString());
-                imageSet.setSmallSize(((LinkedTreeMap<String, Object>)map.get("square_300")).get("url").toString());
-                imageSets.add(imageSet);
-            }
-            notification.setImages_links(imageSets);
+            formatLinks(notification);
         }
+    }
+
+    private void formatLinks(ContentNotification notification){
+        List<Image> images = notification.getImages();
+        List<ImageSet> imageSets = new ArrayList<>();
+        for (Image image : images) {
+            ImageSet imageSet = new ImageSet();
+            HashMap<String, Object> map = image.getImage();
+            imageSet.setFullSize((String) map.get("url"));
+            imageSet.setBigSize(((LinkedTreeMap<String, Object>)map.get("max_1920_jpg")).get("url").toString());
+            imageSet.setSmallSize(((LinkedTreeMap<String, Object>)map.get("square_300")).get("url").toString());
+            imageSets.add(imageSet);
+        }
+        notification.setImages_links(imageSets);
     }
 
     @Override

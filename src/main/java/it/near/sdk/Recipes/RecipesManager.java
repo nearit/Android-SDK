@@ -176,14 +176,13 @@ public class RecipesManager {
 
     /**
      * Process a recipe from it's id. Typically called for processing a push recipe.
-     * @param id recipe id.
+     * @param id push id.
      * @return true if the recipe was found, false otherwise.
      */
     public boolean processRecipe(final String id) {
         // TODO use new evaluation endpoint for single recipes
         Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
-                .appendQueryParameter("include", "reaction_bundle")
                 .build();
 
         GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(
@@ -195,7 +194,7 @@ public class RecipesManager {
                 ULog.d(TAG, recipe.toString());
                 String reactionPluginName = recipe.getReaction_plugin_id();
                 Reaction reaction = reactions.get(reactionPluginName);
-                reaction.handlePushReaction(recipe, id, response);
+                reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle().getId());
             }
         }, new Response.ErrorListener() {
             @Override
