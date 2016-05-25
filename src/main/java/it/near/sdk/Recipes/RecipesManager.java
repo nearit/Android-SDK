@@ -102,7 +102,6 @@ public class RecipesManager {
         // TODO turn strings to constants
         final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendQueryParameter("filter[active]", "true")
-                .appendQueryParameter("include", "pulse_action,operation_action,reaction_action")
                 .build();
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, uri.toString(), new Response.Listener<JSONObject>() {
