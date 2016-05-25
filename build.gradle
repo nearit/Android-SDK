@@ -84,6 +84,8 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 
 // Upload to bintray
 
+group = 'it.near.sdk.core'
+
 bintray {
     user = properties.getProperty("bintray.user")
     key = properties.getProperty("bintray.apikey")
@@ -129,7 +131,7 @@ task uploadDocs << {
     }
 }
 
-group = 'it.near.sdk.core'
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
