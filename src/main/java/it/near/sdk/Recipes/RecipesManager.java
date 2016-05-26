@@ -99,6 +99,7 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
+        /*
         final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendQueryParameter("filter[active]", "true")
                 .build();
