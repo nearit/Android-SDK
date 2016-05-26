@@ -82,6 +82,7 @@ public class NearItUserProfile {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
+                        ULog.d(TAG, "profile erro: " + error.toString());
                         listener.onProfileCreationError("volley network error: " + error.toString());
                     }
                 }
@@ -107,6 +108,17 @@ public class NearItUserProfile {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
+            NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
+                @Override
+                public void onProfileCreated(boolean created, String profileId) {
+
+                }
+
+                @Override
+                public void onProfileCreationError(String error) {
+
+                }
+            });
             return;
         }
 
@@ -153,6 +165,17 @@ public class NearItUserProfile {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
+            NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
+                @Override
+                public void onProfileCreated(boolean created, String profileId) {
+
+                }
+
+                @Override
+                public void onProfileCreationError(String error) {
+
+                }
+            });
             return;
         }
 
@@ -173,6 +196,7 @@ public class NearItUserProfile {
 
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_NAME)
+                .appendPath(PROFILE_RES_TYPE)
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
 
