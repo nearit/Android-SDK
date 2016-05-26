@@ -5,10 +5,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,7 +21,6 @@ import java.util.List;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
-import it.near.sdk.Communication.Filter;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
@@ -45,7 +42,7 @@ import it.near.sdk.Utils.ULog;
 public class RecipesManager {
     private static final String TAG = "RecipesManager";
     public static final String PREFS_SUFFIX = "NearRecipes";
-    private static final String EVALUATE_PATH = "evaluate";
+    private static final String PROCESS_PATH = "process";
     public final String PREFS_NAME;
     private final SharedPreferences sp;
     private Context mContext;
@@ -127,7 +124,7 @@ public class RecipesManager {
         }));
 */
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendPath(EVALUATE_PATH).build();
+                .appendPath(PROCESS_PATH).build();
         HashMap<String, Object> map = new HashMap<>();
         map.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
         map.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
@@ -137,7 +134,6 @@ public class RecipesManager {
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "profileId not present");
-            return;
         }
         map.put("congrego", congregoObj);
         String requestBody = null;
@@ -153,11 +149,18 @@ public class RecipesManager {
                             @Override
                             public void onResponse(JSONObject response) {
                                 ULog.d(TAG, "Got recipes: " + response.toString());
+                                recipes = NearUtils.parseList(morpheus, response, Recipe.class);
+                                persistList(recipes);
                             }
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 ULog.d(TAG, "Error in downloading recipes: " + error.toString());
+                                try {
+                                    recipes = loadChachedList();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         })
         );
