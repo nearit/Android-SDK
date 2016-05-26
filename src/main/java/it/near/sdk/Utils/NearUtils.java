@@ -7,6 +7,7 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -82,6 +83,15 @@ public class NearUtils {
         return toJsonAPI(type, null, map);
     }
 
+    public static String toJsonAPI(String type, List<HashMap<String, Object>> maps) throws JSONException{
+        JSONArray array = new JSONArray();
+        for (HashMap<String, Object> map : maps) {
+            array.put(getResObj(type, null, map));
+        }
+        JSONObject outerObj = new JSONObject();
+        outerObj.put("data", array);
+        return outerObj.toString();
+    }
     /**
      * Turns an hasmap of values to a jsonapi resource string. ALso sets the id.
      * @param type the type of the jsonapi resource.
@@ -91,6 +101,15 @@ public class NearUtils {
      * @throws JSONException
      */
     public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
+        JSONObject dataObject = getResObj(type, id, map);
+
+        JSONObject outerObj = new JSONObject();
+        outerObj.put("data", dataObject);
+
+        return outerObj.toString();
+    }
+
+    private static JSONObject getResObj(String type, String id, HashMap<String, Object> map) throws JSONException {
         JSONObject attributesObj = new JSONObject();
 
         for (Map.Entry<String, Object> entry : map.entrySet() ){
@@ -103,11 +122,7 @@ public class NearUtils {
         }
         dataObject.put("type", type);
         dataObject.put("attributes", attributesObj);
-
-        JSONObject outerObj = new JSONObject();
-        outerObj.put("data", dataObject);
-
-        return outerObj.toString();
+        return dataObject;
     }
 
     /**
