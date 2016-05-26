@@ -15,8 +15,6 @@ import it.near.sdk.MorpheusNear.Resource;
  * @author cattaneostefano
  */
 public class ContentNotification extends Resource implements Parcelable {
-    @SerializedName("text")
-    String text;
     @SerializedName("content")
     String content;
     @SerializedName("video_link")
@@ -31,14 +29,6 @@ public class ContentNotification extends Resource implements Parcelable {
     List<ImageSet> images_links;
 
     public ContentNotification() {
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public String getContent() {
@@ -96,7 +86,6 @@ public class ContentNotification extends Resource implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(text);
         dest.writeString(content);
         dest.writeString(video_link);
         dest.writeString(updated_at);
@@ -116,7 +105,6 @@ public class ContentNotification extends Resource implements Parcelable {
     };
 
     public ContentNotification(Parcel in) {
-        setText(in.readString());
         setContent(in.readString());
         setVideo_link(in.readString());
         setUpdated_at(in.readString());
@@ -132,7 +120,6 @@ public class ContentNotification extends Resource implements Parcelable {
     public boolean isSimpleNotification() {
         return content == null &&
                 images == null &&
-                text == null &&
                 video_link == null;
     }
 }

@@ -11,8 +11,6 @@ import it.near.sdk.MorpheusNear.Resource;
  * @author cattaneostefano
  */
 public class PollNotification extends Resource implements Parcelable{
-    @SerializedName("text")
-    String text;
     @SerializedName("question")
     String question;
     @SerializedName("choice_1")
@@ -23,14 +21,6 @@ public class PollNotification extends Resource implements Parcelable{
     String updated_at;
 
     public PollNotification() {
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 
     public String getQuestion() {
@@ -72,7 +62,6 @@ public class PollNotification extends Resource implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(getText());
         dest.writeString(getQuestion());
         dest.writeString(getChoice_1());
         dest.writeString(getChoice_2());
@@ -93,7 +82,6 @@ public class PollNotification extends Resource implements Parcelable{
     };
 
     public PollNotification(Parcel in){
-        setText(in.readString());
         setQuestion(in.readString());
         setChoice_1(in.readString());
         setChoice_2(in.readString());
