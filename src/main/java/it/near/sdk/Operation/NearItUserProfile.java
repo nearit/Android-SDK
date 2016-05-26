@@ -1,5 +1,6 @@
 package it.near.sdk.Operation;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
 
@@ -10,7 +11,9 @@ import com.android.volley.VolleyError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
@@ -68,6 +71,7 @@ public class NearItUserProfile {
                         try {
                             profileId = response.getJSONObject("data").getString("id");
                             GlobalConfig.getInstance(context).setProfileId(profileId);
+                            GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                             listener.onProfileCreated(true, profileId);
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -120,6 +124,55 @@ public class NearItUserProfile {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_NAME)
                 .appendPath(PROFILE_RES_TYPE)
+                .appendPath(profileId)
+                .appendPath(DATA_POINTS_RES_TYPE).build();
+
+        GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
+                context,
+                Request.Method.POST,
+                url.toString(),
+                reqBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ULog.d(TAG, "datapoint created: " + response.toString());
+                        listener.onDataCreated();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        listener.onDataNotSetError("volley network error: " + error.toString());
+                    }
+                }
+        ));
+
+    }
+
+    public static void setBatchUserData(Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener){
+        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        if (profileId == null) {
+            listener.onDataNotSetError("Profile didn't exists");
+            return;
+        }
+
+        ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
+        for (Map.Entry<String, String> entry : valuesMap.entrySet()){
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("key", entry.getKey());
+            map.put("value", entry.getValue());
+            maps.add(map);
+        }
+        String reqBody = null;
+        try {
+            reqBody = NearUtils.toJsonAPI("data_points", maps);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            listener.onDataNotSetError("Request creatin error");
+        }
+
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(PLUGIN_NAME)
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
 
