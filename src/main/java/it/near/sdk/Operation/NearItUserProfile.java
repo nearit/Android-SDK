@@ -41,6 +41,7 @@ public class NearItUserProfile {
     public static void createNewProfile(final Context context, final ProfileCreationListener listener){
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId != null){
+            // profile already created
             listener.onProfileCreated(false, profileId);
         }
 
@@ -111,7 +112,7 @@ public class NearItUserProfile {
             NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
                 @Override
                 public void onProfileCreated(boolean created, String profileId) {
-
+                    // TODO replay method call?
                 }
 
                 @Override
@@ -161,6 +162,12 @@ public class NearItUserProfile {
 
     }
 
+    /**
+     * Create or update multiple user data, key/value couples used in profile segmentation.
+     * @param context the application context.
+     * @param valuesMap map fo key values profile data.
+     * @param listener interface for success or failure on properties creation.
+     */
     public static void setBatchUserData(Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener){
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
