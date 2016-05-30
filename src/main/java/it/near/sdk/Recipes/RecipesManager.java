@@ -131,7 +131,9 @@ public class RecipesManager {
         map.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
         JSONObject congregoObj = new JSONObject();
         try {
-            congregoObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+            JSONObject evaluateObj = new JSONObject();
+            evaluateObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+            congregoObj.put("evaluate_segment", evaluateObj);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "profileId not present");

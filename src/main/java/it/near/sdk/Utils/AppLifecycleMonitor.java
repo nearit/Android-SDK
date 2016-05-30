@@ -42,13 +42,6 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
         return resumed > paused;
     }
 
-
-
-
-
-
-
-
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
     }
