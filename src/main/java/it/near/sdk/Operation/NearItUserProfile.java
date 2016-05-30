@@ -3,6 +3,7 @@ package it.near.sdk.Operation;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
+import android.provider.Settings;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -32,6 +33,15 @@ public class NearItUserProfile {
     private static final String PROFILE_RES_TYPE = "profiles";
     private static final String DATA_POINTS_RES_TYPE = "data_points";
     private static final String TAG = "NearItUserProfile";
+
+    /**
+     * Set the profileId of the user using this app installation. This string usually comes from the authentication service for the app.
+     * @param context the application context.
+     * @param profileId the profileId string.
+     */
+    public static void setProfileId(Context context, String profileId){
+        GlobalConfig.getInstance(context).setProfileId(profileId);
+    }
 
     /**
      * Create a new profile and saves the profile identifier internally. After a profile is created, it's possible to add properties to it.
@@ -105,7 +115,7 @@ public class NearItUserProfile {
      * @param value the value of the data field for the current user.
      * @param listener interface for success or failure on property creation.
      */
-    public static void setUserData(Context context, String key, String value, final UserDataNotifier listener){
+    public static void setUserData(final Context context, String key, String value, final UserDataNotifier listener){
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
@@ -149,6 +159,7 @@ public class NearItUserProfile {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, "datapoint created: " + response.toString());
+                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                         listener.onDataCreated();
                     }
                 },
@@ -168,7 +179,7 @@ public class NearItUserProfile {
      * @param valuesMap map fo key values profile data.
      * @param listener interface for success or failure on properties creation.
      */
-    public static void setBatchUserData(Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener){
+    public static void setBatchUserData(final Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener){
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
@@ -216,6 +227,7 @@ public class NearItUserProfile {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, "datapoint created: " + response.toString());
+                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                         listener.onDataCreated();
                     }
                 },
