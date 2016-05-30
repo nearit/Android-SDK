@@ -27,8 +27,7 @@ To implement a custom background behaviour look in the advanced topics section.
 
 To start using the SDK, include this in your app *build.gradle*
 
-```
-# !java
+```java
 
 dependencies {
     compile 'it.near.sdk.core:nearitsdk:0.2.7'
@@ -38,8 +37,7 @@ dependencies {
 In the *onCreate* method of your Application class, initialize a *NearItManager* object, passing the API key as a String
 
 
-```
-# !java
+```java
  @Override
     public void onCreate() {
         super.onCreate();
@@ -58,8 +56,7 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 ### Built-in region background receivers ###
 
 If you want to be notified when a user enters a region using the built-in background region notifications put this in your app manifest.
-```
-#!xml
+```xml
 <!-- built in region receivers -->
 <receiver android:name="it.near.sdk.Beacons.Monitoring.RegionBroadcastReceiver"
     android:exported="false">
@@ -74,8 +71,7 @@ If you want to be notified when a user enters a region using the built-in backgr
 
 If you need a different approach for notifying region enter, other than having a notification at every instance of this event, you need to subclass 2 classes (a BroadcastReceiver and an IntentService) and properly add them in your manifest. See the sample for an implementation of this scenario. Here's a snippet of the manifest:
 
-```
-# !xml
+```xml
 <!-- region messages -->
 <service android:name=".MyRegionIntentService" />
 
@@ -92,7 +88,7 @@ If you need a different approach for notifying region enter, other than having a
 ### Answer Polls###
 
 To answer a poll add this to your code
-```
+```java
 // answer can either be 1 or 2
 nearItManager.sendEvent(new PollEvent(poll_id, answer);
 ```
@@ -103,8 +99,7 @@ NearIt offers a default push reception and visualization. It shows a system noti
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
 
 To enable push notification, add this permission to your app *manifest*
-```
-# !xml
+```xml
 <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
 <permission
         android:name="it.near.sampleapp.permission.C2D_MESSAGE"
@@ -113,14 +108,12 @@ To enable push notification, add this permission to your app *manifest*
 ```
 
 Set your push senderId
-```
-# !java
+```java
 nearItManager.setPushSenderId("your-app-sender-id");
 ```
 
 Add this receiver in the *application* tag of your app *manifest*
-```
-# !xml
+```xml
 <application ...>
 ...
     <receiver
@@ -137,8 +130,7 @@ Add this receiver in the *application* tag of your app *manifest*
 
 Every push notification tracks itself as received when the SDK receives it.
 If you want to track notification taps, simply do
-```
-# !java
+```java
 // the push_id will be included in the extras bundle of the intent
 nearItManager.sendEvent(new OpenPushEvent(push_id));
 ```
@@ -150,8 +142,7 @@ If you need a custom handling of push notification (anything that must happens b
 * GcmBroadcastReceiver
 in the same way it was done with MyRegionIntentService and MyRegionBroadcastReceiver
 And add them to your manifest
-```
-# !xml
+```xml
 <service android:name=".MyGcmIntentService"
             android:exported="false"/>
 
