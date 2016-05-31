@@ -168,8 +168,7 @@ And add them to your manifest
 ### User profilation ###
 
 To register an user on our platform call this method
-```
-# !java
+```java
 NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
     @Override
     public void onProfileCreated() {
@@ -184,8 +183,7 @@ NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
 ```
 
 After the profile is created set user data
-```
-# !java
+```java
 NearItUserProfile.setUserData(context, "name", "John", new UserDataNotifier() {
     @Override
     public void onDataCreated() {
@@ -198,3 +196,24 @@ NearItUserProfile.setUserData(context, "name", "John", new UserDataNotifier() {
     }
 });
 ```
+
+If you have multiple data properties, set them in batch
+```java
+HashMap<String, String> userDataMap = new HashMap<>();
+userDataMap.put("name", "John");
+userDataMap.put("age", "23");           // set everything as String
+userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
+NearItUserProfile.setBatchUserData(context, hasmap, new UserDataNotifier() {
+            @Override
+            public void onDataCreated() {
+                // data was set/created 
+            }
+
+            @Override
+            public void onDataNotSetError(String error) {
+
+            }
+        });
+```
+
+If you try to set user data before creating a profile you will get an error.
