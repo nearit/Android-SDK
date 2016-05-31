@@ -215,7 +215,7 @@ public class RecipesManager {
      */
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
-        ULog.d(TAG , stringRecipe);
+        ULog.d(TAG , stringRecipe!=null? stringRecipe : "nameless recipe");
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
