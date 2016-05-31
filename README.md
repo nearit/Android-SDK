@@ -167,7 +167,9 @@ And add them to your manifest
 
 ### User profilation ###
 
-To register an user on our platform call this method
+To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
+
+To register an user in our platform call the method
 ```java
 NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
     @Override
@@ -181,6 +183,13 @@ NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
     }
 });
 ```
+Calling this method multiple times will results in multiple profiles being created, each time with no profilation data.
+
+To be sure to call this method only when necessary, check if you already created a profile with this method
+```java
+String profileId = NearItUserProfile.getProfileId(context);
+```
+If the result is null, it means that no profile is associated with the app installation.
 
 After the profile is created set user data
 ```java
@@ -215,5 +224,15 @@ NearItUserProfile.setBatchUserData(context, hasmap, new UserDataNotifier() {
             }
         });
 ```
+If you try to set user data before creating a profile the error callback will be called.
 
-If you try to set user data before creating a profile you will get an error.
+If you want to set a profileId manually (if it's coming from your user management systems) use the method
+```java
+NearItUserProfile.setProfileId(context, profileId);
+```
+
+If you want to reset your profile use this method
+```java
+NearItUserProfile.resetProfileId(context)
+```
+Further calls to NearItUserProfile.getProfileId(context) will return null.

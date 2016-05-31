@@ -34,6 +34,7 @@ public class NearInstallation {
     private static final String DEVICE_IDENTIFIER = "device_identifier";
     private static final String APP_ID = "app_id";
     private static final String TAG = "NearInstallation";
+    public static final String PLUGIN_RESOURCES = "plugin_resources";
 
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
@@ -97,7 +98,7 @@ public class NearInstallation {
         }
         Uri url = Uri.parse(Constants.API.INSTALLATIONS_PATH).buildUpon()
                 .appendPath(installation_id)
-                .appendPath("plugin_resources")
+                .appendPath(PLUGIN_RESOURCES)
                 .build();
         GlobalState.getInstance(context).getRequestQueue().add(
                 new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
@@ -113,6 +114,7 @@ public class NearInstallation {
                 })
         );
     }
+
 
     /**
      * Return a JSONapi formatted installation object with the proper attributes.

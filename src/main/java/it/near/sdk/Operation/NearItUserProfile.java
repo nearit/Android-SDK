@@ -43,6 +43,25 @@ public class NearItUserProfile {
         setProfilePluginProperty(context, profileId);
     }
 
+    /**
+     * Get the cached profileId. Might be null.
+     * @param context the application context.
+     * @return the cached profileId.
+     */
+    public static String getProfileId(Context context){
+        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        return profileId;
+    }
+
+    /**
+     * Reset the profileId. After this is called, the get will return null.
+     * @param context the application context.
+     */
+    public static void resetProfileId(Context context){
+        GlobalConfig.getInstance(context).setProfileId(null);
+        setProfilePluginProperty(context, null);
+    }
+
     private static void setProfilePluginProperty(Context context, String profileId) {
         String installationId = GlobalConfig.getInstance(context).getInstallationId();
         if (installationId != null){
