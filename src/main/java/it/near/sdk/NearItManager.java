@@ -11,6 +11,7 @@ import org.altbeacon.beacon.BeaconManager;
 
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
+import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
@@ -77,6 +78,8 @@ public class NearItManager {
         GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
         plugInSetup();
+
+        NearInstallation.registerInstallation(application);
 
         registerLogReceiver();
     }
