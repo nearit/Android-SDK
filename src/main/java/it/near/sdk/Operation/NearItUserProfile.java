@@ -18,6 +18,7 @@ import java.util.Map;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.NearUtils;
@@ -41,6 +42,14 @@ public class NearItUserProfile {
      */
     public static void setProfileId(Context context, String profileId){
         GlobalConfig.getInstance(context).setProfileId(profileId);
+        setPluginProperty(context, profileId);
+    }
+
+    private static void setPluginProperty(Context context, String profileId) {
+        String installationId = GlobalConfig.getInstance(context).getInstallationId();
+        if (installationId != null){
+            NearInstallation.setPluginResource(context, installationId, "congrego", profileId);
+        }
     }
 
     /**
@@ -82,6 +91,7 @@ public class NearItUserProfile {
                         try {
                             profileId = response.getJSONObject("data").getString("id");
                             GlobalConfig.getInstance(context).setProfileId(profileId);
+                            setPluginProperty(context, profileId);
                             GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                             listener.onProfileCreated(true, profileId);
                         } catch (JSONException e) {

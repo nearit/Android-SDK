@@ -150,7 +150,6 @@ public class GlobalConfig {
     public void setProfileId(String profileId){
         this.profileId = profileId;
         setLocalString(PROFILE_ID, profileId);
-        // TODO do profile-installation link
     }
 
     private void setLocalString(String name, String value){

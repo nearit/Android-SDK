@@ -1,6 +1,7 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.support.multidex.BuildConfig;
 
@@ -74,6 +75,43 @@ public class NearInstallation {
             ULog.d(TAG, "Unable to send installation data");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Create or replace a plugin resource for the installation
+     * @param context the application context.
+     * @param plugin_name name of the plugin to add the resource to.
+     * @param resource string value of the resource.
+     */
+    public static void setPluginResource(Context context, String installation_id, String plugin_name, String resource){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("plugin_name", plugin_name);
+        map.put("resource_id", resource);
+        String body;
+        try {
+            body = NearUtils.toJsonAPI("plugin_resource", map);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ULog.d(TAG, "Set respurces: error in building body");
+            return;
+        }
+        Uri url = Uri.parse(Constants.API.INSTALLATIONS_PATH).buildUpon()
+                .appendPath(installation_id)
+                .appendPath("plugin_resources")
+                .build();
+        GlobalState.getInstance(context).getRequestQueue().add(
+                new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                })
+        );
     }
 
     /**
