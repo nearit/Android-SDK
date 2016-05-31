@@ -60,6 +60,7 @@ public class NearItUserProfile {
         if (profileId != null){
             // profile already created
             listener.onProfileCreated(false, profileId);
+            return;
         }
 
         String requestBody = null;
