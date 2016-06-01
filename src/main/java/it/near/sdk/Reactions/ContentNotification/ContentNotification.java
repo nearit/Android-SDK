@@ -119,7 +119,7 @@ public class ContentNotification extends Resource implements Parcelable {
 
     public boolean isSimpleNotification() {
         return content == null &&
-                images == null &&
+                images_links == null &&
                 video_link == null;
     }
 }
