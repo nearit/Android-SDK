@@ -34,11 +34,10 @@ import it.near.sdk.Utils.ULog;
  *
  * <pre>
  * {@code
- *
  * // inside the custom Application onCreate method
  * nearItManager = new NearItManager(this, getResources().getString(R.string.api_key));
  * nearItManager.setSenderId(R.string.sender_id);
- *
+ * nearItManager.setNotificationImage(R.drawable.beacon_notif_icon);
  * }
  * </pre>
  *
