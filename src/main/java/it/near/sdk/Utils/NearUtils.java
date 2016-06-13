@@ -26,9 +26,7 @@ import it.near.sdk.MorpheusNear.Resource;
  * @author cattaneostefano
  */
 public class NearUtils {
-
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
-
+    
     /**
      * Parse a list.
      * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
