@@ -6,9 +6,6 @@ import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
-import it.near.sdk.Reactions.ContentNotification.ContentNotification;
-import it.near.sdk.Reactions.PollNotification.PollNotification;
-
 /**
  * WakefulBroadcastReceiver to receive region messages. This receiver should be initiated in the manifest to use the default implementation
  * or extended to create a custom implementation (In this case the extended receiver it's the one to include in the app manifest).

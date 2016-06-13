@@ -1,9 +1,7 @@
-package it.near.sdk.Reactions.ContentNotification;
+package it.near.sdk.Reactions.Content;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import java.io.Serializable;
 
 /**
  * @author cattaneostefano

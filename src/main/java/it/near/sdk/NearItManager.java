@@ -14,10 +14,10 @@ import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
-import it.near.sdk.Reactions.ContentNotification.ContentNotificationReaction;
+import it.near.sdk.Reactions.Content.ContentReaction;
 import it.near.sdk.Reactions.Event;
-import it.near.sdk.Reactions.PollNotification.PollEvent;
-import it.near.sdk.Reactions.PollNotification.PollNotificationReaction;
+import it.near.sdk.Reactions.Poll.PollEvent;
+import it.near.sdk.Reactions.Poll.PollReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
@@ -53,8 +53,8 @@ public class NearItManager {
     private static String APP_PACKAGE_NAME;
     private ForestManager forest;
     private RecipesManager recipesManager;
-    private ContentNotificationReaction contentNotification;
-    private PollNotificationReaction pollNotification;
+    private ContentReaction contentNotification;
+    private PollReaction pollNotification;
     private PushManager pushManager;
     private NearSimpleLogger logger;
 
@@ -106,10 +106,10 @@ public class NearItManager {
         monitor = new AltBeaconMonitor(application);
         forest = new ForestManager(application, monitor, recipesManager);
 
-        contentNotification = new ContentNotificationReaction(application, nearNotifier);
+        contentNotification = new ContentReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
 
-        pollNotification = new PollNotificationReaction(application, nearNotifier);
+        pollNotification = new PollReaction(application, nearNotifier);
         recipesManager.addReaction(pollNotification.getPluginName(), pollNotification);
 
     }

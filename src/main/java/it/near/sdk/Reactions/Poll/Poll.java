@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.PollNotification;
+package it.near.sdk.Reactions.Poll;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,7 +10,7 @@ import it.near.sdk.MorpheusNear.Resource;
 /**
  * @author cattaneostefano
  */
-public class PollNotification extends Resource implements Parcelable{
+public class Poll extends Resource implements Parcelable{
     @SerializedName("question")
     String question;
     @SerializedName("choice_1")
@@ -20,7 +20,7 @@ public class PollNotification extends Resource implements Parcelable{
     @SerializedName("updated_at")
     String updated_at;
 
-    public PollNotification() {
+    public Poll() {
     }
 
     public String getQuestion() {
@@ -72,16 +72,16 @@ public class PollNotification extends Resource implements Parcelable{
     public static final Parcelable.Creator CREATOR = new Creator() {
         @Override
         public Object createFromParcel(Parcel source) {
-            return new PollNotification(source);
+            return new Poll(source);
         }
 
         @Override
         public Object[] newArray(int size) {
-            return new PollNotification[size];
+            return new Poll[size];
         }
     };
 
-    public PollNotification(Parcel in){
+    public Poll(Parcel in){
         setQuestion(in.readString());
         setChoice_1(in.readString());
         setChoice_2(in.readString());

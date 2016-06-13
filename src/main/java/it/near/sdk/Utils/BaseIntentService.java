@@ -3,9 +3,9 @@ package it.near.sdk.Utils;
 import android.app.IntentService;
 import android.content.Intent;
 
-import it.near.sdk.Reactions.ContentNotification.ContentNotification;
+import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.CoreContentsListener;
-import it.near.sdk.Reactions.PollNotification.PollNotification;
+import it.near.sdk.Reactions.Poll.Poll;
 
 /**
  * @author cattaneostefano.
@@ -37,19 +37,19 @@ public abstract class BaseIntentService extends IntentService {
         String pulse_action = intent.getExtras().getString("pulse-action");
         String pulse_bundle = intent.getExtras().getString("pulse-bundle");
 
-        ContentNotification c_notif;
-        PollNotification p_notif;
+        Content c_notif;
+        Poll p_notif;
 
         boolean coreContent = false;
         if (reaction_plugin == null) return false;
         switch (reaction_plugin) {
             case "content-notification" :
-                c_notif = (ContentNotification) intent.getParcelableExtra("content");
+                c_notif = (Content) intent.getParcelableExtra("content");
                 listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "poll-notification" :
-                p_notif = (PollNotification) intent.getParcelableExtra("content");
+                p_notif = (Poll) intent.getParcelableExtra("content");
                 listener.getPollNotification(intent, p_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;

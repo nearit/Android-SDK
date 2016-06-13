@@ -42,6 +42,9 @@ public abstract class Reaction {
         // static GSON object for de/serialization of objects to/from JSON
         gson = new Gson();
         PACK_NAME = mContext.getApplicationContext().getPackageName();
+        setUpMorpheus();
+        initSharedPreferences(getPrefSuffix());
+        refreshConfig();
     }
 
     /**
@@ -138,6 +141,7 @@ public abstract class Reaction {
     public abstract void buildActions();
     public abstract void refreshConfig();
     public abstract String getPluginName();
+    public abstract String getPrefSuffix();
 
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
