@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.ContentNotification;
+package it.near.sdk.Reactions.Content;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -14,7 +14,7 @@ import it.near.sdk.MorpheusNear.Resource;
 /**
  * @author cattaneostefano
  */
-public class ContentNotification extends Resource implements Parcelable {
+public class Content extends Resource implements Parcelable {
     @SerializedName("content")
     String content;
     @SerializedName("video_link")
@@ -28,7 +28,7 @@ public class ContentNotification extends Resource implements Parcelable {
 
     List<ImageSet> images_links;
 
-    public ContentNotification() {
+    public Content() {
     }
 
     public String getContent() {
@@ -95,16 +95,16 @@ public class ContentNotification extends Resource implements Parcelable {
 
     // Creator
     public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
-        public ContentNotification createFromParcel(Parcel in) {
-            return new ContentNotification(in);
+        public Content createFromParcel(Parcel in) {
+            return new Content(in);
         }
 
-        public ContentNotification[] newArray(int size) {
-            return new ContentNotification[size];
+        public Content[] newArray(int size) {
+            return new Content[size];
         }
     };
 
-    public ContentNotification(Parcel in) {
+    public Content(Parcel in) {
         setContent(in.readString());
         setVideo_link(in.readString());
         setUpdated_at(in.readString());

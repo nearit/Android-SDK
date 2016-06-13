@@ -1,13 +1,11 @@
 package it.near.sdk.Push;
 
-import android.app.IntentService;
 import android.content.Intent;
 
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.R;
-import it.near.sdk.Reactions.ContentNotification.ContentNotification;
+import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.CoreContentsListener;
-import it.near.sdk.Reactions.PollNotification.PollNotification;
+import it.near.sdk.Reactions.Poll.Poll;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
 
@@ -33,7 +31,7 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
     }
 
     @Override
-    public void getPollNotification(Intent intent, PollNotification notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getPollNotification(Intent intent, Poll notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -46,7 +44,7 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
     }
 
     @Override
-    public void getContentNotification(Intent intent, ContentNotification notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getContentNotification(Intent intent, Content notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 

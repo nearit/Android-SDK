@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.PollNotification;
+package it.near.sdk.Reactions.Poll;
 
 import android.content.Context;
 import android.net.Uri;
@@ -19,7 +19,6 @@ import java.util.List;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Reactions.ContentNotification.ContentNotification;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -29,28 +28,18 @@ import it.near.sdk.Utils.ULog;
 /**
  * @author cattaneostefano
  */
-public class PollNotificationReaction extends Reaction {
+public class PollReaction extends Reaction {
     // ---------- poll notification plugin ----------
     public static final String POLL_NOTIFICATION =          "poll-notification";
     public static final String POLL_NOTIFICATION_RESOURCE = "polls";
     private static final String PLUGIN_NAME = "poll-notification";
     private static final String SHOW_POLL_ACTION_NAME = "show_poll";
-    private static final String TAG = "PollNotificationReaction";
+    private static final String TAG = "PollReaction";
     public static final String PREFS_SUFFIX = "NearPollNot";
-    private List<PollNotification> pollList;
+    private List<Poll> pollList;
 
-    public PollNotificationReaction(Context mContext, NearNotifier nearNotifier) {
+    public PollReaction(Context mContext, NearNotifier nearNotifier) {
         super(mContext, nearNotifier);
-        setUpMorpheus();
-
-        initSharedPreferences(PREFS_SUFFIX);
-
-        try {
-            testObject = new JSONObject(test);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        refreshConfig();
     }
 
     @Override
@@ -79,7 +68,7 @@ public class PollNotificationReaction extends Reaction {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
-                        PollNotification content = NearUtils.parseElement(morpheus, response, PollNotification.class);
+                        Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
                         nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
                     }
                 }, new Response.ErrorListener() {
@@ -93,14 +82,14 @@ public class PollNotificationReaction extends Reaction {
 
     private void showPoll(String reaction_bundle, Recipe recipe) {
         ULog.d(TAG , "Show poll: " + reaction_bundle);
-        PollNotification notification = getNotification(reaction_bundle);
+        Poll notification = getNotification(reaction_bundle);
         if (notification==null) return;
         nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
     }
 
-    private PollNotification getNotification(String reaction_bundle) {
+    private Poll getNotification(String reaction_bundle) {
         if (pollList == null) return null;
-        for (PollNotification pn : pollList){
+        for (Poll pn : pollList){
             if (pn.getId().equals(reaction_bundle)){
                 return pn;
             }
@@ -118,7 +107,7 @@ public class PollNotificationReaction extends Reaction {
                     @Override
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
-                        pollList = NearUtils.parseList(morpheus, response, PollNotification.class);
+                        pollList = NearUtils.parseList(morpheus, response, Poll.class);
                         persistList(TAG, pollList);
                     }
                 }, new Response.ErrorListener() {
@@ -135,9 +124,9 @@ public class PollNotificationReaction extends Reaction {
         );
     }
 
-    private ArrayList<PollNotification> loadList() throws JSONException {
+    private ArrayList<Poll> loadList() throws JSONException {
         String cachedString = loadCachedString(TAG);
-        return gson.fromJson(cachedString , new TypeToken<Collection<PollNotification>>(){}.getType());
+        return gson.fromJson(cachedString , new TypeToken<Collection<Poll>>(){}.getType());
     }
 
     @Override
@@ -152,14 +141,17 @@ public class PollNotificationReaction extends Reaction {
     }
 
     @Override
+    public String getPrefSuffix() {
+        return PREFS_SUFFIX;
+    }
+
+    @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
-        map.put("polls", PollNotification.class);
+        map.put("polls", Poll.class);
         return map;
     }
 
-    JSONObject testObject;
-    String test = "{\"data\":[{\"id\":\"5db0d8a4-d17a-4c2d-8d48-cf459aeab4e5\",\"type\":\"notifications\",\"attributes\":{\"text\":\"Poll - Tap to answer\",\"question\":\"How you doing?\",\"choice_1\":\"Fine, thx\",\"choice_2\":\"No good..\",\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\"}}]}";
 
     public void sendEvent(PollEvent event) {
         try {

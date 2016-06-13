@@ -1,7 +1,4 @@
-package it.near.sdk.Reactions.ContentNotification;
-
-import android.os.Parcel;
-import android.os.Parcelable;
+package it.near.sdk.Reactions.Content;
 
 import com.google.gson.annotations.SerializedName;
 
