@@ -78,6 +78,7 @@ public class NearItUserProfile {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId != null){
             // profile already created
+            setProfilePluginProperty(context, profileId);
             listener.onProfileCreated(false, profileId);
             return;
         }
