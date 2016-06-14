@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.PollNotification;
+package it.near.sdk.Reactions.Poll;
 
 import org.json.JSONException;
 import java.util.HashMap;

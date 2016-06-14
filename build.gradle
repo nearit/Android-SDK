@@ -56,20 +56,20 @@ task generateSourcesJar(type: Jar) {
 }
 
 task generateJavadocs(type: Javadoc) {
-    failOnError false
+    title = "Android NearIt SDK $version API"
+    description = "Generates JavaDoc for $version"
+    println "Generating Javadocs for $version"
+    // failOnError false
     options.author = true
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath()
             .join(File.pathSeparator))
+    classpath += configurations.javadocDeps
 }
 
 task generateJavadocsJar(type: Jar) {
     from generateJavadocs.destinationDir
     classifier 'javadoc'
-}
-
-task allJavadoc(dependsOn: ['assembleRelease'], type: Javadoc) {
-    classpath += configurations.javadocDeps
 }
 
 generateJavadocsJar.dependsOn generateJavadocs
@@ -83,6 +83,8 @@ Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 // Upload to bintray
+
+group = 'it.near.sdk.core'
 
 bintray {
     user = properties.getProperty("bintray.user")
@@ -129,13 +131,14 @@ task uploadDocs << {
     }
 }
 
-group = 'it.near.sdk.core'
+
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:support-annotations:23.3.0'
     javadocDeps 'com.android.support:support-annotations:23.3.0'
+    javadocDeps 'org.altbeacon:android-beacon-library:2.8.1'
     compile 'com.android.support:support-v4:23.3.0'
     compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.google.code.gson:gson:2.6.2'

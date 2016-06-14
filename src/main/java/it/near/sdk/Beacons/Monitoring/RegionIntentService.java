@@ -1,13 +1,8 @@
 package it.near.sdk.Beacons.Monitoring;
 
-import android.app.IntentService;
 import android.content.Intent;
 
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.R;
-import it.near.sdk.Reactions.ContentNotification.ContentNotification;
-import it.near.sdk.Reactions.CoreContentsListener;
-import it.near.sdk.Reactions.PollNotification.PollNotification;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
 

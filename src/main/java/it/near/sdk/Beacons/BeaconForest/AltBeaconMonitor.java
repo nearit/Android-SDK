@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Utils.ULog;
 

@@ -1,6 +1,7 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.support.multidex.BuildConfig;
 
@@ -33,6 +34,7 @@ public class NearInstallation {
     private static final String DEVICE_IDENTIFIER = "device_identifier";
     private static final String APP_ID = "app_id";
     private static final String TAG = "NearInstallation";
+    public static final String PLUGIN_RESOURCES = "plugin_resources";
 
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
@@ -75,6 +77,44 @@ public class NearInstallation {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Create or replace a plugin resource for the installation
+     * @param context the application context.
+     * @param plugin_name name of the plugin to add the resource to.
+     * @param resource string value of the resource.
+     */
+    public static void setPluginResource(Context context, String installation_id, final String plugin_name, String resource){
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("plugin_name", plugin_name);
+        map.put("resource_id", resource);
+        String body;
+        try {
+            body = NearUtils.toJsonAPI("plugin_resource", map);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ULog.d(TAG, "Set resources: error in building body");
+            return;
+        }
+        Uri url = Uri.parse(Constants.API.INSTALLATIONS_PATH).buildUpon()
+                .appendPath(installation_id)
+                .appendPath(PLUGIN_RESOURCES)
+                .build();
+        GlobalState.getInstance(context).getRequestQueue().add(
+                new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
+                    }
+                })
+        );
+    }
+
 
     /**
      * Return a JSONapi formatted installation object with the proper attributes.

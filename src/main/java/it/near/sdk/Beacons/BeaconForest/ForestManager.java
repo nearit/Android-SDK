@@ -305,6 +305,8 @@ public class ForestManager implements BootstrapNotifier {
         String formatted = sdf.format(now);
         map.put("tracked_at", formatted);
         map.put("platform", "android");
+        /*String installId = GlobalConfig.getInstance(getApplicationContext()).getInstallationId();
+        map.put("installation_id", installId);*/
         return NearUtils.toJsonAPI("trackings", map);
     }
 

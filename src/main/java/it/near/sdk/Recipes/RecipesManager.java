@@ -4,10 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import com.android.volley.RequestQueue;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -22,7 +21,7 @@ import java.util.List;
 
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
-import it.near.sdk.Communication.Filter;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Reactions.Reaction;
@@ -43,6 +42,7 @@ import it.near.sdk.Utils.ULog;
 public class RecipesManager {
     private static final String TAG = "RecipesManager";
     public static final String PREFS_SUFFIX = "NearRecipes";
+    private static final String PROCESS_PATH = "process";
     public final String PREFS_NAME;
     private final SharedPreferences sp;
     private Context mContext;
@@ -99,6 +99,7 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
+        /*
         final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendQueryParameter("filter[active]", "true")
                 .build();
@@ -122,6 +123,51 @@ public class RecipesManager {
                 }
             }
         }));
+*/
+        Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
+                .appendPath(PROCESS_PATH).build();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
+        map.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
+        JSONObject congregoObj = new JSONObject();
+        try {
+            JSONObject evaluateObj = new JSONObject();
+            evaluateObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+            congregoObj.put("evaluate_segment", evaluateObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ULog.d(TAG, "profileId not present");
+        }
+        map.put("congrego", congregoObj);
+        String requestBody = null;
+        try {
+            requestBody = NearUtils.toJsonAPI("evaluates", map);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ULog.d(TAG, "Can't build request body");
+        }
+        GlobalState.getInstance(mContext).getRequestQueue().add(
+                new CustomJsonRequest(mContext, Request.Method.POST, url.toString(), requestBody,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                ULog.d(TAG, "Got recipes: " + response.toString());
+                                recipes = NearUtils.parseList(morpheus, response, Recipe.class);
+                                persistList(recipes);
+                            }
+                        }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                ULog.d(TAG, "Error in downloading recipes: " + error.toString());
+                                try {
+                                    recipes = loadChachedList();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        })
+        );
+
     }
 
     private void persistList(List<Recipe> recipes) {
@@ -169,7 +215,7 @@ public class RecipesManager {
      */
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
-        ULog.d(TAG , stringRecipe);
+        ULog.d(TAG , stringRecipe!=null? stringRecipe : "nameless recipe");
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
