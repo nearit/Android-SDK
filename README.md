@@ -2,8 +2,6 @@
 
 This is the NearIt Android SDK. With this component you can integrate the NearIt services into your app to engage with your users.
 
-It is currently in **beta**.
-
 ## Features ##
 
 * NearIt services integration
