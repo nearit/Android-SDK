@@ -116,24 +116,25 @@ dependencies{
         }
     }
 }
-task uploadDocs << {
+
+task uploadDocs {
+    mustRunAfter generateJavadocs
     description = "Upload javadocs to our ftp server"
     def ftpHost = properties.getProperty("docs.ftp.host")
     def ftpDir = properties.getProperty("docs.ftp.dir")
     def ftpUser = properties.getProperty("docs.ftp.user")
     def ftpPassword = properties.getProperty("docs.ftp.password")
-    ant {
-        taskdef(name: 'ftp',
-                classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
-                classpath: configurations.ftpAntTask.asPath)
-        ftp(server: ftpHost, userid: ftpUser, password: ftpPassword, remoteDir: ftpDir) {
-            fileset(dir: 'build/docs/javadoc/')
+    doLast{
+        ant {
+            taskdef(name: 'ftp',
+                    classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
+                    classpath: configurations.ftpAntTask.asPath)
+            ftp(server: ftpHost, userid: ftpUser, password: ftpPassword, remoteDir: ftpDir) {
+                fileset(dir: 'build/docs/javadoc/')
+            }
         }
     }
 }
-uploadDocs.mustRunAfter generateJavadocs
-
-
 
 
 dependencies {
