@@ -117,6 +117,7 @@ dependencies{
     }
 }
 task uploadDocs << {
+    description = "Upload javadocs to our ftp server"
     def ftpHost = properties.getProperty("docs.ftp.host")
     def ftpDir = properties.getProperty("docs.ftp.dir")
     def ftpUser = properties.getProperty("docs.ftp.user")
@@ -130,6 +131,8 @@ task uploadDocs << {
         }
     }
 }
+uploadDocs.mustRunAfter generateJavadocs
+
 
 
 
