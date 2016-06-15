@@ -2,8 +2,6 @@
 
 This is the NearIt Android SDK. With this component you can integrate the NearIt services into your app to engage with your users.
 
-It is currently in **beta**.
-
 ## Features ##
 
 * NearIt services integration
@@ -98,16 +96,7 @@ nearItManager.sendEvent(new PollEvent(poll_id, answer);
 NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
 
-To enable push notification, add this permission to your app *manifest*
-```xml
-<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-<permission
-        android:name="it.near.sampleapp.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
-<uses-permission android:name="<YOUR_APP_PACKAGE_NAME>.permission.C2D_MESSAGE" />
-```
-
-Set your push senderId
+To enable push notification,set your push senderId
 ```java
 nearItManager.setPushSenderId("your-app-sender-id");
 ```
