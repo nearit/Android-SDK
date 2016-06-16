@@ -19,6 +19,7 @@ import java.util.List;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalState;
+import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -28,7 +29,7 @@ import it.near.sdk.Utils.ULog;
 /**
  * @author cattaneostefano
  */
-public class PollReaction extends Reaction {
+public class PollReaction extends CoreReaction {
     // ---------- poll notification plugin ----------
     public static final String POLL_NOTIFICATION =          "poll-notification";
     public static final String POLL_NOTIFICATION_RESOURCE = "polls";
@@ -58,7 +59,7 @@ public class PollReaction extends Reaction {
 
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
-        //TODO download single resource
+        // Download the single resource
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(POLL_NOTIFICATION)
                 .appendPath(POLL_NOTIFICATION_RESOURCE)

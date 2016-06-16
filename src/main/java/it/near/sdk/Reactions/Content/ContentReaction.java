@@ -19,6 +19,7 @@ import java.util.List;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalState;
+import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -28,7 +29,7 @@ import it.near.sdk.Utils.ULog;
 /**
  * @author cattaneostefano
  */
-public class ContentReaction extends Reaction {
+public class ContentReaction extends CoreReaction {
     // ---------- content notification plugin ----------
     public static final String CONTENT_NOTIFICATION_PATH =      "content-notification";
     public static final String CONTENT_NOTIFICATION_RESOURCE =  "contents";

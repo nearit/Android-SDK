@@ -22,53 +22,25 @@ import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.ULog;
 
 /**
- * Superclass for plugins of type "reaction".
+ * Superclass for plugins of type "reaction". Subclass to add the support of new "What" types and handle requests to fire contents,
+ * from within the devices and form push notifications.
  * @author cattaneostefano
  */
 public abstract class Reaction {
-    private static final String TAG = "Reaction";
     public List<String> supportedActions = null;
-    protected static Gson gson = null;
-    protected SharedPreferences sp;
-    protected SharedPreferences.Editor editor;
-    protected static String PACK_NAME;
+    /**
+     * App context.
+     */
     protected Context mContext;
+    /**
+     * Notifier of content to the app.
+     */
     protected NearNotifier nearNotifier;
-    protected Morpheus morpheus;
 
     public Reaction(Context mContext, NearNotifier nearNotifier) {
         this.mContext = mContext;
         this.nearNotifier = nearNotifier;
-        // static GSON object for de/serialization of objects to/from JSON
-        gson = new Gson();
-        PACK_NAME = mContext.getApplicationContext().getPackageName();
-        setUpMorpheus();
-        initSharedPreferences(getPrefSuffix());
-        refreshConfig();
     }
-
-    /**
-     * set up the jsonapi parser for parsing only related to this plugin
-     */
-    public void setUpMorpheus(){
-        HashMap<String, Class> classes = getModelHashMap();
-        morpheus = new Morpheus();
-        for (Map.Entry<String, Class> entry : classes.entrySet()){
-            morpheus.getFactory().getDeserializer().registerResourceClass(entry.getKey(), entry.getValue());
-        }
-    }
-
-    /**
-     * Initialize SharedPreferences.
-     * The preference name is formed by our plugin name and the package name of the app, to avoid conflicts.
-     * @param prefsNameSuffix suffix for shared parameters
-     */
-    protected void initSharedPreferences(String prefsNameSuffix) {
-        String PREFS_NAME = PACK_NAME + prefsNameSuffix;
-        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
-        editor = sp.edit();
-    }
-
 
     public List<String> getSupportedActions() {
         if (supportedActions == null){
@@ -89,68 +61,36 @@ public abstract class Reaction {
     }
 
     /**
-     * Utility for parsing lists
-     * @param json json to parse
-     * @param clazz Object class of list objects
-     * @param <T> generic type
-     * @return List of Objects
-     */
-    protected <T> List<T> parseList(JSONObject json, Class<T> clazz) {
-        JsonApiObject jsonapiObject = null;
-        try {
-            jsonapiObject = morpheus.parse(json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<T> returnList = new ArrayList<T>();
-
-        for (Resource r : jsonapiObject.getResources()){
-            returnList.add((T) r);
-        }
-
-        return returnList;
-    }
-
-    /**
-     * Utility to persist lists in the SharedPreferences.
-     * @param key
-     * @param list
-     */
-    protected void persistList(String key, List list){
-        String persistedString = gson.toJson(list);
-        ULog.d(key, "Persist: " + persistedString);
-        editor.putString(key, persistedString);
-        editor.apply();
-    }
-
-    /**
-     * Returns a String stored in SharedPreferences.
-     * It was not possible to write a generic method already returning a list because of Java type erasure
-     * @param key
-     * @return
-     * @throws JSONException
-     */
-    protected String loadCachedString(String key) throws JSONException {
-        return sp.getString(key,"");
-    }
-
-    /**
      * Build supported actions
      */
     public abstract void buildActions();
-    public abstract void refreshConfig();
-    public abstract String getPluginName();
-    public abstract String getPrefSuffix();
 
     /**
-     * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
-     * @return
+     * Refresh configuration from the server. Consider caching the results so you can support offline mode.
      */
-    protected abstract HashMap<String,Class> getModelHashMap();
+    public abstract void refreshConfig();
+
+    /**
+     * @return the profile name.
+     */
+    public abstract String getPluginName();
+
+    /**
+     * Handle a reaction, including the call to the NearNotifier object.
+     * @param reaction_action the reaction anction of the recipe.
+     * @param reaction_bundle the reaction bundle of the recipe.
+     * @param recipe the entire recipe object.
+     */
     protected abstract void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe);
+
+    /**
+     * Handle a reaction from a push notification, including the call to the NearNotifier object. Since this will be called after the insertion
+     * of a push based rrecipe, it's highly unlikely that the recipe information will be cached.
+     * @param recipe the recipe object.
+     * @param push_id the id of the push notification.
+     * @param bundle_id the id of the reaction bundle.
+     */
     public abstract void handlePushReaction(Recipe recipe, String push_id, String bundle_id);
-    protected abstract String getResTypeName();
 
 
 }
