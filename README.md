@@ -2,7 +2,7 @@
 
 This is the NearIt Android SDK. With this component you can integrate the NearIt services into your app to engage with your users.
 
--It is currently in **beta**.
+- This is a pre-release software and features can change.
 
 ## Features ##
 
@@ -12,11 +12,11 @@ This is the NearIt Android SDK. With this component you can integrate the NearIt
 * Beacon monitoring with app in the background.
 * Different types of contents.
 * Push Notification
+* User Segmentation
 
 ## Coming soon ##
 
 * Different type of detectors
-* User Segmentation
 
 ## Behaviour ##
 
