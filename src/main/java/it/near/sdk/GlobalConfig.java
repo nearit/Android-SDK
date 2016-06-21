@@ -3,6 +3,8 @@ package it.near.sdk;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import cz.msebera.android.httpclient.auth.AuthenticationException;
+
 /**
  * Class containing global configuration. It saves all configuration strings on disk.
  *
@@ -67,7 +69,7 @@ public class GlobalConfig {
     }
 
 
-    public String getApiKey() {
+    public String getApiKey() throws AuthenticationException{
         if (apiKey == null){
             apiKey = getLocalString(APIKEY);
         }
