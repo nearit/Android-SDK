@@ -59,7 +59,6 @@ public class ContentReaction extends CoreReaction {
 
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
-        //TODO download single resource
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)

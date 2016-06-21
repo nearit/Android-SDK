@@ -104,13 +104,15 @@ public class CustomJsonRequest extends JsonObjectRequest {
     /**
      * Simple policy with long timeout, one retry and back-off multiplier of 1
      */
-    DefaultRetryPolicy simpleRetryPolicy = new DefaultRetryPolicy(60*1000,1,1.0f);
+    DefaultRetryPolicy simpleRetryPolicy = new DefaultRetryPolicy(1*1000,6,0.0f);
 
     /**
      * Policy for trackings. Long timeout, 4 retries and long back-off multiplier.
      * First retry after 5 minutes, then after 50 minutes, then after 5 hours, then after 1 day.
      */
     DefaultRetryPolicy trackingRetryPolicy = new DefaultRetryPolicy(60*1000, 4, 5.0f);
+
+
 
     /**
      * Return headers for HTTP calls
@@ -132,8 +134,9 @@ public class CustomJsonRequest extends JsonObjectRequest {
      * @return the complete path
      */
     private static String composeUrl(Context context, String url) {
-        String baseUrl = context.getResources().getString(R.string.API_BASE_URL);
-        return baseUrl + url;
+        String baseUrl = context.getResources().getString(R.string.API_BASE_URL) + url;
+
+        return baseUrl.replace("%5B", "[").replace("%5D", "]");
     }
 
 }
