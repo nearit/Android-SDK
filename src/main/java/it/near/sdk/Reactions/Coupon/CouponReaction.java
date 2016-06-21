@@ -3,9 +3,6 @@ package it.near.sdk.Reactions.Coupon;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -101,6 +98,8 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("include", "coupon").build();
         String output = url.toString();
         ULog.d(TAG, output);
+        // TODO knjgfdrjkgrem
+/*
         GlobalState.getInstance(context).getRequestQueue().add(
                 new CustomJsonRequest(context, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
@@ -116,5 +115,6 @@ public class CouponReaction extends CoreReaction {
                     }
                 })
         );
+*/
     }
 }

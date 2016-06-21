@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.AsyncHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -50,6 +48,7 @@ public class RecipesManager {
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
     SharedPreferences.Editor editor;
+    private AsyncHttpClient httpClient;
 
     public RecipesManager(Context context) {
         this.mContext = context;
@@ -65,6 +64,7 @@ public class RecipesManager {
         }
         setUpMorpheusParser();
         refreshConfig();
+        httpClient = new AsyncHttpClient();
     }
 
     /**
@@ -99,31 +99,6 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
-        /*
-        final Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendQueryParameter("filter[active]", "true")
-                .build();
-        GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, uri.toString(), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                ULog.d(TAG, uri.toString());
-                ULog.d(TAG, response.toString());
-                recipes = NearUtils.parseList(morpheus, response, Recipe.class);
-                persistList(recipes);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                ULog.d(TAG , "Error " + error.toString());
-                try {
-                    recipes = loadChachedList();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }));
-*/
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
         HashMap<String, Object> map = new HashMap<>();
@@ -146,6 +121,9 @@ public class RecipesManager {
             e.printStackTrace();
             ULog.d(TAG, "Can't build request body");
         }
+        //TODO download
+
+/*
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, Request.Method.POST, url.toString(), requestBody,
                         new Response.Listener<JSONObject>() {
@@ -167,6 +145,7 @@ public class RecipesManager {
                             }
                         })
         );
+*/
 
     }
 
@@ -231,6 +210,8 @@ public class RecipesManager {
                 .appendEncodedPath(id)
                 .build();
 
+        // TODO wdwefewf
+/*
         GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(
                 mContext, uri.toString(), new Response.Listener<JSONObject>() {
             @Override
@@ -249,6 +230,7 @@ public class RecipesManager {
             }
         }
         ));
+*/
         // inside receiver, parse the response to know what reaction plugin to use
         // than fire the reaction
         // if we got a network error, return false

@@ -3,10 +3,6 @@ package it.near.sdk.Operation;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -96,6 +92,8 @@ public class NearItUserProfile {
                 .appendPath(PLUGIN_NAME)
                 .appendPath(PROFILE_RES_TYPE).build();
 
+// TODO ksdnfkjbfjehfbe
+/*
         GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
                 context,
                 Request.Method.POST,
@@ -127,6 +125,8 @@ public class NearItUserProfile {
                     }
                 }
         ));
+*/
+
     }
 
     private static String buildProfileCreationRequestBody(Context context) throws JSONException {
@@ -178,7 +178,8 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE)
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
-
+  //TODO dnfjhdbfhjrf
+/*
         GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
                 context,
                 Request.Method.POST,
@@ -199,6 +200,7 @@ public class NearItUserProfile {
                     }
                 }
         ));
+*/
 
     }
 
@@ -247,6 +249,8 @@ public class NearItUserProfile {
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
 
+                // TODO jsdbfjdshbfds
+/*
         GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
                 context,
                 Request.Method.POST,
@@ -267,6 +271,7 @@ public class NearItUserProfile {
                     }
                 }
         ));
+*/
 
     }
 

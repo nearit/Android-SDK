@@ -3,8 +3,6 @@ package it.near.sdk.Reactions.Content;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 
@@ -64,6 +62,8 @@ public class ContentReaction extends CoreReaction {
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                 .appendPath(bundle_id)
                 .appendQueryParameter("include", "images").build();
+        //TODO wemfjewgfhejrgkre
+/*
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
@@ -80,6 +80,7 @@ public class ContentReaction extends CoreReaction {
                     }
                 })
         );
+*/
     }
 
     private void showContent(String reaction_bundle, Recipe recipe) {
@@ -104,6 +105,8 @@ public class ContentReaction extends CoreReaction {
                     .appendPath(CONTENT_NOTIFICATION_PATH)
                     .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                     .appendQueryParameter("include", "images").build();
+        //TODO ejdnfjdngfkj
+/*
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
@@ -125,6 +128,7 @@ public class ContentReaction extends CoreReaction {
                     }
                 })
         );
+*/
     }
 
 

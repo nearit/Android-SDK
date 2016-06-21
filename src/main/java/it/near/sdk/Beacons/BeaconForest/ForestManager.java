@@ -5,8 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -130,7 +128,8 @@ public class ForestManager implements BootstrapNotifier {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(BEACON_FOREST_PATH)
                     .appendPath(BEACON_FOREST_BEACONS).build();
-        GlobalState.getInstance(mContext).getRequestQueue().add(
+        //TODO download
+/*        GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -153,7 +152,7 @@ public class ForestManager implements BootstrapNotifier {
                         e.printStackTrace();
                     }
             }
-        }));
+        }))*/;
 
     }
 

@@ -5,10 +5,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.multidex.BuildConfig;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +46,8 @@ public class NearInstallation {
             // build a JSON api request body with or without the id, depending wheter the installID is null or not
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
-            int method = installationId == null ? Request.Method.POST : Request.Method.PUT;
+            // TODO dmewnfejwnfjenfkj
+            /*int method = installationId == null ? Request.Method.POST : Request.Method.PUT;
             String subPath = installationId == null ? "" : "/" + installationId;
             GlobalState.getInstance(context).getRequestQueue().add(
                     new CustomJsonRequest(context, method, Constants.API.INSTALLATIONS_PATH + subPath, installBody, new Response.Listener<JSONObject>() {
@@ -71,7 +68,7 @@ public class NearInstallation {
                             ULog.d(TAG, "Installation datat sending error: " + error.toString());
                         }
                     }));
-
+*/
         } catch (JSONException e) {
             ULog.d(TAG, "Unable to send installation data");
             e.printStackTrace();
@@ -100,6 +97,8 @@ public class NearInstallation {
                 .appendPath(installation_id)
                 .appendPath(PLUGIN_RESOURCES)
                 .build();
+        // TODO fewfewgewgw
+/*
         GlobalState.getInstance(context).getRequestQueue().add(
                 new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
                     @Override
@@ -113,6 +112,7 @@ public class NearInstallation {
                     }
                 })
         );
+*/
     }
 
 

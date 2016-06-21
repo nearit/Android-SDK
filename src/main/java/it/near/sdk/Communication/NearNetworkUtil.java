@@ -2,10 +2,6 @@ package it.near.sdk.Communication;
 
 import android.content.Context;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-
 import org.json.JSONObject;
 
 import it.near.sdk.GlobalState;
@@ -27,6 +23,8 @@ public class NearNetworkUtil {
      * @param body the HTTP request body.
      */
     public static void sendTrack(Context context, String url, String body){
+        // TODO ewfjrbghregfr
+/*
         GlobalState.getInstance(context).getRequestQueue().add(
                 new CustomJsonRequest(context, Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
                     @Override
@@ -40,6 +38,7 @@ public class NearNetworkUtil {
                     }
                 })
         );
+*/
     }
 
 }

@@ -3,9 +3,6 @@ package it.near.sdk.Reactions.Poll;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
@@ -64,7 +61,8 @@ public class PollReaction extends CoreReaction {
                 .appendPath(POLL_NOTIFICATION)
                 .appendPath(POLL_NOTIFICATION_RESOURCE)
                 .appendPath(bundle_id).build();
-        GlobalState.getInstance(mContext).getRequestQueue().add(
+        // TODO dbfhebjfherfer
+        /*GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -78,7 +76,7 @@ public class PollReaction extends CoreReaction {
                         ULog.d(TAG, "Error downloading push content: " + error.toString());
                     }
                 })
-        );
+        );*/
     }
 
     private void showPoll(String reaction_bundle, Recipe recipe) {
@@ -103,7 +101,8 @@ public class PollReaction extends CoreReaction {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(POLL_NOTIFICATION)
                     .appendPath(POLL_NOTIFICATION_RESOURCE).build();
-        GlobalState.getInstance(mContext).getRequestQueue().add(
+        // TODO skjfbjhfbdhjr
+        /*GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -122,7 +121,7 @@ public class PollReaction extends CoreReaction {
                         }
                     }
                 })
-        );
+        );*/
     }
 
     private ArrayList<Poll> loadList() throws JSONException {
@@ -163,7 +162,8 @@ public class PollReaction extends CoreReaction {
                     .appendPath(POLL_NOTIFICATION_RESOURCE)
                     .appendPath(event.getId())
                     .appendPath("answers").build();
-            GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
+            // TODO ksdjbfjhdbend
+            /*GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     ULog.d(TAG, "Answer sent successfully");
@@ -173,7 +173,7 @@ public class PollReaction extends CoreReaction {
                 public void onErrorResponse(VolleyError error) {
                     ULog.d(TAG, "Error in sending answer: " + error.toString());
                 }
-            }));
+            }));*/
 
         } catch (JSONException e) {
             e.printStackTrace();

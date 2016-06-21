@@ -144,7 +144,6 @@ dependencies {
     javadocDeps 'com.android.support:support-annotations:23.3.0'
     javadocDeps 'org.altbeacon:android-beacon-library:2.8.1'
     compile 'com.android.support:support-v4:23.3.0'
-    compile 'com.mcxiaoke.volley:library:1.0.19'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.altbeacon:android-beacon-library:2.8.1'
     compile "com.google.android.gms:play-services-gcm:8.4.0"
