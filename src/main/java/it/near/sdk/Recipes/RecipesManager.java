@@ -7,18 +7,24 @@ import android.net.Uri;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
@@ -48,7 +54,7 @@ public class RecipesManager {
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
     SharedPreferences.Editor editor;
-    private AsyncHttpClient httpClient;
+    private NearAsyncHttpClient httpClient;
 
     public RecipesManager(Context context) {
         this.mContext = context;
@@ -57,6 +63,7 @@ public class RecipesManager {
         PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
         sp = mContext.getSharedPreferences(PREFS_NAME, 0);
         editor = sp.edit();
+        httpClient = new NearAsyncHttpClient();
         try {
             loadChachedList();
         } catch (JSONException e) {
@@ -64,7 +71,6 @@ public class RecipesManager {
         }
         setUpMorpheusParser();
         refreshConfig();
-        httpClient = new AsyncHttpClient();
     }
 
     /**
@@ -121,8 +127,31 @@ public class RecipesManager {
             e.printStackTrace();
             ULog.d(TAG, "Can't build request body");
         }
-        //TODO download
 
+        try {
+            httpClient.nearPost(mContext, url.toString(), requestBody, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, "Got recipes: " + response.toString());
+                    recipes = NearUtils.parseList(morpheus, response, Recipe.class);
+                    persistList(recipes);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "Error in downloading recipes: " + statusCode);
+                    try {
+                        recipes = loadChachedList();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 /*
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, Request.Method.POST, url.toString(), requestBody,
@@ -206,11 +235,31 @@ public class RecipesManager {
      */
     public boolean processRecipe(final String id) {
         // TODO use new evaluation endpoint for single recipes
-        Uri uri = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
+        Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
                 .build();
 
-        // TODO wdwefewf
+        // TODO not tested
+        try {
+            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
+                    ULog.d(TAG, recipe.toString());
+                    String reactionPluginName = recipe.getReaction_plugin_id();
+                    Reaction reaction = reactions.get(reactionPluginName);
+                    reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle().getId());
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "single recipe failed");
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
 /*
         GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(
                 mContext, uri.toString(), new Response.Listener<JSONObject>() {

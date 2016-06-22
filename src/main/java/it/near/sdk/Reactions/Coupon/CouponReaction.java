@@ -3,6 +3,8 @@ package it.near.sdk.Reactions.Coupon;
 import android.content.Context;
 import android.net.Uri;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -13,6 +15,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalConfig;
@@ -98,7 +102,25 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("include", "coupon").build();
         String output = url.toString();
         ULog.d(TAG, output);
-        // TODO knjgfdrjkgrem
+        // TODO not tested
+        try {
+            httpClient.nearGet(context, url.toString(), new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    List<Claim> claims = NearUtils.parseList(morpheus, response, Claim.class);
+                    listener.onClaimsDownloaded(claims);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    listener.onClaimsDownloadError("Download error");
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+            listener.onClaimsDownloadError("Download error");
+        }
 /*
         GlobalState.getInstance(context).getRequestQueue().add(
                 new CustomJsonRequest(context, url.toString(), new Response.Listener<JSONObject>() {

@@ -5,11 +5,16 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.multidex.BuildConfig;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.NearUtils;
@@ -32,6 +37,8 @@ public class NearInstallation {
     private static final String TAG = "NearInstallation";
     public static final String PLUGIN_RESOURCES = "plugin_resources";
 
+    private static NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
+
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
      * or a PUT if an installationId is already present.
@@ -46,7 +53,29 @@ public class NearInstallation {
             // build a JSON api request body with or without the id, depending wheter the installID is null or not
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
-            // TODO dmewnfejwnfjenfkj
+            // TODO not tested
+            try {
+                registerOrEditInstallation(context, installationId, installBody, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        ULog.d(TAG , "Installation data sent");
+                        // If the registration is correct, we save the installationId locally
+                        try {
+                            String installationId = response.getJSONObject("data").getString("id");
+                            GlobalConfig.getInstance(context).setInstallationId(installationId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        ULog.d(TAG, "Installation datat sending error: " + statusCode);
+                    }
+                });
+            } catch (UnsupportedEncodingException | AuthenticationException e) {
+                e.printStackTrace();
+            }
             /*int method = installationId == null ? Request.Method.POST : Request.Method.PUT;
             String subPath = installationId == null ? "" : "/" + installationId;
             GlobalState.getInstance(context).getRequestQueue().add(
@@ -75,6 +104,15 @@ public class NearInstallation {
         }
     }
 
+    private static void registerOrEditInstallation(Context context, String installationId, String installBody, JsonHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
+        if (installationId == null){
+            httpClient.nearPost(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler );
+        } else {
+            String subPath = "/" + installationId;
+            httpClient.nearPut(context, Constants.API.INSTALLATIONS_PATH + subPath, installBody, jsonHttpResponseHandler);
+        }
+    }
+
     /**
      * Create or replace a plugin resource for the installation
      * @param context the application context.
@@ -97,7 +135,24 @@ public class NearInstallation {
                 .appendPath(installation_id)
                 .appendPath(PLUGIN_RESOURCES)
                 .build();
-        // TODO fewfewgewgw
+        // TODO not tested
+        try {
+            httpClient.nearPut(context, url.toString(), body, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
+                }
+            });
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
 /*
         GlobalState.getInstance(context).getRequestQueue().add(
                 new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
