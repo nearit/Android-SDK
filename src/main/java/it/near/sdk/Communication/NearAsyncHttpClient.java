@@ -4,16 +4,22 @@ import android.content.Context;
 import android.preference.PreferenceActivity;
 
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
+import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.message.BasicHeader;
+import cz.msebera.android.httpclient.message.BasicHttpResponse;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.R;
 
@@ -22,13 +28,52 @@ import it.near.sdk.R;
  */
 public class NearAsyncHttpClient extends AsyncHttpClient {
 
-    public RequestHandle nearPost(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
-        HttpEntity body = new StringEntity(requestBody);
-        return super.post(context, buildUrl(context, url), getHeaders(context), body, Constants.Headers.jsonApiHeader, responseHandler);
+    public NearAsyncHttpClient() {
+        super();
     }
 
-    public RequestHandle nearGet(Context context, String url, ResponseHandlerInterface responseHandler){
-        return super.get(context, buildUrl(context, url), responseHandler);
+    public RequestHandle nearGet(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
+        return super.get(context,
+                buildUrl(context, url),
+                getHeaders(context),
+                null,
+                responseHandler);
+    }
+
+    public RequestHandle nearPost(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
+        HttpEntity body = new StringEntity(requestBody);
+        return super.post(context,
+                buildUrl(context, url),
+                getHeaders(context),
+                body,
+                Constants.Headers.jsonApiHeader,
+                responseHandler);
+    }
+
+    public RequestHandle nearPut(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws UnsupportedEncodingException, AuthenticationException {
+        HttpEntity body = new StringEntity(requestBody);
+        return super.put(context,
+                buildUrl(context, url),
+                getHeaders(context),
+                body,
+                Constants.Headers.jsonApiHeader,
+                responseHandler);
+    }
+
+    public RequestHandle nearMock(Context context, String url, JsonHttpResponseHandler responseHandlerInterface, int mockResId){
+        String mockedString = context.getApplicationContext().getResources().getString(mockResId);
+        JSONObject mockedResponse = null;
+        try {
+            mockedResponse = new JSONObject(mockedString);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        responseHandlerInterface.onSuccess(200, null, mockedResponse);
+        return null;
+    }
+
+    public RequestHandle nearMock(Context context, String url, String requestBody, JsonHttpResponseHandler responseHandlerInterface, int mockResId){
+        return nearMock(context, url, responseHandlerInterface, mockResId);
     }
 
     /**
