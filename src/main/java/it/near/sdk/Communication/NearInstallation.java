@@ -36,6 +36,7 @@ public class NearInstallation {
     private static final String APP_ID = "app_id";
     private static final String TAG = "NearInstallation";
     public static final String PLUGIN_RESOURCES = "plugin_resources";
+    private static final String PROFILE_ID = "profile_id";
 
     private static NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
 
@@ -126,6 +127,10 @@ public class NearInstallation {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
                 }
+
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
+                }
             });
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -170,6 +175,8 @@ public class NearInstallation {
         attributeMap.put(DEVICE_IDENTIFIER, GlobalConfig.getInstance(context).getDeviceToken());
         // Set app ID (as defined by our APIs)
         attributeMap.put(APP_ID, GlobalConfig.getInstance(context).getAppId());
+        // Set the profile if I have it.
+        attributeMap.put(PROFILE_ID, GlobalConfig.getInstance(context).getProfileId());
         return NearUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
     }
 
