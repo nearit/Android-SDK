@@ -17,6 +17,8 @@ public class Recipe extends Resource {
     String name;
     @SerializedName("notification")
     HashMap<String, Object> notification;
+    @SerializedName("labels")
+    HashMap<String, Object> labels;
     @SerializedName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
@@ -35,6 +37,7 @@ public class Recipe extends Resource {
     String operation_bundle_id;*/
     /*@Relationship("operation_action")
     OperationAction operation_action;*/
+    private static final String ONLINE = "online";
 
     public String getName() {
         return name;
@@ -50,6 +53,22 @@ public class Recipe extends Resource {
 
     public void setNotification(HashMap<String, Object> notification) {
         this.notification = notification;
+    }
+
+    public HashMap<String, Object> getLabels() {
+        return labels;
+    }
+
+    public boolean isEvaluatedOnline(){
+        if (!labels.containsKey(ONLINE)){
+            return false;
+        } else {
+            return labels.get(ONLINE).equals(true);
+        }
+    }
+
+    public void setLabels(HashMap<String, Object> labels) {
+        this.labels = labels;
     }
 
     public String getPulse_plugin_id() {
