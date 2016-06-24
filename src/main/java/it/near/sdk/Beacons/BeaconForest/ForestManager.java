@@ -135,7 +135,6 @@ public class ForestManager implements BootstrapNotifier {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(BEACON_FOREST_PATH)
                     .appendPath(BEACON_FOREST_BEACONS).build();
-        //TODO not tested
         try {
             httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
                 @Override

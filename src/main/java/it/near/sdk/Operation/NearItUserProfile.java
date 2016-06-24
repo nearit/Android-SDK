@@ -43,7 +43,7 @@ public class NearItUserProfile {
      */
     public static void setProfileId(Context context, String profileId){
         GlobalConfig.getInstance(context).setProfileId(profileId);
-        setProfilePluginProperty(context, profileId);
+        NearInstallation.registerInstallation(context);
     }
 
     /**
@@ -62,7 +62,7 @@ public class NearItUserProfile {
      */
     public static void resetProfileId(Context context){
         GlobalConfig.getInstance(context).setProfileId(null);
-        setProfilePluginProperty(context, null);
+        NearInstallation.registerInstallation(context);
     }
 
     private static void setProfilePluginProperty(Context context, String profileId) {
@@ -81,7 +81,7 @@ public class NearItUserProfile {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId != null){
             // profile already created
-            setProfilePluginProperty(context, profileId);
+            NearInstallation.registerInstallation(context);
             listener.onProfileCreated(false, profileId);
             return;
         }
@@ -99,7 +99,6 @@ public class NearItUserProfile {
                 .appendPath(PLUGIN_NAME)
                 .appendPath(PROFILE_RES_TYPE).build();
 
-// TODO not tested
         try {
             httpClient.nearPost(context, url.toString(), requestBody, new JsonHttpResponseHandler(){
                 @Override
@@ -110,7 +109,8 @@ public class NearItUserProfile {
                     try {
                         profileId = response.getJSONObject("data").getString("id");
                         GlobalConfig.getInstance(context).setProfileId(profileId);
-                        setProfilePluginProperty(context, profileId);
+                        // update the installation with the profile id
+                        NearInstallation.registerInstallation(context);
                         GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                         listener.onProfileCreated(true, profileId);
                     } catch (JSONException e) {

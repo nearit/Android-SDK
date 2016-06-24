@@ -239,7 +239,6 @@ public class RecipesManager {
                 .appendEncodedPath(id)
                 .build();
 
-        // TODO not tested
         try {
             httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
                 @Override
@@ -260,29 +259,60 @@ public class RecipesManager {
         } catch (AuthenticationException e) {
             e.printStackTrace();
         }
-/*
-        GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(
-                mContext, uri.toString(), new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
-                ULog.d(TAG, recipe.toString());
-                String reactionPluginName = recipe.getReaction_plugin_id();
-                Reaction reaction = reactions.get(reactionPluginName);
-                reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle().getId());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
 
-            }
-        }
-        ));
-*/
         // inside receiver, parse the response to know what reaction plugin to use
         // than fire the reaction
         // if we got a network error, return false
         return true;
+    }
+
+    public boolean evaluateRecipe(String recipeId){
+        if (recipeId == null) return false;
+        Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
+                .appendEncodedPath(recipeId)
+                .appendPath(EVALUATE).build();
+        String evaluateBody = null;
+        try {
+            evaluateBody = buildEvaluateBody();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        try {
+            httpClient.nearPost(mContext, url.toString(), evaluateBody, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    super.onFailure(statusCode, headers, responseString, throwable);
+                }
+            });
+        } catch (AuthenticationException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        return false;
+    }
+
+    private String buildEvaluateBody() throws JSONException {
+        if (GlobalConfig.getInstance(mContext).getProfileId() == null ||
+                GlobalConfig.getInstance(mContext).getInstallationId() == null ||
+                GlobalConfig.getInstance(mContext).getAppId() == null){
+            throw new JSONException("missing data");
+        }
+        HashMap<String, Object> coreAttributes = new HashMap<>();
+        coreAttributes.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+        coreAttributes.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
+        coreAttributes.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("core" , coreAttributes);
+        String body = NearUtils.toJsonAPI("evaluation", attributes);
+        return null;
     }
 }

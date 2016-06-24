@@ -133,7 +133,7 @@ public class PollReaction extends CoreReaction {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     ULog.d(TAG, "Error: " + statusCode);
                     try {
                         pollList = loadList();

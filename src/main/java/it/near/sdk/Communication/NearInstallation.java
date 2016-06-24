@@ -53,7 +53,6 @@ public class NearInstallation {
             // build a JSON api request body with or without the id, depending wheter the installID is null or not
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
-            // TODO not tested
             try {
                 registerOrEditInstallation(context, installationId, installBody, new JsonHttpResponseHandler(){
                     @Override
@@ -76,33 +75,13 @@ public class NearInstallation {
             } catch (UnsupportedEncodingException | AuthenticationException e) {
                 e.printStackTrace();
             }
-            /*int method = installationId == null ? Request.Method.POST : Request.Method.PUT;
-            String subPath = installationId == null ? "" : "/" + installationId;
-            GlobalState.getInstance(context).getRequestQueue().add(
-                    new CustomJsonRequest(context, method, Constants.API.INSTALLATIONS_PATH + subPath, installBody, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            ULog.d(TAG , "Installation data sent");
-                            // If the registration is correct, we save the installationId locally
-                            try {
-                                String installationId = response.getJSONObject("data").getString("id");
-                                GlobalConfig.getInstance(context).setInstallationId(installationId);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            ULog.d(TAG, "Installation datat sending error: " + error.toString());
-                        }
-                    }));
-*/
+
         } catch (JSONException e) {
             ULog.d(TAG, "Unable to send installation data");
             e.printStackTrace();
         }
     }
+
 
     private static void registerOrEditInstallation(Context context, String installationId, String installBody, JsonHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
         if (installationId == null){

@@ -127,7 +127,6 @@ public class ContentReaction extends CoreReaction {
                     .appendPath(CONTENT_NOTIFICATION_PATH)
                     .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                     .appendQueryParameter("include", "images").build();
-        //TODO not tested
         try {
             httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
                 @Override
