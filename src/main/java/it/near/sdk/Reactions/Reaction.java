@@ -27,6 +27,9 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano
  */
 public abstract class Reaction {
+    /**
+     * List of supported plugin actions. Still unused.
+     */
     public List<String> supportedActions = null;
     /**
      * App context.
@@ -85,12 +88,20 @@ public abstract class Reaction {
 
     /**
      * Handle a reaction from a push notification, including the call to the NearNotifier object. Since this will be called after the insertion
-     * of a push based rrecipe, it's highly unlikely that the recipe information will be cached.
+     * of a push based recipe, it's highly unlikely that the recipe information will be cached.
      * @param recipe the recipe object.
      * @param push_id the id of the push notification.
      * @param bundle_id the id of the reaction bundle.
      */
     public abstract void handlePushReaction(Recipe recipe, String push_id, String bundle_id);
+
+    /**
+     * Handle a reaction that was evaluated online, including the call to NearNotifier object. This should check if the bundle_id refers to not cached contents
+     * and fetch the reaction bundle object if necessary.
+     * @param recipe the recipe object.
+     * @param bundle_id the id of the reaction bundle.
+     */
+    public abstract void handleEvaluatedReaction(Recipe recipe, String bundle_id);
 
 
 }

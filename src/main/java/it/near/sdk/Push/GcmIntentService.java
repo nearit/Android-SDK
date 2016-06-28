@@ -5,6 +5,7 @@ import android.content.Intent;
 import it.near.sdk.R;
 import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.CoreContentsListener;
+import it.near.sdk.Reactions.Coupon.Coupon;
 import it.near.sdk.Reactions.Poll.Poll;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
@@ -57,4 +58,8 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
 
     }
 
+    @Override
+    public void getCouponNotification(Intent intent, Coupon notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+        // TODO khreuhreuthure
+    }
 }
