@@ -1,12 +1,14 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
+import android.os.Looper;
 import android.preference.PreferenceActivity;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
+import com.loopj.android.http.SyncHttpClient;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,23 +28,30 @@ import it.near.sdk.R;
 /**
  * @author cattaneostefano.
  */
-public class NearAsyncHttpClient extends AsyncHttpClient {
+public class NearAsyncHttpClient {
 
-    public NearAsyncHttpClient() {
-        super();
-    }
+    public static AsyncHttpClient syncHttpClient = new SyncHttpClient();
+    public static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
-    public RequestHandle nearGet(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
-        return super.get(context,
+
+    public static RequestHandle nearGet(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
+        return getClient().get(context,
                 buildUrl(context, url),
                 getHeaders(context),
                 null,
                 responseHandler);
     }
 
-    public RequestHandle nearPost(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
+    private static AsyncHttpClient getClient() {
+        if (Looper.myLooper() == null){
+            return syncHttpClient;
+        }
+        return asyncHttpClient;
+    }
+
+    public static RequestHandle nearPost(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
         HttpEntity body = new StringEntity(requestBody);
-        return super.post(context,
+        return getClient().post(context,
                 buildUrl(context, url),
                 getHeaders(context),
                 body,
@@ -50,9 +59,9 @@ public class NearAsyncHttpClient extends AsyncHttpClient {
                 responseHandler);
     }
 
-    public RequestHandle nearPut(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws UnsupportedEncodingException, AuthenticationException {
+    public static RequestHandle nearPut(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws UnsupportedEncodingException, AuthenticationException {
         HttpEntity body = new StringEntity(requestBody);
-        return super.put(context,
+        return getClient().put(context,
                 buildUrl(context, url),
                 getHeaders(context),
                 body,
@@ -92,7 +101,7 @@ public class NearAsyncHttpClient extends AsyncHttpClient {
 
 
 
-    private Header[] getHeaders(Context context) throws AuthenticationException {
+    private static Header[] getHeaders(Context context) throws AuthenticationException {
         return new Header[]{
                 new BasicHeader(Constants.Headers.accessToken, "bearer " + GlobalConfig.getInstance(context).getApiKey()),
                 new BasicHeader(Constants.Headers.contentType, Constants.Headers.jsonApiHeader),
@@ -100,7 +109,7 @@ public class NearAsyncHttpClient extends AsyncHttpClient {
         };
     }
 
-    private String buildUrl(Context context, String relativeUrl){
+    private static String buildUrl(Context context, String relativeUrl){
         String baseUrl = context.getResources().getString(R.string.API_BASE_URL) + relativeUrl;
 
         return baseUrl.replace("%5B", "[").replace("%5D", "]");
