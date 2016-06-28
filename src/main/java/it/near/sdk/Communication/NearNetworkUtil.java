@@ -1,6 +1,7 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
+import android.os.Looper;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -30,16 +31,20 @@ public class NearNetworkUtil {
     public static void sendTrack(Context context, String url, String body){
         // TODO not tested
         NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
-
         try {
             httpClient.nearPost(context, url, body, new JsonHttpResponseHandler(){
+                @Override
+                public void setUsePoolThread(boolean pool) {
+                    super.setUsePoolThread(true);
+                }
+
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Tracking data sent.");
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                     ULog.d(TAG, "Tracking data not sent. Error: " + statusCode);
                 }
             });
