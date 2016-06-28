@@ -104,7 +104,7 @@ public class PollReaction extends CoreReaction {
         ULog.d(TAG , "Show poll: " + reaction_bundle);
         Poll notification = getNotification(reaction_bundle);
         if (notification==null) return;
-        nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
+        nearNotifier.deliverBackgroundReaction(notification, recipe);
     }
 
     private Poll getNotification(String reaction_bundle) {

@@ -198,7 +198,7 @@ public class NearItManager {
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundRegionReaction(Parcelable parcelable, Recipe recipe) {
+        public void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe) {
             deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION, null);
         }
 

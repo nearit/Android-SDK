@@ -109,7 +109,7 @@ public class ContentReaction extends CoreReaction {
         ULog.d(TAG, "Show content: " + reaction_bundle);
         Content notification = getNotification(reaction_bundle);
         if (notification == null) return;
-        nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
+        nearNotifier.deliverBackgroundReaction(notification, recipe);
     }
 
     private Content getNotification(String reaction_bundle) {
