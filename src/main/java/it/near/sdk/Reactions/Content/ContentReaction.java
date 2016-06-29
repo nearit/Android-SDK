@@ -3,10 +3,9 @@ package it.near.sdk.Reactions.Content;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +15,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalState;
@@ -59,12 +60,32 @@ public class ContentReaction extends CoreReaction {
 
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
-        //TODO download single resource
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                 .appendPath(bundle_id)
                 .appendQueryParameter("include", "images").build();
+        //TODO not tested
+        try {
+            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    Content content = NearUtils.parseElement(morpheus, response, Content.class);
+                    formatLinks(content);
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "Error downloading push content: " + statusCode);
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
+
+/*
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
@@ -81,6 +102,7 @@ public class ContentReaction extends CoreReaction {
                     }
                 })
         );
+*/
     }
 
     private void showContent(String reaction_bundle, Recipe recipe) {
@@ -105,6 +127,30 @@ public class ContentReaction extends CoreReaction {
                     .appendPath(CONTENT_NOTIFICATION_PATH)
                     .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                     .appendQueryParameter("include", "images").build();
+        try {
+            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    contentList = NearUtils.parseList(morpheus, response, Content.class);
+                    formatLinks(contentList);
+                    persistList(TAG, contentList);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "Error: " + statusCode);
+                    try {
+                        contentList = loadList();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
+/*
         GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
@@ -126,6 +172,7 @@ public class ContentReaction extends CoreReaction {
                     }
                 })
         );
+*/
     }
 
 

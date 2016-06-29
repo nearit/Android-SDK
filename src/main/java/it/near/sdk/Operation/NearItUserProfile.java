@@ -3,19 +3,21 @@ package it.near.sdk.Operation;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
@@ -32,6 +34,7 @@ public class NearItUserProfile {
     private static final String PROFILE_RES_TYPE = "profiles";
     private static final String DATA_POINTS_RES_TYPE = "data_points";
     private static final String TAG = "NearItUserProfile";
+    private static NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
 
     /**
      * Set the profileId of the user using this app installation. This string usually comes from the authentication service for the app.
@@ -40,7 +43,7 @@ public class NearItUserProfile {
      */
     public static void setProfileId(Context context, String profileId){
         GlobalConfig.getInstance(context).setProfileId(profileId);
-        setProfilePluginProperty(context, profileId);
+        NearInstallation.registerInstallation(context);
     }
 
     /**
@@ -59,7 +62,7 @@ public class NearItUserProfile {
      */
     public static void resetProfileId(Context context){
         GlobalConfig.getInstance(context).setProfileId(null);
-        setProfilePluginProperty(context, null);
+        NearInstallation.registerInstallation(context);
     }
 
     private static void setProfilePluginProperty(Context context, String profileId) {
@@ -78,7 +81,7 @@ public class NearItUserProfile {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId != null){
             // profile already created
-            setProfilePluginProperty(context, profileId);
+            NearInstallation.registerInstallation(context);
             listener.onProfileCreated(false, profileId);
             return;
         }
@@ -96,6 +99,38 @@ public class NearItUserProfile {
                 .appendPath(PLUGIN_NAME)
                 .appendPath(PROFILE_RES_TYPE).build();
 
+        try {
+            httpClient.nearPost(context, url.toString(), requestBody, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, "got profile: " + response.toString());
+
+                    String profileId = null;
+                    try {
+                        profileId = response.getJSONObject("data").getString("id");
+                        GlobalConfig.getInstance(context).setProfileId(profileId);
+                        // update the installation with the profile id
+                        NearInstallation.registerInstallation(context);
+                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
+                        listener.onProfileCreated(true, profileId);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        listener.onProfileCreationError("unknown server format");
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "profile erro: " + statusCode);
+                    listener.onProfileCreationError("network error: " + statusCode);
+                }
+            });
+        } catch (AuthenticationException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            listener.onProfileCreationError("error: impossible to make a request" );
+        }
+
+/*
         GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
                 context,
                 Request.Method.POST,
@@ -127,6 +162,8 @@ public class NearItUserProfile {
                     }
                 }
         ));
+*/
+
     }
 
     private static String buildProfileCreationRequestBody(Context context) throws JSONException {
@@ -178,7 +215,27 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE)
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
+  //TODO not tested
+        try {
+            httpClient.nearPost(context, url.toString(), reqBody, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, "datapoint created: " + response.toString());
+                    GlobalState.getInstance(context).getRecipesManager().refreshConfig();
+                    listener.onDataCreated();
+                }
 
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    listener.onDataNotSetError("network error: " + statusCode);
+                }
+            });
+        } catch (AuthenticationException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            listener.onDataNotSetError("error: impossible to send requests");
+        }
+
+/*
         GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
                 context,
                 Request.Method.POST,
@@ -199,7 +256,7 @@ public class NearItUserProfile {
                     }
                 }
         ));
-
+*/
     }
 
     /**
@@ -247,6 +304,26 @@ public class NearItUserProfile {
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
 
+                // TODO not tested
+        try {
+            httpClient.nearPost(context, url.toString(), reqBody, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, "datapoint created: " + response.toString());
+                    GlobalState.getInstance(context).getRecipesManager().refreshConfig();
+                    listener.onDataCreated();
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    listener.onDataNotSetError("network error: " + statusCode);
+                }
+            });
+        } catch (AuthenticationException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            listener.onDataNotSetError("error: impossible to send request");
+        }
+/*
         GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
                 context,
                 Request.Method.POST,
@@ -267,6 +344,7 @@ public class NearItUserProfile {
                     }
                 }
         ));
+*/
 
     }
 

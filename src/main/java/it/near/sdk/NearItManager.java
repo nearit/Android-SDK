@@ -9,12 +9,17 @@ import android.os.Parcelable;
 
 import org.altbeacon.beacon.BeaconManager;
 
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+
 import it.near.sdk.Beacons.BeaconForest.ForestManager;
 import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
+import it.near.sdk.Reactions.Coupon.ClaimsListener;
+import it.near.sdk.Reactions.Coupon.CouponReaction;
 import it.near.sdk.Reactions.Event;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
@@ -55,6 +60,7 @@ public class NearItManager {
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
     private PollReaction pollNotification;
+    private CouponReaction couponReaction;
     private PushManager pushManager;
     private NearSimpleLogger logger;
 
@@ -111,6 +117,9 @@ public class NearItManager {
 
         pollNotification = new PollReaction(application, nearNotifier);
         recipesManager.addReaction(pollNotification.getPluginName(), pollNotification);
+
+        couponReaction = new CouponReaction(application, nearNotifier);
+        recipesManager.addReaction(couponReaction.getPluginName(), couponReaction);
 
     }
 
@@ -251,4 +260,8 @@ public class NearItManager {
             }
         }
     };
+
+    public void getClaims(ClaimsListener listener) throws UnsupportedEncodingException, MalformedURLException {
+        couponReaction.getClaims(application, listener);
+    }
 }

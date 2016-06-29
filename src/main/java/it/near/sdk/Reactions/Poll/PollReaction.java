@@ -3,19 +3,20 @@ package it.near.sdk.Reactions.Poll;
 import android.content.Context;
 import android.net.Uri;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalState;
@@ -64,7 +65,25 @@ public class PollReaction extends CoreReaction {
                 .appendPath(POLL_NOTIFICATION)
                 .appendPath(POLL_NOTIFICATION_RESOURCE)
                 .appendPath(bundle_id).build();
-        GlobalState.getInstance(mContext).getRequestQueue().add(
+        // TODO not tested
+        try {
+            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "Error downloading push content: " + statusCode);
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
+        /*GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -78,7 +97,7 @@ public class PollReaction extends CoreReaction {
                         ULog.d(TAG, "Error downloading push content: " + error.toString());
                     }
                 })
-        );
+        );*/
     }
 
     private void showPoll(String reaction_bundle, Recipe recipe) {
@@ -103,7 +122,30 @@ public class PollReaction extends CoreReaction {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(POLL_NOTIFICATION)
                     .appendPath(POLL_NOTIFICATION_RESOURCE).build();
-        GlobalState.getInstance(mContext).getRequestQueue().add(
+        // TODO not tested
+        try {
+            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    pollList = NearUtils.parseList(morpheus, response, Poll.class);
+                    persistList(TAG, pollList);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    ULog.d(TAG, "Error: " + statusCode);
+                    try {
+                        pollList = loadList();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
+        /*GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
@@ -122,7 +164,7 @@ public class PollReaction extends CoreReaction {
                         }
                     }
                 })
-        );
+        );*/
     }
 
     private ArrayList<Poll> loadList() throws JSONException {
@@ -158,12 +200,30 @@ public class PollReaction extends CoreReaction {
         try {
             String answerBody = event.toJsonAPI();
             ULog.d(TAG, "Answer" + answerBody);
-            Uri path = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(POLL_NOTIFICATION)
                     .appendPath(POLL_NOTIFICATION_RESOURCE)
                     .appendPath(event.getId())
                     .appendPath("answers").build();
-            GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
+            // TODO not tested
+            try {
+                httpClient.nearPost(mContext, url.toString(), answerBody, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        ULog.d(TAG, "Answer sent successfully");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        ULog.d(TAG, "Error in sending answer: " + statusCode);
+                    }
+                });
+            } catch (AuthenticationException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            /*GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     ULog.d(TAG, "Answer sent successfully");
@@ -173,7 +233,7 @@ public class PollReaction extends CoreReaction {
                 public void onErrorResponse(VolleyError error) {
                     ULog.d(TAG, "Error in sending answer: " + error.toString());
                 }
-            }));
+            }));*/
 
         } catch (JSONException e) {
             e.printStackTrace();

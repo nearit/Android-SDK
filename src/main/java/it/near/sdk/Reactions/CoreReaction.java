@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.MorpheusNear.JsonApiObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
@@ -30,6 +31,7 @@ public abstract class CoreReaction extends Reaction {
     protected static Gson gson = null;
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
+    protected NearAsyncHttpClient httpClient;
     /**
      * Cache prefix based on app package name.
      */
@@ -46,6 +48,7 @@ public abstract class CoreReaction extends Reaction {
         PACK_NAME = mContext.getApplicationContext().getPackageName();
         setUpMorpheus();
         initSharedPreferences(getPrefSuffix());
+        httpClient = new NearAsyncHttpClient();
         refreshConfig();
     }
 
