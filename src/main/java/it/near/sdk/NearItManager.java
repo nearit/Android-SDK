@@ -18,7 +18,7 @@ import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
-import it.near.sdk.Reactions.Coupon.ClaimsListener;
+import it.near.sdk.Reactions.Coupon.CouponListener;
 import it.near.sdk.Reactions.Coupon.CouponReaction;
 import it.near.sdk.Reactions.Event;
 import it.near.sdk.Reactions.Poll.PollEvent;
@@ -198,7 +198,7 @@ public class NearItManager {
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundRegionReaction(Parcelable parcelable, Recipe recipe) {
+        public void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe) {
             deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION, null);
         }
 
@@ -261,7 +261,16 @@ public class NearItManager {
         }
     };
 
-    public void getClaims(ClaimsListener listener) throws UnsupportedEncodingException, MalformedURLException {
-        couponReaction.getClaims(application, listener);
+    /**
+     * Return a list of coupon claimed by the user and that are currently valid.
+     * @param listener a listener for success or failure. If there are no coupons available the success method will be called with a null paramaeter.
+     */
+    public void getCoupons(CouponListener listener) {
+        try {
+            couponReaction.getCoupons(application, listener);
+        } catch (UnsupportedEncodingException | MalformedURLException e) {
+            e.printStackTrace();
+            listener.onCouponDownloadError("Error");
+        }
     }
 }

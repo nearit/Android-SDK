@@ -1,14 +1,21 @@
 package it.near.sdk.Reactions.Coupon;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
  * @author cattaneostefano.
  */
-public class Coupon extends Resource {
+public class Coupon extends Resource implements Parcelable{
     @SerializedName("name")
     String name;
     @SerializedName("description")
@@ -19,6 +26,8 @@ public class Coupon extends Resource {
     String expires_at;
     @SerializedName("icon_id")
     String icon_id;
+    @Relationship("claims")
+    List<Claim> claims;
 
     public Coupon() {
     }
@@ -61,5 +70,52 @@ public class Coupon extends Resource {
 
     public void setIcon_id(String icon_id) {
         this.icon_id = icon_id;
+    }
+
+    public List<Claim> getClaims() {
+        return claims;
+    }
+
+    public void setClaims(List<Claim> claims) {
+        this.claims = claims;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getId());
+        dest.writeString(name);
+        dest.writeString(description);
+        dest.writeString(value);
+        dest.writeString(expires_at);
+        dest.writeString(icon_id);
+        dest.writeList(claims);
+    }
+
+    public static final Creator<Coupon> CREATOR = new Creator<Coupon>() {
+        @Override
+        public Coupon createFromParcel(Parcel in) {
+            return new Coupon(in);
+        }
+
+        @Override
+        public Coupon[] newArray(int size) {
+            return new Coupon[size];
+        }
+    };
+
+    protected Coupon(Parcel in) {
+        setId(in.readString());
+        name = in.readString();
+        description = in.readString();
+        value = in.readString();
+        expires_at = in.readString();
+        icon_id = in.readString();
+        claims = new ArrayList<Claim>();
+        in.readList(claims, Claim.class.getClassLoader());
     }
 }

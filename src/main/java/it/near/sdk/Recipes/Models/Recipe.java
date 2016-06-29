@@ -17,6 +17,8 @@ public class Recipe extends Resource {
     String name;
     @SerializedName("notification")
     HashMap<String, Object> notification;
+    @SerializedName("labels")
+    HashMap<String, Object> labels;
     @SerializedName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
@@ -26,7 +28,7 @@ public class Recipe extends Resource {
     @SerializedName("reaction_plugin_id")
     String reaction_plugin_id;
     @Relationship("reaction_bundle")
-    ReactionBundle reaction_bundle;
+    Resource reaction_bundle;
     @Relationship("reaction_action")
     ReactionAction reaction_action;
     /*@SerializedName("operation_plugin_id")
@@ -35,6 +37,7 @@ public class Recipe extends Resource {
     String operation_bundle_id;*/
     /*@Relationship("operation_action")
     OperationAction operation_action;*/
+    private static final String ONLINE = "online";
 
     public String getName() {
         return name;
@@ -50,6 +53,22 @@ public class Recipe extends Resource {
 
     public void setNotification(HashMap<String, Object> notification) {
         this.notification = notification;
+    }
+
+    public HashMap<String, Object> getLabels() {
+        return labels;
+    }
+
+    public boolean isEvaluatedOnline(){
+        if (!labels.containsKey(ONLINE)){
+            return false;
+        } else {
+            return labels.get(ONLINE).equals(true);
+        }
+    }
+
+    public void setLabels(HashMap<String, Object> labels) {
+        this.labels = labels;
     }
 
     public String getPulse_plugin_id() {
@@ -92,11 +111,11 @@ public class Recipe extends Resource {
         this.reaction_plugin_id = reaction_plugin_id;
     }
 
-    public ReactionBundle getReaction_bundle() {
+    public Resource getReaction_bundle() {
         return reaction_bundle;
     }
 
-    public void setReaction_bundle(ReactionBundle reaction_bundle) {
+    public void setReaction_bundle(Resource reaction_bundle) {
         this.reaction_bundle = reaction_bundle;
     }
 

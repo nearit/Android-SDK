@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 
 import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
@@ -18,10 +19,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.CustomJsonRequest;
-import it.near.sdk.GlobalState;
 import it.near.sdk.Reactions.CoreReaction;
-import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearUtils;
@@ -59,30 +57,23 @@ public class PollReaction extends CoreReaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
-        // Download the single resource
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(POLL_NOTIFICATION)
-                .appendPath(POLL_NOTIFICATION_RESOURCE)
-                .appendPath(bundle_id).build();
+    public void handlePushReaction(final Recipe recipe, final String push_id, String bundleId) {
         // TODO not tested
-        try {
-            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
-                    Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+        requestSingleReaction(bundleId, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        ULog.d(TAG, response.toString());
+                        Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
+                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        ULog.d(TAG, "Error downloading push content: " + statusCode);
+                    }
                 }
 
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    ULog.d(TAG, "Error downloading push content: " + statusCode);
-                }
-            });
-        } catch (AuthenticationException e) {
-            e.printStackTrace();
-        }
+        );
         /*GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
                     @Override
@@ -100,11 +91,40 @@ public class PollReaction extends CoreReaction {
         );*/
     }
 
+    public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(POLL_NOTIFICATION)
+                .appendPath(POLL_NOTIFICATION_RESOURCE)
+                .appendPath(bundleId).build();
+        try {
+            httpClient.nearGet(mContext, url.toString(), responseHandler);
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void handleEvaluatedReaction(final Recipe recipe, String bundle_id) {
+        requestSingleReaction(bundle_id, new JsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                ULog.d(TAG, response.toString());
+                Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
+                nearNotifier.deliverBackgroundReaction(content, recipe);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                ULog.d(TAG, "Error donwloading content: " + statusCode);
+            }
+        });
+    }
+
     private void showPoll(String reaction_bundle, Recipe recipe) {
         ULog.d(TAG , "Show poll: " + reaction_bundle);
         Poll notification = getNotification(reaction_bundle);
         if (notification==null) return;
-        nearNotifier.deliverBackgroundRegionReaction(notification, recipe);
+        nearNotifier.deliverBackgroundReaction(notification, recipe);
     }
 
     private Poll getNotification(String reaction_bundle) {

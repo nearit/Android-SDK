@@ -92,7 +92,7 @@ public class NearUtils {
         return outerObj.toString();
     }
     /**
-     * Turns an hasmap of values to a jsonapi resource string. ALso sets the id.
+     * Turns an hasmap of values to a jsonapi resource string. Also sets the id.
      * @param type the type of the jsonapi resource.
      * @param id id of the resource.
      * @param map values map.
@@ -112,7 +112,11 @@ public class NearUtils {
         JSONObject attributesObj = new JSONObject();
 
         for (Map.Entry<String, Object> entry : map.entrySet() ){
-            attributesObj.put(entry.getKey(), entry.getValue());
+            if (entry.getValue() instanceof HashMap){
+                attributesObj.put(entry.getKey(), new JSONObject((Map) entry.getValue()));
+            } else {
+                attributesObj.put(entry.getKey(), entry.getValue()!=null ? entry.getValue() : JSONObject.NULL);
+            }
         }
 
         JSONObject dataObject = new JSONObject();

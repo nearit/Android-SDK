@@ -1,5 +1,8 @@
 package it.near.sdk.Reactions.Coupon;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.SerializedName;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
@@ -8,7 +11,7 @@ import it.near.sdk.MorpheusNear.Resource;
 /**
  * @author cattaneostefano.
  */
-public class Claim extends Resource {
+public class Claim extends Resource implements Parcelable {
     @SerializedName("serial_number")
     String serial_number;
     @SerializedName("claimed_at")
@@ -51,5 +54,39 @@ public class Claim extends Resource {
 
     public void setCoupon(Coupon coupon) {
         this.coupon = coupon;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(getId());
+        dest.writeString(serial_number);
+        dest.writeString(claimed_at);
+        dest.writeString(redeemed_at);
+        dest.writeParcelable(coupon, flags);
+    }
+
+    public static final Creator<Claim> CREATOR = new Creator<Claim>() {
+        @Override
+        public Claim createFromParcel(Parcel in) {
+            return new Claim(in);
+        }
+
+        @Override
+        public Claim[] newArray(int size) {
+            return new Claim[size];
+        }
+    };
+
+    protected Claim(Parcel in) {
+        setId(in.readString());
+        serial_number = in.readString();
+        claimed_at = in.readString();
+        redeemed_at = in.readString();
+        coupon = (Coupon) in.readParcelable(Coupon.class.getClassLoader());
     }
 }

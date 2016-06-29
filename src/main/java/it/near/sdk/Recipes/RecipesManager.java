@@ -3,6 +3,7 @@ package it.near.sdk.Recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.view.ViewTreeObserver;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -47,6 +48,7 @@ public class RecipesManager {
     private static final String TAG = "RecipesManager";
     public static final String PREFS_SUFFIX = "NearRecipes";
     private static final String PROCESS_PATH = "process";
+    private static final String EVALUATE = "evaluate";
     public final String PREFS_NAME;
     private final SharedPreferences sp;
     private Context mContext;
@@ -213,7 +215,11 @@ public class RecipesManager {
         }
         if (matchingRecipes.isEmpty()){return;}
         Recipe winnerRecipe = matchingRecipes.get(0);
-        gotRecipe(winnerRecipe);
+        if (winnerRecipe.isEvaluatedOnline()){
+            evaluateRecipe(winnerRecipe.getId());
+        } else {
+            gotRecipe(winnerRecipe);
+        }
     }
 
     /**
@@ -234,18 +240,19 @@ public class RecipesManager {
      * @return true if the recipe was found, false otherwise.
      */
     public boolean processRecipe(final String id) {
-        // TODO use new evaluation endpoint for single recipes
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
                 .build();
 
         try {
             httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
                     Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
                     ULog.d(TAG, recipe.toString());
+                    // TODO refactor plugin
                     String reactionPluginName = recipe.getReaction_plugin_id();
                     Reaction reaction = reactions.get(reactionPluginName);
                     reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle().getId());
@@ -267,6 +274,7 @@ public class RecipesManager {
     }
 
     public boolean evaluateRecipe(String recipeId){
+        ULog.d(TAG, "Evaluating recipe: " + recipeId);
         if (recipeId == null) return false;
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(recipeId)
@@ -276,43 +284,53 @@ public class RecipesManager {
             evaluateBody = buildEvaluateBody();
         } catch (JSONException e) {
             e.printStackTrace();
+            ULog.d(TAG, "body build error");
             return false;
         }
 
         try {
             httpClient.nearPost(mContext, url.toString(), evaluateBody, new JsonHttpResponseHandler(){
                 @Override
+                public void setUsePoolThread(boolean pool) {
+                    super.setUsePoolThread(true);
+                }
+                @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
                     Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
+                    ULog.d(TAG, recipe.toString());
+                    // TODO refactor plugin
+                    String reactionPluginName = recipe.getReaction_plugin_id();
+                    Reaction reaction = reactions.get(reactionPluginName);
+                    reaction.handleEvaluatedReaction(recipe, recipe.getReaction_bundle().getId());
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                    super.onFailure(statusCode, headers, responseString, throwable);
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject jsonObject) {
+                    ULog.d(TAG, "Error in handling on failure: " + statusCode);
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
-            return false;
+            ULog.d(TAG, "Error");
         }
 
         return false;
     }
 
-    private String buildEvaluateBody() throws JSONException {
+    public String buildEvaluateBody() throws JSONException {
         if (GlobalConfig.getInstance(mContext).getProfileId() == null ||
                 GlobalConfig.getInstance(mContext).getInstallationId() == null ||
                 GlobalConfig.getInstance(mContext).getAppId() == null){
             throw new JSONException("missing data");
         }
-        HashMap<String, Object> coreAttributes = new HashMap<>();
-        coreAttributes.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
-        coreAttributes.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-        coreAttributes.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
+        HashMap<String, Object> coreObj = new HashMap<>();
+        coreObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+        coreObj.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
+        coreObj.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
         HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put("core" , coreAttributes);
+        attributes.put("core" , coreObj);
         String body = NearUtils.toJsonAPI("evaluation", attributes);
-        return null;
+        return body;
     }
 }
