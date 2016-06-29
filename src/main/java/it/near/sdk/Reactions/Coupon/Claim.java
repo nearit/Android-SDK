@@ -18,6 +18,8 @@ public class Claim extends Resource implements Parcelable {
     String claimed_at;
     @SerializedName("redeemed_at")
     String redeemed_at;
+    @Relationship("coupon")
+    Coupon coupon;
 
     public Claim() {
     }
@@ -46,6 +48,14 @@ public class Claim extends Resource implements Parcelable {
         this.redeemed_at = redeemed_at;
     }
 
+    public Coupon getCoupon() {
+        return coupon;
+    }
+
+    public void setCoupon(Coupon coupon) {
+        this.coupon = coupon;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -57,6 +67,7 @@ public class Claim extends Resource implements Parcelable {
         dest.writeString(serial_number);
         dest.writeString(claimed_at);
         dest.writeString(redeemed_at);
+        dest.writeParcelable(coupon, flags);
     }
 
     public static final Creator<Claim> CREATOR = new Creator<Claim>() {
@@ -76,5 +87,6 @@ public class Claim extends Resource implements Parcelable {
         serial_number = in.readString();
         claimed_at = in.readString();
         redeemed_at = in.readString();
+        coupon = (Coupon) in.readParcelable(Coupon.class.getClassLoader());
     }
 }

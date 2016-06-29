@@ -76,8 +76,6 @@ public class NearNetworkUtil {
      * @param url the tracking url.
      * @param body the HHTP request body.
      * @param handler the response handler.
-     * @throws UnsupportedEncodingException
-     * @throws AuthenticationException
      */
     public static void sendTrack (Context context, String url, String body, JsonHttpResponseHandler handler) throws UnsupportedEncodingException, AuthenticationException {
         NearAsyncHttpClient httpClient = new NearAsyncHttpClient();

@@ -10,8 +10,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,9 +17,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
@@ -90,8 +86,8 @@ public class CouponReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
-                Claim claim = NearUtils.parseElement(morpheus, response, Claim.class);
-                nearNotifier.deliverBackgroundPushReaction(claim, recipe, push_id);
+                Coupon coupon = NearUtils.parseElement(morpheus, response, Coupon.class);
+                nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
             }
 
             @Override
@@ -134,18 +130,18 @@ public class CouponReaction extends CoreReaction {
 
     }
 
-    public void getClaims(Context context, final ClaimsListener listener) throws UnsupportedEncodingException, MalformedURLException {
+    public void getCoupons(Context context, final CouponListener listener) throws UnsupportedEncodingException, MalformedURLException {
         String profile_id = null;
         profile_id = GlobalConfig.getInstance(context).getProfileId();
         if (profile_id == null){
-            listener.onClaimsDownloadError("Missing profileId");
+            listener.onCouponDownloadError("Missing profileId");
             return;
         }
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)
-                .appendPath(CLAIMS_RES)
-                .appendQueryParameter("filter[profile_id]", profile_id)
-                .appendQueryParameter("include", "coupon").build();
+                .appendPath(COUPONS_RES)
+                .appendQueryParameter("filter[claims.profile_id]", profile_id)
+                .appendQueryParameter("include", "claims").build();
         String output = url.toString();
         ULog.d(TAG, output);
         // TODO not tested
@@ -154,18 +150,18 @@ public class CouponReaction extends CoreReaction {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    List<Claim> claims = NearUtils.parseList(morpheus, response, Claim.class);
-                    listener.onClaimsDownloaded(claims);
+                    List<Coupon> coupons = NearUtils.parseList(morpheus, response, Coupon.class);
+                    listener.onCouponsDownloaded(coupons);
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    listener.onClaimsDownloadError("Download error");
+                    listener.onCouponDownloadError("Download error");
                 }
             });
         } catch (AuthenticationException e) {
             e.printStackTrace();
-            listener.onClaimsDownloadError("Download error");
+            listener.onCouponDownloadError("Download error");
         }
 /*
         GlobalState.getInstance(context).getRequestQueue().add(
@@ -174,12 +170,12 @@ public class CouponReaction extends CoreReaction {
                     public void onResponse(JSONObject response) {
                         ULog.d(TAG, response.toString());
                         List<Claim> claims = NearUtils.parseList(morpheus, response, Claim.class);
-                        listener.onClaimsDownloaded(claims);
+                        listener.onCouponsDownloaded(claims);
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        listener.onClaimsDownloadError("Download error");
+                        listener.onCouponDownloadError("Download error");
                     }
                 })
         );
