@@ -75,30 +75,6 @@ public abstract class CoreReaction extends Reaction {
     }
 
     /**
-     * Utility for parsing lists
-     * @param json json to parse
-     * @param clazz Object class of list objects
-     * @param <T> generic type
-     * @return List of Objects
-     */
-    protected <T> List<T> parseList(JSONObject json, Class<T> clazz) {
-        JsonApiObject jsonapiObject = null;
-        try {
-            jsonapiObject = morpheus.parse(json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<T> returnList = new ArrayList<T>();
-
-        for (Resource r : jsonapiObject.getResources()){
-            returnList.add((T) r);
-        }
-
-        return returnList;
-    }
-
-    /**
      * Utility to persist lists in the SharedPreferences.
      * @param key
      * @param list

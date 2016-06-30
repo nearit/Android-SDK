@@ -103,29 +103,7 @@ public class ContentReaction extends CoreReaction {
         } catch (AuthenticationException e) {
             e.printStackTrace();
         }
-/*
-        GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        contentList = NearUtils.parseList(morpheus, response, Content.class);
-                        formatLinks(contentList);
-                        persistList(TAG, contentList);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error: " + error.toString());
-                        try {
-                            contentList = loadList();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                })
-        );
-*/
+
     }
 
     @Override
