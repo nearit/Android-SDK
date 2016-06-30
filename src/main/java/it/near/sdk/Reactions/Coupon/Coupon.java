@@ -80,6 +80,18 @@ public class Coupon extends Resource implements Parcelable{
         this.claims = claims;
     }
 
+    public String getSerial(){
+        return getClaims().get(0).getSerial_number();
+    }
+
+    public String getClaimedAt(){
+        return getClaims().get(0).getClaimed_at();
+    }
+
+    public String getRedeemedAt(){
+        return getClaims().get(0).getRedeemed_at();
+    }
+
     @Override
     public int describeContents() {
         return 0;
