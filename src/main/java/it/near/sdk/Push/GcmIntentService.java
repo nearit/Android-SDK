@@ -8,6 +8,7 @@ import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.Coupon.Coupon;
 import it.near.sdk.Reactions.CustomJSON.CustomJSON;
 import it.near.sdk.Reactions.Poll.Poll;
+import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
 
@@ -62,6 +63,8 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
             notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
         String notifText = intent.getStringExtra("notif_body");
+        String recipeId = intent.getStringExtra("recipe_id");
+        Recipe.sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
         NearNotification.send(this, R.drawable.ic_send_white_24dp, notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
 
     }

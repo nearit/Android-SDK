@@ -1,12 +1,23 @@
 package it.near.sdk.Recipes.Models;
 
 
+import android.content.Context;
+import android.net.Uri;
+
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
+import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Utils.NearUtils;
 
 /**
  * @author cattaneostefano
@@ -38,6 +49,10 @@ public class Recipe extends Resource {
     /*@Relationship("operation_action")
     OperationAction operation_action;*/
     private static final String ONLINE = "online";
+
+    private static final String TRACKINGS_PATH = "trackings";
+    public static final String NOTIFIED_STATUS = "notified";
+    public static final String ENGAGED_STATUS = "engaged";
 
     public String getName() {
         return name;
@@ -155,5 +170,33 @@ public class Recipe extends Resource {
             return getNotification().get("body").toString();
         }
         return null;
+    }
+
+    public static void sendTracking(Context context, String recipeId, String notifiedStatus) throws JSONException {
+        String trackingBody = buildTrackingBody(context, recipeId, notifiedStatus);
+        Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
+        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
+    }
+
+    private static String buildTrackingBody(Context context, String recipeId, String notifiedStatus) throws JSONException {
+        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        String appId = GlobalConfig.getInstance(context).getAppId();
+        String installationId = GlobalConfig.getInstance(context).getInstallationId();
+        if (recipeId == null ||
+                profileId == null ||
+                installationId == null ){
+            throw new JSONException("missing data");
+        }
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        Date now = new Date(System.currentTimeMillis());
+        String formattedDate = sdf.format(now);
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("profile_id", profileId);
+        attributes.put("installation_id", installationId);
+        attributes.put("app_id", appId);
+        attributes.put("recipe_id", recipeId);
+        attributes.put("event", notifiedStatus);
+        attributes.put("tracked_at", formattedDate);
+        return NearUtils.toJsonAPI("trackings", attributes);
     }
 }
