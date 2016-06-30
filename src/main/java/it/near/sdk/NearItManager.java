@@ -20,6 +20,7 @@ import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
 import it.near.sdk.Reactions.Coupon.CouponListener;
 import it.near.sdk.Reactions.Coupon.CouponReaction;
+import it.near.sdk.Reactions.CustomJSON.CustomJSONReaction;
 import it.near.sdk.Reactions.Event;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
@@ -61,6 +62,7 @@ public class NearItManager {
     private ContentReaction contentNotification;
     private PollReaction pollNotification;
     private CouponReaction couponReaction;
+    private CustomJSONReaction customJSONReaction;
     private PushManager pushManager;
     private NearSimpleLogger logger;
 
@@ -120,6 +122,9 @@ public class NearItManager {
 
         couponReaction = new CouponReaction(application, nearNotifier);
         recipesManager.addReaction(couponReaction.getPluginName(), couponReaction);
+
+        customJSONReaction = new CustomJSONReaction(application, nearNotifier);
+        recipesManager.addReaction(customJSONReaction.getPluginName(), customJSONReaction);
 
     }
 

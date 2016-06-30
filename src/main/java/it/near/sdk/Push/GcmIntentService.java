@@ -6,6 +6,7 @@ import it.near.sdk.R;
 import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.Coupon.Coupon;
+import it.near.sdk.Reactions.CustomJSON.CustomJSON;
 import it.near.sdk.Reactions.Poll.Poll;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
@@ -33,19 +34,25 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
 
     @Override
     public void getPollNotification(Intent intent, Poll notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
-        Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
-        targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        targetIntent.putExtras(intent.getExtras());
-        String notif_title = intent.getStringExtra("notif_title");
-        if (notif_title == null) {
-            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        }
-        NearNotification.send(this, R.drawable.ic_send_white_24dp, notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
+        sendSimpleNotification(intent);
     }
 
     @Override
     public void getContentNotification(Intent intent, Content notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+        sendSimpleNotification(intent);
+    }
+
+    @Override
+    public void getCouponNotification(Intent intent, Coupon notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+        sendSimpleNotification(intent);
+    }
+
+    @Override
+    public void getCustomJSONNotification(Intent intent, CustomJSON notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+        // TODO this was a custom json, implementation may vary, it's usually overriden
+    }
+
+    private void sendSimpleNotification(Intent intent){
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -54,12 +61,8 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         if (notif_title == null) {
             notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
+        String notifText = intent.getStringExtra("notif_body");
         NearNotification.send(this, R.drawable.ic_send_white_24dp, notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
 
-    }
-
-    @Override
-    public void getCouponNotification(Intent intent, Coupon notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
-        // TODO khreuhreuthure
     }
 }
