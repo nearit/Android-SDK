@@ -2,6 +2,8 @@ package it.near.sdk.Push;
 
 import android.content.Intent;
 
+import org.json.JSONException;
+
 import it.near.sdk.R;
 import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.CoreContentsListener;
@@ -64,7 +66,11 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         }
         String notifText = intent.getStringExtra("notif_body");
         String recipeId = intent.getStringExtra("recipe_id");
-        Recipe.sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
+        try {
+            Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         NearNotification.send(this, R.drawable.ic_send_white_24dp, notif_title, notifText, targetIntent, PUSH_NOTIFICATION_ID);
 
     }
