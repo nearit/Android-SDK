@@ -2,7 +2,6 @@ package it.near.sdk.Communication;
 
 import android.content.Context;
 import android.os.Looper;
-import android.preference.PreferenceActivity;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -17,11 +16,9 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
-import cz.msebera.android.httpclient.HttpResponse;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.message.BasicHeader;
-import cz.msebera.android.httpclient.message.BasicHttpResponse;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.R;
 

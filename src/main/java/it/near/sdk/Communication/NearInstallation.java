@@ -3,7 +3,6 @@ package it.near.sdk.Communication;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.support.multidex.BuildConfig;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
@@ -132,9 +130,7 @@ public class NearInstallation {
                     ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
                 }
             });
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (AuthenticationException e) {
+        } catch (UnsupportedEncodingException | AuthenticationException e) {
             e.printStackTrace();
         }
 /*

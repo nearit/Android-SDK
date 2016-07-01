@@ -18,6 +18,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.Reactions.Content.Image;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
@@ -51,6 +52,7 @@ public class CouponReaction extends CoreReaction {
         HashMap<String, Class> map = new HashMap<>();
         map.put(CLAIMS_RES, Claim.class);
         map.put(COUPONS_RES, Coupon.class);
+        map.put("imaes", Image.class);
         return map;
     }
 
@@ -87,6 +89,7 @@ public class CouponReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
                 Coupon coupon = NearUtils.parseElement(morpheus, response, Coupon.class);
+                formatLinks(coupon);
                 nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
             }
 
@@ -104,6 +107,7 @@ public class CouponReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
                 Coupon coupon = NearUtils.parseElement(morpheus, response, Coupon.class);
+                formatLinks(coupon);
                 nearNotifier.deliverBackgroundReaction(coupon, recipe);
             }
 
@@ -121,7 +125,7 @@ public class CouponReaction extends CoreReaction {
                 .appendPath(COUPONS_RES)
                 .appendPath(bundleId)
                 .appendQueryParameter("filter[claims.profile_id]", profileId)
-                .appendQueryParameter("include", "claims").build();
+                .appendQueryParameter("include", "claims,icon").build();
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
@@ -141,7 +145,7 @@ public class CouponReaction extends CoreReaction {
                 .appendPath(PLUGIN_ROOT_PATH)
                 .appendPath(COUPONS_RES)
                 .appendQueryParameter("filter[claims.profile_id]", profile_id)
-                .appendQueryParameter("include", "claims").build();
+                .appendQueryParameter("include", "claims,icon").build();
         String output = url.toString();
         ULog.d(TAG, output);
         // TODO not tested
@@ -151,6 +155,7 @@ public class CouponReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
                     List<Coupon> coupons = NearUtils.parseList(morpheus, response, Coupon.class);
+                    formatLinks(coupons);
                     listener.onCouponsDownloaded(coupons);
                 }
 
@@ -181,4 +186,18 @@ public class CouponReaction extends CoreReaction {
         );
 */
     }
+
+
+    private void formatLinks(List<Coupon> notifications){
+        for (Coupon notification : notifications) {
+            formatLinks(notification);
+        }
+    }
+
+    private void formatLinks(Coupon notification){
+        Image icon = notification.getIcon();
+        if (icon == null) return;
+        notification.setIconSet(icon.toImageSet());
+    }
+
 }

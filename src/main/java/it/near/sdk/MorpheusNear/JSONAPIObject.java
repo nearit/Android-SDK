@@ -1,10 +1,7 @@
 package it.near.sdk.MorpheusNear;
 
-import android.util.ArrayMap;
-
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 public class JsonApiObject {
 

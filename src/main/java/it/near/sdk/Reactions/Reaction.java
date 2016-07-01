@@ -1,25 +1,11 @@
 package it.near.sdk.Reactions;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JsonApiObject;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Superclass for plugins of type "reaction". Subclass to add the support of new "What" types and handle requests to fire contents,

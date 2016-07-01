@@ -11,6 +11,8 @@ import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Reactions.Content.Image;
+import it.near.sdk.Reactions.Content.ImageSet;
 
 /**
  * @author cattaneostefano.
@@ -28,6 +30,10 @@ public class Coupon extends Resource implements Parcelable{
     String icon_id;
     @Relationship("claims")
     List<Claim> claims;
+    @Relationship("icon")
+    Image icon;
+
+    ImageSet iconSet;
 
     public Coupon() {
     }
@@ -72,6 +78,14 @@ public class Coupon extends Resource implements Parcelable{
         this.icon_id = icon_id;
     }
 
+    public Image getIcon() {
+        return icon;
+    }
+
+    public void setIcon(Image icon) {
+        this.icon = icon;
+    }
+
     public List<Claim> getClaims() {
         return claims;
     }
@@ -92,6 +106,14 @@ public class Coupon extends Resource implements Parcelable{
         return getClaims().get(0).getRedeemed_at();
     }
 
+    public ImageSet getIconSet() {
+        return iconSet;
+    }
+
+    public void setIconSet(ImageSet iconSet) {
+        this.iconSet = iconSet;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -106,6 +128,7 @@ public class Coupon extends Resource implements Parcelable{
         dest.writeString(expires_at);
         dest.writeString(icon_id);
         dest.writeList(claims);
+        dest.writeParcelable(iconSet, flags);
     }
 
     public static final Creator<Coupon> CREATOR = new Creator<Coupon>() {
@@ -129,5 +152,6 @@ public class Coupon extends Resource implements Parcelable{
         icon_id = in.readString();
         claims = new ArrayList<Claim>();
         in.readList(claims, Claim.class.getClassLoader());
+        iconSet = in.readParcelable(ImageSet.class.getClassLoader());
     }
 }

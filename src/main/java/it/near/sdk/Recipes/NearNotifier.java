@@ -13,7 +13,7 @@ public interface NearNotifier {
      * @param parcelable the generic parcelable reaction object.
      * @param recipe the recipe object.
      */
-    public abstract void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe);
+    void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe);
 
     /**
      * Deliver a reaction in the background coming from a push.
@@ -21,5 +21,5 @@ public interface NearNotifier {
      * @param recipe the recipe object.
      * @param push_id the push message identifier, used for tracking.
      */
-    public abstract void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id);
+    void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id);
 }

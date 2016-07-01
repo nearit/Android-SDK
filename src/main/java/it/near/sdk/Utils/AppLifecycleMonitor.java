@@ -3,9 +3,6 @@ package it.near.sdk.Utils;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.util.Log;
-
-import java.util.Vector;
 
 
 /**

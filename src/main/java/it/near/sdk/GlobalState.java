@@ -3,7 +3,6 @@ package it.near.sdk;
 import android.content.Context;
 
 import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
-import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.RecipesManager;

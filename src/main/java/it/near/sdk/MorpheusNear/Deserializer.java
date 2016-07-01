@@ -1,7 +1,5 @@
 package it.near.sdk.MorpheusNear;
 
-import android.util.ArrayMap;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 

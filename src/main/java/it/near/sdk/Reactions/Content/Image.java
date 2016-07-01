@@ -1,6 +1,7 @@
 package it.near.sdk.Reactions.Content;
 
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.HashMap;
 
@@ -22,6 +23,14 @@ public class Image extends Resource {
 
     public void setImage(HashMap<String, Object> image) {
         this.image = image;
+    }
+
+    public ImageSet toImageSet(){
+        ImageSet imageSet = new ImageSet();
+        imageSet.setFullSize((String) image.get("url"));
+        imageSet.setBigSize(((LinkedTreeMap<String, Object>)image.get("max_1920_jpg")).get("url").toString());
+        imageSet.setSmallSize(((LinkedTreeMap<String, Object>)image.get("square_300")).get("url").toString());
+        return imageSet;
     }
 
 }
