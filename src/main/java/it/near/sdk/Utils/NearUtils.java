@@ -35,16 +35,16 @@ public class NearUtils {
      * @return list of objects.
      */
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
-        JsonApiObject jsonapiObject = null;
+        JsonApiObject jsonApiObject = null;
         try {
-            jsonapiObject = morpheus.parse(json.toString());
+            jsonApiObject = morpheus.parse(json.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         List<T> returnList = new ArrayList<T>();
 
-        for (Resource r : jsonapiObject.getResources()){
+        for (Resource r : jsonApiObject.getResources()){
             returnList.add((T) r);
         }
 
@@ -60,13 +60,13 @@ public class NearUtils {
      * @return casted object.
      */
     public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz){
-        JsonApiObject jsonapiObject = null;
+        JsonApiObject jsonApiObject = null;
         try {
-            jsonapiObject = morpheus.parse(json.toString());
+            jsonApiObject = morpheus.parse(json.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return (T) jsonapiObject.getResource();
+        return (T) jsonApiObject.getResource();
     }
 
     /**
