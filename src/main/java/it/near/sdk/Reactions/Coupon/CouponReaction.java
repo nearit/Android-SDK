@@ -3,7 +3,6 @@ package it.near.sdk.Reactions.Coupon;
 import android.content.Context;
 import android.net.Uri;
 
-import com.google.gson.internal.LinkedTreeMap;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -20,7 +19,6 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Content.Image;
-import it.near.sdk.Reactions.Content.ImageSet;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
@@ -197,8 +195,9 @@ public class CouponReaction extends CoreReaction {
     }
 
     private void formatLinks(Coupon notification){
-        Image image = notification.getIcon();
-        notification.setIconSet(image.toImageSet());
+        Image icon = notification.getIcon();
+        if (icon == null) return;
+        notification.setIconSet(icon.toImageSet());
     }
 
 }

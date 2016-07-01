@@ -64,6 +64,7 @@ public class PollReaction extends CoreReaction {
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, response.toString());
                         Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
+                        content.setRecipeId(recipe.getId());
                         nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
                     }
 
@@ -110,6 +111,7 @@ public class PollReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
                 Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
+                content.setRecipeId(recipe.getId());
                 nearNotifier.deliverBackgroundReaction(content, recipe);
             }
 
@@ -124,6 +126,7 @@ public class PollReaction extends CoreReaction {
         ULog.d(TAG , "Show poll: " + reaction_bundle);
         Poll notification = getNotification(reaction_bundle);
         if (notification==null) return;
+        notification.setRecipeId(recipe.getId());
         nearNotifier.deliverBackgroundReaction(notification, recipe);
     }
 
@@ -218,12 +221,12 @@ public class PollReaction extends CoreReaction {
 
     public void sendEvent(PollEvent event) {
         try {
-            String answerBody = event.toJsonAPI();
+            String answerBody = event.toJsonAPI(mContext);
             ULog.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(POLL_NOTIFICATION)
                     .appendPath(POLL_NOTIFICATION_RESOURCE)
-                    .appendPath(event.getId())
+                    .appendPath(event.getPollId())
                     .appendPath("answers").build();
             // TODO not tested
             try {
@@ -238,9 +241,7 @@ public class PollReaction extends CoreReaction {
                         ULog.d(TAG, "Error in sending answer: " + statusCode);
                     }
                 });
-            } catch (AuthenticationException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
+            } catch (AuthenticationException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
             /*GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {

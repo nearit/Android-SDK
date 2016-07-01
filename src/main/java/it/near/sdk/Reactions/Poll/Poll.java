@@ -20,6 +20,8 @@ public class Poll extends Resource implements Parcelable{
     @SerializedName("updated_at")
     String updated_at;
 
+    String recipeId;
+
     public Poll() {
     }
 
@@ -55,6 +57,14 @@ public class Poll extends Resource implements Parcelable{
         this.updated_at = updated_at;
     }
 
+    public String getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(String recipeId) {
+        this.recipeId = recipeId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -67,6 +77,7 @@ public class Poll extends Resource implements Parcelable{
         dest.writeString(getChoice_2());
         dest.writeString(getUpdated_at());
         dest.writeString(getId());
+        dest.writeString(getRecipeId());
     }
 
     public static final Parcelable.Creator CREATOR = new Creator() {
@@ -87,5 +98,6 @@ public class Poll extends Resource implements Parcelable{
         setChoice_2(in.readString());
         setUpdated_at(in.readString());
         setId(in.readString());
+        setRecipeId(in.readString());
     }
 }
