@@ -2,7 +2,10 @@ package it.near.sdk.Beacons.Monitoring;
 
 import android.content.Intent;
 
+import org.json.JSONException;
+
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
 
@@ -53,6 +56,12 @@ public class RegionIntentService extends BaseIntentService {
         targetIntent.putExtras(intent.getExtras());
         if (notificationTitle == null) {
             notificationTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        }
+        String recipeId = intent.getStringExtra("recipe_id");
+        try {
+            Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         // sends system notification
         NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notificationTitle, notificationBody, targetIntent, NOTIFICATION_ID);
