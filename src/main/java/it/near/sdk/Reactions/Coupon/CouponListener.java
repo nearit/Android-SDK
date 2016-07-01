@@ -6,6 +6,6 @@ import java.util.List;
  * @author cattaneostefano.
  */
 public interface CouponListener {
-    public abstract void onCouponsDownloaded(List<Coupon> claims);
-    public abstract void onCouponDownloadError(String error);
+    void onCouponsDownloaded(List<Coupon> claims);
+    void onCouponDownloadError(String error);
 }

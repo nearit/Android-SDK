@@ -19,7 +19,6 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;

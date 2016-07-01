@@ -16,7 +16,6 @@ import java.util.Map;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.GlobalConfig;
@@ -52,8 +51,7 @@ public class NearItUserProfile {
      * @return the cached profileId.
      */
     public static String getProfileId(Context context){
-        String profileId = GlobalConfig.getInstance(context).getProfileId();
-        return profileId;
+        return GlobalConfig.getInstance(context).getProfileId();
     }
 
     /**
@@ -170,8 +168,7 @@ public class NearItUserProfile {
         String appId = GlobalConfig.getInstance(context).getAppId();
         HashMap<String, Object> map = new HashMap<>();
         map.put("app_id", appId);
-        String reqBody = NearUtils.toJsonAPI("profiles", map);
-        return reqBody;
+        return NearUtils.toJsonAPI("profiles", map);
     }
 
     /**

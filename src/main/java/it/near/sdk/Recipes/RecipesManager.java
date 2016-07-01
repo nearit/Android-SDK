@@ -3,12 +3,9 @@ package it.near.sdk.Recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.view.ViewTreeObserver;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
@@ -24,10 +21,8 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.Models.OperationAction;
@@ -149,9 +144,7 @@ public class RecipesManager {
                     }
                 }
             });
-        } catch (AuthenticationException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 /*
@@ -191,8 +184,7 @@ public class RecipesManager {
     private List<Recipe> loadChachedList() throws JSONException {
         Gson gson = new Gson();
         Type collectionType = new TypeToken<Collection<Recipe>>(){}.getType();
-        ArrayList<Recipe> recipes = gson.fromJson(sp.getString(TAG, ""), collectionType);
-        return recipes;
+        return gson.<ArrayList<Recipe>>fromJson(sp.getString(TAG, ""), collectionType);
     }
 
     /**
@@ -237,9 +229,8 @@ public class RecipesManager {
     /**
      * Process a recipe from it's id. Typically called for processing a push recipe.
      * @param id push id.
-     * @return true if the recipe was found, false otherwise.
      */
-    public boolean processRecipe(final String id) {
+    public void processRecipe(final String id) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
                 .build();
@@ -267,15 +258,15 @@ public class RecipesManager {
             e.printStackTrace();
         }
 
-        // inside receiver, parse the response to know what reaction plugin to use
-        // than fire the reaction
-        // if we got a network error, return false
-        return true;
     }
 
-    public boolean evaluateRecipe(String recipeId){
+    /**
+     * Online evaluation of a recipe.
+     * @param recipeId recipe identifier.
+     */
+    public void evaluateRecipe(String recipeId){
         ULog.d(TAG, "Evaluating recipe: " + recipeId);
-        if (recipeId == null) return false;
+        if (recipeId == null) return;
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(recipeId)
                 .appendPath(EVALUATE).build();
@@ -285,7 +276,7 @@ public class RecipesManager {
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "body build error");
-            return false;
+            return;
         }
 
         try {
@@ -314,8 +305,6 @@ public class RecipesManager {
             e.printStackTrace();
             ULog.d(TAG, "Error");
         }
-
-        return false;
     }
 
     public String buildEvaluateBody() throws JSONException {
@@ -330,7 +319,6 @@ public class RecipesManager {
         coreObj.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put("core" , coreObj);
-        String body = NearUtils.toJsonAPI("evaluation", attributes);
-        return body;
+        return NearUtils.toJsonAPI("evaluation", attributes);
     }
 }

@@ -2,7 +2,6 @@ package it.near.sdk.Utils;
 
 import android.content.Context;
 import android.util.Base64;
-import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -12,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -196,9 +194,6 @@ public class NearUtils {
     public static boolean checkPlayServices(Context context) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            return false;
-        }
-        return true;
+        return resultCode == ConnectionResult.SUCCESS;
     }
 }

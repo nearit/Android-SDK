@@ -3,7 +3,6 @@ package it.near.sdk.Reactions.Content;
 import android.content.Context;
 import android.net.Uri;
 
-import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;

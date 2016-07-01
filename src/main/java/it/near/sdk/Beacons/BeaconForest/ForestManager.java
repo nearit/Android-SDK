@@ -28,11 +28,8 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.CustomJsonRequest;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearNetworkUtil;
-import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
@@ -73,9 +70,9 @@ public class ForestManager implements BootstrapNotifier {
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
-    private static final long backgroundBetweenScanPeriod = 10000l;
-    private static final long backgroundScanPeriod = 1500l;
-    private static final long regionExitPeriod = 30000l;
+    private static final long backgroundBetweenScanPeriod = 10000L;
+    private static final long backgroundScanPeriod = 1500L;
+    private static final long regionExitPeriod = 30000L;
 
     private List<Beacon> beaconList;
     private Context mContext;
@@ -185,7 +182,7 @@ public class ForestManager implements BootstrapNotifier {
                         e.printStackTrace();
                     }
             }
-        }))*/;
+        }))*/
 
     }
 
@@ -209,8 +206,7 @@ public class ForestManager implements BootstrapNotifier {
     private List<Beacon> loadChachedList() throws JSONException {
         Gson gson = new Gson();
         Type collectionType = new TypeToken<Collection<Beacon>>(){}.getType();
-        ArrayList<Beacon> beacons = gson.fromJson(sp.getString(TAG, ""), collectionType);
-        return beacons;
+        return gson.<ArrayList<Beacon>>fromJson(sp.getString(TAG, ""), collectionType);
     }
 
     /**
@@ -229,7 +225,7 @@ public class ForestManager implements BootstrapNotifier {
         // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
         // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
         List<Region> superRegions = computeSuperRegions(regionsToMonitor);
-        monitor.startRadar(60000l, 2000l, 20000l, 2000l, regionExitPeriod, superRegions, regionsToMonitor, this);
+        monitor.startRadar(60000L, 2000L, 20000L, 2000L, regionExitPeriod, superRegions, regionsToMonitor, this);
     }
 
     /**

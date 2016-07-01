@@ -87,6 +87,6 @@ public class Claim extends Resource implements Parcelable {
         serial_number = in.readString();
         claimed_at = in.readString();
         redeemed_at = in.readString();
-        coupon = (Coupon) in.readParcelable(Coupon.class.getClassLoader());
+        coupon = in.readParcelable(Coupon.class.getClassLoader());
     }
 }

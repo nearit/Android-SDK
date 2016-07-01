@@ -4,8 +4,6 @@ import org.altbeacon.beacon.Beacon;
 
 import java.util.ArrayList;
 
-import it.near.sdk.Models.NearBeacon;
-
 /**
  * @author cattaneostefano
  */
@@ -56,7 +54,7 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData>{
 
     public void initializeCycleData() {
 
-        distances.add(new Double(-1));
+        distances.add((double) -1);
         if (distances.size() > 4)
             distances.remove(0);
     }
@@ -97,10 +95,8 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData>{
                 numberOfValid++;
         }
 
-        if (numberOfValid >= 2)
-            return true;
+        return numberOfValid >= 2;
 
-        return false;
     }
 
 

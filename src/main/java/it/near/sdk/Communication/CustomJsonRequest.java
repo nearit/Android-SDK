@@ -1,15 +1,5 @@
 package it.near.sdk.Communication;
 
-import android.content.Context;
-
-import org.json.JSONObject;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import it.near.sdk.GlobalConfig;
-import it.near.sdk.R;
-
 /**
  * Create a JsonObjectRequest (from the volley library) subclass with the proper Near headers.
  * Also includes appending of the relative path to the host.

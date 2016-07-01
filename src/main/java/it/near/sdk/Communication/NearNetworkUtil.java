@@ -1,7 +1,6 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
-import android.os.Looper;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -11,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -48,9 +46,7 @@ public class NearNetworkUtil {
                     ULog.d(TAG, "Tracking data not sent. Error: " + statusCode);
                 }
             });
-        } catch (AuthenticationException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
+        } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
 /*

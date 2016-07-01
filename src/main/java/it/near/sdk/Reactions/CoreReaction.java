@@ -6,17 +6,13 @@ import android.content.SharedPreferences;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import it.near.sdk.Communication.NearAsyncHttpClient;
-import it.near.sdk.MorpheusNear.JsonApiObject;
 import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.ULog;
 
@@ -91,9 +87,8 @@ public abstract class CoreReaction extends Reaction {
      * It was not possible to write a generic method already returning a list because of Java type erasure
      * @param key
      * @return
-     * @throws JSONException
      */
-    protected String loadCachedString(String key) throws JSONException {
+    protected String loadCachedString(String key) {
         return sp.getString(key,"");
     }
 

@@ -7,7 +7,7 @@ import it.near.sdk.Models.NearBeacon;
  */
 public interface ProximityListener {
 
-    public abstract void enterBeaconRange(NearBeacon beacon);
-    public abstract void exitBeaconRange(NearBeacon beacon);
+    void enterBeaconRange(NearBeacon beacon);
+    void exitBeaconRange(NearBeacon beacon);
 
 }
