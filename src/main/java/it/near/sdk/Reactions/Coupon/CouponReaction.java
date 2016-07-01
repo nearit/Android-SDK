@@ -198,12 +198,7 @@ public class CouponReaction extends CoreReaction {
 
     private void formatLinks(Coupon notification){
         Image image = notification.getIcon();
-        ImageSet iconSet = new ImageSet();
-        HashMap<String, Object> map = image.getImage();
-        iconSet.setFullSize((String) map.get("url"));
-        iconSet.setBigSize(((LinkedTreeMap<String, Object>)map.get("max_1920_jpg")).get("url").toString());
-        iconSet.setSmallSize(((LinkedTreeMap<String, Object>)map.get("square_300")).get("url").toString());
-        notification.setIconSet(iconSet);
+        notification.setIconSet(image.toImageSet());
     }
 
 }

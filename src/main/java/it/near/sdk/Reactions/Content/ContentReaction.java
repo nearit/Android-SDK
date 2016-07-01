@@ -191,12 +191,7 @@ public class ContentReaction extends CoreReaction {
         List<Image> images = notification.getImages();
         List<ImageSet> imageSets = new ArrayList<>();
         for (Image image : images) {
-            ImageSet imageSet = new ImageSet();
-            HashMap<String, Object> map = image.getImage();
-            imageSet.setFullSize((String) map.get("url"));
-            imageSet.setBigSize(((LinkedTreeMap<String, Object>)map.get("max_1920_jpg")).get("url").toString());
-            imageSet.setSmallSize(((LinkedTreeMap<String, Object>)map.get("square_300")).get("url").toString());
-            imageSets.add(imageSet);
+            imageSets.add(image.toImageSet());
         }
         notification.setImages_links(imageSets);
     }
