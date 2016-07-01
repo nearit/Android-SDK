@@ -69,7 +69,7 @@ If you want to be notified when a user enters a region using the built-in backgr
 
 ### Custom background behavior ###
 
-If you need a different approach for notifying region enter, other than having a notification at every instance of this event, you need to subclass 2 classes (a BroadcastReceiver and an IntentService) and properly add them in your manifest. See the sample for an implementation of this scenario. Here's a snippet of the manifest:
+If you need a different approach for notifying region enter, other than having a notification at every instance of this event, you need to subclass 2 classes (a BroadcastReceiver and an IntentService) and properly add them in your manifest. See the sample for an implementation of this scenario (including how to track a notified recipe). Here's a snippet of the manifest:
 
 ```xml
 <!-- region messages -->
@@ -122,8 +122,8 @@ Add this receiver in the *application* tag of your app *manifest*
 Every push notification tracks itself as received when the SDK receives it.
 If you want to track notification taps, simply do
 ```java
-// the push_id will be included in the extras bundle of the intent
-nearItManager.sendEvent(new OpenPushEvent(push_id));
+// the recipeId will be included in the extras bundle of the intent with the key "recipe_id"
+Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
 ### Custom Push Notification ###
