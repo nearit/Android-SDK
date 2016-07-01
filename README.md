@@ -89,8 +89,8 @@ If you need a different approach for notifying region enter, other than having a
 
 To answer a poll add this to your code
 ```java
-// answer can either be 1 or 2
-nearItManager.sendEvent(new PollEvent(poll_id, answer);
+// answer can either be 1 or 2, poll is the poll object.
+nearItManager.sendEvent(new PollEvent(poll, answer);
 ```
 
 ### Enable Push Notifications ###
