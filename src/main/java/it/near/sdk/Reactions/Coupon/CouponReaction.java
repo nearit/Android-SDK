@@ -148,7 +148,6 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("include", "claims,icon").build();
         String output = url.toString();
         ULog.d(TAG, output);
-        // TODO not tested
         try {
             httpClient.nearGet(context, url.toString(), new JsonHttpResponseHandler(){
                 @Override
