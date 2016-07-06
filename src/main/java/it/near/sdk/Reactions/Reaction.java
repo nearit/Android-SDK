@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JsonApiObject;
+import it.near.sdk.MorpheusNear.JSONAPIObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Recipes.NearNotifier;
@@ -96,7 +95,7 @@ public abstract class Reaction {
      * @return List of Objects
      */
     protected <T> List<T> parseList(JSONObject json, Class<T> clazz) {
-        JsonApiObject jsonapiObject = null;
+        JSONAPIObject jsonapiObject = null;
         try {
             jsonapiObject = morpheus.parse(json.toString());
         } catch (Exception e) {

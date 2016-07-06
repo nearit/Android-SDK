@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
-public class JsonApiObject {
+public class JSONAPIObject {
 
   private Resource resource;
   private List<Resource> resources;
