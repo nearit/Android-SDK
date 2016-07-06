@@ -2,7 +2,10 @@ package it.near.sdk.Beacons.Monitoring;
 
 import android.content.Intent;
 
+import org.json.JSONException;
+
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.NearNotification;
 
@@ -43,19 +46,25 @@ public class RegionIntentService extends BaseIntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String notif_title = intent.getStringExtra("notif_title");
-        String notif_body = intent.getStringExtra("notif_body");
+        String notificationTitle = intent.getStringExtra("notif_title");
+        String notificationBody = intent.getStringExtra("notif_body");
 
         // create simple intent to open app launcher
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
-        if (notif_title == null) {
-            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        if (notificationTitle == null) {
+            notificationTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        }
+        String recipeId = intent.getStringExtra("recipe_id");
+        try {
+            Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
         // sends system notification
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notif_title, notif_body, targetIntent, NOTIFICATION_ID);
+        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notificationTitle, notificationBody, targetIntent, NOTIFICATION_ID);
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         RegionBroadcastReceiver.completeWakefulIntent(intent);

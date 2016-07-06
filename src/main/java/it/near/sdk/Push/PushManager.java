@@ -81,13 +81,13 @@ public class PushManager {
     }
 
     public void processPush(String push_id, String recipe_id) {
-        trackPush(push_id, PushManager.PUSH_RECEIVED_ACTION);
+        //trackPush(push_id, PushManager.PUSH_RECEIVED_ACTION);
         getRecipesManager().processRecipe(recipe_id);
     }
 
     private RecipesManager getRecipesManager(){return GlobalState.getInstance(mContext.getApplicationContext()).getRecipesManager();}
 
     public void sendEvent(OpenPushEvent event){
-        trackPush(event.getId(), PUSH_OPENED_ACTION);
+        //trackPush(event.getId(), PUSH_OPENED_ACTION);
     }
 }

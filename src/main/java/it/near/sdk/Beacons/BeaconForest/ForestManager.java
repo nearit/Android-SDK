@@ -5,10 +5,9 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
@@ -25,12 +24,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.CustomJsonRequest;
+import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearNetworkUtil;
-import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
@@ -71,15 +70,17 @@ public class ForestManager implements BootstrapNotifier {
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
-    private static final long backgroundBetweenScanPeriod = 10000l;
-    private static final long backgroundScanPeriod = 1500l;
-    private static final long regionExitPeriod = 30000l;
+    private static final long backgroundBetweenScanPeriod = 10000L;
+    private static final long backgroundScanPeriod = 1500L;
+    private static final long regionExitPeriod = 30000L;
 
     private List<Beacon> beaconList;
     private Context mContext;
     private Morpheus morpheus;
     private AltBeaconMonitor monitor;
     private NearRangeNotifier rangeNotifier;
+
+    private NearAsyncHttpClient httpClient;
 
     /**
      * Constructor.
@@ -105,6 +106,7 @@ public class ForestManager implements BootstrapNotifier {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        httpClient = new NearAsyncHttpClient();
         refreshConfig();
     }
  
@@ -130,7 +132,34 @@ public class ForestManager implements BootstrapNotifier {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(BEACON_FOREST_PATH)
                     .appendPath(BEACON_FOREST_BEACONS).build();
-        GlobalState.getInstance(mContext).getRequestQueue().add(
+        try {
+            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, response.toString());
+                    List<Beacon> beacons = NearUtils.parseList(morpheus, response, Beacon.class);
+                    beaconList = parseTree(beacons);
+                    startRadarOnBeacons(beaconList);
+                    persistList(beaconList);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "Error " + statusCode);
+                    try {
+                        beaconList = loadChachedList();
+                        if (beaconList!=null){
+                            startRadarOnBeacons(beaconList);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (AuthenticationException e) {
+            e.printStackTrace();
+        }
+/*        GlobalState.getInstance(mContext).getRequestQueue().add(
                 new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -153,7 +182,7 @@ public class ForestManager implements BootstrapNotifier {
                         e.printStackTrace();
                     }
             }
-        }));
+        }))*/
 
     }
 
@@ -177,8 +206,7 @@ public class ForestManager implements BootstrapNotifier {
     private List<Beacon> loadChachedList() throws JSONException {
         Gson gson = new Gson();
         Type collectionType = new TypeToken<Collection<Beacon>>(){}.getType();
-        ArrayList<Beacon> beacons = gson.fromJson(sp.getString(TAG, ""), collectionType);
-        return beacons;
+        return gson.<ArrayList<Beacon>>fromJson(sp.getString(TAG, ""), collectionType);
     }
 
     /**
@@ -197,7 +225,7 @@ public class ForestManager implements BootstrapNotifier {
         // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
         // monitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
         List<Region> superRegions = computeSuperRegions(regionsToMonitor);
-        monitor.startRadar(60000l, 2000l, 20000l, 2000l, regionExitPeriod, superRegions, regionsToMonitor, this);
+        monitor.startRadar(60000L, 2000L, 20000L, 2000L, regionExitPeriod, superRegions, regionsToMonitor, this);
     }
 
     /**

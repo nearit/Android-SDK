@@ -1,7 +1,5 @@
 package it.near.sdk.Communication;
 
-import it.near.sdk.Beacons.BeaconForest.ForestManager;
-
 /**
  * Contains constants for HTTP calls
  * @author cattaneostefano

@@ -5,6 +5,8 @@ import android.content.Intent;
 
 import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.CoreContentsListener;
+import it.near.sdk.Reactions.Coupon.Coupon;
+import it.near.sdk.Reactions.CustomJSON.CustomJSON;
 import it.near.sdk.Reactions.Poll.Poll;
 
 /**
@@ -39,18 +41,30 @@ public abstract class BaseIntentService extends IntentService {
 
         Content c_notif;
         Poll p_notif;
+        Coupon coup_notif;
+        CustomJSON custom_notif;
 
         boolean coreContent = false;
         if (reaction_plugin == null) return false;
         switch (reaction_plugin) {
             case "content-notification" :
-                c_notif = (Content) intent.getParcelableExtra("content");
+                c_notif = intent.getParcelableExtra("content");
                 listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "poll-notification" :
-                p_notif = (Poll) intent.getParcelableExtra("content");
+                p_notif = intent.getParcelableExtra("content");
                 listener.getPollNotification(intent, p_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "coupon-blaster" :
+                coup_notif = intent.getParcelableExtra("content");
+                listener.getCouponNotification(intent, coup_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "json-sender" :
+                custom_notif = intent.getParcelableExtra("content");
+                listener.getCustomJSONNotification(intent, custom_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
         }

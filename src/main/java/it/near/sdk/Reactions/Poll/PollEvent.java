@@ -1,7 +1,11 @@
 package it.near.sdk.Reactions.Poll;
 
+import android.content.Context;
+
 import org.json.JSONException;
 import java.util.HashMap;
+
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Event;
 import it.near.sdk.Utils.NearUtils;
 
@@ -12,28 +16,48 @@ import it.near.sdk.Utils.NearUtils;
  */
 public class PollEvent extends Event{
     public static final String PLUGIN_NAME = "PollEvent";
-    private static final String ATTRIBUTE_ANSWER = "answer";
-    private static final String ATTRIBUTE_ID = "notification_id";
     private static final String RES_TYPE = "answers";
-    String id;
-    int answer;
+    private static final String ANSWER = "answer";
+    private static final String PROFILE_ID = "profile_id";
+    private static final String RECIPE_ID = "recipe_id";
+    private static final String POLL_ID = "poll_id";
+    String pollId;
+    int answer = 0;
+    String recipeId;
 
     /**
      * Default constructor.
-     * @param id poll identifier.
+     * @param poll poll to answer.
      * @param answer answer number, can be either 1 or 2.
      */
-    public PollEvent(String id, int answer) {
-        this.id = id;
+    public PollEvent(Poll poll, int answer) {
+        this.pollId = poll.getId();
+        this.answer = answer;
+        this.recipeId = poll.getRecipeId();
+    }
+
+    public String getPollId() {
+        return pollId;
+    }
+
+    public void setPollId(String pollId) {
+        this.pollId = pollId;
+    }
+
+    public int getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(int answer) {
         this.answer = answer;
     }
 
-    public String getId() {
-        return id;
+    public String getRecipeId() {
+        return recipeId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setRecipeId(String recipeId) {
+        this.recipeId = recipeId;
     }
 
     @Override
@@ -41,10 +65,20 @@ public class PollEvent extends Event{
         return PLUGIN_NAME;
     }
 
-    public String toJsonAPI() throws JSONException {
+    public String toJsonAPI(Context context) throws JSONException {
+        String profileId = GlobalConfig.getInstance(context).getProfileId();
         HashMap<String, Object> attributeMap = new HashMap<>();
-        attributeMap.put(ATTRIBUTE_ANSWER, this.answer);
-        attributeMap.put(ATTRIBUTE_ID, this.id);
+        if (profileId == null ||
+                answer == 0 ||
+                recipeId == null ||
+                pollId == null
+                ) {
+            throw new JSONException("missing data");
+        }
+        attributeMap.put(ANSWER, answer);
+        attributeMap.put(PROFILE_ID, profileId);
+        attributeMap.put(RECIPE_ID, recipeId);
+        attributeMap.put(POLL_ID, pollId);
         return NearUtils.toJsonAPI(RES_TYPE, attributeMap);
     }
 }

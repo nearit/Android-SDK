@@ -116,24 +116,25 @@ dependencies{
         }
     }
 }
-task uploadDocs << {
+
+task uploadDocs {
+    mustRunAfter generateJavadocs
     description = "Upload javadocs to our ftp server"
     def ftpHost = properties.getProperty("docs.ftp.host")
     def ftpDir = properties.getProperty("docs.ftp.dir")
     def ftpUser = properties.getProperty("docs.ftp.user")
     def ftpPassword = properties.getProperty("docs.ftp.password")
-    ant {
-        taskdef(name: 'ftp',
-                classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
-                classpath: configurations.ftpAntTask.asPath)
-        ftp(server: ftpHost, userid: ftpUser, password: ftpPassword, remoteDir: ftpDir) {
-            fileset(dir: 'build/docs/javadoc/')
+    doLast{
+        ant {
+            taskdef(name: 'ftp',
+                    classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
+                    classpath: configurations.ftpAntTask.asPath)
+            ftp(server: ftpHost, userid: ftpUser, password: ftpPassword, remoteDir: ftpDir) {
+                fileset(dir: 'build/docs/javadoc/')
+            }
         }
     }
 }
-uploadDocs.mustRunAfter generateJavadocs
-
-
 
 
 dependencies {
@@ -143,7 +144,7 @@ dependencies {
     javadocDeps 'com.android.support:support-annotations:23.3.0'
     javadocDeps 'org.altbeacon:android-beacon-library:2.8.1'
     compile 'com.android.support:support-v4:23.3.0'
-    compile 'com.mcxiaoke.volley:library:1.0.19'
+    compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.altbeacon:android-beacon-library:2.8.1'
     compile "com.google.android.gms:play-services-gcm:8.4.0"

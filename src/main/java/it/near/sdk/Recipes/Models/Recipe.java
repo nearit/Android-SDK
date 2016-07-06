@@ -1,12 +1,23 @@
 package it.near.sdk.Recipes.Models;
 
 
+import android.content.Context;
+import android.net.Uri;
+
 import com.google.gson.annotations.SerializedName;
 
+import org.json.JSONException;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
+import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Utils.NearUtils;
 
 /**
  * @author cattaneostefano
@@ -17,6 +28,8 @@ public class Recipe extends Resource {
     String name;
     @SerializedName("notification")
     HashMap<String, Object> notification;
+    @SerializedName("labels")
+    HashMap<String, Object> labels;
     @SerializedName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
@@ -26,7 +39,7 @@ public class Recipe extends Resource {
     @SerializedName("reaction_plugin_id")
     String reaction_plugin_id;
     @Relationship("reaction_bundle")
-    ReactionBundle reaction_bundle;
+    Resource reaction_bundle;
     @Relationship("reaction_action")
     ReactionAction reaction_action;
     /*@SerializedName("operation_plugin_id")
@@ -35,6 +48,11 @@ public class Recipe extends Resource {
     String operation_bundle_id;*/
     /*@Relationship("operation_action")
     OperationAction operation_action;*/
+    private static final String ONLINE = "online";
+
+    private static final String TRACKINGS_PATH = "trackings";
+    public static final String NOTIFIED_STATUS = "notified";
+    public static final String ENGAGED_STATUS = "engaged";
 
     public String getName() {
         return name;
@@ -50,6 +68,22 @@ public class Recipe extends Resource {
 
     public void setNotification(HashMap<String, Object> notification) {
         this.notification = notification;
+    }
+
+    public HashMap<String, Object> getLabels() {
+        return labels;
+    }
+
+    public boolean isEvaluatedOnline(){
+        if (!labels.containsKey(ONLINE)){
+            return false;
+        } else {
+            return labels.get(ONLINE).equals(true);
+        }
+    }
+
+    public void setLabels(HashMap<String, Object> labels) {
+        this.labels = labels;
     }
 
     public String getPulse_plugin_id() {
@@ -92,11 +126,11 @@ public class Recipe extends Resource {
         this.reaction_plugin_id = reaction_plugin_id;
     }
 
-    public ReactionBundle getReaction_bundle() {
+    public Resource getReaction_bundle() {
         return reaction_bundle;
     }
 
-    public void setReaction_bundle(ReactionBundle reaction_bundle) {
+    public void setReaction_bundle(Resource reaction_bundle) {
         this.reaction_bundle = reaction_bundle;
     }
 
@@ -136,5 +170,33 @@ public class Recipe extends Resource {
             return getNotification().get("body").toString();
         }
         return null;
+    }
+
+    public static void sendTracking(Context context, String recipeId, String notifiedStatus) throws JSONException {
+        String trackingBody = buildTrackingBody(context, recipeId, notifiedStatus);
+        Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
+        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
+    }
+
+    private static String buildTrackingBody(Context context, String recipeId, String notifiedStatus) throws JSONException {
+        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        String appId = GlobalConfig.getInstance(context).getAppId();
+        String installationId = GlobalConfig.getInstance(context).getInstallationId();
+        if (recipeId == null ||
+                profileId == null ||
+                installationId == null ){
+            throw new JSONException("missing data");
+        }
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        Date now = new Date(System.currentTimeMillis());
+        String formattedDate = sdf.format(now);
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("profile_id", profileId);
+        attributes.put("installation_id", installationId);
+        attributes.put("app_id", appId);
+        attributes.put("recipe_id", recipeId);
+        attributes.put("event", notifiedStatus);
+        attributes.put("tracked_at", formattedDate);
+        return NearUtils.toJsonAPI("trackings", attributes);
     }
 }

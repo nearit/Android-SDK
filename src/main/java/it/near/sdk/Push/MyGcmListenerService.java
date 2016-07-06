@@ -6,7 +6,6 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmListenerService;
 
 import it.near.sdk.GlobalState;
-import it.near.sdk.Recipes.RecipesManager;
 
 /**
  * Service that receives push notification.

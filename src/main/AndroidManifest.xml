@@ -44,6 +44,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".Trackings.BluetoothStatusReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
+            </intent-filter>
+        </receiver>
 
         <service
             android:name=".Push.GCMRegistration.MyInstanceIDListenerService"

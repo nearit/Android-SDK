@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JSONAPIObject;
+import it.near.sdk.MorpheusNear.JsonApiObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
 
@@ -35,16 +35,16 @@ public class NearUtils {
      * @return list of objects.
      */
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
-        JSONAPIObject jsonapiObject = null;
+        JsonApiObject jsonApiObject = null;
         try {
-            jsonapiObject = morpheus.parse(json.toString());
+            jsonApiObject = morpheus.parse(json.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         List<T> returnList = new ArrayList<T>();
 
-        for (Resource r : jsonapiObject.getResources()){
+        for (Resource r : jsonApiObject.getResources()){
             returnList.add((T) r);
         }
 
@@ -60,13 +60,13 @@ public class NearUtils {
      * @return casted object.
      */
     public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz){
-        JSONAPIObject jsonapiObject = null;
+        JsonApiObject jsonApiObject = null;
         try {
-            jsonapiObject = morpheus.parse(json.toString());
+            jsonApiObject = morpheus.parse(json.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return (T) jsonapiObject.getResource();
+        return (T) jsonApiObject.getResource();
     }
 
     /**
@@ -90,7 +90,7 @@ public class NearUtils {
         return outerObj.toString();
     }
     /**
-     * Turns an hasmap of values to a jsonapi resource string. ALso sets the id.
+     * Turns an hasmap of values to a jsonapi resource string. Also sets the id.
      * @param type the type of the jsonapi resource.
      * @param id id of the resource.
      * @param map values map.
@@ -110,7 +110,11 @@ public class NearUtils {
         JSONObject attributesObj = new JSONObject();
 
         for (Map.Entry<String, Object> entry : map.entrySet() ){
-            attributesObj.put(entry.getKey(), entry.getValue());
+            if (entry.getValue() instanceof HashMap){
+                attributesObj.put(entry.getKey(), new JSONObject((Map) entry.getValue()));
+            } else {
+                attributesObj.put(entry.getKey(), entry.getValue()!=null ? entry.getValue() : JSONObject.NULL);
+            }
         }
 
         JSONObject dataObject = new JSONObject();
@@ -190,9 +194,6 @@ public class NearUtils {
     public static boolean checkPlayServices(Context context) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            return false;
-        }
-        return true;
+        return resultCode == ConnectionResult.SUCCESS;
     }
 }

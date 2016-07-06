@@ -1,21 +1,23 @@
 package it.near.sdk.Communication;
 
+import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
-import android.support.multidex.BuildConfig;
+import android.support.v4.content.ContextCompat;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.ULog;
 
@@ -33,8 +35,13 @@ public class NearInstallation {
     private static final String SDK_VERSION = "sdk_version";
     private static final String DEVICE_IDENTIFIER = "device_identifier";
     private static final String APP_ID = "app_id";
+    private static final String BLUETOOTH = "bluetooth";
+    private static final String LOCATION = "location";
     private static final String TAG = "NearInstallation";
     public static final String PLUGIN_RESOURCES = "plugin_resources";
+    private static final String PROFILE_ID = "profile_id";
+
+    private static NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
 
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
@@ -50,31 +57,42 @@ public class NearInstallation {
             // build a JSON api request body with or without the id, depending wheter the installID is null or not
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
-            int method = installationId == null ? Request.Method.POST : Request.Method.PUT;
-            String subPath = installationId == null ? "" : "/" + installationId;
-            GlobalState.getInstance(context).getRequestQueue().add(
-                    new CustomJsonRequest(context, method, Constants.API.INSTALLATIONS_PATH + subPath, installBody, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            ULog.d(TAG , "Installation data sent");
-                            // If the registration is correct, we save the installationId locally
-                            try {
-                                String installationId = response.getJSONObject("data").getString("id");
-                                GlobalConfig.getInstance(context).setInstallationId(installationId);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+            try {
+                registerOrEditInstallation(context, installationId, installBody, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        ULog.d(TAG , "Installation data sent");
+                        // If the registration is correct, we save the installationId locally
+                        try {
+                            String installationId = response.getJSONObject("data").getString("id");
+                            GlobalConfig.getInstance(context).setInstallationId(installationId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
                         }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            ULog.d(TAG, "Installation datat sending error: " + error.toString());
-                        }
-                    }));
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        ULog.d(TAG, "Installation datat sending error: " + statusCode);
+                    }
+                });
+            } catch (UnsupportedEncodingException | AuthenticationException e) {
+                e.printStackTrace();
+            }
 
         } catch (JSONException e) {
             ULog.d(TAG, "Unable to send installation data");
             e.printStackTrace();
+        }
+    }
+
+
+    private static void registerOrEditInstallation(Context context, String installationId, String installBody, JsonHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
+        if (installationId == null){
+            httpClient.nearPost(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler );
+        } else {
+            String subPath = "/" + installationId;
+            httpClient.nearPut(context, Constants.API.INSTALLATIONS_PATH + subPath, installBody, jsonHttpResponseHandler);
         }
     }
 
@@ -100,6 +118,27 @@ public class NearInstallation {
                 .appendPath(installation_id)
                 .appendPath(PLUGIN_RESOURCES)
                 .build();
+        // TODO not tested
+        try {
+            httpClient.nearPut(context, url.toString(), body, new JsonHttpResponseHandler(){
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
+                }
+
+                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                    ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
+                }
+            });
+        } catch (UnsupportedEncodingException | AuthenticationException e) {
+            e.printStackTrace();
+        }
+/*
         GlobalState.getInstance(context).getRequestQueue().add(
                 new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
                     @Override
@@ -113,6 +152,7 @@ public class NearInstallation {
                     }
                 })
         );
+*/
     }
 
 
@@ -120,7 +160,7 @@ public class NearInstallation {
      * Return a JSONapi formatted installation object with the proper attributes.
      *
      * @param context the app context.
-     * @param id installation id. It can be null and in that case will not be set.
+     * @param id      installation id. It can be null and in that case will not be set.
      * @return The JSONapi string of the installation object.
      * @throws JSONException
      */
@@ -136,7 +176,24 @@ public class NearInstallation {
         attributeMap.put(DEVICE_IDENTIFIER, GlobalConfig.getInstance(context).getDeviceToken());
         // Set app ID (as defined by our APIs)
         attributeMap.put(APP_ID, GlobalConfig.getInstance(context).getAppId());
+        // Set the profile if I have it.
+        attributeMap.put(PROFILE_ID, GlobalConfig.getInstance(context).getProfileId());
+        // Set bluetooth availability
+        attributeMap.put(BLUETOOTH, getBluetoothStatus());
+        // Set location permission
+        attributeMap.put(LOCATION, ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION));
         return NearUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
     }
 
+    public static boolean getBluetoothStatus() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            return false;
+        } else {
+            if (!mBluetoothAdapter.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

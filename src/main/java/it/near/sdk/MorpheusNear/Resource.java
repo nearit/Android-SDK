@@ -1,11 +1,6 @@
 package it.near.sdk.MorpheusNear;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.util.ArrayMap;
-
 import java.util.HashMap;
-import java.util.Objects;
 
 /**
  * Extend this resource to your custom Object you want to map.
