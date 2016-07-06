@@ -3,7 +3,7 @@ package it.near.sdk.MorpheusNear;
 import java.util.HashMap;
 import java.util.List;
 
-public class JSONAPIObject {
+public class JsonApiObject {
 
   private Resource resource;
   private List<Resource> resources;

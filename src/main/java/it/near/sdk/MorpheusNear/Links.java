@@ -3,7 +3,7 @@ package it.near.sdk.MorpheusNear;
 /**
  * Links object.
  *
- * @see JSONAPIObject
+ * @see JsonApiObject
  * @see Resource
  * @author kwaky
  */

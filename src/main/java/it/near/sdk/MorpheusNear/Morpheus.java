@@ -14,7 +14,7 @@ import org.json.JSONObject;
  * <pre>
  * {@code
  *  Morpheus morpheus = new Morpheus();
- *  JSONAPIObject jsonapiObject = morpheus.parse(YOUR-JSON-STRING);
+ *  JsonApiObject jsonapiObject = morpheus.parse(YOUR-JSON-STRING);
  * }
  * </pre>
  */
@@ -39,13 +39,13 @@ public class Morpheus {
   }
 
   /**
-   * Will return you an {@link JSONAPIObject} with parsed objects, links, relations and includes.
+   * Will return you an {@link JsonApiObject} with parsed objects, links, relations and includes.
    *
    * @param jsonString Your json:api formated string.
-   * @return A {@link JSONAPIObject}.
+   * @return A {@link JsonApiObject}.
    * @throws JSONException or NotExtendingResourceException
    */
-  public JSONAPIObject parse(String jsonString) throws Exception {
+  public JsonApiObject parse(String jsonString) throws Exception {
     JSONObject jsonObject = null;
     try {
       jsonObject = new JSONObject(jsonString);
@@ -59,8 +59,8 @@ public class Morpheus {
   /**
    * Parse and map all the top level members.
    */
-  private JSONAPIObject parseFromJSONObject(JSONObject jsonObject) throws Exception {
-    JSONAPIObject jsonApiObject = new JSONAPIObject();
+  private JsonApiObject parseFromJSONObject(JSONObject jsonObject) throws Exception {
+    JsonApiObject jsonApiObject = new JsonApiObject();
 
     //included
     try {
