@@ -72,8 +72,8 @@ public class NearInstallation {
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        ULog.d(TAG, "Installation datat sending error: " + statusCode);
+                    public void onFailure(int statusCode, Header[] headers, String responseString , Throwable throwable) {
+                        ULog.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
                     }
                 });
             } catch (UnsupportedEncodingException | AuthenticationException e) {

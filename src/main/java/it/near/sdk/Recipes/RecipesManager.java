@@ -243,14 +243,13 @@ public class RecipesManager {
                     ULog.d(TAG, response.toString());
                     Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
                     ULog.d(TAG, recipe.toString());
-                    // TODO refactor plugin
                     String reactionPluginName = recipe.getReaction_plugin_id();
                     Reaction reaction = reactions.get(reactionPluginName);
                     reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle().getId());
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailure(int statusCode, Header[] headers, String stringResponse, Throwable throwable) {
                     ULog.d(TAG, "single recipe failed");
                 }
             });
