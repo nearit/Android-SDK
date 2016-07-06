@@ -1,8 +1,11 @@
 package it.near.sdk.Communication;
 
+import android.Manifest;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -32,6 +35,8 @@ public class NearInstallation {
     private static final String SDK_VERSION = "sdk_version";
     private static final String DEVICE_IDENTIFIER = "device_identifier";
     private static final String APP_ID = "app_id";
+    private static final String BLUETOOTH = "bluetooth";
+    private static final String LOCATION = "location";
     private static final String TAG = "NearInstallation";
     public static final String PLUGIN_RESOURCES = "plugin_resources";
     private static final String PROFILE_ID = "profile_id";
@@ -155,7 +160,7 @@ public class NearInstallation {
      * Return a JSONapi formatted installation object with the proper attributes.
      *
      * @param context the app context.
-     * @param id installation id. It can be null and in that case will not be set.
+     * @param id      installation id. It can be null and in that case will not be set.
      * @return The JSONapi string of the installation object.
      * @throws JSONException
      */
@@ -173,7 +178,22 @@ public class NearInstallation {
         attributeMap.put(APP_ID, GlobalConfig.getInstance(context).getAppId());
         // Set the profile if I have it.
         attributeMap.put(PROFILE_ID, GlobalConfig.getInstance(context).getProfileId());
+        // Set bluetooth availability
+        attributeMap.put(BLUETOOTH, getBluetoothStatus());
+        // Set location permission
+        attributeMap.put(LOCATION, ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION));
         return NearUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
     }
 
+    public static boolean getBluetoothStatus() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (mBluetoothAdapter == null) {
+            return false;
+        } else {
+            if (!mBluetoothAdapter.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

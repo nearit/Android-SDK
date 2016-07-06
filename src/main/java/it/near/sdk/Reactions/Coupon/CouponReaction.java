@@ -148,12 +148,11 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("include", "claims,icon").build();
         String output = url.toString();
         ULog.d(TAG, output);
-        // TODO not tested
         try {
             httpClient.nearGet(context, url.toString(), new JsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    ULog.d(TAG, "Copuns downloaded: " + response.toString());
                     List<Coupon> coupons = NearUtils.parseList(morpheus, response, Coupon.class);
                     formatLinks(coupons);
                     listener.onCouponsDownloaded(coupons);
