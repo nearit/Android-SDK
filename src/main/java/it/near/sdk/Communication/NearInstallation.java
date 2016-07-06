@@ -3,6 +3,7 @@ package it.near.sdk.Communication;
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -181,7 +182,7 @@ public class NearInstallation {
         // Set bluetooth availability
         attributeMap.put(BLUETOOTH, getBluetoothStatus());
         // Set location permission
-        attributeMap.put(LOCATION, ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION));
+        attributeMap.put(LOCATION, ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
         return NearUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
     }
 
@@ -190,7 +191,7 @@ public class NearInstallation {
         if (mBluetoothAdapter == null) {
             return false;
         } else {
-            if (!mBluetoothAdapter.isEnabled()) {
+            if (mBluetoothAdapter.isEnabled()) {
                 return true;
             }
         }
