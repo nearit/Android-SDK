@@ -30,6 +30,8 @@ import it.near.sdk.Beacons.Ranging.NearRangeNotifier;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.GlobalConfig;
+import it.near.sdk.GlobalState;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
@@ -333,6 +335,8 @@ public class ForestManager implements BootstrapNotifier {
         String formatted = sdf.format(now);
         map.put("tracked_at", formatted);
         map.put("platform", "android");
+        map.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+        map.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
         /*String installId = GlobalConfig.getInstance(getApplicationContext()).getInstallationId();
         map.put("installation_id", installId);*/
         return NearUtils.toJsonAPI("trackings", map);
