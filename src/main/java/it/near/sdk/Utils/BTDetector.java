@@ -12,8 +12,10 @@ import android.content.pm.PackageManager;
  *
  *
  *      Requires those permissions:
+ *      {@code
  *      <uses-permission android:name="android.permission.BLUETOOTH" />
  *      <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+ *      }
  *
  *      Can be use to check for BLE availability.
  *
