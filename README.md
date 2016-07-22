@@ -194,7 +194,7 @@ HashMap<String, String> userDataMap = new HashMap<>();
 userDataMap.put("name", "John");
 userDataMap.put("age", "23");           // set everything as String
 userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
-NearItUserProfile.setBatchUserData(context, hasmap, new UserDataNotifier() {
+NearItUserProfile.setBatchUserData(context, userDataMap, new UserDataNotifier() {
             @Override
             public void onDataCreated() {
                 // data was set/created 
