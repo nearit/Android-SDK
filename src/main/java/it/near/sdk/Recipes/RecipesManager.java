@@ -62,7 +62,7 @@ public class RecipesManager {
         editor = sp.edit();
         httpClient = new NearAsyncHttpClient();
         try {
-            loadChachedList();
+            recipes = loadChachedList();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -183,7 +183,7 @@ public class RecipesManager {
 
     private List<Recipe> loadChachedList() throws JSONException {
         Gson gson = new Gson();
-        Type collectionType = new TypeToken<Collection<Recipe>>(){}.getType();
+        Type collectionType = new TypeToken<List<Recipe>>(){}.getType();
         return gson.<ArrayList<Recipe>>fromJson(sp.getString(TAG, ""), collectionType);
     }
 
