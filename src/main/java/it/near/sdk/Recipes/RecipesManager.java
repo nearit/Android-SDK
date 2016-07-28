@@ -95,7 +95,7 @@ public class RecipesManager {
      * @return the list of recipes
      */
     public List<Recipe> getRecipes() {
-        return recipes;
+        return recipes!= null ? recipes : new ArrayList<Recipe>();
     }
 
     /**
