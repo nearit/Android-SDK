@@ -11,6 +11,7 @@ import org.altbeacon.beacon.BeaconManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.Beacons.BeaconForest.Beacon;
@@ -155,11 +156,11 @@ public class NearItManager {
     }
 
     /**
-     * Returns the list of beacons. Since they are downloaded, it may return null.
-     * @return the beacon list, or null if they weren't downloaded or an error occoured.
+     * Returns the list of beacons. Since they are downloaded, it may return an empty list.
+     * @return the beacon list, can be empty if recipes were not yet downloaded or an error occurred.
      */
     public List<Beacon> getBeaconList(){
-        if (forest == null) return null;
+        if (forest == null) return new ArrayList<Beacon>();
         return forest.getBeaconList();
     }
 
