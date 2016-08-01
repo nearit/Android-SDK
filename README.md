@@ -122,7 +122,7 @@ Add this receiver in the *application* tag of your app *manifest*
 Every push notification tracks itself as received when the SDK receives it.
 If you want to track notification taps, simply do
 ```java
-// the recipeId will be included in the extras bundle of the intent with the key "recipe_id"
+// the recipeId will be included in the extras bundle of the intent with the key IntentConstants.RECIPE_ID
 Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 

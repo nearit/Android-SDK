@@ -31,6 +31,7 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
+import it.near.sdk.Utils.IntentConstants;
 import it.near.sdk.Utils.NearSimpleLogger;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.OnLifecycleEventListener;
@@ -231,22 +232,22 @@ public class NearItManager {
 
         Intent resultIntent = new Intent(action);
         if (action.equals(PUSH_MESSAGE_ACTION)){
-            resultIntent.putExtra("push_id", pushId);
+            resultIntent.putExtra(IntentConstants.PUSH_ID, pushId);
         }
         // set recipe id
-        resultIntent.putExtra("recipe_id", recipe.getId());
+        resultIntent.putExtra(IntentConstants.RECIPE_ID, recipe.getId());
         // set notification text
-        resultIntent.putExtra("notif_title", recipe.getNotificationTitle());
-        resultIntent.putExtra("notif_body", recipe.getNotificationBody());
+        resultIntent.putExtra(IntentConstants.NOTIF_TITLE, recipe.getNotificationTitle());
+        resultIntent.putExtra(IntentConstants.NOTIF_BODY, recipe.getNotificationBody());
         // set contet to show
-        resultIntent.putExtra("content", parcelable);
+        resultIntent.putExtra(IntentConstants.CONTENT, parcelable);
         // set the content type so the app can cast the parcelable to correct content
-        resultIntent.putExtra("reaction-plugin", recipe.getReaction_plugin_id());
-        resultIntent.putExtra("reaction-action", recipe.getReaction_action().getId());
+        resultIntent.putExtra(IntentConstants.REACTION_PLUGIN, recipe.getReaction_plugin_id());
+        resultIntent.putExtra(IntentConstants.REACTION_ACTION, recipe.getReaction_action().getId());
         // set the pulse info
-        resultIntent.putExtra("pulse-plugin", recipe.getPulse_plugin_id());
-        resultIntent.putExtra("pulse-action", recipe.getPulse_action().getId());
-        resultIntent.putExtra("pulse-bundle", recipe.getPulse_bundle().getId());
+        resultIntent.putExtra(IntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
+        resultIntent.putExtra(IntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
+        resultIntent.putExtra(IntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle().getId());
 
         application.sendOrderedBroadcast(resultIntent, null);
     }

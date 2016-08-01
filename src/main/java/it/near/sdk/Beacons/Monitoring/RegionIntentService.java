@@ -7,6 +7,7 @@ import org.json.JSONException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.BaseIntentService;
+import it.near.sdk.Utils.IntentConstants;
 import it.near.sdk.Utils.NearNotification;
 
 /**
@@ -46,8 +47,8 @@ public class RegionIntentService extends BaseIntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String notificationTitle = intent.getStringExtra("notif_title");
-        String notificationBody = intent.getStringExtra("notif_body");
+        String notificationTitle = intent.getStringExtra(IntentConstants.NOTIF_TITLE);
+        String notificationBody = intent.getStringExtra(IntentConstants.NOTIF_BODY);
 
         // create simple intent to open app launcher
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
@@ -57,12 +58,14 @@ public class RegionIntentService extends BaseIntentService {
         if (notificationTitle == null) {
             notificationTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
-        String recipeId = intent.getStringExtra("recipe_id");
+        String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
         try {
             Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        // TODO add constant string for intent field for notification title
         // sends system notification
         NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notificationTitle, notificationBody, targetIntent, NOTIFICATION_ID);
 
