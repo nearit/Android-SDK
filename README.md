@@ -30,7 +30,7 @@ To start using the SDK, include this in your app *build.gradle*
 ```java
 
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:0.2.12'
+    compile 'it.near.sdk.core:nearitsdk:0.2.13'
 }
 ```
 
@@ -91,6 +91,8 @@ To answer a poll add this to your code
 ```java
 // answer can either be 1 or 2, poll is the poll object.
 nearItManager.sendEvent(new PollEvent(poll, answer);
+// if you don't hold the poll object use this constructor
+nearItManager.sendEvent(new PollEvent(pollId, answer, recipeId));
 ```
 
 ### Enable Push Notifications ###
