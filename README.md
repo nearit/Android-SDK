@@ -105,7 +105,7 @@ To enable push notification,set your push senderId
 nearItManager.setPushSenderId("your-app-sender-id");
 ```
 
-Add this receiver in the *application* tag of your app *manifest*
+Add these receivers in the *application* tag of your app *manifest*
 ```xml
 <application ...>
 ...
@@ -117,6 +117,14 @@ Add this receiver in the *application* tag of your app *manifest*
             <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             <category android:name="<YOUR_APP_PACKAGE_NAME>" />
         </intent-filter>
+    </receiver>
+    <receiver
+         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+         android:exported="false">
+         <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+         </intent-filter>
     </receiver>
 </application>
 ```
@@ -148,7 +156,17 @@ And add them to your manifest
     </intent-filter>
 </receiver>
 ```
-
+Also, you need to omit this receiver from your manifest
+```xml
+<receiver
+         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+         android:exported="false">
+         <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+         </intent-filter>
+    </receiver>
+```
 ### User profilation ###
 
 To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
