@@ -105,21 +105,19 @@ public class RecipesManager {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
         HashMap<String, Object> map = new HashMap<>();
-        map.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
-        map.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-        JSONObject congregoObj = new JSONObject();
+        JSONObject evalCoreObject = new JSONObject();
         try {
-            JSONObject evaluateObj = new JSONObject();
-            evaluateObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
-            congregoObj.put("evaluate_segment", evaluateObj);
+            evalCoreObject.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
+            evalCoreObject.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
+            evalCoreObject.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "profileId not present");
         }
-        map.put("congrego", congregoObj);
+        map.put("core", evalCoreObject);
         String requestBody = null;
         try {
-            requestBody = NearUtils.toJsonAPI("evaluates", map);
+            requestBody = NearUtils.toJsonAPI("evaluation", map);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Can't build request body");
