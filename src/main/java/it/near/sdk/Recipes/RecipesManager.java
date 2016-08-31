@@ -3,6 +3,7 @@ package it.near.sdk.Recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -14,7 +15,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -62,7 +62,7 @@ public class RecipesManager {
         editor = sp.edit();
         httpClient = new NearAsyncHttpClient();
         try {
-            loadChachedList();
+            recipes = loadChachedList();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -95,31 +95,47 @@ public class RecipesManager {
      * @return the list of recipes
      */
     public List<Recipe> getRecipes() {
-        return recipes;
+        return recipes!= null ? recipes : new ArrayList<Recipe>();
     }
 
     /**
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
+        refreshConfig(new RecipeRefreshListener() {
+            @Override
+            public void onRecipesRefresh() {
+                Log.d(TAG, "empty listener called: success");
+            }
+
+            @Override
+            public void onRecipesRefreshFail(int statusCode) {
+                Log.d(TAG, "empty listener called: fail with code " + statusCode);
+            }
+        });
+    }
+
+    /**
+     * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
+     * Plus a listener will be notified of the refresh process.
+     */
+    public void refreshConfig(final RecipeRefreshListener listener){
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
         HashMap<String, Object> map = new HashMap<>();
-        map.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
-        map.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-        JSONObject congregoObj = new JSONObject();
+        JSONObject evalCoreObject = new JSONObject();
         try {
-            JSONObject evaluateObj = new JSONObject();
-            evaluateObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
-            congregoObj.put("evaluate_segment", evaluateObj);
+            evalCoreObject.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
+            evalCoreObject.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
+            evalCoreObject.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "profileId not present");
         }
-        map.put("congrego", congregoObj);
+        map.put("core", evalCoreObject);
         String requestBody = null;
         try {
-            requestBody = NearUtils.toJsonAPI("evaluates", map);
+            requestBody = NearUtils.toJsonAPI("evaluation", map);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Can't build request body");
@@ -132,6 +148,7 @@ public class RecipesManager {
                     ULog.d(TAG, "Got recipes: " + response.toString());
                     recipes = NearUtils.parseList(morpheus, response, Recipe.class);
                     persistList(recipes);
+                    listener.onRecipesRefresh();
                 }
 
                 @Override
@@ -142,10 +159,12 @@ public class RecipesManager {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    listener.onRecipesRefreshFail(statusCode);
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
+            listener.onRecipesRefreshFail(-1);
         }
 /*
         GlobalState.getInstance(mContext).getRequestQueue().add(
@@ -183,7 +202,7 @@ public class RecipesManager {
 
     private List<Recipe> loadChachedList() throws JSONException {
         Gson gson = new Gson();
-        Type collectionType = new TypeToken<Collection<Recipe>>(){}.getType();
+        Type collectionType = new TypeToken<List<Recipe>>(){}.getType();
         return gson.<ArrayList<Recipe>>fromJson(sp.getString(TAG, ""), collectionType);
     }
 

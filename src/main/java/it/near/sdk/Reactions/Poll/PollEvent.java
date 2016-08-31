@@ -36,6 +36,18 @@ public class PollEvent extends Event{
         this.recipeId = poll.getRecipeId();
     }
 
+    /**
+     * Constructor that doesn't need the original poll object.
+     * @param pollId the poll id.
+     * @param answer answer number, can be either 1 or 2.
+     * @param recipeId the recipe id.
+     */
+    public PollEvent(String pollId, int answer, String recipeId){
+        this.pollId = pollId;
+        this.answer = answer;
+        this.recipeId = recipeId;
+    }
+
     public String getPollId() {
         return pollId;
     }

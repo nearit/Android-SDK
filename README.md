@@ -30,7 +30,7 @@ To start using the SDK, include this in your app *build.gradle*
 ```java
 
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:0.2.10'
+    compile 'it.near.sdk.core:nearitsdk:0.2.16'
 }
 ```
 
@@ -91,6 +91,8 @@ To answer a poll add this to your code
 ```java
 // answer can either be 1 or 2, poll is the poll object.
 nearItManager.sendEvent(new PollEvent(poll, answer);
+// if you don't hold the poll object use this constructor
+nearItManager.sendEvent(new PollEvent(pollId, answer, recipeId));
 ```
 
 ### Enable Push Notifications ###
@@ -103,7 +105,7 @@ To enable push notification,set your push senderId
 nearItManager.setPushSenderId("your-app-sender-id");
 ```
 
-Add this receiver in the *application* tag of your app *manifest*
+Add these receivers in the *application* tag of your app *manifest*
 ```xml
 <application ...>
 ...
@@ -116,13 +118,21 @@ Add this receiver in the *application* tag of your app *manifest*
             <category android:name="<YOUR_APP_PACKAGE_NAME>" />
         </intent-filter>
     </receiver>
+    <receiver
+         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+         android:exported="false">
+         <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+         </intent-filter>
+    </receiver>
 </application>
 ```
 
 Every push notification tracks itself as received when the SDK receives it.
 If you want to track notification taps, simply do
 ```java
-// the recipeId will be included in the extras bundle of the intent with the key "recipe_id"
+// the recipeId will be included in the extras bundle of the intent with the key IntentConstants.RECIPE_ID
 Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
@@ -146,7 +156,17 @@ And add them to your manifest
     </intent-filter>
 </receiver>
 ```
-
+Also, you need to omit this receiver from your manifest
+```xml
+<receiver
+         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+         android:exported="false">
+         <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+         </intent-filter>
+    </receiver>
+```
 ### User profilation ###
 
 To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
@@ -194,7 +214,7 @@ HashMap<String, String> userDataMap = new HashMap<>();
 userDataMap.put("name", "John");
 userDataMap.put("age", "23");           // set everything as String
 userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
-NearItUserProfile.setBatchUserData(context, hasmap, new UserDataNotifier() {
+NearItUserProfile.setBatchUserData(context, userDataMap, new UserDataNotifier() {
             @Override
             public void onDataCreated() {
                 // data was set/created 

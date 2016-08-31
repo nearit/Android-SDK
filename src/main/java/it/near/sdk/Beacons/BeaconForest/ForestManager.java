@@ -189,6 +189,14 @@ public class ForestManager implements BootstrapNotifier {
     }
 
     /**
+     * Returns the list of beacons. Since they are downloaded, it may return null.
+     * @return the beacon list, or null if they weren't downloaded or an error occoured.
+     */
+    public List<Beacon> getBeaconList() {
+        return beaconList;
+    }
+
+    /**
      * Save the beacon list on disk
      * @param beaconList the list of beacons.
      */

@@ -12,6 +12,7 @@ import it.near.sdk.Reactions.CustomJSON.CustomJSON;
 import it.near.sdk.Reactions.Poll.Poll;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.BaseIntentService;
+import it.near.sdk.Utils.IntentConstants;
 import it.near.sdk.Utils.NearNotification;
 
 /**
@@ -60,12 +61,12 @@ public class GcmIntentService extends BaseIntentService implements CoreContentsL
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
-        String notif_title = intent.getStringExtra("notif_title");
+        String notif_title = intent.getStringExtra(IntentConstants.NOTIF_TITLE);
         if (notif_title == null) {
             notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
-        String notifText = intent.getStringExtra("notif_body");
-        String recipeId = intent.getStringExtra("recipe_id");
+        String notifText = intent.getStringExtra(IntentConstants.NOTIF_BODY);
+        String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
         try {
             Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
