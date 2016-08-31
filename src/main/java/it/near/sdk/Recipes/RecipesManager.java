@@ -3,6 +3,7 @@ package it.near.sdk.Recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -14,7 +15,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -102,6 +102,24 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig(){
+        refreshConfig(new RecipeRefreshListener() {
+            @Override
+            public void onRecipesRefresh() {
+                Log.d(TAG, "empty listener called: success");
+            }
+
+            @Override
+            public void onRecipesRefreshFail(int statusCode) {
+                Log.d(TAG, "empty listener called: fail with code " + statusCode);
+            }
+        });
+    }
+
+    /**
+     * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
+     * Plus a listener will be notified of the refresh process.
+     */
+    public void refreshConfig(final RecipeRefreshListener listener){
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
         HashMap<String, Object> map = new HashMap<>();
@@ -130,6 +148,7 @@ public class RecipesManager {
                     ULog.d(TAG, "Got recipes: " + response.toString());
                     recipes = NearUtils.parseList(morpheus, response, Recipe.class);
                     persistList(recipes);
+                    listener.onRecipesRefresh();
                 }
 
                 @Override
@@ -140,10 +159,12 @@ public class RecipesManager {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    listener.onRecipesRefreshFail(statusCode);
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
+            listener.onRecipesRefreshFail(-1);
         }
 /*
         GlobalState.getInstance(mContext).getRequestQueue().add(

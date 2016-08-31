@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Parcelable;
+import android.util.Log;
 
 import org.altbeacon.beacon.BeaconManager;
 
@@ -29,6 +30,7 @@ import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.Recipes.RecipeRefreshListener;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.IntentConstants;
@@ -206,8 +208,25 @@ public class NearItManager {
     /**
      * Force the refresh of all SDK configurations.
      */
-    public void refreshConfigs(){
-        recipesManager.refreshConfig();
+    public void refreshConfigs() {
+        refreshConfigs(new RecipeRefreshListener() {
+            @Override
+            public void onRecipesRefresh() {
+                Log.d(TAG, "empty listener called: success");
+            }
+
+            @Override
+            public void onRecipesRefreshFail(int statusCode) {
+                Log.d(TAG, "empty listener called: fail with code " + statusCode);
+            }
+        });
+    }
+
+    /**
+     * Force the refresh of all SDK configurations. The listener will be notified with the recipes refresh outcome.
+     */
+    public void refreshConfigs(RecipeRefreshListener listener){
+        recipesManager.refreshConfig(listener);
         forest.refreshConfig();
         contentNotification.refreshConfig();
         pollNotification.refreshConfig();
