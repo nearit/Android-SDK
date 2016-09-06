@@ -17,22 +17,19 @@
             android:exported="false"/>
 
         <!-- GCM registration -->
-        <service android:name=".Push.GCMRegistration.RegistrationIntentService"
-            android:exported="false">
-        </service>
 
         <!-- push messages -->
         <!-- service that receives push from GCM and does internal SDK work -->
         <service
-            android:name="it.near.sdk.Push.MyGcmListenerService"
+            android:name="it.near.sdk.Push.MyFcmListenerService"
             android:exported="false" >
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <!-- internal service to send local notifications -->
-        <service android:name=".Push.GcmIntentService"
+        <service android:name=".Push.FcmIntentService"
             android:exported="false"/>
 
 
@@ -44,10 +41,10 @@
         </receiver>
 
         <service
-            android:name=".Push.GCMRegistration.MyInstanceIDListenerService"
+            android:name=".Push.FCMRegistration.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 

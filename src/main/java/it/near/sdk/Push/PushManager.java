@@ -15,7 +15,6 @@ import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Push.GCMRegistration.RegistrationIntentService;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearUtils;
 
@@ -37,19 +36,9 @@ public class PushManager {
      * Default constructor. Checks play services presence and register the device on GCM.
      *
      * @param mContext the app context.
-     * @param senderId the senderId of the Android project.
      */
-    public PushManager(Context mContext, String senderId) {
-        this.senderId = senderId;
+    public PushManager(Context mContext) {
         this.mContext = mContext;
-        GlobalConfig.getInstance(mContext).setSenderId(senderId);
-
-        if (NearUtils.checkPlayServices(mContext)) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(mContext, RegistrationIntentService.class);
-            intent.putExtra(RegistrationIntentService.SENDER_ID, senderId);
-            mContext.startService(intent);
-        }
     }
 
     public void trackPush(String push_id, String action) {

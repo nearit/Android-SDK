@@ -3,7 +3,10 @@ package it.near.sdk.Push;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.android.gms.gcm.GcmListenerService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Map;
 
 import it.near.sdk.GlobalState;
 
@@ -12,26 +15,23 @@ import it.near.sdk.GlobalState;
  *
  * @author cattaneostefano
  */
-public class MyGcmListenerService extends GcmListenerService {
+public class MyFcmListenerService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyGcmListenerService";
+    private static final String TAG = "MyFcmListenerService";
 
     /**
      * Called when message is received.
      *
-     * @param from SenderID of the sender.
-     * @param data Data bundle containing message data as key/value pairs.
-     *             For Set of keys use data.keySet().
      */
     // [START receive_message]
     @Override
-    public void onMessageReceived(String from, Bundle data) {
-        String message = data.getString("message");
-        Log.d(TAG, "From: " + from);
+    public void onMessageReceived(RemoteMessage message) {
+        Log.d(TAG, "From: " + message.getFrom());
         Log.d(TAG, "Message: " + message);
 
-        String recipe_id = data.getString("recipe_id");
-        String push_id = data.getString("push_id");
+        Map data = message.getData();
+        String recipe_id = (String) data.get("recipe_id");
+        String push_id = (String) data.get("push_id");
 
         getPushManager().processPush(push_id, recipe_id);
 
