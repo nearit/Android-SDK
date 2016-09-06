@@ -2,10 +2,11 @@ package it.near.sdk.Push.GCMRegistration;
 
 import android.content.Intent;
 
-import com.google.android.gms.iid.InstanceIDListenerService;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 
+import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Push.GCMRegistration.RegistrationIntentService;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -14,16 +15,28 @@ import it.near.sdk.Utils.ULog;
  *
  * @author cattaneostefano
  */
-public class MyInstanceIDListenerService extends InstanceIDListenerService {
+public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyInstanceIDListenerService";
 
     @Override
     public void onTokenRefresh() {
-        super.onTokenRefresh();
-        ULog.d(TAG , "onToken Refresh");
-        Intent intent = new Intent(this, RegistrationIntentService.class);
-        intent.putExtra(RegistrationIntentService.SENDER_ID, GlobalConfig.getInstance(this).getSenderId());
-        startService(intent);
+        String refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        ULog.d(TAG, "Refreshed token: " + refreshedToken);
+        sendRegistrationToServer(refreshedToken);
+    }
+
+    /**
+     * Persist registration to NearIt servers.
+     *
+     * Modify this method to associate the user's GCM registration token with any server-side account
+     * maintained by your application.
+     *
+     * @param token The new token.
+     */
+    private void sendRegistrationToServer(String token) {
+        // Add custom implementation, as needed.
+        GlobalConfig.getInstance(this.getApplicationContext()).setDeviceToken(token);
+        NearInstallation.registerInstallation(this.getApplicationContext());
     }
 }

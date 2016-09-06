@@ -95,6 +95,10 @@ public class NearItManager {
         NearInstallation.registerInstallation(application);
 
         registerLogReceiver();
+
+        pushManager = new PushManager(application);
+        GlobalState.getInstance(application).setPushManager(pushManager);
+
     }
 
     /**
@@ -139,15 +143,6 @@ public class NearItManager {
         String filter = application.getPackageName() + "log";
         IntentFilter intentFilter = new IntentFilter(filter);
         application.registerReceiver(logReceiver, intentFilter);
-    }
-
-    /**
-     * Set the senderId for the push notifications
-     * @param senderId
-     */
-    public void setPushSenderId(String senderId){
-        pushManager = new PushManager(application, senderId);
-        GlobalState.getInstance(application).setPushManager(pushManager);
     }
 
     /**
