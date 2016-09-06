@@ -1,6 +1,4 @@
-package it.near.sdk.Push.GCMRegistration;
-
-import android.content.Intent;
+package it.near.sdk.Push.FCMRegistration;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
@@ -29,7 +27,7 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
     /**
      * Persist registration to NearIt servers.
      *
-     * Modify this method to associate the user's GCM registration token with any server-side account
+     * Modify this method to associate the user's Fcm registration token with any server-side account
      * maintained by your application.
      *
      * @param token The new token.

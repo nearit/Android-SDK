@@ -18,22 +18,22 @@ import it.near.sdk.Utils.NearNotification;
 /**
  * @author cattaneostefano.
  */
-public class GcmIntentService extends BaseIntentService implements CoreContentsListener {
+public class FcmIntentService extends BaseIntentService implements CoreContentsListener {
 
-    private static String TAG = "GcmIntentService";
+    private static String TAG = "FcmIntentService";
     private static final int PUSH_NOTIFICATION_ID = 2;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
      */
-    public GcmIntentService() {
+    public FcmIntentService() {
         super(TAG);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         parseCoreContents(intent, this);
-        GcmBroadcastReceiver.completeWakefulIntent(intent);
+        FcmBroadcastReceiver.completeWakefulIntent(intent);
     }
 
     @Override

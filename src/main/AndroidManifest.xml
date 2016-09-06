@@ -29,7 +29,7 @@
         </service>
 
         <!-- internal service to send local notifications -->
-        <service android:name=".Push.GcmIntentService"
+        <service android:name=".Push.FcmIntentService"
             android:exported="false"/>
 
 
@@ -41,7 +41,7 @@
         </receiver>
 
         <service
-            android:name=".Push.GCMRegistration.MyInstanceIDListenerService"
+            android:name=".Push.FCMRegistration.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
