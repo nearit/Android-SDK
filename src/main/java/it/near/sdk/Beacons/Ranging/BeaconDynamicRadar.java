@@ -43,7 +43,7 @@ public class BeaconDynamicRadar {
     public void initBeaconDynamicData(List<Beacon> beacons){
         // for every beacon, create a BeaconDynamicData
         for (Beacon beacon : beacons){
-            BeaconDynamicData dynData = new BeaconDynamicData();
+            BeaconDynamicData dynData = new BeaconDynamicData(context, proximityListener);
             dynData.setAltBeacon(beacon);
             beaconsDistances.add(dynData);
         }
@@ -67,8 +67,7 @@ public class BeaconDynamicRadar {
         }
 
         // select only beacon for which we stand in their proximity
-        ArrayList<BeaconDynamicData> inRangeBeacons = filterInRange();
-
+        /*ArrayList<BeaconDynamicData> inRangeBeacons = filterInRange();
 
         BeaconDynamicData closestBeacon = null;
         Collections.sort(inRangeBeacons);
@@ -94,7 +93,7 @@ public class BeaconDynamicRadar {
             // enterBeacon(currentDynamicBeacon.getBeaconConfig());
         }
 
-        logInRangeBeacons(inRangeBeacons);
+        logInRangeBeacons(inRangeBeacons);*/
 
     }
 
@@ -147,19 +146,4 @@ public class BeaconDynamicRadar {
         return null;
     }
 
-    private void enterBeacon(NearBeacon beacon){
-        proximityListener.enterBeaconRange(beacon);
-    }
-
-    private void leaveBeacon(NearBeacon beacon){
-        proximityListener.exitBeaconRange(beacon);
-    }
-
-    public ProximityListener getProximityListener() {
-        return proximityListener;
-    }
-
-    public void setProximityListener(ProximityListener proximityListener) {
-        this.proximityListener = proximityListener;
-    }
 }

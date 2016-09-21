@@ -35,6 +35,8 @@ public class Factory {
       throw e;
     }
 
+    realObject.setJsonSourceObject(dataObject);
+
     try {
       realObject = mapper.mapId(realObject, dataObject);
     } catch (Exception e) {
@@ -48,11 +50,11 @@ public class Factory {
       Logger.debug("JSON data does not contain attributes");
     }
 
-    try {
+    /*try {
       realObject = mapper.mapRelations(realObject, dataObject.getJSONObject("relationships"), included);
     } catch (Exception e) {
       Logger.debug("JSON data does not contain relationships");
-    }
+    }*/
 
     try {
       assert realObject != null;
@@ -95,7 +97,9 @@ public class Factory {
         throw e;
       }
     }
-    for (int i = 0; i < dataArray.length(); i++) {
+
+    // TODO possibly remove this next section
+    /*for (int i = 0; i < dataArray.length(); i++) {
       JSONObject jsonObject = null;
 
       try {
@@ -111,7 +115,7 @@ public class Factory {
       } catch (Exception e) {
         Logger.debug("JSON data does not contain relationships");
       }
-    }
+    }*/
 
 
     return objects;

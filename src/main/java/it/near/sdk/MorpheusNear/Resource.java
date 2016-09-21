@@ -1,5 +1,7 @@
 package it.near.sdk.MorpheusNear;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 /**
@@ -15,6 +17,7 @@ public class Resource {
   private String Id;
   private Links links;
   private HashMap<String, Object> meta;
+  private JSONObject jsonSourceObject;
 
   public Resource() {
   }
@@ -41,6 +44,14 @@ public class Resource {
 
   public void setId(String id) {
     Id = id;
+  }
+
+  public JSONObject getJsonSourceObject() {
+    return jsonSourceObject;
+  }
+
+  public void setJsonSourceObject(JSONObject jsonSourceObject) {
+    this.jsonSourceObject = jsonSourceObject;
   }
 }
 

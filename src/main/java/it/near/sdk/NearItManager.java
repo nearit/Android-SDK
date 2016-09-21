@@ -12,11 +12,8 @@ import org.altbeacon.beacon.BeaconManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.List;
 
-import it.near.sdk.Beacons.BeaconForest.Beacon;
-import it.near.sdk.Beacons.BeaconForest.ForestManager;
+import it.near.sdk.Beacons.BeaconForest.GeopolisManager;
 import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Push.OpenPushEvent;
@@ -63,7 +60,7 @@ public class NearItManager {
     private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
     private static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
     private static String APP_PACKAGE_NAME;
-    private ForestManager forest;
+    private GeopolisManager forest;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
     private PollReaction pollNotification;
@@ -121,8 +118,7 @@ public class NearItManager {
         recipesManager = new RecipesManager(application);
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
-        monitor = new AltBeaconMonitor(application);
-        forest = new ForestManager(application, monitor, recipesManager);
+        forest = new GeopolisManager(application, recipesManager);
 
         contentNotification = new ContentReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
@@ -153,14 +149,7 @@ public class NearItManager {
         return recipesManager;
     }
 
-    /**
-     * Returns the list of beacons. Since they are downloaded, it may return an empty list.
-     * @return the beacon list, can be empty if recipes were not yet downloaded or an error occurred.
-     */
-    public List<Beacon> getBeaconList(){
-        if (forest == null) return new ArrayList<Beacon>();
-        return forest.getBeaconList();
-    }
+
 
     /**
      * Checks the device capacity to detect beacons

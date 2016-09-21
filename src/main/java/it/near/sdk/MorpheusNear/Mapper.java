@@ -2,6 +2,7 @@ package it.near.sdk.MorpheusNear;
 
 import com.google.gson.annotations.SerializedName;
 
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -116,7 +117,7 @@ public class Mapper {
       return object;
     }
 
-    for (Field field : object.getClass().getDeclaredFields()) {
+    for (Field field : FieldUtils.getAllFieldsList(object.getClass())) {
       // get the right attribute name
       String jsonFieldName = field.getName();
       boolean isRelation = false;
@@ -329,7 +330,8 @@ public class Mapper {
    */
   private HashMap<String, String> getRelationshipNames(Class clazz) {
     HashMap<String, String> relationNames = new HashMap<>();
-    for (Field field : clazz.getDeclaredFields()) {
+    List<Field> fields = FieldUtils.getAllFieldsList(clazz);
+    for (Field field : fields) {
       String fieldName = field.getName();
       for (Annotation annotation : field.getDeclaredAnnotations()) {
         if (annotation.annotationType() == SerializedName.class) {
@@ -360,4 +362,7 @@ public class Mapper {
     this.factory = factory;
   }
 
+  public void mapRelations(Resource resource, List<Resource> included) throws Exception {
+    mapRelations(resource, resource.getJsonSourceObject().getJSONObject("relationships"), included);
+  }
 }

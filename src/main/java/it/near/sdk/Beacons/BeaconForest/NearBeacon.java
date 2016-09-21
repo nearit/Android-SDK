@@ -8,12 +8,12 @@ import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
- * Representation of a Beacon. In this plugin a beacon will represent a region.
+ * Representation of a NearBeacon. In this plugin a beacon will represent a region.
  * Beacons of the Forest Manager are organized in a tree-like structure, therefore a beacon can have children.
  *
  * @author cattaneostefano
  */
-public class Beacon extends Resource {
+public class NearBeacon extends Resource {
 
     @SerializedName("uuid")
     String uuid;
@@ -24,7 +24,7 @@ public class Beacon extends Resource {
     @SerializedName("name")
     String name;
     @Relationship("children")
-    private List<Beacon> children;
+    private List<NearBeacon> children;
 
     public String getUuid() {
         return uuid;
@@ -58,11 +58,11 @@ public class Beacon extends Resource {
         this.name = name;
     }
 
-    public List<Beacon> getChildren() {
+    public List<NearBeacon> getChildren() {
         return children;
     }
 
-    public void setChildren(List<Beacon> children) {
+    public void setChildren(List<NearBeacon> children) {
         this.children = children;
     }
 }
