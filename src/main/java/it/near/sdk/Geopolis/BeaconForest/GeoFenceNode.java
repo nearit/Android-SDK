@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons.BeaconForest;
+package it.near.sdk.Geopolis.BeaconForest;
 
 import com.google.gson.annotations.SerializedName;
 

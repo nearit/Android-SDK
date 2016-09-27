@@ -13,8 +13,8 @@ import org.altbeacon.beacon.BeaconManager;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 
-import it.near.sdk.Beacons.BeaconForest.GeopolisManager;
-import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
+import it.near.sdk.Geopolis.GeopolisManager;
+import it.near.sdk.Geopolis.BeaconForest.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;

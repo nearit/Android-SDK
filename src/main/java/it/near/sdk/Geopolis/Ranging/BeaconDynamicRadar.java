@@ -1,11 +1,10 @@
-package it.near.sdk.Beacons.Ranging;
+package it.near.sdk.Geopolis.Ranging;
 
 import android.content.Context;
 
 import org.altbeacon.beacon.Beacon;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.Models.NearBeacon;

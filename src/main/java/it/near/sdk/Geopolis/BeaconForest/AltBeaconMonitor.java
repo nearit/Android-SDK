@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons.BeaconForest;
+package it.near.sdk.Geopolis.BeaconForest;
 
 import android.app.Application;
 import android.content.Context;
@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.RemoteException;
-import android.util.Log;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -22,12 +21,12 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.Beacons.Ranging.BeaconDynamicRadar;
-import it.near.sdk.Beacons.Ranging.ProximityListener;
-import it.near.sdk.GlobalConfig;
+import it.near.sdk.Geopolis.Ranging.BeaconDynamicRadar;
+import it.near.sdk.Geopolis.Ranging.ProximityListener;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.ULog;
@@ -81,21 +80,61 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
 
-    public void startRadar(List<Region> regions, ProximityListener proximityListener){
+    public void setUpMonitor(List<Node> nodes, ProximityListener proximityListener){
 
+        resetRanging();
+        resetMonitoring();
+
+        List<Region> regionsToMonitor = filterBeaconRegions(nodes);
+        if (regionsToMonitor == null || regionsToMonitor.size() == 0) return;
+
+        startRadar(regionsToMonitor, proximityListener);
+
+    }
+
+    private void startRadar(List<Region> regionsToMonitor, ProximityListener proximityListener) {
+        this.regions = regionsToMonitor;
         beaconManager.setBackgroundBetweenScanPeriod(BACKGROUND_BETWEEN_SCAN_PERIODS);
         beaconManager.setBackgroundScanPeriod(BACKGROUND_SCAN_PERIOD);
         beaconManager.setForegroundScanPeriod(FOREGROUND_SCAN_PERIOD);
         BeaconManager.setRegionExitPeriod(REGION_EXIT_PERIOD);
-
         beaconManager.setBackgroundMode(true);
 
-        this.regions = regions;
         this.proximityListener = proximityListener;
-        resetRanging();
-        resetMonitoring();
         regionBootstrap = new RegionBootstrap(this, regions);
+    }
 
+    /**
+     * Compute the beacon region list to monitor from a list of geopolis nodes tree roots, walking down only the beacon branches.
+     * @param nodes
+     * @return
+     */
+    private List<Region> filterBeaconRegions(List<Node> nodes) {
+        List<Region> regionsToMonitor = new ArrayList<>();
+        if (nodes == null) return regionsToMonitor;
+        for (Node node : nodes) {
+            addBranch(node, regionsToMonitor);
+        }
+        return regionsToMonitor;
+    }
+
+    /**
+     * From a single node add all the direct beacons. This means that beacons under geofences we are not already in, won't be considered.
+     * @param node the single geo node
+     * @param regionsToMonitor
+     */
+    private void addBranch(Node node, List<Region> regionsToMonitor) {
+        // if the node is a geofence we don't consider it nor its children
+        if (!BeaconNode.class.isInstance(node)) return;
+        try {
+            regionsToMonitor.add(BeaconNode.toAltRegion((BeaconNode) node));
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+
+        for (Node child : node.getChildren()) {
+            addBranch(child, regionsToMonitor);
+        }
     }
 
     public void stopRadar(){

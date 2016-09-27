@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons.Monitoring;
+package it.near.sdk.Geopolis.Monitoring;
 
 import android.content.Intent;
 

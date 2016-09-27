@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons;
+package it.near.sdk.Geopolis;
 
 import android.content.Context;
 

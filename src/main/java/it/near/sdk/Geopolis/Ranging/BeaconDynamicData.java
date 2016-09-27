@@ -1,4 +1,4 @@
-package it.near.sdk.Beacons.Ranging;
+package it.near.sdk.Geopolis.Ranging;
 
 import android.content.Context;
 import android.content.Intent;

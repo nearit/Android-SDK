@@ -41,6 +41,8 @@ public class NearUtils {
 
         List<T> returnList = new ArrayList<T>();
 
+        if (jsonApiObject.getResources() == null) return returnList;
+
         for (Resource r : jsonApiObject.getResources()){
             returnList.add((T) r);
         }
