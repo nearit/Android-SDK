@@ -149,6 +149,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.altbeacon:android-beacon-library:2.9.1'
     compile 'com.google.firebase:firebase-messaging:9.4.0'
+    compile 'com.google.android.gms:play-services-location:9.2.1'
 }
 
 
