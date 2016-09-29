@@ -28,11 +28,10 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.Geopolis.BeaconForest.AltBeaconMonitor;
-import it.near.sdk.Geopolis.BeaconForest.BeaconNode;
-import it.near.sdk.Geopolis.BeaconForest.GeoFenceNode;
+import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
+import it.near.sdk.Geopolis.Beacons.BeaconNode;
+import it.near.sdk.Geopolis.GeoFence.GeoFenceNode;
 import it.near.sdk.Geopolis.BeaconForest.NearBeacon;
-import it.near.sdk.Geopolis.BeaconForest.Node;
 import it.near.sdk.Geopolis.Ranging.ProximityListener;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
@@ -68,7 +67,7 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
     public static final String BEACON_FOREST_BEACONS =      "beacons";
 
     private static final String TAG = "GeopolisManager";
-    private static final String PREFS_SUFFIX = "NearBeacons";
+    private static final String PREFS_SUFFIX = "GeopolisManager";
     // TODO change
     private static final String PLUGIN_NAME = "beacon-forest";
     private static final String ENTER_REGION = "enter_region";
@@ -99,11 +98,6 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
         sp = mApplication.getSharedPreferences(PREFS_NAME, 0);
         editor = sp.edit();
 
-        try {
-            testObject = new JSONObject(test);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
         httpClient = new NearAsyncHttpClient();
         refreshConfig();
     }
@@ -145,12 +139,13 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
                         e.printStackTrace();
                     }
                     List<Node> nodes = NearUtils.parseList(morpheus, testNodesObj, Node.class);
+                    // TODO revert to starting on the first level nodes
                     startRadar(nodes.get(0).getChildren());
 
-                    List<NearBeacon> beacons = NearUtils.parseList(morpheus, response, NearBeacon.class);
+                    /*List<NearBeacon> beacons = NearUtils.parseList(morpheus, response, NearBeacon.class);
                     beaconList = parseTree(beacons);
 
-                    startRadarOnBeacons(beaconList);
+                    startRadarOnBeacons(beaconList);*/
                     // persistList(beaconList);
                 }
 
@@ -175,6 +170,7 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
 
     private void startRadar(List<Node> nodes) {
         monitor.setUpMonitor(nodes, this);
+
     }
 
     private void persistList(List<Node> nodes) {
@@ -268,8 +264,6 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
     }
 
 
-    String test = "{\"data\":[{\"id\":\"6a3375ed-6072-42e0-8af0-755094f5884a\",\"type\":\"beacons\",\"attributes\":{\"uuid\":\"acfd065e-c3c0-11e3-9bbe-1a514932ac01\",\"major\":1001,\"minor\":14,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\",\"name\":\"root\",\"map_placement\":null},\"relationships\":{\"parent\":{\"data\":null},\"children\":{\"data\":[{\"id\":\"c2313d76-ede3-4950-a352-58efd0315849\",\"type\":\"beacons\"},{\"id\":\"97bc9f29-b341-4ac7-bf18-73ae868ddae1\",\"type\":\"beacons\"}]}}},{\"id\":\"eeff61aa-4d1d-48cd-858f-3bee6e901290\",\"type\":\"beacons\",\"attributes\":{\"uuid\":\"acfd065e-c3c0-11e3-9bbe-1a514932ac01\",\"major\":2001,\"minor\":10,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\",\"name\":\"root2\",\"map_placement\":null},\"relationships\":{\"parent\":{\"data\":null},\"children\":{\"data\":[{\"id\":\"baa9fac9-1ce6-4b7e-bfd4-a909ac32d8f0\",\"type\":\"beacons\"},{\"id\":\"511606b8-5f19-45af-acff-bba5e0d5cb0b\",\"type\":\"beacons\"}]}}}],\"included\":[{\"id\":\"c2313d76-ede3-4950-a352-58efd0315849\",\"type\":\"beacons\",\"attributes\":{\"uuid\":\"acfd065e-c3c0-11e3-9bbe-1a514932ac01\",\"major\":1001,\"minor\":14,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\",\"name\":\"figlio1\",\"map_placement\":null},\"relationships\":{\"parent\":{\"data\":{\"id\":\"6a3375ed-6072-42e0-8af0-755094f5884a\",\"type\":\"beacons\"}},\"children\":{\"data\":[]}}},{\"id\":\"97bc9f29-b341-4ac7-bf18-73ae868ddae1\",\"type\":\"beacons\",\"attributes\":{\"uuid\":\"acfd065e-c3c0-11e3-9bbe-1a514932ac01\",\"major\":1001,\"minor\":16,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\",\"name\":\"figlio2\",\"map_placement\":null},\"relationships\":{\"parent\":{\"data\":{\"id\":\"6a3375ed-6072-42e0-8af0-755094f5884a\",\"type\":\"beacons\"}},\"children\":{\"data\":[]}}},{\"id\":\"baa9fac9-1ce6-4b7e-bfd4-a909ac32d8f0\",\"type\":\"beacons\",\"attributes\":{\"uuid\":\"acfd065e-c3c0-11e3-9bbe-1a514932ac01\",\"major\":2001,\"minor\":12,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\",\"name\":\"figlia1\",\"map_placement\":null},\"relationships\":{\"parent\":{\"data\":{\"id\":\"eeff61aa-4d1d-48cd-858f-3bee6e901290\",\"type\":\"beacons\"}},\"children\":{\"data\":[]}}},{\"id\":\"511606b8-5f19-45af-acff-bba5e0d5cb0b\",\"type\":\"beacons\",\"attributes\":{\"uuid\":\"acfd065e-c3c0-11e3-9bbe-1a514932ac01\",\"major\":2001,\"minor\":15,\"app_id\":\"cda5b1bd-e5b7-4ca7-8930-5bedcad449f6\",\"owner_id\":\"1bff22d9-3abc-43ed-b51b-764440c65865\",\"name\":\"figlia2\",\"map_placement\":null},\"relationships\":{\"parent\":{\"data\":{\"id\":\"eeff61aa-4d1d-48cd-858f-3bee6e901290\",\"type\":\"beacons\"}},\"children\":{\"data\":[]}}}]}";
-    JSONObject testObject;
 
     @Override
     public Context getApplicationContext() {
@@ -380,6 +374,17 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
     @Override
     public void exitRegion(Region region) {
 
+    }
+
+    /**
+     * Returns wether the app started the location radar.
+     * @param context
+     * @return
+     */
+    public static boolean isRadarStarted(Context context){
+        String PACK_NAME = context.getApplicationContext().getPackageName();
+        SharedPreferences sp = context.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0);
+        return sp.getBoolean(RADAR_ON, false);
     }
 
     String testnodes = "{\n" +
