@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.BeaconForest;
+package it.near.sdk.Geopolis.Beacons;
 
 import android.app.Application;
 import android.content.Context;
@@ -21,10 +21,11 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 import java.util.Map;
 
+import it.near.sdk.Geopolis.Beacons.BeaconNode;
+import it.near.sdk.Geopolis.Node;
 import it.near.sdk.Geopolis.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Geopolis.Ranging.ProximityListener;
 import it.near.sdk.Utils.AppLifecycleMonitor;

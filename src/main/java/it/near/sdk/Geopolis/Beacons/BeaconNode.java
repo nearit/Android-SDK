@@ -1,13 +1,13 @@
-package it.near.sdk.Geopolis.BeaconForest;
+package it.near.sdk.Geopolis.Beacons;
 
 import com.google.gson.annotations.SerializedName;
 
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
-import org.apache.commons.lang3.ObjectUtils;
 
-import java.util.IllegalFormatException;
 import java.util.UUID;
+
+import it.near.sdk.Geopolis.Node;
 
 /**
  * Created by cattaneostefano on 21/09/16.
