@@ -112,7 +112,6 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
         morpheus = new Morpheus();
         // register your resources
 
-        morpheus.getFactory().getDeserializer().registerResourceClass("beacons", NearBeacon.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("nodes", Node.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("beacon_nodes", BeaconNode.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("geofence_nodes", GeoFenceNode.class);
@@ -127,6 +126,12 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(BEACON_FOREST_PATH)
                     .appendPath(BEACON_FOREST_BEACONS).build();
+        url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath("geopolis")
+                .appendPath("nodes")
+                .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
+                .appendQueryParameter("include", "children.*.children")
+                .build();
         try {
             httpClient.nearGet(mApplication, url.toString(), new JsonHttpResponseHandler(){
                 @Override
@@ -138,9 +143,8 @@ public class GeopolisManager implements BootstrapNotifier, ProximityListener {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    List<Node> nodes = NearUtils.parseList(morpheus, testNodesObj, Node.class);
-                    // TODO revert to starting on the first level nodes
-                    startRadar(nodes.get(0).getChildren());
+                    List<Node> nodes = NearUtils.parseList(morpheus, response, Node.class);
+                    startRadar(nodes);
 
                     /*List<NearBeacon> beacons = NearUtils.parseList(morpheus, response, NearBeacon.class);
                     beaconList = parseTree(beacons);
