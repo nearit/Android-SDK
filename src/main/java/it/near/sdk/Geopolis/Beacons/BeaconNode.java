@@ -15,13 +15,16 @@ import it.near.sdk.Geopolis.Node;
 
 public class BeaconNode extends Node {
     @SerializedName("proximity_uuid")
-    private String proximityUUID;
+    String proximityUUID;
 
     @SerializedName("major")
-    private int major;
+    Integer major;
 
     @SerializedName("minor")
-    private int minor;
+    Integer minor;
+
+    public BeaconNode() {
+    }
 
     public String getProximityUUID() {
         return proximityUUID;
@@ -31,19 +34,19 @@ public class BeaconNode extends Node {
         this.proximityUUID = proximityUUID;
     }
 
-    public int getMajor() {
+    public Integer getMajor() {
         return major;
     }
 
-    public void setMajor(int major) {
+    public void setMajor(Integer major) {
         this.major = major;
     }
 
-    public int getMinor() {
+    public Integer getMinor() {
         return minor;
     }
 
-    public void setMinor(int minor) {
+    public void setMinor(Integer minor) {
         this.minor = minor;
     }
 

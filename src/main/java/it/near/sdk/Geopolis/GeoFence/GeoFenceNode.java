@@ -15,14 +15,17 @@ import it.near.sdk.Geopolis.Node;
 public class GeoFenceNode extends Node implements Parcelable{
     private static final int LOITERING_DELAY = 30000;
     @SerializedName("latitude")
-    private double latitude;
+    Double latitude;
 
     @SerializedName("longitude")
-    private double longitude;
+    Double longitude;
 
     @SerializedName("radius")
-    private int radius;
+    Integer radius;
 
+    public GeoFenceNode() {
+        super();
+    }
 
     public double getLatitude() {
         return latitude;

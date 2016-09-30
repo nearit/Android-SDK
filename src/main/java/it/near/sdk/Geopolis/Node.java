@@ -21,6 +21,9 @@ public class Node extends Resource {
     @Relationship("children")
     protected List<Node> children;
 
+    public Node() {
+    }
+
     public String getIdentifier() {
         return identifier;
     }
