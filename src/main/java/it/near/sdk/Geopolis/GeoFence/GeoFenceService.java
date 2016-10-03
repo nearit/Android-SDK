@@ -30,6 +30,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,13 +47,12 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     // TODO rename
     public static final String REMOVE_GEOFENCE_ACTION = "com.example.geofence.remove";
     private static final String LIST_IDS = "list_ids";
-    List<Geofence> mGeofenceList = new ArrayList<>();
     private PendingIntent mGeofencePendingIntent;
     private GoogleApiClient mGoogleApiClient;
     private List<GeoFenceNode> mNearGeoList;
     private final IBinder myBinder = new MyLocalBinder();
-    private List<String> currentRequestIds;
     private SharedPreferences sp;
+    private List<Geofence> mPendingGeofences = new ArrayList<>();
 
     @Override
     public void onCreate() {
@@ -60,7 +60,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         Log.d(TAG, "onCreate()");
         setUpReceiver();
         // loadGeofenceList();
-        currentRequestIds = loadIds();
     }
 
 
@@ -81,12 +80,22 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         return Service.START_STICKY;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopAllGeofences();
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return myBinder;
     }
 
+    /**
+     * Create and start the google api client for the geofences.
+     * Set this service as the listener for the connection callback methods.
+     */
     private void startGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -96,6 +105,10 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         mGoogleApiClient.connect();
     }
 
+    /**
+     * Load geofence request ids from disk.
+     * @return
+     */
     private List<String> loadIds() {
         Gson gson = new Gson();
         sp = getSharedPreferences(getSharedPrefName(),0);
@@ -103,12 +116,19 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         return gson.fromJson(jsonText, new TypeToken<List<String>>(){}.getType());
     }
 
+    /**
+     * Overwrite geofence request ids.
+     * @param ids
+     */
     private void saveIds(List<String> ids){
         Gson gson = new Gson();
         SharedPreferences.Editor edit = getSharedPreferences(getSharedPrefName(),0).edit();
         edit.putString(LIST_IDS, gson.toJson(ids)).apply();
     }
 
+    /**
+     *
+     */
     private void loadGeofenceList() {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<GeoFenceNode>>(){}.getType();
@@ -117,86 +137,105 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         if (!json.equals("")){
             mNearGeoList = gson.fromJson(json, type);
         }
-        if (mNearGeoList != null)
-        {
-            for (GeoFenceNode nearGeofence : mNearGeoList) {
-                mGeofenceList.add(nearGeofence.toGeofence());
-            }
-        }
 
-        /*mGeofenceList.add(new Geofence.Builder()
-                .setRequestId(GALASSIA_FENCE_ID)
-                .setCircularRegion(GALASSIA_LATITUDE, GALASSIA_LONGITUDE, FENCE_RADIUS)
-                .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                .setLoiteringDelay(30000)
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
-                .build()
-        );*/
-    }
-
-    public void setGeoFences(List<GeoFenceNode> geoFenceNodes) {
-        this.mNearGeoList = geoFenceNodes;
-        List<String> ids = new ArrayList<>();
-        List<Geofence> geofences = new ArrayList<>();
-        for (GeoFenceNode geoFenceNode : geoFenceNodes) {
-            ids.add(geoFenceNode.getId());
-            geofences.add(geoFenceNode.toGeofence());
-        }
-        addGeofences(geofences);
-        saveIds(ids);
-        startGeoFencing(getGeofencingRequest());
-    }
-
-    public void addGeofences(List<Geofence> geofences) {
-        mGeofenceList.addAll(geofences);
-
-        GeofencingRequest request = new GeofencingRequest.Builder()
-                .addGeofences(mGeofenceList)
-                .build();
-
-        //persistGeofenceList();
-
-        startGeoFencing(request);
-    }
-
-    public void stopGeofencing(){
-        List<String> ids = loadIds();
-        if (ids == null) return;
-        for (String id : loadIds()) {
-            removeGeofence(id);
-        }
-    }
-
-    public void removeGeofence(String bundleId){
-        // using iterator to delete in a loop
-        Iterator<GeoFenceNode> i = mNearGeoList.iterator();
-        while (i.hasNext()) {
-            GeoFenceNode nGeo = i.next();
-            if (nGeo.getId().equals(bundleId)){
-                i.remove();
-            }
-        }
-        Iterator<Geofence> j = mGeofenceList.iterator();
-        while (j.hasNext()) {
-            Geofence gFence = j.next();
-            if (gFence.getRequestId().equals(bundleId)){
-                j.remove();
-            }
-        }
-        //persistGeofenceList();
-        List<String> gfReqIds = new ArrayList<String>();
-        gfReqIds.add(bundleId);
-        LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, gfReqIds)
-            .setResultCallback(this);
     }
 
     /**
-     * Start geofencing from a geofence request.
+     * Set the geofence to monitor. Filters the geofence to only add the new ones and to
+     * remove the geofences it has no longer to monitor. Persists the new ids.
+     * @param geoFenceNodes
+     */
+    public void setGeoFences(List<GeoFenceNode> geoFenceNodes) {
+        // get the ids of the geofence to monitor
+        List<String> newIds = idsFromGeofences(geoFenceNodes);
+
+        // subtracting the new ids to the old ones, find the geofence to stop monitoring
+        List<String> idsToremove = loadIds();
+        if (idsToremove != null){
+            idsToremove.removeAll(newIds);
+            stopGeofencing(idsToremove);
+        }
+
+        // from the old and the new sets of ids, find the geofence to add
+        List<Geofence> geofencesToAdd = fetchNewGeofence(geoFenceNodes, newIds, loadIds());
+        startGeoFencing(getGeofencingRequest(geofencesToAdd));
+        saveIds(newIds);
+    }
+
+    private List<Geofence> fetchNewGeofence(List<GeoFenceNode> geoFenceNodes, List<String> newIds, List<String> oldIds) {
+        // create copy of the new ids
+        List<String> idsToAdd = new ArrayList<>(newIds);
+        // subtract the old ids to the new
+        if (oldIds!=null){
+            idsToAdd.removeAll(oldIds);
+        }
+
+        // for each id, fetch the geofence and return them all
+        List<Geofence> geoFenceNodesToAdd = new ArrayList<>();
+        for (String id : idsToAdd) {
+            GeoFenceNode geoFenceNode = getGeofenceFromId(geoFenceNodes, id);
+            if (geoFenceNode != null){
+                geoFenceNodesToAdd.add(geoFenceNode.toGeofence());
+            }
+        }
+        return geoFenceNodesToAdd;
+    }
+
+    /**
+     * Stop all geofences
+     */
+    public void stopAllGeofences(){
+        stopGeofencing(loadIds());
+        saveIds(new ArrayList<String>());
+    }
+
+    /**
+     * Find a geofence from a geofence list, given its id
+     * @param geoFenceNodes
+     * @param id
+     * @return
+     */
+    private GeoFenceNode getGeofenceFromId(List<GeoFenceNode> geoFenceNodes, String id) {
+        for (GeoFenceNode geoFenceNode : geoFenceNodes) {
+            if (geoFenceNode.getId().equals(id)){
+                return geoFenceNode;
+            }
+        }
+        return null;
+    }
+
+    private List<String> idsFromGeofences(List<GeoFenceNode> geoFenceNodes) {
+        List<String> ids = new ArrayList<>();
+        for (GeoFenceNode geoFenceNode : geoFenceNodes) {
+            ids.add(geoFenceNode.getId());
+        }
+        return ids;
+    }
+
+
+    /**
+     * Stop geofencing on request ids.
+     * @param idsToremove
+     */
+    public void stopGeofencing(List<String> idsToremove){
+        if (idsToremove == null || idsToremove.size() == 0) return;
+
+        LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, idsToremove)
+                .setResultCallback(this);
+    }
+
+    /**
+     * Start geofencing from a geofence request. If the google api client is not yet connected,
+     * store the geofecing as pending to be started once the client is connected.
      * @param request
      */
     private void startGeoFencing(GeofencingRequest request) {
         if (request == null) return;
-        if (!mGoogleApiClient.isConnected()) return;
+        if (!mGoogleApiClient.isConnected()){
+            mPendingGeofences = request.getGeofences();
+            return;
+        }
+        mPendingGeofences.clear();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -224,19 +263,23 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
 
     /**
-     * Build the geofence request from the list of saved geofence
+     * Builds the geofence request from a list of geofences
      * @return
      */
-    private GeofencingRequest getGeofencingRequest() {
-        if (mGeofenceList == null || mGeofenceList.size() == 0){
+    private GeofencingRequest getGeofencingRequest(List<Geofence> geofences) {
+        if (geofences == null || geofences.size() == 0){
             return null;
         }
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         // builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
-        builder.addGeofences(mGeofenceList);
+        builder.addGeofences(geofences);
         return builder.build();
     }
 
+    /**
+     * Build the geofence pending intent.
+     * @return
+     */
     private PendingIntent getGeofencePendingIntent() {
         // Reuse the PendingIntent if we already have it.
         if (mGeofencePendingIntent != null) {
@@ -255,9 +298,10 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "onConnected");
-        Log.d(TAG, "client API connected: " + mGoogleApiClient.isConnected());
-        if (mGeofenceList != null){
-            startGeoFencing(getGeofencingRequest());
+        // If we have pending geofences (that need to be started)
+        // we start the geofence now that the client is connected.
+        if (mPendingGeofences != null){
+            startGeoFencing(getGeofencingRequest(mPendingGeofences));
         }
     }
 
@@ -280,27 +324,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         String PACK_NAME = getApplicationContext().getPackageName();
         return PACK_NAME + PREF_SUFFIX;
     }
-
-    /*BroadcastReceiver geofenceUpdateReceiver = new BroadcastReceiver() {
-        static final String TAG = "GeoUpdate";
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "Received update on regions");
-            switch (intent.getAction()){
-                case ADD_GEOFENCE_ACTION:
-                    GeoFenceNode geofence = intent.getParcelableExtra("geofence");
-                    Log.d(TAG, "Start monitoring geofence: " + geofence.getId());
-                    addGeofence(geofence);
-                    break;
-                case REMOVE_GEOFENCE_ACTION:
-                    String geofenceBundleId = intent.getStringExtra("geofence_bundle");
-                    Log.d(TAG, "Stop monitoring geofence: " + geofenceBundleId);
-                    removeGeofence(geofenceBundleId);
-                    break;
-                default:
-            }
-        }
-    };*/
 
     public class MyLocalBinder extends Binder {
         GeoFenceService getService() {
