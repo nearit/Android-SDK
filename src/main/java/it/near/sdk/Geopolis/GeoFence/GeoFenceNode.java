@@ -6,6 +6,9 @@ import android.os.Parcelable;
 import com.google.android.gms.location.Geofence;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import it.near.sdk.Geopolis.Node;
 
 /**
@@ -91,4 +94,11 @@ public class GeoFenceNode extends Node implements Parcelable{
         }
     };
 
+    public static List<Geofence> toGeofences(List<GeoFenceNode> geoFenceNodes) {
+        List<Geofence> geofences = new ArrayList<>();
+        for (GeoFenceNode geoFenceNode : geoFenceNodes) {
+            geofences.add(geoFenceNode.toGeofence());
+        }
+        return geofences;
+    }
 }
