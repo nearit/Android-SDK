@@ -59,17 +59,17 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         super.onCreate();
         Log.d(TAG, "onCreate()");
         setUpReceiver();
-        loadGeofenceList();
+        // loadGeofenceList();
         currentRequestIds = loadIds();
     }
 
 
     private void setUpReceiver() {
         Log.d(TAG, "setUpReceiver");
-        IntentFilter intentFilter = new IntentFilter();
+        /*IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ADD_GEOFENCE_ACTION);
         intentFilter.addAction(REMOVE_GEOFENCE_ACTION);
-        registerReceiver(geofenceUpdateReceiver, intentFilter);
+        registerReceiver(geofenceUpdateReceiver, intentFilter);*/
     }
 
     @Override
@@ -137,24 +137,24 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     public void setGeoFences(List<GeoFenceNode> geoFenceNodes) {
         this.mNearGeoList = geoFenceNodes;
         List<String> ids = new ArrayList<>();
+        List<Geofence> geofences = new ArrayList<>();
         for (GeoFenceNode geoFenceNode : geoFenceNodes) {
-            addGeofence(geoFenceNode);
             ids.add(geoFenceNode.getId());
+            geofences.add(geoFenceNode.toGeofence());
         }
+        addGeofences(geofences);
         saveIds(ids);
         startGeoFencing(getGeofencingRequest());
     }
 
-    public void addGeofence(GeoFenceNode nearGeofence) {
-        Geofence androidGeofence = nearGeofence.toGeofence();
-        mGeofenceList.add(androidGeofence);
+    public void addGeofences(List<Geofence> geofences) {
+        mGeofenceList.addAll(geofences);
 
         GeofencingRequest request = new GeofencingRequest.Builder()
-                .addGeofence(androidGeofence)
+                .addGeofences(mGeofenceList)
                 .build();
 
-        mNearGeoList.add(nearGeofence);
-        persistGeofenceList();
+        //persistGeofenceList();
 
         startGeoFencing(request);
     }
@@ -183,13 +183,17 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                 j.remove();
             }
         }
-        persistGeofenceList();
+        //persistGeofenceList();
         List<String> gfReqIds = new ArrayList<String>();
         gfReqIds.add(bundleId);
         LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, gfReqIds)
             .setResultCallback(this);
     }
 
+    /**
+     * Start geofencing from a geofence request.
+     * @param request
+     */
     private void startGeoFencing(GeofencingRequest request) {
         if (request == null) return;
         if (!mGoogleApiClient.isConnected()) return;
@@ -219,6 +223,10 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     }
 
 
+    /**
+     * Build the geofence request from the list of saved geofence
+     * @return
+     */
     private GeofencingRequest getGeofencingRequest() {
         if (mGeofenceList == null || mGeofenceList.size() == 0){
             return null;
@@ -246,8 +254,9 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG , "onConnected");
-        if (mNearGeoList == null){
+        Log.d(TAG, "onConnected");
+        Log.d(TAG, "client API connected: " + mGoogleApiClient.isConnected());
+        if (mGeofenceList != null){
             startGeoFencing(getGeofencingRequest());
         }
     }
@@ -272,7 +281,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         return PACK_NAME + PREF_SUFFIX;
     }
 
-    BroadcastReceiver geofenceUpdateReceiver = new BroadcastReceiver() {
+    /*BroadcastReceiver geofenceUpdateReceiver = new BroadcastReceiver() {
         static final String TAG = "GeoUpdate";
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -291,7 +300,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                 default:
             }
         }
-    };
+    };*/
 
     public class MyLocalBinder extends Binder {
         GeoFenceService getService() {

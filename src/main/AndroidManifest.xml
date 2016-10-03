@@ -33,6 +33,12 @@
         <service android:name=".Push.FcmIntentService"
             android:exported="false"/>
 
+        <service
+            android:name=".Geopolis.GeoFence.GeoFenceService"
+            android:exported="false" />
+        <service android:name=".Geopolis.GeoFence.GeofenceTransitionsIntentService"
+            android:exported="false" />
+
 
         <receiver android:name=".Trackings.BluetoothStatusReceiver"
             android:enabled="true">
