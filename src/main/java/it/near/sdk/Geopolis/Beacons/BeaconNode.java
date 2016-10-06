@@ -1,10 +1,13 @@
 package it.near.sdk.Geopolis.Beacons;
 
+import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.gson.annotations.SerializedName;
 
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
+import org.apache.commons.lang3.ObjectUtils;
 
+import java.util.IllegalFormatException;
 import java.util.UUID;
 
 import it.near.sdk.Geopolis.Node;
@@ -50,11 +53,12 @@ public class BeaconNode extends Node {
         this.minor = minor;
     }
 
-    public static Region toAltRegion(BeaconNode beaconNode) throws NullPointerException{
+    public static Region toAltRegion(BeaconNode beaconNode) throws NullPointerException {
+        if (beaconNode.getIdentifier() == null) throw new NullPointerException();
         Region region = new Region(beaconNode.getIdentifier(),
                                 Identifier.fromUuid(UUID.fromString(beaconNode.getProximityUUID())),
-                                beaconNode.getMajor() != 0 ? Identifier.fromInt(beaconNode.getMajor()) : null,
-                                beaconNode.getMinor() != 0 ? Identifier.fromInt(beaconNode.getMinor()) : null);
+                                beaconNode.getMajor() != null ? Identifier.fromInt(beaconNode.getMajor()) : null,
+                                beaconNode.getMinor() != null ? Identifier.fromInt(beaconNode.getMinor()) : null);
         return region;
     }
 

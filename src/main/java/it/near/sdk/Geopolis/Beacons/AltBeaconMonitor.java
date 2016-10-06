@@ -24,10 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.Geopolis.Beacons.BeaconNode;
+import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Geopolis.Node;
 import it.near.sdk.Geopolis.Ranging.BeaconDynamicRadar;
-import it.near.sdk.Geopolis.Ranging.ProximityListener;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.ULog;
@@ -46,6 +45,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private static final long BACKGROUND_SCAN_PERIOD = 1500;
     private static final long FOREGROUND_SCAN_PERIOD = 3000;
     private static final long REGION_EXIT_PERIOD = 30000;
+    private static final int REGION_ENTRY = 1;
+    private static final int REGION_EXIT = 2;
+
     private final BeaconManager beaconManager;
     private BackgroundPowerSaver backgroundPowerSaver;
     private Application mApplication;
@@ -58,12 +60,12 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private String prefsNameSuffix = "AltMonitor";
     private SharedPreferences sp;
     private List<Region> regions;
-    private ProximityListener proximityListener;
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 
     public AltBeaconMonitor(Application application) {
         this.mApplication = application;
         this.rangingRadars = new HashMap<>();
+        this.regions = new ArrayList<>();
 
         initAppLifecycleMonitor(application);
 
@@ -81,19 +83,18 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
 
-    public void setUpMonitor(List<Node> nodes, ProximityListener proximityListener){
-
-        resetRanging();
-        resetMonitoring();
+    /*public void setUpMonitor(List<Node> nodes){
+        // resetMonitoring();
 
         List<Region> regionsToMonitor = filterBeaconRegions(nodes);
         if (regionsToMonitor == null || regionsToMonitor.size() == 0) return;
 
-        startRadar(regionsToMonitor, proximityListener);
+        if (GeopolisManager.isRadarStarted(mApplication)){
+            startRadar(regionsToMonitor);
+        }
+    }*/
 
-    }
-
-    private void startRadar(List<Region> regionsToMonitor, ProximityListener proximityListener) {
+    /*private void startRadar(List<Region> regionsToMonitor) {
         this.regions = regionsToMonitor;
         beaconManager.setBackgroundBetweenScanPeriod(BACKGROUND_BETWEEN_SCAN_PERIODS);
         beaconManager.setBackgroundScanPeriod(BACKGROUND_SCAN_PERIOD);
@@ -101,8 +102,34 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         BeaconManager.setRegionExitPeriod(REGION_EXIT_PERIOD);
         beaconManager.setBackgroundMode(true);
 
-        this.proximityListener = proximityListener;
-        regionBootstrap = new RegionBootstrap(this, regions);
+        if (GeopolisManager.isRadarStarted(mApplication)){
+            startRadar();
+        }
+    }*/
+
+
+    private void startRadar() {
+        beaconManager.setBackgroundBetweenScanPeriod(BACKGROUND_BETWEEN_SCAN_PERIODS);
+        beaconManager.setBackgroundScanPeriod(BACKGROUND_SCAN_PERIOD);
+        beaconManager.setForegroundScanPeriod(FOREGROUND_SCAN_PERIOD);
+        BeaconManager.setRegionExitPeriod(REGION_EXIT_PERIOD);
+        beaconManager.setBackgroundMode(true);
+        if (regions != null && regions.size() > 0){
+            regionBootstrap = new RegionBootstrap(this, regions);
+        }
+    }
+
+    public void stopRadar(){
+        if (regions != null) regions.clear();
+        beaconManager.setBackgroundMode(true);
+        beaconManager.removeAllMonitorNotifiers();
+        beaconManager.removeAllRangeNotifiers();
+        resetRanging();
+        resetMonitoring();
+        if (regionBootstrap != null){
+            regionBootstrap.disable();
+            regionBootstrap = null;
+        }
     }
 
     /**
@@ -110,7 +137,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * @param nodes
      * @return
      */
-    private List<Region> filterBeaconRegions(List<Node> nodes) {
+    public static List<Region> filterBeaconRegions(List<Node> nodes) {
         List<Region> regionsToMonitor = new ArrayList<>();
         if (nodes == null) return regionsToMonitor;
         for (Node node : nodes) {
@@ -124,7 +151,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * @param node the single geo node
      * @param regionsToMonitor
      */
-    private void addBranch(Node node, List<Region> regionsToMonitor) {
+    private static void addBranch(Node node, List<Region> regionsToMonitor) {
         // if the node is a geofence we don't consider it nor its children
         if (!BeaconNode.class.isInstance(node)) return;
         try {
@@ -138,15 +165,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         }
     }
 
-    public void stopRadar(){
-        regions.clear();
-        beaconManager.setBackgroundMode(true);
-        beaconManager.removeAllMonitorNotifiers();
-        beaconManager.removeAllRangeNotifiers();
-        resetRanging();
-        resetMonitoring();
-        regionBootstrap.disable();
-    }
+
 
     /**
      * Initialize app lifecycle monitor to detect the app going to the background/foreground
@@ -156,24 +175,41 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         new AppLifecycleMonitor(application, this);
     }
 
-    public void addRegions(List<Region> regions){
+    public void addRegions(List<Node> nodes){
+        List<Region> regions = filterBeaconRegions(nodes);
         for (Region region : regions) {
+            this.regions.add(region);
             addRegion(region);
+        }
+        if (regionBootstrap == null && regions.size() > 0) {
+            resetRanging();
+            resetMonitoring();
+            startRadar();
         }
     }
 
     public void addRegion(Region region){
-        regionBootstrap.addRegion(region);
+        if (regionBootstrap!=null) regionBootstrap.addRegion(region);
     }
 
-    public void removeRegions(List<Region> regions){
+    public void removeRegions(List<Node> nodes){
+        List<Region> regions = filterBeaconRegions(nodes);
         for (Region region : regions) {
+            this.regions.remove(region);
             removeRegion(region);
+        }
+        if (this.regions.size() == 0){
+            stopRadar();
         }
     }
 
     public void removeRegion(Region region) {
-        regionBootstrap.removeRegion(region);
+        try {
+            stopRangingRegion(region);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        if (regionBootstrap!=null) regionBootstrap.removeRegion(region);
     }
 
     /**
@@ -215,7 +251,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private void resetRanging() {
         for (Region region : beaconManager.getRangedRegions()) {
             try {
-                beaconManager.stopRangingBeaconsInRegion(region);
+                stopRangingRegion(region);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -256,8 +292,17 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
         logRangedRegions();
         // nearit trigger
-        proximityListener.enterRegion(region);
+        notifiyEventOnBeaconRegion(region, REGION_ENTRY);
 
+    }
+
+    private void notifiyEventOnBeaconRegion(Region region, int regionEvent) {
+        Intent intent  = new Intent();
+        String packageName = mApplication.getPackageName();
+        // TODO not just entry!!!
+        intent.setAction(packageName + "." + GeopolisManager.BT_ENTRY_ACTION_SUFFIX);
+        intent.putExtra(GeopolisManager.NODE_ID, region.getUniqueId());
+        mApplication.sendBroadcast(intent);
     }
 
     @Override
@@ -266,6 +311,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         ULog.wtf(TAG, msg);
 
         logRangedRegions();
+        notifiyEventOnBeaconRegion(region, REGION_EXIT);
         if (beaconManager.getRangedRegions().size() == 0){
             // if the list of ranged regions is empty, we stop ranging
             stopRanging();
@@ -309,7 +355,8 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
 
     private void startRangingRegion(Region region) throws RemoteException {
-        rangingRadars.put(region, new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region), proximityListener));
+        // TODO restore a proximity listener just for ranging
+        rangingRadars.put(region, new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region), null));
         beaconManager.startRangingBeaconsInRegion(region);
     }
 

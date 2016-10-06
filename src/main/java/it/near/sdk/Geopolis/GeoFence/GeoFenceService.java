@@ -3,10 +3,8 @@ package it.near.sdk.Geopolis.GeoFence;
 import android.Manifest;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Binder;
@@ -29,10 +27,10 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+
+import it.near.sdk.Geopolis.GeopolisManager;
+import it.near.sdk.Utils.ULog;
 
 /**
  * Created by cattaneostefano on 18/07/16.
@@ -42,15 +40,11 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     private static final String TAG = "GeoFenceService";
     private static final String PREF_SUFFIX = "NearGeo";
     private static final String GEO_LIST = "GeofenceList";
-    // TODO rename
-    public static final String ADD_GEOFENCE_ACTION = "com.example.geofence.add";
-    // TODO rename
-    public static final String REMOVE_GEOFENCE_ACTION = "com.example.geofence.remove";
     private static final String LIST_IDS = "list_ids";
+    public static final String GEOFENCES = "geofences";
     private PendingIntent mGeofencePendingIntent;
     private GoogleApiClient mGoogleApiClient;
     private List<GeoFenceNode> mNearGeoList;
-    private final IBinder myBinder = new MyLocalBinder();
     private SharedPreferences sp;
     private List<Geofence> mPendingGeofences = new ArrayList<>();
 
@@ -58,39 +52,42 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate()");
-        setUpReceiver();
         // loadGeofenceList();
-    }
-
-
-    private void setUpReceiver() {
-        Log.d(TAG, "setUpReceiver");
-        /*IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ADD_GEOFENCE_ACTION);
-        intentFilter.addAction(REMOVE_GEOFENCE_ACTION);
-        registerReceiver(geofenceUpdateReceiver, intentFilter);*/
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // can be called multiple times
         Log.d(TAG, "onStartCommand()");
-        startGoogleApiClient();
+        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()){
+            startGoogleApiClient();
+        }
+
+        if (intent != null && intent.hasExtra(GEOFENCES)){
+            List<GeoFenceNode> nodes = intent.getParcelableArrayListExtra(GEOFENCES);
+            mPendingGeofences = GeoFenceNode.toGeofences(nodes);
+            if (GeopolisManager.isRadarStarted(this)){
+                setGeoFences(nodes);
+            }
+        }
 
         return Service.START_STICKY;
     }
 
     @Override
     public void onDestroy() {
+        ULog.d(TAG, "onDestroy on geofence service");
         super.onDestroy();
         stopAllGeofences();
+        resetIds(this);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return myBinder;
+        return null;
     }
+
 
     /**
      * Create and start the google api client for the geofences.
@@ -111,7 +108,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
      */
     private List<String> loadIds() {
         Gson gson = new Gson();
-        sp = getSharedPreferences(getSharedPrefName(),0);
+        sp = getSharedPreferences(getSharedPrefName(this),0);
         String jsonText = sp.getString(LIST_IDS, null);
         return gson.fromJson(jsonText, new TypeToken<List<String>>(){}.getType());
     }
@@ -122,8 +119,17 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
      */
     private void saveIds(List<String> ids){
         Gson gson = new Gson();
-        SharedPreferences.Editor edit = getSharedPreferences(getSharedPrefName(),0).edit();
+        SharedPreferences.Editor edit = getSharedPreferences(getSharedPrefName(this),0).edit();
         edit.putString(LIST_IDS, gson.toJson(ids)).apply();
+    }
+
+    /**
+     * Reset the listened geofence request ids.
+     * @param context
+     */
+    public static void resetIds(Context context){
+        SharedPreferences.Editor edit = context.getSharedPreferences(getSharedPrefName(context),0).edit();
+        edit.putString(LIST_IDS, null).apply();
     }
 
     /**
@@ -132,7 +138,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     private void loadGeofenceList() {
         Gson gson = new Gson();
         Type type = new TypeToken<ArrayList<GeoFenceNode>>(){}.getType();
-        SharedPreferences sp = getSharedPreferences(getSharedPrefName(), 0);
+        SharedPreferences sp = getSharedPreferences(getSharedPrefName(this), 0);
         String json = sp.getString(GEO_LIST, "");
         if (!json.equals("")){
             mNearGeoList = gson.fromJson(json, type);
@@ -145,7 +151,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
      * remove the geofences it has no longer to monitor. Persists the new ids.
      * @param geoFenceNodes
      */
-    public void setGeoFences(List<GeoFenceNode> geoFenceNodes) {
+    private void setGeoFences(List<GeoFenceNode> geoFenceNodes) {
         // get the ids of the geofence to monitor
         List<String> newIds = idsFromGeofences(geoFenceNodes);
 
@@ -254,12 +260,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         ).setResultCallback(this);
     }
 
-    private void persistGeofenceList() {
-        Gson gson = new Gson();
-        String json = gson.toJson(mNearGeoList);
-        SharedPreferences.Editor edit = getSharedPreferences(getSharedPrefName(),0).edit();
-        edit.putString(GEO_LIST, json).apply();
-    }
 
 
     /**
@@ -285,7 +285,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         if (mGeofencePendingIntent != null) {
             return mGeofencePendingIntent;
         }
-        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        Intent intent = new Intent(this, NearGeofenceTransitionsIntentService.class);
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
         // calling addGeofences() and removeGeofences().
         mGeofencePendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.
@@ -320,14 +320,9 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         Log.d(TAG, "onResult: " + status.getStatusMessage() );
     }
 
-    public String getSharedPrefName() {
-        String PACK_NAME = getApplicationContext().getPackageName();
+    public static String getSharedPrefName(Context context) {
+        String PACK_NAME = context.getApplicationContext().getPackageName();
         return PACK_NAME + PREF_SUFFIX;
     }
 
-    public class MyLocalBinder extends Binder {
-        GeoFenceService getService() {
-            return GeoFenceService.this;
-        }
-    }
 }

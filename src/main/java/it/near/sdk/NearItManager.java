@@ -60,7 +60,7 @@ public class NearItManager {
     private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
     private static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
     private static String APP_PACKAGE_NAME;
-    private GeopolisManager forest;
+    private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
     private PollReaction pollNotification;
@@ -118,7 +118,7 @@ public class NearItManager {
         recipesManager = new RecipesManager(application);
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
-        forest = new GeopolisManager(application, recipesManager);
+        geopolis = new GeopolisManager(application, recipesManager);
 
         contentNotification = new ContentReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
@@ -211,7 +211,7 @@ public class NearItManager {
      */
     public void refreshConfigs(RecipeRefreshListener listener){
         recipesManager.refreshConfig(listener);
-        forest.refreshConfig();
+        geopolis.refreshConfig();
         contentNotification.refreshConfig();
         pollNotification.refreshConfig();
     }
@@ -293,5 +293,13 @@ public class NearItManager {
             e.printStackTrace();
             listener.onCouponDownloadError("Error");
         }
+    }
+
+    public void startRadar() {
+        geopolis.startRadar();
+    }
+
+    public void stopRadar() {
+        geopolis.stopRadar();
     }
 }

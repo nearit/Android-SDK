@@ -19,7 +19,6 @@ import it.near.sdk.Utils.ULog;
 public class NearNetworkUtil {
     public static final String TAG = "NearNetworkUtil";
 
-
     /**
      * Send tracking information to the back-end.
      * @param context the app context.

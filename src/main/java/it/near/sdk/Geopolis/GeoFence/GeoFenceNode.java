@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.android.gms.location.Geofence;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -74,12 +76,14 @@ public class GeoFenceNode extends Node implements Parcelable{
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
         dest.writeInt(radius);
+        dest.writeString(getId());
     }
 
     protected GeoFenceNode(Parcel in) {
         latitude = in.readDouble();
         longitude = in.readDouble();
         radius = in.readInt();
+        setId(in.readString());
     }
 
     public static final Creator<GeoFenceNode> CREATOR = new Creator<GeoFenceNode>() {
@@ -100,5 +104,23 @@ public class GeoFenceNode extends Node implements Parcelable{
             geofences.add(geoFenceNode.toGeofence());
         }
         return geofences;
+    }
+
+    /**
+     * Exclusion strategy for gson serializing, since there are circular references in the structure
+     * @return
+     */
+    public static ExclusionStrategy getExclusionStrategy(){
+        ExclusionStrategy es = new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+                return f.getName().equals("parent") || f.getName().equals("children");
+            }
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+            }
+        };
+        return es;
     }
 }
