@@ -9,9 +9,5 @@ import org.altbeacon.beacon.Region;
 public interface ProximityListener {
 
     void enterBeaconRange(Beacon beacon, int proximity);
-    void exitBeaconRange(Beacon beacon, int proximity);
-
-    void enterRegion(Region region);
-    void exitRegion(Region region);
 
 }

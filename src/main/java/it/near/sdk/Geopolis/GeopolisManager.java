@@ -311,14 +311,11 @@ public class GeopolisManager {
                     break;
                 case BT_ENTRY_ACTION_SUFFIX:
                     trackAndFirePulse(node.getIdentifier(), Events.ENTER_REGION);
-                    // todo what else?
                     break;
                 case BT_EXIT_ACTION_SUFFIX:
                     trackAndFirePulse(node.getIdentifier(), Events.LEAVE_REGION);
-                    // todo what else?
                     break;
             }
-
         }
     };
 

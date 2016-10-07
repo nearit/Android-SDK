@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
+import it.near.sdk.Geopolis.Ranging.ProximityListener;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
@@ -308,4 +309,17 @@ public class NearItManager {
     public void stopRadar() {
         geopolis.stopRadar();
     }
+
+    public void addProximityListener(ProximityListener proximityListener){
+        // TODO implementation
+    }
+
+    public void removeProximityListener(ProximityListener proximityListener) {
+        // TODO implmentation
+    }
+
+    public void removeAllProximityListener(){
+        // TODO implementation
+    }
+
 }

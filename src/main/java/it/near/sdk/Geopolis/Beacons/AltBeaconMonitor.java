@@ -303,6 +303,10 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         mApplication.sendBroadcast(intent);
     }
 
+    public void notifyOnRangeBeacon(Beacon beacon, String eventActionSuffix) {
+        // todo
+    }
+
     @Override
     public void didExitRegion(Region region) {
         String msg = "exit region: " + region.toString();
@@ -329,6 +333,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         try {
             if (i == MonitorNotifier.INSIDE){
                 // region enter
+                // todo don't add region if its a fully defined beacon
                 startRangingRegion(region);
                 if (AppLifecycleMonitor.isApplicationInForeground()){
                     // switch to ranging mode only if we are in foreground
