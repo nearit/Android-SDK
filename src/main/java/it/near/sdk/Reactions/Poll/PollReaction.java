@@ -20,6 +20,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Reactions.CoreReaction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearUtils;
@@ -48,18 +49,18 @@ public class PollReaction extends CoreReaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch(reaction_action){
             case SHOW_POLL_ACTION_NAME:
-                showPoll(reaction_bundle, recipe);
+                showPoll(reaction_bundle.getId(), recipe);
                 break;
         }
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, String bundleId) {
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
         // TODO not tested
-        requestSingleReaction(bundleId, new JsonHttpResponseHandler(){
+        requestSingleReaction(bundle.getId(), new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, response.toString());

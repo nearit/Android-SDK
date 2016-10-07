@@ -32,6 +32,7 @@ import it.near.sdk.Geopolis.BeaconForest.NearBeacon;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.Geopolis.GeoFence.GeoFenceSystemEventsReceiver;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Reactions.Event;
@@ -66,9 +67,7 @@ public class GeopolisManager {
 
     private static final String TAG = "GeopolisManager";
     private static final String PREFS_SUFFIX = "GeopolisManager";
-    // TODO change
-    private static final String PLUGIN_NAME = "beacon-forest";
-    private static final String ENTER_REGION = "enter_region";
+    private static final String PLUGIN_NAME = "geopolis";
 
     private static final String RADAR_ON = "radar_on";
     private static final String GEOPOLIS_CONFIG = "cached_config";
@@ -220,6 +219,7 @@ public class GeopolisManager {
 
     private List<Node> loadNodes() throws JSONException {
         String config = getSavedConfig();
+        if (config == null) return null;
         JSONObject configJson = new JSONObject(config);
         return NearUtils.parseList(morpheus, configJson, Node.class);
     }
@@ -293,54 +293,66 @@ public class GeopolisManager {
             String packageName = mApplication.getPackageName();
             String action = intent.getAction().replace(packageName + ".", "");
             Node node = nodeFromId(intent.getStringExtra(NODE_ID));
+
             if (node == null) return;
             switch (action){
                 case GF_ENTRY_ACTION_SUFFIX:
-
-                    trackEvent(node.getIdentifier(), Events.ENTER_PLACE);
-                    // TODO notify recipeManager
+                    trackAndFirePulse(node.getIdentifier(), Events.ENTER_PLACE);
                     if (node.getChildren() != null){
                         geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnEnter(nodes, node));
                         altBeaconMonitor.addRegions(node.getChildren());
                     }
                     break;
                 case GF_EXIT_ACTION_SUFFIX:
-
-                    trackEvent(node.getIdentifier(), Events.LEAVE_PLACE);
-                    // TODO notify recipeManager
+                    trackAndFirePulse(node.getIdentifier(), Events.LEAVE_PLACE);
                     geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnExit(nodes, node));
                     altBeaconMonitor.removeRegions(node.getChildren());
 
                     break;
                 case BT_ENTRY_ACTION_SUFFIX:
-
-                    trackEvent(node.getIdentifier(), Events.ENTER_REGION);
-                    // TODO notify recipeManager
+                    trackAndFirePulse(node.getIdentifier(), Events.ENTER_REGION);
+                    // todo what else?
                     break;
                 case BT_EXIT_ACTION_SUFFIX:
-
-                    trackEvent(node.getIdentifier(), Events.LEAVE_REGION);
-                    // TODO notify recipeManager
+                    trackAndFirePulse(node.getIdentifier(), Events.LEAVE_REGION);
+                    // todo what else?
                     break;
             }
 
         }
     };
 
+    /**
+     * Tracks the geographical interaction and fires the proper pulse. It does nothing if the identifier is null.
+     * @param identifier
+     * @param event
+     */
+    private void trackAndFirePulse(String identifier, String event) {
+        if (identifier != null){
+            trackEvent(identifier, event);
+            firePulse(event, identifier);
+        }
+    }
+
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ULog.d(TAG, "reset intent received");
-            if (nodes == null) {
-                try {
-                    nodes = loadNodes();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return;
+            ULog.wtf(TAG, "reset intent received");
+            if (intent.getBooleanExtra(GeoFenceSystemEventsReceiver.LOCATION_STATUS, false)){
+                if (nodes == null) {
+                    try {
+                        nodes = loadNodes();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        return;
+                    }
                 }
+                startRadarOnNodes(nodes);
+            } else {
+                altBeaconMonitor.stopRadar();
+                geofenceMonitor.stopGFRadar();
             }
-            startRadarOnNodes(nodes);
-            altBeaconMonitor.stopRadar();
+
         }
     };
 

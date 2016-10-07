@@ -25,6 +25,8 @@ import it.near.sdk.Reactions.CustomJSON.CustomJSONReaction;
 import it.near.sdk.Reactions.Event;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipeRefreshListener;
@@ -63,6 +65,7 @@ public class NearItManager {
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
+    private SimpleNotificationReaction simpleNotification;
     private PollReaction pollNotification;
     private CouponReaction couponReaction;
     private CustomJSONReaction customJSONReaction;
@@ -121,16 +124,19 @@ public class NearItManager {
         geopolis = new GeopolisManager(application, recipesManager);
 
         contentNotification = new ContentReaction(application, nearNotifier);
-        recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
+        recipesManager.addReaction(contentNotification);
+
+        simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
+        recipesManager.addReaction(simpleNotification);
 
         pollNotification = new PollReaction(application, nearNotifier);
-        recipesManager.addReaction(pollNotification.getPluginName(), pollNotification);
+        recipesManager.addReaction(pollNotification);
 
         couponReaction = new CouponReaction(application, nearNotifier);
-        recipesManager.addReaction(couponReaction.getPluginName(), couponReaction);
+        recipesManager.addReaction(couponReaction);
 
         customJSONReaction = new CustomJSONReaction(application, nearNotifier);
-        recipesManager.addReaction(customJSONReaction.getPluginName(), customJSONReaction);
+        recipesManager.addReaction(customJSONReaction);
 
     }
 
@@ -250,7 +256,7 @@ public class NearItManager {
         // set the pulse info
         resultIntent.putExtra(IntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
         resultIntent.putExtra(IntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
-        resultIntent.putExtra(IntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle().getId());
+        resultIntent.putExtra(IntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle() != null ? recipe.getPulse_bundle().getId() : "");
 
         application.sendOrderedBroadcast(resultIntent, null);
     }

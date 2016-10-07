@@ -10,6 +10,7 @@ import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.Coupon.Coupon;
 import it.near.sdk.Reactions.CustomJSON.CustomJSON;
 import it.near.sdk.Reactions.Poll.Poll;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.BaseIntentService;
 import it.near.sdk.Utils.IntentConstants;
@@ -54,6 +55,11 @@ public class FcmIntentService extends BaseIntentService implements CoreContentsL
     @Override
     public void getCustomJSONNotification(Intent intent, CustomJSON notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
         // TODO this was a custom json, implementation may vary, it's usually overriden
+    }
+
+    @Override
+    public void getSimpleNotification(Intent intent, SimpleNotification s_notif, String notif_body, String reaction_plugin, String reaction_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+        sendSimpleNotification(intent);
     }
 
     private void sendSimpleNotification(Intent intent){

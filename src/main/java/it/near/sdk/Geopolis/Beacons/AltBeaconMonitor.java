@@ -45,8 +45,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private static final long BACKGROUND_SCAN_PERIOD = 1500;
     private static final long FOREGROUND_SCAN_PERIOD = 3000;
     private static final long REGION_EXIT_PERIOD = 30000;
-    private static final int REGION_ENTRY = 1;
-    private static final int REGION_EXIT = 2;
 
     private final BeaconManager beaconManager;
     private BackgroundPowerSaver backgroundPowerSaver;
@@ -292,15 +290,15 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
         logRangedRegions();
         // nearit trigger
-        notifiyEventOnBeaconRegion(region, REGION_ENTRY);
+        notifiyEventOnBeaconRegion(region, GeopolisManager.BT_ENTRY_ACTION_SUFFIX);
 
     }
 
-    private void notifiyEventOnBeaconRegion(Region region, int regionEvent) {
+    private void notifiyEventOnBeaconRegion(Region region, String eventActionSuffix) {
+        ULog.wtf(TAG, "Region event: " + eventActionSuffix + " on region: " + region.toString());
         Intent intent  = new Intent();
         String packageName = mApplication.getPackageName();
-        // TODO not just entry!!!
-        intent.setAction(packageName + "." + GeopolisManager.BT_ENTRY_ACTION_SUFFIX);
+        intent.setAction(packageName + "." + eventActionSuffix);
         intent.putExtra(GeopolisManager.NODE_ID, region.getUniqueId());
         mApplication.sendBroadcast(intent);
     }
@@ -311,7 +309,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         ULog.wtf(TAG, msg);
 
         logRangedRegions();
-        notifiyEventOnBeaconRegion(region, REGION_EXIT);
+        notifiyEventOnBeaconRegion(region, GeopolisManager.BT_EXIT_ACTION_SUFFIX);
         if (beaconManager.getRangedRegions().size() == 0){
             // if the list of ranged regions is empty, we stop ranging
             stopRanging();

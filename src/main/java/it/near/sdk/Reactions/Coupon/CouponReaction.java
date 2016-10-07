@@ -20,6 +20,7 @@ import it.near.sdk.Communication.Constants;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Content.Image;
 import it.near.sdk.Reactions.CoreReaction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearUtils;
@@ -78,13 +79,13 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         // TODO this will likely never get called because coupon recipes are online evaluated or push recipes.
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
-        requestSingleResource(bundle_id, new JsonHttpResponseHandler(){
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
+        requestSingleResource(bundle.getId(), new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());

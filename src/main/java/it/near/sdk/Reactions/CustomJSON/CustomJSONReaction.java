@@ -20,6 +20,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.CoreReaction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearUtils;
@@ -109,10 +110,10 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch (reaction_action){
             case SHOW_JSON_ACTION:
-                showJSON(reaction_bundle, recipe);
+                showJSON(reaction_bundle.getId(), recipe);
                 break;
         }
     }
@@ -135,8 +136,8 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
-        requestSingleReaction(bundle_id, new JsonHttpResponseHandler(){
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
+        requestSingleReaction(bundle.getId(), new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());

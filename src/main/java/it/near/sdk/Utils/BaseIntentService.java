@@ -8,6 +8,7 @@ import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.Coupon.Coupon;
 import it.near.sdk.Reactions.CustomJSON.CustomJSON;
 import it.near.sdk.Reactions.Poll.Poll;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
 /**
  * @author cattaneostefano.
@@ -33,13 +34,14 @@ public abstract class BaseIntentService extends IntentService {
 
         String reaction_plugin = intent.getExtras().getString("reaction-plugin");
         String reaction_action = intent.getExtras().getString("reaction-action");
-        String notif_body = intent.getExtras().getString("notif_body");
+        String notif_body = intent.getExtras().getString(IntentConstants.NOTIF_BODY);
 
         String pulse_plugin = intent.getExtras().getString("pulse-plugin");
         String pulse_action = intent.getExtras().getString("pulse-action");
         String pulse_bundle = intent.getExtras().getString("pulse-bundle");
 
         Content c_notif;
+        SimpleNotification s_notif;
         Poll p_notif;
         Coupon coup_notif;
         CustomJSON custom_notif;
@@ -50,6 +52,11 @@ public abstract class BaseIntentService extends IntentService {
             case "content-notification" :
                 c_notif = intent.getParcelableExtra("content");
                 listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "simple-notification" :
+                s_notif = intent.getParcelableExtra("content");
+                listener.getSimpleNotification(intent, s_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "poll-notification" :

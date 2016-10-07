@@ -39,7 +39,7 @@ public class Recipe extends Resource {
     @SerializedName("reaction_plugin_id")
     String reaction_plugin_id;
     @Relationship("reaction_bundle")
-    Resource reaction_bundle;
+    ReactionBundle reaction_bundle;
     @Relationship("reaction_action")
     ReactionAction reaction_action;
     /*@SerializedName("operation_plugin_id")
@@ -126,11 +126,11 @@ public class Recipe extends Resource {
         this.reaction_plugin_id = reaction_plugin_id;
     }
 
-    public Resource getReaction_bundle() {
+    public ReactionBundle getReaction_bundle() {
         return reaction_bundle;
     }
 
-    public void setReaction_bundle(Resource reaction_bundle) {
+    public void setReaction_bundle(ReactionBundle reaction_bundle) {
         this.reaction_bundle = reaction_bundle;
     }
 

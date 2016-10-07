@@ -19,6 +19,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Reactions.CoreReaction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearUtils;
@@ -35,6 +36,7 @@ public class ContentReaction extends CoreReaction {
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentReaction";
     public static final String PREFS_SUFFIX = "NearContentNot";
+    private static final String SIMPLE_NOTIFICATION_PLUGIN_NAME = "simple-notification";
     private List<Content> contentList;
 
     public ContentReaction(Context context, NearNotifier nearNotifier) {
@@ -47,10 +49,10 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+    public void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch (reaction_action){
             case SHOW_CONTENT_ACTION_NAME:
-                showContent(reaction_bundle, recipe);
+                showContent(reaction_bundle.getId(), recipe);
                 break;
         }
     }
@@ -106,9 +108,9 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, String bundleId) {
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundleId) {
         // TODO not tested
-        requestSingleReaction(bundleId, new JsonHttpResponseHandler(){
+        requestSingleReaction(bundleId.getId(), new JsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
@@ -219,4 +221,7 @@ public class ContentReaction extends CoreReaction {
         supportedActions.add(SHOW_CONTENT_ACTION_NAME);
     }
 
+    public String getSimpleNotificationPluginName() {
+        return SIMPLE_NOTIFICATION_PLUGIN_NAME;
+    }
 }

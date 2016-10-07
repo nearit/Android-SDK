@@ -86,8 +86,8 @@ public class RecipesManager {
         morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
     }
 
-    public void addReaction(String plugin, Reaction reaction){
-        reactions.put(plugin, reaction);
+    public void addReaction(Reaction reaction){
+        reactions.put(reaction.getPluginName(), reaction);
     }
 
     /**
@@ -218,6 +218,7 @@ public class RecipesManager {
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return;
         for (Recipe recipe : recipes){
+            // TODO check for null pulse bundle
              if ( recipe.getPulse_plugin_id().equals(pulse_plugin) &&
                   recipe.getPulse_action().getId().equals(pulse_action) &&
                   recipe.getPulse_bundle().getId().equals(pulse_bundle) ) {
@@ -264,7 +265,7 @@ public class RecipesManager {
                     ULog.d(TAG, recipe.toString());
                     String reactionPluginName = recipe.getReaction_plugin_id();
                     Reaction reaction = reactions.get(reactionPluginName);
-                    reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle().getId());
+                    reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle());
                 }
 
                 @Override
