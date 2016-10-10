@@ -62,4 +62,9 @@ public class BeaconNode extends Node {
         return region;
     }
 
+    public static boolean isBeacon(Node node) {
+        return node instanceof BeaconNode &&
+                ((BeaconNode) node).getMinor() != null &&
+                ((BeaconNode) node).getMajor() != null;
+    }
 }
