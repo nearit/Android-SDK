@@ -303,10 +303,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         mApplication.sendBroadcast(intent);
     }
 
-    public void notifyOnRangeBeacon(Beacon beacon, String eventActionSuffix) {
-        // todo
-    }
-
     @Override
     public void didExitRegion(Region region) {
         String msg = "exit region: " + region.toString();

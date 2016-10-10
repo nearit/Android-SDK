@@ -65,7 +65,6 @@ public class RegionIntentService extends BaseIntentService {
             e.printStackTrace();
         }
 
-        // TODO add constant string for intent field for notification title
         // sends system notification
         NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notificationTitle, notificationBody, targetIntent, NOTIFICATION_ID);
 

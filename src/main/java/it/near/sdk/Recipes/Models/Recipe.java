@@ -199,4 +199,8 @@ public class Recipe extends Resource {
         attributes.put("tracked_at", formattedDate);
         return NearUtils.toJsonAPI("trackings", attributes);
     }
+
+    public boolean isForegroundRecipe() {
+        return getPulse_action().isForeground();
+    }
 }

@@ -66,8 +66,6 @@ public class NearGeofenceTransitionsIntentService extends IntentService {
 
             Log.wtf(TAG, geofenceTransitionDetails);
             // Send notification and log the transition details.
-
-            //TODO  notifiy
         } else {
             Log.e(TAG, getString(R.string.geofence_transition_invalid_type, geofenceTransition));
         }
@@ -76,7 +74,6 @@ public class NearGeofenceTransitionsIntentService extends IntentService {
     private void notifyEventOnGeofence(Geofence triggeringGeofence, int geofenceTransition) {
         Intent intent = new Intent();
         String packageName = this.getPackageName();
-        // TODO not just entry!!!
         String actionSuffix = geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ?
                 GeopolisManager.GF_ENTRY_ACTION_SUFFIX : GeopolisManager.GF_EXIT_ACTION_SUFFIX;
         intent.setAction(packageName + "." + actionSuffix);
