@@ -12,6 +12,8 @@ import org.altbeacon.beacon.BeaconManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
@@ -72,6 +74,7 @@ public class NearItManager {
     private CustomJSONReaction customJSONReaction;
     private PushManager pushManager;
     private NearSimpleLogger logger;
+    private List<ProximityListener> proximityListenerList = new ArrayList<>();
 
     private AltBeaconMonitor monitor;
 
@@ -234,6 +237,14 @@ public class NearItManager {
         public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id) {
             deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION, push_id);
         }
+
+        @Override
+        public void deliverForegroundReaction(Parcelable content, Recipe recipe) {
+            for (ProximityListener proximityListener : proximityListenerList) {
+                proximityListener.enterBeaconRange(content, recipe);
+            }
+
+        }
     };
 
 
@@ -311,15 +322,21 @@ public class NearItManager {
     }
 
     public void addProximityListener(ProximityListener proximityListener){
-        // TODO implementation
+        synchronized (proximityListenerList) {
+            proximityListenerList.add(proximityListener);
+        }
     }
 
     public void removeProximityListener(ProximityListener proximityListener) {
-        // TODO implmentation
+        synchronized (proximityListenerList){
+            proximityListenerList.remove(proximityListener);
+        }
     }
 
     public void removeAllProximityListener(){
-        // TODO implementation
+        synchronized (proximityListenerList) {
+            proximityListenerList.clear();
+        }
     }
 
 }
