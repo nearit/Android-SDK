@@ -52,7 +52,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate()");
-        // loadGeofenceList();
     }
 
     @Override
@@ -133,20 +132,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     }
 
     /**
-     *
-     */
-    private void loadGeofenceList() {
-        Gson gson = new Gson();
-        Type type = new TypeToken<ArrayList<GeoFenceNode>>(){}.getType();
-        SharedPreferences sp = getSharedPreferences(getSharedPrefName(this), 0);
-        String json = sp.getString(GEO_LIST, "");
-        if (!json.equals("")){
-            mNearGeoList = gson.fromJson(json, type);
-        }
-
-    }
-
-    /**
      * Set the geofence to monitor. Filters the geofence to only add the new ones and to
      * remove the geofences it has no longer to monitor. Persists the new ids.
      * @param geoFenceNodes
@@ -218,13 +203,13 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         return ids;
     }
 
-
     /**
      * Stop geofencing on request ids.
      * @param idsToremove
      */
     public void stopGeofencing(List<String> idsToremove){
         if (idsToremove == null || idsToremove.size() == 0) return;
+        if (!mGoogleApiClient.isConnected()) return;
 
         LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, idsToremove)
                 .setResultCallback(this);

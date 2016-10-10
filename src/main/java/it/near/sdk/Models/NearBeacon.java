@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import it.near.sdk.MorpheusNear.Resource;
 
 /**
- * NearBeacon model for ranging use.
  * @author cattaneostefano
  */
 public class NearBeacon extends Resource {

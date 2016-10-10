@@ -29,7 +29,6 @@ public class BeaconDynamicData {
 
     private ArrayList<Integer> proximityValues;
     private double average;
-    // private NearBeacon beaconConfig;
     private BeaconNode beaconNode;
 
     private int currentProximity = 0;

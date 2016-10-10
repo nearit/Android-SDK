@@ -41,7 +41,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private static final String TAG = "AltBeaconMonitor";
     private static final float DEFAULT_THRESHOLD = 0.5f;
-    private static final String INSIDE_STATE = "inside_state";
     private static final long BACKGROUND_BETWEEN_SCAN_PERIODS = 30000;
     private static final long BACKGROUND_SCAN_PERIOD = 1500;
     private static final long FOREGROUND_SCAN_PERIOD = 3000;
@@ -49,14 +48,8 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private final BeaconManager beaconManager;
     private final NodesManager nodesManager;
-    private BackgroundPowerSaver backgroundPowerSaver;
     private Application mApplication;
     private RegionBootstrap regionBootstrap;
-    private List<Region> regionsToRange = new ArrayList<>();
-    private List<Region> regionsImIn = new ArrayList<>();
-    private BootstrapNotifier outerNotifier;
-    private float threshold = DEFAULT_THRESHOLD;
-    private boolean areWeInside;
     private String prefsNameSuffix = "AltMonitor";
     private SharedPreferences sp;
     private List<Region> regions;
@@ -82,31 +75,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         sp = application.getSharedPreferences(PREFS_NAME, 0);
 
     }
-
-
-    /*public void setUpMonitor(List<Node> nodes){
-        // resetMonitoring();
-
-        List<Region> regionsToMonitor = filterBeaconRegions(nodes);
-        if (regionsToMonitor == null || regionsToMonitor.size() == 0) return;
-
-        if (GeopolisManager.isRadarStarted(mApplication)){
-            startRadar(regionsToMonitor);
-        }
-    }*/
-
-    /*private void startRadar(List<Region> regionsToMonitor) {
-        this.regions = regionsToMonitor;
-        beaconManager.setBackgroundBetweenScanPeriod(BACKGROUND_BETWEEN_SCAN_PERIODS);
-        beaconManager.setBackgroundScanPeriod(BACKGROUND_SCAN_PERIOD);
-        beaconManager.setForegroundScanPeriod(FOREGROUND_SCAN_PERIOD);
-        BeaconManager.setRegionExitPeriod(REGION_EXIT_PERIOD);
-        beaconManager.setBackgroundMode(true);
-
-        if (GeopolisManager.isRadarStarted(mApplication)){
-            startRadar();
-        }
-    }*/
 
 
     private void startRadar() {

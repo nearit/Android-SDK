@@ -28,7 +28,6 @@ import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
 import it.near.sdk.Geopolis.Beacons.BeaconNode;
 import it.near.sdk.Geopolis.GeoFence.GeoFenceMonitor;
 import it.near.sdk.Geopolis.GeoFence.GeoFenceNode;
-import it.near.sdk.Geopolis.BeaconForest.NearBeacon;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearNetworkUtil;
@@ -85,7 +84,6 @@ public class GeopolisManager {
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
-    private List<NearBeacon> beaconList;
     private List<Region> regionList;
     private Application mApplication;
     private Morpheus morpheus;
