@@ -217,60 +217,6 @@ public class GeopolisManager {
         geofenceMonitor.stopGFRadar();
     }
 
-    private List<Node> loadNodes() throws JSONException {
-        String config = getSavedConfig();
-        if (config == null) return null;
-        JSONObject configJson = new JSONObject(config);
-        return NearUtils.parseList(morpheus, configJson, Node.class);
-    }
-
-    private String getSavedConfig(){
-        return sp.getString(GEOPOLIS_CONFIG, null);
-    }
-
-    private void saveConfir(String json){
-        editor.putString(GEOPOLIS_CONFIG, json).apply();
-    }
-
-    /**
-     * Creates a list of AltBeacon regions from Near Regions and starts the radar.
-     *
-     * @param beacons the list to convert
-     */
-    private void startRadarOnBeacons(List<NearBeacon> beacons) {
-        List<Region> regionsToMonitor = new ArrayList<>();
-        for (NearBeacon beacon : beacons){
-            String uniqueId = "Region" + Integer.toString(beacon.getMajor()) + Integer.toString(beacon.getMinor());
-            Region region = new Region(uniqueId, Identifier.parse(beacon.getUuid()),
-                    Identifier.fromInt(beacon.getMajor()), Identifier.fromInt(beacon.getMinor()));
-            regionsToMonitor.add(region);
-        }
-        regionList = regionsToMonitor;
-        // BeaconDynamicRadar radar = new BeaconDynamicRadar(getApplicationContext(), beacons, null);
-        // altBeaconMonitor.startRadar(backgroundBetweenScanPeriod, backgroundScanPeriod, regionExitPeriod, regionsToMonitor, this);
-        if (sp.getBoolean(RADAR_ON, false)){
-            // altBeaconMonitor.startRadar(regionsToMonitor, this);
-        }
-    }
-
-
-
-    /**
-     * Return the region identifier form an AltBeacon region
-     * @param region the AltBeacon region
-     * @return the region identifier of the region if such region exists in the configuration, <code>null</code> otherwise
-     */
-    private String getPulseFromRegion(Region region) {
-        // TODO this needs ot be changed
-        for (NearBeacon beacon : beaconList){
-            if (beacon.getUuid().equals(region.getId1().toString()) &&
-                    beacon.getMajor() == region.getId2().toInt() &&
-                    beacon.getMinor() == region.getId3().toInt()){
-                return beacon.getId();
-            }
-        }
-        return null;
-    }
 
     /**
      * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
