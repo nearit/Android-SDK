@@ -26,6 +26,7 @@ import java.util.Map;
 
 import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Geopolis.Node;
+import it.near.sdk.Geopolis.NodesManager;
 import it.near.sdk.Geopolis.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
@@ -47,6 +48,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private static final long REGION_EXIT_PERIOD = 30000;
 
     private final BeaconManager beaconManager;
+    private final NodesManager nodesManager;
     private BackgroundPowerSaver backgroundPowerSaver;
     private Application mApplication;
     private RegionBootstrap regionBootstrap;
@@ -60,8 +62,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private List<Region> regions;
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 
-    public AltBeaconMonitor(Application application) {
+    public AltBeaconMonitor(Application application, NodesManager nodesManager) {
         this.mApplication = application;
+        this.nodesManager = nodesManager;
         this.rangingRadars = new HashMap<>();
         this.regions = new ArrayList<>();
 
@@ -329,8 +332,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         try {
             if (i == MonitorNotifier.INSIDE){
                 // region enter
-                // todo don't add region if its a fully defined beacon
-                startRangingRegion(region);
+                if (region.getId2() != null && region.getId3() == null){
+                    startRangingRegion(region);
+                }
                 if (AppLifecycleMonitor.isApplicationInForeground()){
                     // switch to ranging mode only if we are in foreground
                     startRanging();
@@ -354,22 +358,21 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
 
     private void startRangingRegion(Region region) throws RemoteException {
-        // TODO restore a proximity listener just for ranging
-        rangingRadars.put(region, new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region), null));
+        rangingRadars.put(region, new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region)));
         beaconManager.startRangingBeaconsInRegion(region);
     }
 
-    private List<Beacon> rangingBeaconsFor(Region region) {
-        // TODO obviously fake implementation
-        List<Beacon> rangingBeacons = new ArrayList<>();
-        for (int i = 1 ; i <= 4 ; i++) {
-            rangingBeacons.add(new Beacon.Builder()
-                    .setId1(region.getId1().toString())
-                    .setId2(region.getId2().toString())
-                    .setId3(String.valueOf(i))
-                    .build());
+    private List<BeaconNode> rangingBeaconsFor(Region region) {
+        List<BeaconNode> nodes = new ArrayList<>();
+        Node regionNode = nodesManager.nodeFromId(region.getUniqueId());
+        if (regionNode == null || regionNode.getChildren() == null) return nodes;
+
+        for (Node node : regionNode.getChildren()) {
+            if (BeaconNode.isBeacon(node)){
+                nodes.add((BeaconNode) node);
+            }
         }
-        return rangingBeacons;
+        return nodes;
     }
 
     private void stopRangingRegion(Region region) throws RemoteException {

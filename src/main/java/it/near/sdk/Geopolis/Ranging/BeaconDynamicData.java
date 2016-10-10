@@ -7,11 +7,16 @@ import org.altbeacon.beacon.Beacon;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import it.near.sdk.Geopolis.Beacons.BeaconNode;
+import it.near.sdk.Geopolis.GeopolisManager;
+import it.near.sdk.Utils.ULog;
 
 /**
  * @author cattaneostefano
  */
-public class BeaconDynamicData implements Comparable<BeaconDynamicData> {
+public class BeaconDynamicData {
 
     public static final int INDETERMINED = 0;
     public static final int IMMEDIATE = 1;
@@ -19,13 +24,13 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData> {
     public static final int FAR = 3;
     public static final String NEW_PROXIMITY_EVENT = "new_proximity_event";
     public static final String PROXIMITY = "proximity";
+    private static final String TAG = "BeaconDynamicData";
     private final Context mContext;
-    private final ProximityListener proximityListener;
 
     private ArrayList<Integer> proximityValues;
     private double average;
     // private NearBeacon beaconConfig;
-    private Beacon altBeacon;
+    private BeaconNode beaconNode;
 
     private int currentProximity = 0;
 
@@ -34,30 +39,25 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData> {
     }
 
     public void setCurrentProximity(int newProximity) {
-        if (currentProximity != newProximity){
-            notifiyEvent(newProximity);
-            if (currentProximity == INDETERMINED || newProximity < currentProximity){
-                proximityListener.enterBeaconRange(getAltBeacon(), newProximity);
-            }
+        if (currentProximity == INDETERMINED || newProximity != currentProximity){
+            notifiyEvent(getBeaconNode(), newProximity);
         }
-        /*if (currentProximity < newProximity) {
-            notifiyEvent(newProximity);
-        }*/
         currentProximity = newProximity;
     }
 
-    private void notifiyEvent(int newProximity) {
-        // TODO notifiy, track and trigger
-        // Console.writeLine("----------- NUOVO STATO: " + newProximity);
-        Intent intent = new Intent();
-        intent.setAction(NEW_PROXIMITY_EVENT);
-        intent.putExtra(PROXIMITY, newProximity);
+    private void notifiyEvent(BeaconNode beaconNode, int newProximity) {
+        ULog.wtf(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.getIdentifier());
+        Intent intent  = new Intent();
+        String packageName = mContext.getPackageName();
+        intent.setAction(packageName + "." + getActionFrom(newProximity));
+        intent.putExtra(GeopolisManager.NODE_ID, beaconNode.getId());
         mContext.sendBroadcast(intent);
+
     }
 
-    public BeaconDynamicData(Context context, ProximityListener proximityListener) {
+
+    public BeaconDynamicData(Context context) {
         mContext = context;
-        this.proximityListener = proximityListener;
         proximityValues = new ArrayList<>();
     }
 
@@ -70,12 +70,12 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData> {
     }
 
 
-    public Beacon getAltBeacon() {
-        return altBeacon;
+    public BeaconNode getBeaconNode() {
+        return beaconNode;
     }
 
-    public void setAltBeacon(Beacon altBeacon) {
-        this.altBeacon = altBeacon;
+    public void setBeaconNode(BeaconNode beaconNode) {
+        this.beaconNode = beaconNode;
     }
 
     public void initializeCycleData() {
@@ -141,17 +141,6 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData> {
     }
 
 
-    @Override
-    public int compareTo(BeaconDynamicData that) {
-        double diff = this.getAverage() - that.getAverage();
-
-        if (diff<0)
-            return -1;
-        else if (diff>0)
-            return 1;
-        else
-            return 0;
-    }
 
     public static int distanceToProximity(double distance) {
         if (distance<=0)
@@ -172,6 +161,18 @@ public class BeaconDynamicData implements Comparable<BeaconDynamicData> {
 
         return INDETERMINED;
 
+    }
+
+    private String getActionFrom(int newProximity) {
+        switch (newProximity) {
+            case FAR:
+                return GeopolisManager.GF_RANGE_FAR_SUFFIX;
+            case NEAR:
+                return GeopolisManager.GF_RANGE_NEAR_SUFFIX;
+            case IMMEDIATE:
+                return GeopolisManager.GF_RANGE_IMMEDIATE_SUFFIX;
+        }
+        return null;
     }
 
 

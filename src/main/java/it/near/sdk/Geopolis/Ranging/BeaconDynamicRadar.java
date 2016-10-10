@@ -7,6 +7,7 @@ import org.altbeacon.beacon.Beacon;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.near.sdk.Geopolis.Beacons.BeaconNode;
 import it.near.sdk.Models.NearBeacon;
 import it.near.sdk.Utils.ULog;
 
@@ -18,16 +19,13 @@ import it.near.sdk.Utils.ULog;
 public class BeaconDynamicRadar {
 
     private static final String TAG = "BeaconDynamicRadar";
-
     private List<BeaconDynamicData> beaconsDistances;
     private BeaconDynamicData currentDynamicBeacon;
     private final double minDifference = 0.5;
     private Context context;
-    private ProximityListener proximityListener;
 
-    public BeaconDynamicRadar(Context context, List<Beacon> beacons, ProximityListener proximityListener){
+    public BeaconDynamicRadar(Context context, List<BeaconNode> beacons){
         this.context = context;
-        this.proximityListener = proximityListener;
         beaconsDistances = new ArrayList<>();
 
         if (beacons!= null) {
@@ -39,11 +37,11 @@ public class BeaconDynamicRadar {
      * For every beacon create beacon dynamic data
      * @param beacons
      */
-    public void initBeaconDynamicData(List<Beacon> beacons){
+    public void initBeaconDynamicData(List<BeaconNode> beacons){
         // for every beacon, create a BeaconDynamicData
-        for (Beacon beacon : beacons){
-            BeaconDynamicData dynData = new BeaconDynamicData(context, proximityListener);
-            dynData.setAltBeacon(beacon);
+        for (BeaconNode beacon : beacons){
+            BeaconDynamicData dynData = new BeaconDynamicData(context);
+            dynData.setBeaconNode(beacon);
             beaconsDistances.add(dynData);
         }
     }
@@ -60,7 +58,6 @@ public class BeaconDynamicRadar {
             BeaconDynamicData dynBeacon = findDynamicBeacon(beacon);
 
             if (dynBeacon!=null){
-                dynBeacon.setAltBeacon(beacon);
                 dynBeacon.saveDistance(beacon.getDistance());
             }
         }
@@ -137,9 +134,9 @@ public class BeaconDynamicRadar {
 
     BeaconDynamicData findDynamicBeacon(Beacon _beacon) {
         for (BeaconDynamicData data : beaconsDistances) {
-            if (_beacon.getId2().toInt() == data.getAltBeacon().getId2().toInt()
-                    && _beacon.getId3().toInt() == data.getAltBeacon().getId3().toInt()
-                    && _beacon.getId1().toString().equals(data.getAltBeacon().getId1().toString()))
+            if (_beacon.getId2().toInt() == data.getBeaconNode().getMajor()
+                    && _beacon.getId3().toInt() == data.getBeaconNode().getMinor()
+                    && _beacon.getId1().toString().equals(data.getBeaconNode().getProximityUUID()))
                 return data;
         }
         return null;

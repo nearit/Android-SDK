@@ -33,9 +33,9 @@ import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.Geopolis.GeoFence.GeoFenceSystemEventsReceiver;
+import it.near.sdk.Geopolis.Ranging.ProximityListener;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.Reactions.Event;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Trackings.Events;
 import it.near.sdk.Utils.NearUtils;
@@ -75,11 +75,13 @@ public class GeopolisManager {
     public static final String GF_EXIT_ACTION_SUFFIX = "REGION_EXIT";
     public static final String BT_ENTRY_ACTION_SUFFIX = "BT_REGION_ENTRY";
     public static final String BT_EXIT_ACTION_SUFFIX = "BT_REGION_EXIT";
+    public static final String GF_RANGE_FAR_SUFFIX = "RANGE_FAR";
+    public static final String GF_RANGE_NEAR_SUFFIX = "RANGE_NEAR";
+    public static final String GF_RANGE_IMMEDIATE_SUFFIX = "RANGE_IMMEDIATE";
     public static final String NODE_ID = "identifier";
     public static final String RESET_MONITOR_ACTION_SUFFIX = "RESET_SCAN";
 
     private final RecipesManager recipesManager;
-    private final String PREFS_NAME;
     private final SharedPreferences sp;
     private final SharedPreferences.Editor editor;
 
@@ -120,6 +122,9 @@ public class GeopolisManager {
         regionFilter.addAction(packageName + "." + GF_EXIT_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + BT_ENTRY_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + BT_EXIT_ACTION_SUFFIX);
+        regionFilter.addAction(packageName + "." + GF_RANGE_FAR_SUFFIX);
+        regionFilter.addAction(packageName + "." + GF_RANGE_NEAR_SUFFIX);
+        regionFilter.addAction(packageName + "." + GF_RANGE_IMMEDIATE_SUFFIX);
         mApplication.registerReceiver(regionEventsReceiver, regionFilter);
     }
 
@@ -232,10 +237,21 @@ public class GeopolisManager {
 
                     break;
                 case BT_ENTRY_ACTION_SUFFIX:
+                    if (node == null) return;
                     trackAndFirePulse(node.getIdentifier(), Events.ENTER_REGION);
                     break;
                 case BT_EXIT_ACTION_SUFFIX:
+                    if (node == null) return;
                     trackAndFirePulse(node.getIdentifier(), Events.LEAVE_REGION);
+                    break;
+                case GF_RANGE_FAR_SUFFIX:
+                    trackAndFirePulse(node.getIdentifier(), Events.RANGE_FAR);
+                    break;
+                case GF_RANGE_NEAR_SUFFIX:
+                    trackAndFirePulse(node.getIdentifier(), Events.RANGE_NEAR);
+                    break;
+                case GF_RANGE_IMMEDIATE_SUFFIX:
+                    trackAndFirePulse(node.getIdentifier(), Events.RANGE_IMMEDIATE);
                     break;
             }
         }
