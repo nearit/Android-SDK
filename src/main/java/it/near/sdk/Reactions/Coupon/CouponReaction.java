@@ -2,6 +2,7 @@ package it.near.sdk.Reactions.Coupon;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -185,6 +186,11 @@ public class CouponReaction extends CoreReaction {
                 })
         );
 */
+    }
+
+    @Override
+    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
+        return null;
     }
 
 

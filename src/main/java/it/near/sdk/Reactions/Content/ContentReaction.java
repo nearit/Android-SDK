@@ -2,6 +2,7 @@ package it.near.sdk.Reactions.Content;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -43,6 +44,7 @@ public class ContentReaction extends CoreReaction {
         super(context, nearNotifier);
     }
 
+
     @Override
     protected String getResTypeName() {
         return "contents";
@@ -57,16 +59,8 @@ public class ContentReaction extends CoreReaction {
         }
     }
 
-
-
-    private void showContent(String reaction_bundle, Recipe recipe) {
-        ULog.d(TAG, "Show content: " + reaction_bundle);
-        Content notification = getNotification(reaction_bundle);
-        if (notification == null) return;
-        nearNotifier.deliverBackgroundReaction(notification, recipe);
-    }
-
-    private Content getNotification(String reaction_bundle) {
+    @Override
+    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
         if (contentList == null) return null;
         for ( Content cn : contentList){
             if (cn.getId().equals(reaction_bundle)){

@@ -2,6 +2,7 @@ package it.near.sdk.Reactions.CustomJSON;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -113,19 +114,13 @@ public class CustomJSONReaction extends CoreReaction {
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch (reaction_action){
             case SHOW_JSON_ACTION:
-                showJSON(reaction_bundle.getId(), recipe);
+                showContent(reaction_bundle.getId(), recipe);
                 break;
         }
     }
 
-    private void showJSON(String reaction_bundle, Recipe recipe) {
-        ULog.d(TAG, "Show json:" + reaction_bundle);
-        CustomJSON customJSON = getJSONContent(reaction_bundle);
-        if (customJSON == null) return;
-        nearNotifier.deliverBackgroundReaction(customJSON, recipe);
-    }
-
-    private CustomJSON getJSONContent(String reaction_bundle) {
+    @Override
+    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
         if (jsonList == null) return null;
         for (CustomJSON json : jsonList){
             if (json.getId().equals(reaction_bundle)){

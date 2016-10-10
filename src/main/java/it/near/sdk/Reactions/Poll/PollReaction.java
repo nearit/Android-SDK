@@ -2,6 +2,7 @@ package it.near.sdk.Reactions.Poll;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -52,7 +53,7 @@ public class PollReaction extends CoreReaction {
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch(reaction_action){
             case SHOW_POLL_ACTION_NAME:
-                showPoll(reaction_bundle.getId(), recipe);
+                showContent(reaction_bundle.getId(), recipe);
                 break;
         }
     }
@@ -123,18 +124,12 @@ public class PollReaction extends CoreReaction {
         });
     }
 
-    private void showPoll(String reaction_bundle, Recipe recipe) {
-        ULog.d(TAG , "Show poll: " + reaction_bundle);
-        Poll notification = getNotification(reaction_bundle);
-        if (notification==null) return;
-        notification.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundReaction(notification, recipe);
-    }
-
-    private Poll getNotification(String reaction_bundle) {
+    @Override
+    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
         if (pollList == null) return null;
         for (Poll pn : pollList){
             if (pn.getId().equals(reaction_bundle)){
+                pn.setRecipeId(recipe.getId());
                 return pn;
             }
         }
