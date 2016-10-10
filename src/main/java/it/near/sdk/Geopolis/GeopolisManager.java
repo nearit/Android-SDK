@@ -89,21 +89,23 @@ public class GeopolisManager {
     private Morpheus morpheus;
     private AltBeaconMonitor altBeaconMonitor;
     private final GeoFenceMonitor geofenceMonitor;
+    private NodesManager nodesManager;
 
     private NearAsyncHttpClient httpClient;
-    private List<Node> nodes;
+    private List<ProximityListener> proximityListeners = new ArrayList<>();
 
     public GeopolisManager(Application application, RecipesManager recipesManager) {
         this.mApplication = application;
         this.recipesManager = recipesManager;
-        this.altBeaconMonitor = new AltBeaconMonitor(application);
+        this.nodesManager = new NodesManager(application);
+        this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
         this.geofenceMonitor = new GeoFenceMonitor(application);
-        setUpMorpheusParser();
+
         registerProximityReceiver();
         registerResetReceiver();
 
         String PACK_NAME = mApplication.getApplicationContext().getPackageName();
-        PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
+        String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
         sp = mApplication.getSharedPreferences(PREFS_NAME, 0);
         editor = sp.edit();
 
@@ -129,19 +131,7 @@ public class GeopolisManager {
     }
 
 
-    /**
-     * Set up Morpheus parser. Morpheus parses jsonApi encoded resources
-     * https://github.com/xamoom/Morpheus
-     * We didn't actually use this library due to its minSdkVersion. We instead imported its code and adapted it. And then fixed it.
-     */
-    private void setUpMorpheusParser() {
-        morpheus = new Morpheus();
-        // register your resources
 
-        morpheus.getFactory().getDeserializer().registerResourceClass("nodes", Node.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("beacon_nodes", BeaconNode.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("geofence_nodes", GeoFenceNode.class);
-    }
 
     /**
      * Refresh the configuration of the component. The list of beacons to altBeaconMonitor will be downloaded from the APIs.
@@ -163,9 +153,8 @@ public class GeopolisManager {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    saveConfir(response.toString());
 
-                    nodes = NearUtils.parseList(morpheus, response, Node.class);
+                    List<Node> nodes = nodesManager.parseAndSetNodes(response);
                     startRadarOnNodes(nodes);
                 }
 
@@ -173,14 +162,7 @@ public class GeopolisManager {
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
                     ULog.d(TAG, "Error " + statusCode);
                     // load the config
-                    if (nodes == null){
-                        try {
-                            nodes = loadNodes();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    startRadarOnNodes(nodes);
+                    startRadarOnNodes(nodesManager.getNodes());
                 }
             });
         } catch (AuthenticationException e) {
@@ -198,14 +180,7 @@ public class GeopolisManager {
     public void startRadar(){
         if (isRadarStarted(mApplication)) return;
         setRadarState(true);
-        if (nodes == null){
-            try {
-                nodes = loadNodes();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        // TODO reset geopolis on radar start?
+        List<Node> nodes = nodesManager.getNodes();
         // altBeaconMonitor.setUpMonitor(nodes);
         geofenceMonitor.setUpMonitor(GeoFenceMonitor.filterGeofence(nodes));
         geofenceMonitor.startGFRadar();
@@ -238,20 +213,21 @@ public class GeopolisManager {
             // trim the package name
             String packageName = mApplication.getPackageName();
             String action = intent.getAction().replace(packageName + ".", "");
-            Node node = nodeFromId(intent.getStringExtra(NODE_ID));
+            Node node = nodesManager.nodeFromId(intent.getStringExtra(NODE_ID));
 
-            if (node == null) return;
             switch (action){
                 case GF_ENTRY_ACTION_SUFFIX:
+                    if (node == null) return;
                     trackAndFirePulse(node.getIdentifier(), Events.ENTER_PLACE);
                     if (node.getChildren() != null){
-                        geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnEnter(nodes, node));
+                        geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnEnter(nodesManager.getNodes(), node));
                         altBeaconMonitor.addRegions(node.getChildren());
                     }
                     break;
                 case GF_EXIT_ACTION_SUFFIX:
+                    if (node == null) return;
                     trackAndFirePulse(node.getIdentifier(), Events.LEAVE_PLACE);
-                    geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnExit(nodes, node));
+                    geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnExit(nodesManager.getNodes(), node));
                     altBeaconMonitor.removeRegions(node.getChildren());
 
                     break;
@@ -282,15 +258,7 @@ public class GeopolisManager {
         public void onReceive(Context context, Intent intent) {
             ULog.wtf(TAG, "reset intent received");
             if (intent.getBooleanExtra(GeoFenceSystemEventsReceiver.LOCATION_STATUS, false)){
-                if (nodes == null) {
-                    try {
-                        nodes = loadNodes();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        return;
-                    }
-                }
-                startRadarOnNodes(nodes);
+                startRadarOnNodes(nodesManager.getNodes());
             } else {
                 altBeaconMonitor.stopRadar();
                 geofenceMonitor.stopGFRadar();
@@ -298,36 +266,6 @@ public class GeopolisManager {
 
         }
     };
-
-    private Node nodeFromId(String id) {
-        if (nodes == null) {
-            try {
-                nodes = loadNodes();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-        return findNode(nodes, id);
-    }
-
-    private Node findNode(List<Node> nodes, String id) {
-        if (nodes == null){
-            try {
-                nodes = loadNodes();
-            } catch (JSONException e) {
-                e.printStackTrace();
-                return null;
-            }
-            if (nodes == null) return null;
-        }
-        for (Node node : nodes) {
-            if (node.getId() != null && node.getId().equals(id)) return node;
-            Node foundNode = findNode(node.getChildren(), id);
-            if (foundNode != null) return foundNode;
-        }
-        return null;
-    }
 
     /**
      * Send tracking data to the Forest beacon APIs about a region enter (every beacon is a region).
