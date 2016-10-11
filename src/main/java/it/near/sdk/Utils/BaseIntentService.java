@@ -7,6 +7,7 @@ import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.CoreContentsListener;
 import it.near.sdk.Reactions.Coupon.Coupon;
 import it.near.sdk.Reactions.CustomJSON.CustomJSON;
+import it.near.sdk.Reactions.Feedback.Feedback;
 import it.near.sdk.Reactions.Poll.Poll;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
@@ -40,38 +41,38 @@ public abstract class BaseIntentService extends IntentService {
         String pulse_action = intent.getExtras().getString("pulse-action");
         String pulse_bundle = intent.getExtras().getString("pulse-bundle");
 
-        Content c_notif;
-        SimpleNotification s_notif;
-        Poll p_notif;
-        Coupon coup_notif;
-        CustomJSON custom_notif;
 
         boolean coreContent = false;
         if (reaction_plugin == null) return false;
         switch (reaction_plugin) {
             case "content-notification" :
-                c_notif = intent.getParcelableExtra("content");
+                Content c_notif = intent.getParcelableExtra("content");
                 listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "simple-notification" :
-                s_notif = intent.getParcelableExtra("content");
+                SimpleNotification s_notif = intent.getParcelableExtra("content");
                 listener.getSimpleNotification(intent, s_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "poll-notification" :
-                p_notif = intent.getParcelableExtra("content");
+                Poll p_notif = intent.getParcelableExtra("content");
                 listener.getPollNotification(intent, p_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "coupon-blaster" :
-                coup_notif = intent.getParcelableExtra("content");
+                Coupon coup_notif = intent.getParcelableExtra("content");
                 listener.getCouponNotification(intent, coup_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
             case "json-sender" :
-                custom_notif = intent.getParcelableExtra("content");
+                CustomJSON custom_notif = intent.getParcelableExtra("content");
                 listener.getCustomJSONNotification(intent, custom_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "feedbacks" :
+                Feedback f_notif = intent.getParcelableExtra("content");
+                listener.getFeedbackNotification(intent, f_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
                 coreContent = true;
                 break;
         }

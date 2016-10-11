@@ -5,6 +5,7 @@ import android.content.Intent;
 import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.Coupon.Coupon;
 import it.near.sdk.Reactions.CustomJSON.CustomJSON;
+import it.near.sdk.Reactions.Feedback.Feedback;
 import it.near.sdk.Reactions.Poll.Poll;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
@@ -19,4 +20,5 @@ public interface CoreContentsListener {
     void getCouponNotification(Intent intent, Coupon notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle);
     void getCustomJSONNotification(Intent intent, CustomJSON notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle);
     void getSimpleNotification(Intent intent, SimpleNotification s_notif, String notif_body, String reaction_plugin, String reaction_action, String pulse_plugin, String pulse_action, String pulse_bundle);
+    void getFeedbackNotification(Intent intent, Feedback s_notif, String notif_body, String reaction_plugin, String reaction_action, String pulse_plugin, String pulse_action, String pulse_bundle);
 }
