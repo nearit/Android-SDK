@@ -205,4 +205,18 @@ public class Recipe extends Resource {
     public boolean isForegroundRecipe() {
         return getPulse_action().isForeground();
     }
+
+    public boolean isScheduledNow(){
+        isDateValid();
+
+
+    }
+
+    private boolean isDateValid(){
+        HashMap<String, Object> date = (HashMap<String, Object>) scheduling.get("date");
+        if (date == null) return true;
+        String fromDate = (String) date.get("from");
+        String toDate = (String) date.get("to");
+        
+    }
 }
