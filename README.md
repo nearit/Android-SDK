@@ -119,6 +119,16 @@ nearItManager.sendEvent(new PollEvent(poll, answer);
 nearItManager.sendEvent(new PollEvent(pollId, answer, recipeId));
 ```
 
+### Give feedback ###
+
+To send a rating to a feedback
+```java
+// rating must be an integer between 0 and 5, and you can set a comment string.
+nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
+// if you don't hold the feedback object use this constructor
+nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
+```
+
 ### Enable Push Notifications ###
 
 NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
