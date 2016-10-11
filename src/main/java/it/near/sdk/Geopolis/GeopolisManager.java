@@ -75,7 +75,6 @@ public class GeopolisManager {
     public static final String GF_RANGE_NEAR_SUFFIX = "RANGE_NEAR";
     public static final String GF_RANGE_IMMEDIATE_SUFFIX = "RANGE_IMMEDIATE";
     public static final String NODE_ID = "identifier";
-    public static final String RESET_MONITOR_ACTION_SUFFIX = "RESET_SCAN";
 
     private final RecipesManager recipesManager;
     private final SharedPreferences sp;
@@ -126,7 +125,7 @@ public class GeopolisManager {
     private void registerResetReceiver() {
         IntentFilter resetFilter = new IntentFilter();
         String packageName = mApplication.getPackageName();
-        resetFilter.addAction(packageName + "." + RESET_MONITOR_ACTION_SUFFIX);
+        resetFilter.addAction(packageName + "." + GeoFenceSystemEventsReceiver.RESET_MONITOR_ACTION_SUFFIX);
         mApplication.registerReceiver(resetEventReceiver, resetFilter);
     }
 
@@ -263,6 +262,7 @@ public class GeopolisManager {
             firePulse(event, identifier);
         }
     }
+
 
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override

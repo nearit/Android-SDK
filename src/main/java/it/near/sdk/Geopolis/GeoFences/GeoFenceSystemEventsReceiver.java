@@ -9,6 +9,8 @@ import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Receiver for the BOOT_COMPLETED and PROVIDERS_CHANGED system events.
+ * It sends intent to start or stop radar
  * Created by cattaneostefano on 04/10/2016.
  */
 
@@ -16,6 +18,7 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
 
     private static final String TAG = "GeoFenceSystemEventsReceiver";
     public static final String LOCATION_STATUS = "location_status";
+    public static final String RESET_MONITOR_ACTION_SUFFIX = "RESET_SCAN";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -31,15 +34,19 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
             anyLocationProv |= locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             sendResetIntent(context, anyLocationProv);
-
         }
     }
 
-    private void sendResetIntent(Context context, boolean anyLocationProv) {
+    /**
+     * Send the reset intent to start or stop the radar.
+     * @param context
+     * @param startRadar indicates if the radar should start.
+     */
+    private void sendResetIntent(Context context, boolean startRadar) {
         Intent resetIntent = new Intent();
         String packageName = context.getPackageName();
-        resetIntent.setAction(packageName + "." + GeopolisManager.RESET_MONITOR_ACTION_SUFFIX);
-        resetIntent.putExtra(LOCATION_STATUS, anyLocationProv);
+        resetIntent.setAction(packageName + "." + RESET_MONITOR_ACTION_SUFFIX);
+        resetIntent.putExtra(LOCATION_STATUS, startRadar);
         context.sendBroadcast(resetIntent);
     }
 

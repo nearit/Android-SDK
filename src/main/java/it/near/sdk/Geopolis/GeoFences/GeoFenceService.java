@@ -31,6 +31,7 @@ import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Utils.ULog;
 
 /**
+ * Service for monitoring geofences.
  * Created by cattaneostefano on 18/07/16.
  */
 public class GeoFenceService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, ResultCallback<Status> {
