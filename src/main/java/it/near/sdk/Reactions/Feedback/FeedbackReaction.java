@@ -11,6 +11,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,40 +47,6 @@ public class FeedbackReaction extends CoreReaction {
 
     public FeedbackReaction(Context mContext, NearNotifier nearNotifier) {
         super(mContext, nearNotifier);
-    }
-
-    @Override
-    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
-        if (feedbackList == null) return null;
-        for ( Feedback fb : feedbackList){
-            if (fb.getId().equals(reaction_bundle)){
-                return fb;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public String getPrefSuffix() {
-        return PREFS_SUFFIX;
-    }
-
-    @Override
-    protected HashMap<String, Class> getModelHashMap() {
-        HashMap<String, Class> map = new HashMap<>();
-        map.put(FEEDBACKS_NOTIFICATION_RESOURCE, Feedback.class);
-        return map;
-    }
-
-    @Override
-    protected String getResTypeName() {
-        return FEEDBACKS_NOTIFICATION_RESOURCE;
-    }
-
-    @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<String>();
-        supportedActions.add(ASK_FEEDBACK_ACTION_NAME);
     }
 
     @Override
@@ -150,6 +117,7 @@ public class FeedbackReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
                 Feedback feedback = NearUtils.parseElement(morpheus, response, Feedback.class);
+                feedback.setRecipeId(recipe.getId());
                 nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
             }
 
@@ -166,8 +134,9 @@ public class FeedbackReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
-                Feedback content = NearUtils.parseElement(morpheus, response, Feedback.class);
-                nearNotifier.deliverBackgroundReaction(content, recipe);
+                Feedback feedback = NearUtils.parseElement(morpheus, response, Feedback.class);
+                feedback.setRecipeId(recipe.getId());
+                nearNotifier.deliverBackgroundReaction(feedback, recipe);
             }
 
             @Override
@@ -175,5 +144,73 @@ public class FeedbackReaction extends CoreReaction {
                 ULog.d(TAG, "Error downloading feedback:" + statusCode);
             }
         });
+    }
+
+    public void sendEvent(FeedbackEvent event) {
+        try {
+            String answerBody = event.toJsonAPI(mContext);
+            ULog.d(TAG, "Answer" + answerBody);
+            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(PLUGIN_NAME)
+                    .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
+                    .appendPath(event.getFeedbackId())
+                    .appendPath("answers").build();
+            try {
+                httpClient.nearPost(mContext, url.toString(), answerBody, new JsonHttpResponseHandler(){
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        ULog.d(TAG, "Feedback sent successfully");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                        ULog.d(TAG, "Error in sending answer: " + statusCode);
+                    }
+                });
+            } catch (AuthenticationException | UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            ULog.d(TAG, "Error: incorrect format " + e.toString());
+        }
+
+    }
+
+    @Override
+    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
+        if (feedbackList == null) return null;
+        for ( Feedback fb : feedbackList){
+            if (fb.getId().equals(reaction_bundle)){
+                fb.setRecipeId(recipe.getId());
+                return fb;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public String getPrefSuffix() {
+        return PREFS_SUFFIX;
+    }
+
+    @Override
+    protected HashMap<String, Class> getModelHashMap() {
+        HashMap<String, Class> map = new HashMap<>();
+        map.put(FEEDBACKS_NOTIFICATION_RESOURCE, Feedback.class);
+        return map;
+    }
+
+    @Override
+    protected String getResTypeName() {
+        return FEEDBACKS_NOTIFICATION_RESOURCE;
+    }
+
+    @Override
+    public void buildActions() {
+        supportedActions = new ArrayList<String>();
+        supportedActions.add(ASK_FEEDBACK_ACTION_NAME);
     }
 }

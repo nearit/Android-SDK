@@ -16,11 +16,14 @@ public class Feedback extends Resource implements Parcelable{
     @SerializedName("question")
     String question;
 
+    String recipeId;
+
     public Feedback() {
     }
 
     protected Feedback(Parcel in) {
         question = in.readString();
+        setRecipeId(in.readString());
         setId(in.readString());
     }
 
@@ -44,6 +47,14 @@ public class Feedback extends Resource implements Parcelable{
         this.question = question;
     }
 
+    public String getRecipeId() {
+        return recipeId;
+    }
+
+    public void setRecipeId(String recipeId) {
+        this.recipeId = recipeId;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -52,6 +63,7 @@ public class Feedback extends Resource implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(question);
+        dest.writeString(getRecipeId());
         dest.writeString(getId());
     }
 }

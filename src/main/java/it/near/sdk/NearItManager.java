@@ -26,6 +26,7 @@ import it.near.sdk.Reactions.Coupon.CouponListener;
 import it.near.sdk.Reactions.Coupon.CouponReaction;
 import it.near.sdk.Reactions.CustomJSON.CustomJSONReaction;
 import it.near.sdk.Reactions.Event;
+import it.near.sdk.Reactions.Feedback.FeedbackEvent;
 import it.near.sdk.Reactions.Feedback.FeedbackReaction;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
@@ -289,6 +290,9 @@ public class NearItManager {
                 return true;
             case OpenPushEvent.PLUGIN_NAME:
                 pushManager.sendEvent((OpenPushEvent) event);
+                return true;
+            case FeedbackEvent.PLUGIN_NAME:
+                feedbackReaction.sendEvent((FeedbackEvent) event);
                 return true;
         }
         return false;
