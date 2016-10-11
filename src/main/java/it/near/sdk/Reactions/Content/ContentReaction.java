@@ -37,7 +37,6 @@ public class ContentReaction extends CoreReaction {
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentReaction";
     public static final String PREFS_SUFFIX = "NearContentNot";
-    private static final String SIMPLE_NOTIFICATION_PLUGIN_NAME = "simple-notification";
     private List<Content> contentList;
 
     public ContentReaction(Context context, NearNotifier nearNotifier) {
@@ -47,7 +46,7 @@ public class ContentReaction extends CoreReaction {
 
     @Override
     protected String getResTypeName() {
-        return "contents";
+        return CONTENT_NOTIFICATION_RESOURCE;
     }
 
     @Override
@@ -215,7 +214,4 @@ public class ContentReaction extends CoreReaction {
         supportedActions.add(SHOW_CONTENT_ACTION_NAME);
     }
 
-    public String getSimpleNotificationPluginName() {
-        return SIMPLE_NOTIFICATION_PLUGIN_NAME;
-    }
 }
