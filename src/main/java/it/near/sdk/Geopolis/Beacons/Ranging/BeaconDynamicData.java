@@ -1,13 +1,10 @@
-package it.near.sdk.Geopolis.Ranging;
+package it.near.sdk.Geopolis.Beacons.Ranging;
 
 import android.content.Context;
 import android.content.Intent;
 
-import org.altbeacon.beacon.Beacon;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import it.near.sdk.Geopolis.Beacons.BeaconNode;
 import it.near.sdk.Geopolis.GeopolisManager;

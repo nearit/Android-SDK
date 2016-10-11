@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.GeoFence;
+package it.near.sdk.Geopolis.GeoFences;
 
 import android.app.IntentService;
 import android.content.Context;

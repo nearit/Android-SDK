@@ -1,24 +1,16 @@
-package it.near.sdk.Geopolis.GeoFence;
+package it.near.sdk.Geopolis.GeoFences;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.os.IBinder;
 import android.os.Parcelable;
-import android.util.Log;
 
-import com.google.android.gms.location.Geofence;
-import com.google.gson.ExclusionStrategy;
-import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.Geopolis.GeopolisManager;

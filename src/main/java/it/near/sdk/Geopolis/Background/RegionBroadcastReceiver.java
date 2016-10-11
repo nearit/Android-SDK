@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.Monitoring;
+package it.near.sdk.Geopolis.Background;
 
 import android.content.ComponentName;
 import android.content.Context;

@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.GeoFence;
+package it.near.sdk.Geopolis.GeoFences;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
