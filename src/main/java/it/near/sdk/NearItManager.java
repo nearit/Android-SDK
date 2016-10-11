@@ -18,7 +18,7 @@ import java.util.List;
 import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
-import it.near.sdk.Geopolis.Ranging.ProximityListener;
+import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
@@ -28,7 +28,6 @@ import it.near.sdk.Reactions.CustomJSON.CustomJSONReaction;
 import it.near.sdk.Reactions.Event;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -241,7 +240,7 @@ public class NearItManager {
         @Override
         public void deliverForegroundReaction(Parcelable content, Recipe recipe) {
             for (ProximityListener proximityListener : proximityListenerList) {
-                proximityListener.enterBeaconRange(content, recipe);
+                proximityListener.foregroundEvent(content, recipe);
             }
 
         }

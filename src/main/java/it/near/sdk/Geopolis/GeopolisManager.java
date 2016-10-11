@@ -10,7 +10,6 @@ import android.net.Uri;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,14 +24,12 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
-import it.near.sdk.Geopolis.Beacons.BeaconNode;
-import it.near.sdk.Geopolis.GeoFence.GeoFenceMonitor;
-import it.near.sdk.Geopolis.GeoFence.GeoFenceNode;
+import it.near.sdk.Geopolis.GeoFences.GeoFenceMonitor;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearNetworkUtil;
-import it.near.sdk.Geopolis.GeoFence.GeoFenceSystemEventsReceiver;
-import it.near.sdk.Geopolis.Ranging.ProximityListener;
+import it.near.sdk.Geopolis.GeoFences.GeoFenceSystemEventsReceiver;
+import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;

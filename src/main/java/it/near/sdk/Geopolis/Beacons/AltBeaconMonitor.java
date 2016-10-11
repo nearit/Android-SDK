@@ -14,7 +14,6 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
-import org.altbeacon.beacon.powersave.BackgroundPowerSaver;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
@@ -27,7 +26,7 @@ import java.util.Map;
 import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Geopolis.Node;
 import it.near.sdk.Geopolis.NodesManager;
-import it.near.sdk.Geopolis.Ranging.BeaconDynamicRadar;
+import it.near.sdk.Geopolis.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.ULog;

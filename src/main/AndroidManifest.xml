@@ -15,7 +15,7 @@
         android:supportsRtl="true">
 
         <!-- region messages -->
-        <service android:name=".Geopolis.Monitoring.RegionIntentService"
+        <service android:name=".Geopolis.Background.RegionIntentService"
             android:exported="false"/>
 
         <!-- GCM registration -->
@@ -35,11 +35,11 @@
             android:exported="false"/>
 
         <service
-            android:name=".Geopolis.GeoFence.GeoFenceService"
+            android:name=".Geopolis.GeoFences.GeoFenceService"
             android:exported="false" />
-        <service android:name=".Geopolis.GeoFence.NearGeofenceTransitionsIntentService"
+        <service android:name=".Geopolis.GeoFences.NearGeofenceTransitionsIntentService"
             android:exported="false" />
-        <receiver android:name=".Geopolis.GeoFence.GeoFenceSystemEventsReceiver">
+        <receiver android:name=".Geopolis.GeoFences.GeoFenceSystemEventsReceiver">
             <intent-filter>
                 <action android:name="android.location.PROVIDERS_CHANGED"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
