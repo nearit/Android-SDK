@@ -46,12 +46,36 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 
 ```
 
+When you want to start the radar for geofences and beacons call this method
+
+```java
+    // tipically call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
+    nearItManager.startRadar()
+    // to stop call this method nearItManager.stopRadar()
+```
+
 ## Advanced topics ##
 
 * Region scanning is set to a scan every 60 seconds when outside your beacons range. As soon as beacons are picked up, it switches to 20 seconds.
 * You can set the minimum parameter for determine the distance upon which the SDK must detect beacons recipes with the method *setThreshold(floatParam)* or the *NearItManager*. The default value is *0.5f*
-* The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_COARSE_LOCATION permissions at runtime.
+* The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
 * You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of the *NearItManager*
+
+## Foreground updates ##
+
+To receive foreground contents (e.g. ranging recipes) set a proximity listener with the method
+```java
+{
+    ...
+    nearItManager.addProximityListener(this);
+    ...
+}
+
+@Override
+public void foregroundEvent(Parcelable content, Recipe recipe) {
+    Toast.makeText(this, "range event: ", Toast.LENGTH_SHORT).show();
+}   
+```
 
 ### Built-in region background receivers ###
 
