@@ -30,6 +30,8 @@ public class Recipe extends Resource {
     HashMap<String, Object> notification;
     @SerializedName("labels")
     HashMap<String, Object> labels;
+    @SerializedName("scheduling")
+    HashMap<String, Object> scheduling;
     @SerializedName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
