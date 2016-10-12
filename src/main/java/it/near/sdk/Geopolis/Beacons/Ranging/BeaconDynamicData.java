@@ -92,10 +92,12 @@ public class BeaconDynamicData {
         }
 
         computeProximity();
+
+        setCurrentProximity(distanceToProximity(_distance));
     }
 
     private void computeProximity() {
-        int numberOfValid = 0;
+        /*int numberOfValid = 0;
         for (Integer proximityValue : proximityValues) {
             if (proximityValue != INDETERMINED)
                 numberOfValid++;
@@ -110,7 +112,8 @@ public class BeaconDynamicData {
             } else if (scoreboard.get(IMMEDIATE) >= 3){
                 setCurrentProximity(IMMEDIATE);
             }
-        }
+        }*/
+
     }
 
     private HashMap<Integer, Integer> buildScoreboard(ArrayList<Integer> proximityValues) {
