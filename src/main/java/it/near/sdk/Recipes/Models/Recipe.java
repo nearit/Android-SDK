@@ -9,9 +9,14 @@ import com.google.gson.annotations.SerializedName;
 import org.json.JSONException;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
@@ -55,6 +60,8 @@ public class Recipe extends Resource {
     private static final String TRACKINGS_PATH = "trackings";
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";
+    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+    private SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
 
     public String getName() {
         return name;
@@ -207,7 +214,9 @@ public class Recipe extends Resource {
     }
 
     public boolean isScheduledNow(){
-        isDateValid();
+        return isDateValid() &&
+                isTimetableValid() &&
+                isDaysValid();
 
 
     }
@@ -215,8 +224,71 @@ public class Recipe extends Resource {
     private boolean isDateValid(){
         HashMap<String, Object> date = (HashMap<String, Object>) scheduling.get("date");
         if (date == null) return true;
-        String fromDate = (String) date.get("from");
-        String toDate = (String) date.get("to");
-        
+        String fromDateString = (String) date.get("from");
+        String toDateString = (String) date.get("to");
+        boolean valid = true;
+        try {
+            Calendar now = Calendar.getInstance();
+
+            if (fromDateString != null) {
+                Date fromDate = dateFormatter.parse(fromDateString);
+                Calendar fromCalendarDate = Calendar.getInstance();
+                fromCalendarDate.setTimeInMillis(fromDate.getTime());
+                valid &= fromCalendarDate.before(now);
+            }
+            if (toDateString != null) {
+                Date toDate = dateFormatter.parse(toDateString);
+                Calendar toCalendarDate = Calendar.getInstance();
+                toCalendarDate.setTimeInMillis(toDate.getTime());
+                valid &= toCalendarDate.after(now);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return valid;
+    }
+
+    private boolean isTimetableValid() {
+        Map<String, Object> timetable = (HashMap<String, Object>) scheduling.get("timetable");
+        if (timetable == null) return true;
+        String fromHour = (String) timetable.get("from");
+        String toHour = (String) timetable.get("to");
+        boolean valid = true;
+        try {
+            Calendar now = Calendar.getInstance();
+            if (fromHour != null) {
+                Date fromHourDate = timeFormatter.parse(fromHour);
+                Calendar fromHourCalendar = Calendar.getInstance();
+                fromHourCalendar.setTime(fromHourDate);
+                valid &= fromHourCalendar.before(now);
+            }
+            if (toHour != null){
+                Date toHourDate = timeFormatter.parse(toHour);
+                Calendar toHourCalendar = Calendar.getInstance();
+                toHourCalendar.setTime(toHourDate);
+                valid &= toHourCalendar.after(now);
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return valid;
+    }
+
+    private boolean isDaysValid() {
+        List<String> days = (List<String>) scheduling.get("days");
+        if (days == null) return true;
+        String todaysDate = getTodaysDate();
+
+        return days.contains(todaysDate);
+    }
+
+    private String getTodaysDate() {
+        Calendar calendar = Calendar.getInstance();
+        Date date = calendar.getTime();
+        // 3 letter name form of the day
+        return new SimpleDateFormat("EE", Locale.ENGLISH).format(date.getTime());
+
     }
 }
