@@ -61,65 +61,6 @@ public class BeaconDynamicRadar {
                 dynBeacon.saveDistance(beacon.getDistance());
             }
         }
-
-        // select only beacon for which we stand in their proximity
-        /*ArrayList<BeaconDynamicData> inRangeBeacons = filterInRange();
-
-        BeaconDynamicData closestBeacon = null;
-        Collections.sort(inRangeBeacons);
-        if (inRangeBeacons.size() > 0){
-            closestBeacon = inRangeBeacons.get(0);
-        }
-
-        if ( closestBeacon==null && currentDynamicBeacon != null) {
-            // leaveBeacon(currentDynamicBeacon.getBeaconConfig());
-            currentDynamicBeacon = null;
-        } else if (currentDynamicBeacon != null
-                && closestBeacon != null
-                && closestBeacon.getAltBeacon().getId3().toInt() != currentDynamicBeacon.getAltBeacon().getId3().toInt()) {
-            double actualDifference = currentDynamicBeacon.getAverage() - closestBeacon.getAverage();
-            if (actualDifference > minDifference) {
-                // leaveBeacon(currentDynamicBeacon.getBeaconConfig());
-                currentDynamicBeacon = null;
-            }
-        }
-
-        if (inRangeBeacons.size() > 0 && currentDynamicBeacon == null) {
-            currentDynamicBeacon = closestBeacon;
-            // enterBeacon(currentDynamicBeacon.getBeaconConfig());
-        }
-
-        logInRangeBeacons(inRangeBeacons);*/
-
-    }
-
-    private void logInRangeBeacons(ArrayList<BeaconDynamicData> inRangeBeacons) {
-        for (BeaconDynamicData inRangeBeacon : inRangeBeacons) {
-            ULog.d(TAG, inRangeBeacon.toString());
-        }
-    }
-
-    /**
-     * Filter beacons based on us being inside their proximity
-     * @return
-     */
-    private ArrayList<BeaconDynamicData> filterInRange() {
-        ArrayList<BeaconDynamicData> inRangeBeacons = new ArrayList<>();
-        for (BeaconDynamicData dynBeacon : beaconsDistances) {
-            if (dynBeacon.hasMinumumData()) {
-
-                int avgProximityValue = NearBeacon.distanceToProximity(dynBeacon.getAverage()); // trasformo la distanza media in metri in proximity
-                // int requestedProximityValue = Integer.valueOf(dynBeacon.getBeaconConfig().getRange());
-                dynBeacon.setCurrentProximity(avgProximityValue);
-                if (dynBeacon.getAverage() <= 2){
-                    inRangeBeacons.add(dynBeacon);
-                }
-
-//                if ( avgProximityValue <= requestedProximityValue )
-//                    inRangeBeacons.add(dynBeacon);
-            }
-        }
-        return inRangeBeacons;
     }
 
 
