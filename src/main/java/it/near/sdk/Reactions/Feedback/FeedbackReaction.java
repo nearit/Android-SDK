@@ -20,8 +20,6 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
-import it.near.sdk.Reactions.Content.Content;
-import it.near.sdk.Reactions.Content.Image;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -40,6 +38,7 @@ public class FeedbackReaction extends CoreReaction {
     private static final String ASK_FEEDBACK_ACTION_NAME = "ask_feedback";
     public static final String FEEDBACKS_NOTIFICATION_RESOURCE =  "feedbacks";
     private static final String TAG = "FeedbackReaction";
+    public static final String ANSWERS_RESOURCE = "answers";
 
     private List<Feedback> feedbackList;
 
@@ -154,7 +153,7 @@ public class FeedbackReaction extends CoreReaction {
                     .appendPath(PLUGIN_NAME)
                     .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
                     .appendPath(event.getFeedbackId())
-                    .appendPath("answers").build();
+                    .appendPath(ANSWERS_RESOURCE).build();
             try {
                 httpClient.nearPost(mContext, url.toString(), answerBody, new JsonHttpResponseHandler(){
                     @Override
