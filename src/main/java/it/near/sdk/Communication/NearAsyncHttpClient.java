@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Looper;
 
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.SyncHttpClient;
@@ -66,7 +65,7 @@ public class NearAsyncHttpClient {
                 responseHandler);
     }
 
-    public RequestHandle nearMock(Context context, String url, JsonHttpResponseHandler responseHandlerInterface, int mockResId){
+    public RequestHandle nearMock(Context context, String url, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId){
         String mockedString = context.getApplicationContext().getResources().getString(mockResId);
         JSONObject mockedResponse = null;
         try {
@@ -78,7 +77,7 @@ public class NearAsyncHttpClient {
         return null;
     }
 
-    public RequestHandle nearMock(Context context, String url, String requestBody, JsonHttpResponseHandler responseHandlerInterface, int mockResId){
+    public RequestHandle nearMock(Context context, String url, String requestBody, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId){
         return nearMock(context, url, responseHandlerInterface, mockResId);
     }
 

@@ -7,7 +7,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +21,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Reactions.Reaction;
@@ -142,7 +142,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), requestBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Got recipes: " + response.toString());
@@ -152,7 +152,7 @@ public class RecipesManager {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
                         recipes = loadChachedList();
@@ -256,7 +256,7 @@ public class RecipesManager {
                 .build();
 
         try {
-            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -269,7 +269,7 @@ public class RecipesManager {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String stringResponse, Throwable throwable) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "single recipe failed");
                 }
             });
@@ -299,11 +299,12 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), evaluateBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
                 }
+
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
@@ -316,7 +317,7 @@ public class RecipesManager {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject jsonObject) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error in handling on failure: " + statusCode);
                 }
             });

@@ -8,8 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +21,7 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
 import it.near.sdk.Geopolis.GeoFences.GeoFenceMonitor;
 import it.near.sdk.Communication.Constants;
@@ -143,12 +142,12 @@ public class GeopolisManager {
                     .appendPath(BEACON_FOREST_BEACONS).build();
         url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
-                .appendPath("nodes")
+                .appendPath("nodesd")
                 .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
                 .appendQueryParameter("include", "children.*.children")
                 .build();
         try {
-            httpClient.nearGet(mApplication, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
@@ -158,7 +157,7 @@ public class GeopolisManager {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error " + statusCode);
                     // load the config
                     startRadarOnNodes(nodesManager.getNodes());

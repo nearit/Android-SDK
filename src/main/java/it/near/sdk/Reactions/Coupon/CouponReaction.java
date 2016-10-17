@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Parcelable;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
@@ -18,6 +17,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Content.Image;
 import it.near.sdk.Reactions.CoreReaction;
@@ -86,7 +86,7 @@ public class CouponReaction extends CoreReaction {
 
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
-        requestSingleResource(bundle.getId(), new JsonHttpResponseHandler(){
+        requestSingleResource(bundle.getId(), new NearJsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
@@ -96,7 +96,7 @@ public class CouponReaction extends CoreReaction {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 ULog.d(TAG, "Error in downloading push content: " + statusCode);
             }
         });
@@ -104,7 +104,7 @@ public class CouponReaction extends CoreReaction {
 
     @Override
     public void handleEvaluatedReaction(final Recipe recipe, String bundle_id) {
-        requestSingleResource(bundle_id, new JsonHttpResponseHandler(){
+        requestSingleResource(bundle_id, new NearJsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
@@ -114,7 +114,7 @@ public class CouponReaction extends CoreReaction {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 ULog.d(TAG, "Error in downloading content: " + statusCode);
             }
         });
@@ -151,7 +151,7 @@ public class CouponReaction extends CoreReaction {
         String output = url.toString();
         ULog.d(TAG, output);
         try {
-            httpClient.nearGet(context, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(context, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Copuns downloaded: " + response.toString());
@@ -161,7 +161,7 @@ public class CouponReaction extends CoreReaction {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     listener.onCouponDownloadError("Download error");
                 }
             });
