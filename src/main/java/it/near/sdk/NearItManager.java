@@ -42,14 +42,13 @@ import it.near.sdk.Utils.ULog;
 
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
- * This class starts all the plugins manually and initialize global values like the apiKey and the push senderId.
+ * This class starts all the plugins manually and initialize global values like the apiKey.
  * To be able to use beacon technology, make sure to ask for the proper permission in the manifest or runtime, depending on your targeted API.
  *
  * <pre>
  * {@code
  * // inside the custom Application onCreate method
  * nearItManager = new NearItManager(this, getResources().getString(R.string.api_key));
- * nearItManager.setSenderId(R.string.sender_id);
  * nearItManager.setNotificationImage(R.drawable.beacon_notif_icon);
  * }
  * </pre>
@@ -59,11 +58,8 @@ import it.near.sdk.Utils.ULog;
 public class NearItManager {
 
     private static final String TAG = "NearItManager";
-    private static final String ENTER = "enter";
-    private static final String LEAVE = "leave";
     private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
     private static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
-    private static String APP_PACKAGE_NAME;
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
