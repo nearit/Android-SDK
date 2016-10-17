@@ -77,21 +77,6 @@ public class PollReaction extends CoreReaction {
                 }
 
         );
-        /*GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
-                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error downloading push content: " + error.toString());
-                    }
-                })
-        );*/
     }
 
     public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
@@ -164,26 +149,6 @@ public class PollReaction extends CoreReaction {
         } catch (AuthenticationException e) {
             e.printStackTrace();
         }
-        /*GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        pollList = NearUtils.parseList(morpheus, response, Poll.class);
-                        persistList(TAG, pollList);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error: " + error.toString());
-                        try {
-                            pollList = loadList();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                })
-        );*/
     }
 
     private ArrayList<Poll> loadList() throws JSONException {
@@ -240,18 +205,6 @@ public class PollReaction extends CoreReaction {
             } catch (AuthenticationException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            /*GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    ULog.d(TAG, "Answer sent successfully");
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    ULog.d(TAG, "Error in sending answer: " + error.toString());
-                }
-            }));*/
-
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Error: incorrect format " + e.toString());

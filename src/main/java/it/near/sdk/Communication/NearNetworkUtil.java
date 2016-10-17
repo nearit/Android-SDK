@@ -48,21 +48,6 @@ public class NearNetworkUtil {
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(
-                new CustomJsonRequest(context, Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "Tracking data sent.");
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Tracking data not sent. Error: " + error.toString());
-                    }
-                })
-        );
-*/
     }
 
     /**

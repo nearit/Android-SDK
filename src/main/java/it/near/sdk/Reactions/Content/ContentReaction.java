@@ -117,25 +117,6 @@ public class ContentReaction extends CoreReaction {
                 ULog.d(TAG, "Error downloading push content: " + statusCode);
             }
         });
-
-/*
-        GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        Content content = NearUtils.parseElement(morpheus, response, Content.class);
-                        formatLinks(content);
-                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error downloading push content: " + error.toString());
-                    }
-                })
-        );
-*/
     }
 
     @Override

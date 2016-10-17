@@ -128,40 +128,6 @@ public class NearItUserProfile {
             listener.onProfileCreationError("error: impossible to make a request" );
         }
 
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
-                context,
-                Request.Method.POST,
-                url.toString(),
-                requestBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "got profile: " + response.toString());
-
-                        String profileId = null;
-                        try {
-                            profileId = response.getJSONObject("data").getString("id");
-                            GlobalConfig.getInstance(context).setProfileId(profileId);
-                            setProfilePluginProperty(context, profileId);
-                            GlobalState.getInstance(context).getRecipesManager().refreshConfig();
-                            listener.onProfileCreated(true, profileId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            listener.onProfileCreationError("unknown server format");
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "profile erro: " + error.toString());
-                        listener.onProfileCreationError("volley network error: " + error.toString());
-                    }
-                }
-        ));
-*/
-
     }
 
     private static String buildProfileCreationRequestBody(Context context) throws JSONException {
@@ -231,29 +197,6 @@ public class NearItUserProfile {
             e.printStackTrace();
             listener.onDataNotSetError("error: impossible to send requests");
         }
-
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
-                context,
-                Request.Method.POST,
-                url.toString(),
-                reqBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "datapoint created: " + response.toString());
-                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
-                        listener.onDataCreated();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        listener.onDataNotSetError("volley network error: " + error.toString());
-                    }
-                }
-        ));
-*/
     }
 
     /**
@@ -320,29 +263,6 @@ public class NearItUserProfile {
             e.printStackTrace();
             listener.onDataNotSetError("error: impossible to send request");
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
-                context,
-                Request.Method.POST,
-                url.toString(),
-                reqBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "datapoint created: " + response.toString());
-                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
-                        listener.onDataCreated();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        listener.onDataNotSetError("volley network error: " + error.toString());
-                    }
-                }
-        ));
-*/
-
     }
 
 }

@@ -166,30 +166,6 @@ public class RecipesManager {
             e.printStackTrace();
             listener.onRecipesRefreshFail(-1);
         }
-/*
-        GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, Request.Method.POST, url.toString(), requestBody,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                ULog.d(TAG, "Got recipes: " + response.toString());
-                                recipes = NearUtils.parseList(morpheus, response, Recipe.class);
-                                persistList(recipes);
-                            }
-                        }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                ULog.d(TAG, "Error in downloading recipes: " + error.toString());
-                                try {
-                                    recipes = loadChachedList();
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        })
-        );
-*/
-
     }
 
     private void persistList(List<Recipe> recipes) {

@@ -139,21 +139,6 @@ public class NearInstallation {
         } catch (UnsupportedEncodingException | AuthenticationException e) {
             e.printStackTrace();
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(
-                new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
-                    }
-                })
-        );
-*/
     }
 
 

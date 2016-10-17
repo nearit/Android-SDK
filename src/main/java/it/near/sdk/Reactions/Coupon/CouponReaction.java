@@ -169,23 +169,6 @@ public class CouponReaction extends CoreReaction {
             e.printStackTrace();
             listener.onCouponDownloadError("Download error");
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(
-                new CustomJsonRequest(context, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        List<Claim> claims = NearUtils.parseList(morpheus, response, Claim.class);
-                        listener.onCouponsDownloaded(claims);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        listener.onCouponDownloadError("Download error");
-                    }
-                })
-        );
-*/
     }
 
     @Override
