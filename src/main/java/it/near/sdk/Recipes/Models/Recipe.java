@@ -181,13 +181,28 @@ public class Recipe extends Resource {
         return null;
     }
 
-    public static void sendTracking(Context context, String recipeId, String notifiedStatus) throws JSONException {
-        String trackingBody = buildTrackingBody(context, recipeId, notifiedStatus);
+    /**
+     * Sends tracking on a recipe. Lets choose the notified status.
+     * @param context the app context.
+     * @param recipeId the recipe identifier.
+     * @param trackingEvent notified status to send. Can either be NO
+     * @throws JSONException
+     */
+    public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
+        String trackingBody = buildTrackingBody(context, recipeId, trackingEvent);
         Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
         NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
     }
 
-    private static String buildTrackingBody(Context context, String recipeId, String notifiedStatus) throws JSONException {
+    /**
+     * Builds the tracking send request body.
+     * @param context the app context.
+     * @param recipeId the recipe identifier.
+     * @param trackingEvent the tracking event string.
+     * @return the http body string.
+     * @throws JSONException
+     */
+    private static String buildTrackingBody(Context context, String recipeId, String trackingEvent) throws JSONException {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         String appId = GlobalConfig.getInstance(context).getAppId();
         String installationId = GlobalConfig.getInstance(context).getInstallationId();
@@ -204,7 +219,7 @@ public class Recipe extends Resource {
         attributes.put("installation_id", installationId);
         attributes.put("app_id", appId);
         attributes.put("recipe_id", recipeId);
-        attributes.put("event", notifiedStatus);
+        attributes.put("event", trackingEvent);
         attributes.put("tracked_at", formattedDate);
         return NearUtils.toJsonAPI("trackings", attributes);
     }
@@ -213,14 +228,20 @@ public class Recipe extends Resource {
         return getPulse_action().isForeground();
     }
 
+    /**
+     * Check if the recipe is valid according to the scheduling information.
+     * @return the validity of the recipe.
+     */
     public boolean isScheduledNow(){
         return isDateValid() &&
                 isTimetableValid() &&
                 isDaysValid();
-
-
     }
 
+    /**
+     * Check if the date range is valid.
+     * @return if the date range is respected.
+     */
     private boolean isDateValid(){
         HashMap<String, Object> date = (HashMap<String, Object>) scheduling.get("date");
         if (date == null) return true;
@@ -249,6 +270,10 @@ public class Recipe extends Resource {
         return valid;
     }
 
+    /**
+     * Check it the time range is valid.
+     * @return if the time range is respected.
+     */
     private boolean isTimetableValid() {
         Map<String, Object> timetable = (HashMap<String, Object>) scheduling.get("timetable");
         if (timetable == null) return true;
@@ -276,6 +301,10 @@ public class Recipe extends Resource {
         return valid;
     }
 
+    /**
+     * Check if the days selection is valid.
+     * @return if the days selection is respected.
+     */
     private boolean isDaysValid() {
         List<String> days = (List<String>) scheduling.get("days");
         if (days == null) return true;
@@ -284,6 +313,10 @@ public class Recipe extends Resource {
         return days.contains(todaysDate);
     }
 
+    /**
+     * Get today's day of week.
+     * @return the day of week in "EE" format e.g. Sat.
+     */
     private String getTodaysDate() {
         Calendar calendar = Calendar.getInstance();
         Date date = calendar.getTime();
