@@ -6,8 +6,6 @@ import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -19,6 +17,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
@@ -75,7 +74,7 @@ public class ContentReaction extends CoreReaction {
                     .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                     .appendQueryParameter("include", "images").build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
@@ -85,7 +84,7 @@ public class ContentReaction extends CoreReaction {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error: " + statusCode);
                     try {
                         contentList = loadList();
@@ -93,6 +92,7 @@ public class ContentReaction extends CoreReaction {
                         e.printStackTrace();
                     }
                 }
+
             });
         } catch (AuthenticationException e) {
             e.printStackTrace();
@@ -103,7 +103,7 @@ public class ContentReaction extends CoreReaction {
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundleId) {
         // TODO not tested
-        requestSingleReaction(bundleId.getId(), new JsonHttpResponseHandler(){
+        requestSingleReaction(bundleId.getId(), new NearJsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
@@ -113,16 +113,17 @@ public class ContentReaction extends CoreReaction {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 ULog.d(TAG, "Error downloading push content: " + statusCode);
             }
+
         });
     }
 
     @Override
     public void handleEvaluatedReaction(final Recipe recipe, String bundleId) {
         // TODO test this method. Since recipes with a content won't need online evaluation this won't get called for now
-        requestSingleReaction(bundleId, new JsonHttpResponseHandler(){
+        requestSingleReaction(bundleId, new NearJsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
@@ -132,7 +133,7 @@ public class ContentReaction extends CoreReaction {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 ULog.d(TAG, "Error downloading content:" + statusCode);
             }
         });

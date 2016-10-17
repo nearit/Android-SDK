@@ -8,8 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +21,7 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
 import it.near.sdk.Geopolis.GeoFences.GeoFenceMonitor;
 import it.near.sdk.Communication.Constants;
@@ -143,12 +142,12 @@ public class GeopolisManager {
                     .appendPath(BEACON_FOREST_BEACONS).build();
         url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
-                .appendPath("nodes")
+                .appendPath("nodesd")
                 .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
                 .appendQueryParameter("include", "children.*.children")
                 .build();
         try {
-            httpClient.nearGet(mApplication, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
@@ -158,7 +157,7 @@ public class GeopolisManager {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error " + statusCode);
                     // load the config
                     startRadarOnNodes(nodesManager.getNodes());
@@ -217,7 +216,7 @@ public class GeopolisManager {
             switch (action){
                 case GF_ENTRY_ACTION_SUFFIX:
                     if (node == null) return;
-                    trackAndFirePulse(node.getIdentifier(), Events.ENTER_PLACE);
+                    trackAndFirePulse(node, Events.ENTER_PLACE);
                     if (node.getChildren() != null){
                         geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnEnter(nodesManager.getNodes(), node));
                         altBeaconMonitor.addRegions(node.getChildren());
@@ -225,27 +224,27 @@ public class GeopolisManager {
                     break;
                 case GF_EXIT_ACTION_SUFFIX:
                     if (node == null) return;
-                    trackAndFirePulse(node.getIdentifier(), Events.LEAVE_PLACE);
+                    trackAndFirePulse(node, Events.LEAVE_PLACE);
                     geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnExit(nodesManager.getNodes(), node));
                     altBeaconMonitor.removeRegions(node.getChildren());
 
                     break;
                 case BT_ENTRY_ACTION_SUFFIX:
                     if (node == null) return;
-                    trackAndFirePulse(node.getIdentifier(), Events.ENTER_REGION);
+                    trackAndFirePulse(node, Events.ENTER_REGION);
                     break;
                 case BT_EXIT_ACTION_SUFFIX:
                     if (node == null) return;
-                    trackAndFirePulse(node.getIdentifier(), Events.LEAVE_REGION);
+                    trackAndFirePulse(node, Events.LEAVE_REGION);
                     break;
                 case GF_RANGE_FAR_SUFFIX:
-                    trackAndFirePulse(node.getIdentifier(), Events.RANGE_FAR);
+                    trackAndFirePulse(node, Events.RANGE_FAR);
                     break;
                 case GF_RANGE_NEAR_SUFFIX:
-                    trackAndFirePulse(node.getIdentifier(), Events.RANGE_NEAR);
+                    trackAndFirePulse(node, Events.RANGE_NEAR);
                     break;
                 case GF_RANGE_IMMEDIATE_SUFFIX:
-                    trackAndFirePulse(node.getIdentifier(), Events.RANGE_IMMEDIATE);
+                    trackAndFirePulse(node, Events.RANGE_IMMEDIATE);
                     break;
             }
         }
@@ -253,13 +252,13 @@ public class GeopolisManager {
 
     /**
      * Tracks the geographical interaction and fires the proper pulse. It does nothing if the identifier is null.
-     * @param identifier
+     * @param node
      * @param event
      */
-    private void trackAndFirePulse(String identifier, String event) {
-        if (identifier != null){
-            trackEvent(identifier, event);
-            firePulse(event, identifier);
+    private void trackAndFirePulse(Node node, String event) {
+        if (node != null || node.getIdentifier() != null){
+            trackEvent(node.getIdentifier(), event);
+            firePulse(event, node.getIdentifier());
         }
     }
 

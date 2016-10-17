@@ -19,8 +19,7 @@ public class BeaconDynamicData {
     public static final int IMMEDIATE = 1;
     public static final int NEAR = 2;
     public static final int FAR = 3;
-    public static final String NEW_PROXIMITY_EVENT = "new_proximity_event";
-    public static final String PROXIMITY = "proximity";
+
     private static final String TAG = "BeaconDynamicData";
     private final Context mContext;
 
@@ -81,6 +80,11 @@ public class BeaconDynamicData {
             proximityValues.remove(0);
     }
 
+    public void resetData(){
+        proximityValues.clear();
+        currentProximity = INDETERMINED;
+    }
+
 
     public void saveDistance(double _distance) {
 
@@ -92,10 +96,12 @@ public class BeaconDynamicData {
         }
 
         computeProximity();
+
+        setCurrentProximity(distanceToProximity(_distance));
     }
 
     private void computeProximity() {
-        int numberOfValid = 0;
+        /*int numberOfValid = 0;
         for (Integer proximityValue : proximityValues) {
             if (proximityValue != INDETERMINED)
                 numberOfValid++;
@@ -110,7 +116,8 @@ public class BeaconDynamicData {
             } else if (scoreboard.get(IMMEDIATE) >= 3){
                 setCurrentProximity(IMMEDIATE);
             }
-        }
+        }*/
+
     }
 
     private HashMap<Integer, Integer> buildScoreboard(ArrayList<Integer> proximityValues) {
@@ -143,7 +150,7 @@ public class BeaconDynamicData {
             // negative distance, FAR
             return INDETERMINED;
 
-        else if (distance<=0.3)
+        else if (distance<=0.2)
             // IMMEDIATE
             return IMMEDIATE;
 

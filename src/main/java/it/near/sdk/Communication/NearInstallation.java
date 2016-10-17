@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -59,7 +59,7 @@ public class NearInstallation {
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
             try {
-                registerOrEditInstallation(context, installationId, installBody, new JsonHttpResponseHandler(){
+                registerOrEditInstallation(context, installationId, installBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG , "Installation data sent");
@@ -73,7 +73,7 @@ public class NearInstallation {
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString , Throwable throwable) {
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         ULog.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
                     }
                 });
@@ -88,7 +88,7 @@ public class NearInstallation {
     }
 
 
-    private static void registerOrEditInstallation(Context context, String installationId, String installBody, JsonHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
+    private static void registerOrEditInstallation(Context context, String installationId, String installBody, AsyncHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
         if (installationId == null){
             httpClient.nearPost(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler );
         } else {
@@ -121,18 +121,14 @@ public class NearInstallation {
                 .build();
         // TODO not tested
         try {
-            httpClient.nearPut(context, url.toString(), body, new JsonHttpResponseHandler(){
+            httpClient.nearPut(context, url.toString(), body, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
-                }
-
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
                 }
             });

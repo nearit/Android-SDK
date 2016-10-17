@@ -3,8 +3,6 @@ package it.near.sdk.Operation;
 import android.content.Context;
 import android.net.Uri;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +16,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearInstallation;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Utils.NearUtils;
@@ -98,7 +97,7 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE).build();
 
         try {
-            httpClient.nearPost(context, url.toString(), requestBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "got profile: " + response.toString());
@@ -118,10 +117,11 @@ public class NearItUserProfile {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "profile erro: " + statusCode);
                     listener.onProfileCreationError("network error: " + statusCode);
                 }
+
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
@@ -180,7 +180,7 @@ public class NearItUserProfile {
                 .appendPath(DATA_POINTS_RES_TYPE).build();
   //TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "datapoint created: " + response.toString());
@@ -189,7 +189,7 @@ public class NearItUserProfile {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     listener.onDataNotSetError("network error: " + statusCode);
                 }
             });
@@ -246,7 +246,7 @@ public class NearItUserProfile {
 
                 // TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "datapoint created: " + response.toString());
@@ -255,7 +255,7 @@ public class NearItUserProfile {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     listener.onDataNotSetError("network error: " + statusCode);
                 }
             });

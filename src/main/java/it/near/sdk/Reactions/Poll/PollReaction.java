@@ -6,7 +6,6 @@ import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +19,7 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
@@ -61,7 +61,7 @@ public class PollReaction extends CoreReaction {
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
         // TODO not tested
-        requestSingleReaction(bundle.getId(), new JsonHttpResponseHandler(){
+        requestSingleReaction(bundle.getId(), new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, response.toString());
@@ -71,7 +71,7 @@ public class PollReaction extends CoreReaction {
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         ULog.d(TAG, "Error downloading push content: " + statusCode);
                     }
                 }
@@ -93,7 +93,7 @@ public class PollReaction extends CoreReaction {
 
     @Override
     public void handleEvaluatedReaction(final Recipe recipe, String bundle_id) {
-        requestSingleReaction(bundle_id, new JsonHttpResponseHandler(){
+        requestSingleReaction(bundle_id, new NearJsonHttpResponseHandler(){
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
@@ -103,7 +103,7 @@ public class PollReaction extends CoreReaction {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 ULog.d(TAG, "Error donwloading content: " + statusCode);
             }
         });
@@ -128,7 +128,7 @@ public class PollReaction extends CoreReaction {
                     .appendPath(POLL_NOTIFICATION_RESOURCE).build();
         // TODO not tested
         try {
-            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
@@ -137,7 +137,7 @@ public class PollReaction extends CoreReaction {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error: " + statusCode);
                     try {
                         pollList = loadList();
@@ -191,14 +191,14 @@ public class PollReaction extends CoreReaction {
                     .appendPath("answers").build();
             // TODO not tested
             try {
-                httpClient.nearPost(mContext, url.toString(), answerBody, new JsonHttpResponseHandler(){
+                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, "Answer sent successfully");
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         ULog.d(TAG, "Error in sending answer: " + statusCode);
                     }
                 });

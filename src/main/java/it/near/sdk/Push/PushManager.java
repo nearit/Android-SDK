@@ -74,7 +74,9 @@ public class PushManager {
         getRecipesManager().processRecipe(recipe_id);
     }
 
-    private RecipesManager getRecipesManager(){return GlobalState.getInstance(mContext.getApplicationContext()).getRecipesManager();}
+    private RecipesManager getRecipesManager(){
+        return GlobalState.getInstance(mContext.getApplicationContext()).getRecipesManager();
+    }
 
     public void sendEvent(OpenPushEvent event){
         //trackPush(event.getId(), PUSH_OPENED_ACTION);

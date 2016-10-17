@@ -30,7 +30,6 @@ public class NodesManager {
 
     public NodesManager(Context mContext) {
         this.mContext = mContext;
-        this.nodes = new ArrayList<>();
         setUpMorpheusParser();
 
         String PACK_NAME = mContext.getApplicationContext().getPackageName();

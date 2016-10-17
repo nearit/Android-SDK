@@ -14,6 +14,7 @@ import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.service.RangedBeacon;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
@@ -184,6 +185,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * Switch to ranging mode
      */
     private void startRanging() {
+        RangedBeacon.setSampleExpirationMilliseconds(5000);
         beaconManager.setBackgroundMode(false);
         beaconManager.addRangeNotifier(this);
     }
@@ -251,6 +253,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         // Console.clear();
         // When going to the background stop ranging, in an idempotent way (we might haven't been ranging)
         stopRanging();
+        for (Map.Entry<Region, BeaconDynamicRadar> regionBeaconDynamicRadarEntry : rangingRadars.entrySet()) {
+            regionBeaconDynamicRadarEntry.getValue().resetData();
+        }
     }
 
     @Override
@@ -261,7 +266,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         logRangedRegions();
         // nearit trigger
         notifiyEventOnBeaconRegion(region, GeopolisManager.BT_ENTRY_ACTION_SUFFIX);
-
     }
 
     private void notifiyEventOnBeaconRegion(Region region, String eventActionSuffix) {

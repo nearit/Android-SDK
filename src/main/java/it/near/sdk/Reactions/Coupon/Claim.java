@@ -67,7 +67,6 @@ public class Claim extends Resource implements Parcelable {
         dest.writeString(serial_number);
         dest.writeString(claimed_at);
         dest.writeString(redeemed_at);
-        dest.writeParcelable(coupon, flags);
     }
 
     public static final Creator<Claim> CREATOR = new Creator<Claim>() {
@@ -87,6 +86,5 @@ public class Claim extends Resource implements Parcelable {
         serial_number = in.readString();
         claimed_at = in.readString();
         redeemed_at = in.readString();
-        coupon = in.readParcelable(Coupon.class.getClassLoader());
     }
 }
