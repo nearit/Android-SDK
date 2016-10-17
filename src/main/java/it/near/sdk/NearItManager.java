@@ -87,7 +87,6 @@ public class NearItManager {
 
         GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
-        GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
         plugInSetup();
 

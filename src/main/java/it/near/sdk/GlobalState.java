@@ -82,12 +82,4 @@ public class GlobalState {
     public void setPushManager(PushManager pushManager) {
         this.pushManager = pushManager;
     }
-
-    public void setNearNotifier(NearNotifier nearNotifier) {
-        this.nearNotifier = nearNotifier;
-    }
-
-    public NearNotifier getNearNotifier() {
-        return nearNotifier;
-    }
 }

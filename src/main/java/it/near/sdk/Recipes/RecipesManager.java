@@ -247,7 +247,7 @@ public class RecipesManager {
     }
 
     /**
-     * Process a recipe from it's id. Typically called for processing a push recipe.
+     * Process a recipe from its id. Typically called for processing a push recipe.
      * @param id push id.
      */
     public void processRecipe(final String id) {
@@ -276,7 +276,6 @@ public class RecipesManager {
         } catch (AuthenticationException e) {
             e.printStackTrace();
         }
-
     }
 
     /**
