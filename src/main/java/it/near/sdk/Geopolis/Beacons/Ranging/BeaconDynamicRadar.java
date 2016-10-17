@@ -83,4 +83,9 @@ public class BeaconDynamicRadar {
         return null;
     }
 
+    public void resetData() {
+        for (BeaconDynamicData beaconsDistance : beaconsDistances) {
+            beaconsDistance.resetData();
+        }
+    }
 }

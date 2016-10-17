@@ -19,8 +19,7 @@ public class BeaconDynamicData {
     public static final int IMMEDIATE = 1;
     public static final int NEAR = 2;
     public static final int FAR = 3;
-    public static final String NEW_PROXIMITY_EVENT = "new_proximity_event";
-    public static final String PROXIMITY = "proximity";
+
     private static final String TAG = "BeaconDynamicData";
     private final Context mContext;
 
@@ -79,6 +78,11 @@ public class BeaconDynamicData {
         proximityValues.add(INDETERMINED);
         if (proximityValues.size() > 4)
             proximityValues.remove(0);
+    }
+
+    public void resetData(){
+        proximityValues.clear();
+        currentProximity = INDETERMINED;
     }
 
 

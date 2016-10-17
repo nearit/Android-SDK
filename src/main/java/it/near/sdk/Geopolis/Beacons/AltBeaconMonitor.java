@@ -253,6 +253,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         // Console.clear();
         // When going to the background stop ranging, in an idempotent way (we might haven't been ranging)
         stopRanging();
+        for (Map.Entry<Region, BeaconDynamicRadar> regionBeaconDynamicRadarEntry : rangingRadars.entrySet()) {
+            regionBeaconDynamicRadarEntry.getValue().resetData();
+        }
     }
 
     @Override
@@ -263,7 +266,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         logRangedRegions();
         // nearit trigger
         notifiyEventOnBeaconRegion(region, GeopolisManager.BT_ENTRY_ACTION_SUFFIX);
-
     }
 
     private void notifiyEventOnBeaconRegion(Region region, String eventActionSuffix) {
