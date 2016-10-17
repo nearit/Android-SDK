@@ -203,7 +203,13 @@ public class RecipesManager {
              }
         }
         if (matchingRecipes.isEmpty()){return;}
-        Recipe winnerRecipe = matchingRecipes.get(0);
+        List<Recipe> validRecipes = new ArrayList<>();
+        for (Recipe matchingRecipe : matchingRecipes) {
+            if (matchingRecipe.isScheduledNow()){
+                validRecipes.add(matchingRecipe);
+            }
+        }
+        Recipe winnerRecipe = validRecipes.get(0);
         if (winnerRecipe.isEvaluatedOnline()){
             evaluateRecipe(winnerRecipe.getId());
         } else {
