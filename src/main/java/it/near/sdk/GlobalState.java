@@ -6,7 +6,6 @@ import it.near.sdk.Geopolis.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.RecipesManager;
-import it.near.sdk.Utils.TraceNotifier;
 
 /**
  * Class with global instances. Used internally.
@@ -17,21 +16,15 @@ public class GlobalState {
     private static final String TAG = "GlobalState";
 
     private static GlobalState mInstance = null;
-    // private final RequestQueue requestQueue;
 
     private Context mContext;
 
-    private TraceNotifier traceNotifier;
-    private BeaconDynamicRadar beaconDynamicRadar;
-    private NearNotifier nearNotifier;
     private RecipesManager recipesManager;
     private PushManager pushManager;
 
 
     public GlobalState(Context mContext) {
         this.mContext = mContext;
-        /*requestQueue = Volley.newRequestQueue(mContext);
-        requestQueue.start();*/
     }
 
     public static GlobalState getInstance(Context context){
@@ -46,26 +39,6 @@ public class GlobalState {
         return mContext;
     }
 
-/*
-    public RequestQueue getRequestQueue(){ return requestQueue; }
-*/
-
-
-    public TraceNotifier getTraceNotifier() {
-        return traceNotifier;
-    }
-
-    public void setTraceNotifier(TraceNotifier traceNotifier) {
-        this.traceNotifier = traceNotifier;
-    }
-
-    public BeaconDynamicRadar getBeaconDynamicRadar() {
-        return beaconDynamicRadar;
-    }
-
-    public void setBeaconDynamicRadar(BeaconDynamicRadar beaconDynamicRadar) {
-        this.beaconDynamicRadar = beaconDynamicRadar;
-    }
 
     public RecipesManager getRecipesManager() {
         return recipesManager;
