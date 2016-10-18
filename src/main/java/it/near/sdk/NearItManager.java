@@ -250,26 +250,11 @@ public class NearItManager {
 
     private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
         ULog.d(TAG, "deliver Event: " + parcelable.toString());
-
         Intent resultIntent = new Intent(action);
+        Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
         if (action.equals(PUSH_MESSAGE_ACTION)){
             resultIntent.putExtra(IntentConstants.PUSH_ID, pushId);
         }
-        // set recipe id
-        resultIntent.putExtra(IntentConstants.RECIPE_ID, recipe.getId());
-        // set notification text
-        resultIntent.putExtra(IntentConstants.NOTIF_TITLE, recipe.getNotificationTitle());
-        resultIntent.putExtra(IntentConstants.NOTIF_BODY, recipe.getNotificationBody());
-        // set contet to show
-        resultIntent.putExtra(IntentConstants.CONTENT, parcelable);
-        // set the content type so the app can cast the parcelable to correct content
-        resultIntent.putExtra(IntentConstants.REACTION_PLUGIN, recipe.getReaction_plugin_id());
-        resultIntent.putExtra(IntentConstants.REACTION_ACTION, recipe.getReaction_action().getId());
-        // set the pulse info
-        resultIntent.putExtra(IntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
-        resultIntent.putExtra(IntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
-        resultIntent.putExtra(IntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle() != null ? recipe.getPulse_bundle().getId() : "");
-
         application.sendOrderedBroadcast(resultIntent, null);
     }
 

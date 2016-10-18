@@ -2,7 +2,9 @@ package it.near.sdk.Recipes.Models;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -22,6 +24,7 @@ import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Utils.IntentConstants;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
 /**
@@ -325,5 +328,29 @@ public class Recipe extends Resource {
         // 3 letter name form of the day
         return new SimpleDateFormat("EE", Locale.ENGLISH).format(date.getTime());
 
+    }
+
+    /**
+     * Fill the intent with extras regarding the recipe and the parcelable content.
+     * @param intent the intent for the background event.
+     * @param recipe the recipe causing the intent.
+     * @param parcelable the content to be delivered.
+     * @return the intent with the extra arguments.
+     */
+    public static void fillIntentExtras(Intent intent, Recipe recipe, Parcelable parcelable) {
+
+        intent.putExtra(IntentConstants.RECIPE_ID, recipe.getId());
+        // set notification text
+        intent.putExtra(IntentConstants.NOTIF_TITLE, recipe.getNotificationTitle());
+        intent.putExtra(IntentConstants.NOTIF_BODY, recipe.getNotificationBody());
+        // set contet to show
+        intent.putExtra(IntentConstants.CONTENT, parcelable);
+        // set the content type so the app can cast the parcelable to correct content
+        intent.putExtra(IntentConstants.REACTION_PLUGIN, recipe.getReaction_plugin_id());
+        intent.putExtra(IntentConstants.REACTION_ACTION, recipe.getReaction_action().getId());
+        // set the pulse info
+        intent.putExtra(IntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
+        intent.putExtra(IntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
+        intent.putExtra(IntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle() != null ? recipe.getPulse_bundle().getId() : "");
     }
 }
