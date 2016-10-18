@@ -161,7 +161,7 @@ Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 
 ### Custom Push Notification ###
 
-Just like with region messages you can add your own receiver for the push notification to have total control of your app behaviour. [see above](### Custom background behavior ###)
+Just like with region messages you can add your own receiver for the push notification to have total control of your app behaviour. [see above](#custom-background-behavior)
 And add them to your manifest (see the Android samples repository for an implementation of this scenario). 
 ```xml
 <service android:name=".MyFcmIntentService"
