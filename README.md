@@ -79,13 +79,13 @@ public void foregroundEvent(Parcelable content, Recipe recipe) {
 
 ### Built-in region background receivers ###
 
-If you want to be notified when a user enters a region using the built-in background region notifications put this in your app manifest.
+If you want to be notified when a user enters a region (bluetooth or geofence) using the built-in background region notifications put this in your app manifest.
 ```xml
 <!-- built in region receivers -->
 <receiver android:name="it.near.sdk.Beacons.Monitoring.RegionBroadcastReceiver"
     android:exported="false">
     <intent-filter>
-        <action android:name="it.near.sdk.permission.REGION_MESSAGE"/>
+        <action android:name="it.near.sdk.permission.GEO_MESSAGE"/>
         <category android:name="android.intent.category.DEFAULT"/>
     </intent-filter>
 </receiver>
@@ -93,7 +93,7 @@ If you want to be notified when a user enters a region using the built-in backgr
 
 ### Custom background behavior ###
 
-If you need a different approach for notifying region enter, other than having a notification at every instance of this event, you need to subclass 2 classes (a BroadcastReceiver and an IntentService) and properly add them in your manifest. See the sample for an implementation of this scenario (including how to track a notified recipe). Here's a snippet of the manifest:
+If you need a different approach for notifying region enter, other than having a notification at every instance of this event, you need to subclass 2 classes (a BroadcastReceiver and an IntentService) and properly add them in your manifest. See the Android samples repository for an implementation of this scenario (including how to track a notified recipe). Here's a snippet of the manifest:
 
 ```xml
 <!-- region messages -->
@@ -103,7 +103,7 @@ If you need a different approach for notifying region enter, other than having a
 <receiver android:name=".MyRegionBroadcastReceiver"
     android:exported="false">
     <intent-filter>
-        <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
+        <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
         <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
 </receiver>
@@ -134,26 +134,15 @@ nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId))
 NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
 
-To enable push notification,set your push senderId
-```java
-nearItManager.setPushSenderId("your-app-sender-id");
-```
+To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app (add an app in the firebase console, download the google-services.json file and add the proper dependencies into the project level and app level gradle file).
+The NearIt SDK already has the dependency related to the FCM messaging service and has registered the proper service and receivers for handling our internal push notification resolution. The data will be fetched directly from the config file (google-services.json).
 
-Add these receivers in the *application* tag of your app *manifest*
+To receive the system notification of a push recipe add this receiver in the *application* tag of your app *manifest*
 ```xml
 <application ...>
 ...
     <receiver
-        android:name="com.google.android.gms.gcm.GcmReceiver"
-        android:exported="true"
-        android:permission="com.google.android.c2dm.permission.SEND" >
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            <category android:name="<YOUR_APP_PACKAGE_NAME>" />
-        </intent-filter>
-    </receiver>
-    <receiver
-         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
          android:exported="false">
          <intent-filter>
                 <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
@@ -172,17 +161,14 @@ Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 
 ### Custom Push Notification ###
 
-If you need a custom handling of push notification (anything that must happens before or instead of the local notification), subclass these two classes
-* GcmIntentService
-* GcmBroadcastReceiver
-in the same way it was done with MyRegionIntentService and MyRegionBroadcastReceiver
-And add them to your manifest
+Just like with region messages you can add your own receiver for the push notification to have total control of your app behaviour. [see above](### Custom background behavior ###)
+And add them to your manifest (see the Android samples repository for an implementation of this scenario). 
 ```xml
-<service android:name=".MyGcmIntentService"
+<service android:name=".MyFcmIntentService"
             android:exported="false"/>
 
 <receiver
-    android:name=".MyGcmBroadcastReceiver"
+    android:name=".MyFcmBroadcastReceiver"
     android:exported="false">
     <intent-filter>
         <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
@@ -193,7 +179,7 @@ And add them to your manifest
 Also, you need to omit this receiver from your manifest
 ```xml
 <receiver
-         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
          android:exported="false">
          <intent-filter>
                 <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
@@ -201,6 +187,8 @@ Also, you need to omit this receiver from your manifest
          </intent-filter>
     </receiver>
 ```
+We futhermore suggest to create an unique receiver for both region messages and push messages if their custom behavior matches. Just add both intent filters inside the receiver and deal with those messages in the same receiver.
+
 ### User profilation ###
 
 To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
