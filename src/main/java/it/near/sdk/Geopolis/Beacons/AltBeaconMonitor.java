@@ -126,7 +126,8 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         try {
             regionsToMonitor.add(BeaconNode.toAltRegion((BeaconNode) node));
         } catch (Exception e){
-            e.printStackTrace();
+            //
+            // e.printStackTrace();
         }
 
         for (Node child : node.getChildren()) {
