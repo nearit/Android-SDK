@@ -63,6 +63,7 @@ public class GeoFenceMonitor {
      */
     public static List<GeoFenceNode> filterGeofence(List<Node> nodes) {
         List<GeoFenceNode> geoFenceNodeList = new ArrayList<>();
+        if (nodes == null) return geoFenceNodeList;
         for (Node node : nodes) {
             if (node instanceof GeoFenceNode){
                 geoFenceNodeList.add((GeoFenceNode) node);
