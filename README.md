@@ -127,68 +127,6 @@ nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
 nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
 ```
 
-### Enable Push Notifications ###
-
-NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
-When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
-
-To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app (add an app in the firebase console, download the google-services.json file and add the proper dependencies into the project level and app level gradle file).
-The NearIt SDK already has the dependency related to the FCM messaging service and has registered the proper service and receivers for handling our internal push notification resolution in its manifest. The data will be fetched directly from the config file (google-services.json).
-
-To receive the system notification of a push recipe add this receiver in the *application* tag of your app *manifest*
-```xml
-<application ...>
-...
-    <receiver
-         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
-         android:exported="false">
-         <intent-filter>
-                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-                <category android:name="android.intent.category.DEFAULT" />
-         </intent-filter>
-    </receiver>
-</application>
-```
-
-Every push notification tracks itself as received when the SDK receives it.
-If you want to track notification taps, simply do
-```java
-// the recipeId will be included in the extras bundle of the intent with the key IntentConstants.RECIPE_ID
-Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
-```
-
-### Custom Push Notification ###
-
-Just like with region messages you can add your own receiver for the push notification to have total control of your app behaviour. [see above](#custom-background-behavior)
-And add them to your manifest (see the Android samples repository for an implementation of this scenario). 
-```xml
-<service android:name=".MyFcmIntentService"
-            android:exported="false"/>
-
-<receiver
-    android:name=".MyFcmBroadcastReceiver"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-</receiver>
-```
-Also, you need to omit this receiver from your manifest
-```xml
-<receiver
-         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
-         android:exported="false">
-         <intent-filter>
-                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-                <category android:name="android.intent.category.DEFAULT" />
-         </intent-filter>
-    </receiver>
-```
-We futhermore suggest to create an unique receiver for both region messages and push messages if their custom behavior matches. Just add both intent filters inside the receiver and deal with those messages in the same receiver.
-
-WARNING: If you are using some gms play services in your app and experience malfunctioning, please be sure to use the 9.6.1 version of the gms dependency you are pulling in your app.
-
 ### User profilation ###
 
 To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
@@ -260,3 +198,66 @@ If you want to reset your profile use this method
 NearItUserProfile.resetProfileId(context)
 ```
 Further calls to NearItUserProfile.getProfileId(context) will return null.
+
+### Enable Push Notifications ###
+
+NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
+When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
+
+To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app (add an app in the firebase console, download the google-services.json file and add the proper dependencies into the project level and app level gradle file).
+The NearIt SDK already has the dependency related to the FCM messaging service and has registered the proper service and receivers for handling our internal push notification resolution in its manifest. The data will be fetched directly from the config file (google-services.json).
+The only extra step is to enter the cloud messaging server key into the CMS. Push notification only work if a profile is created.
+
+To receive the system notification of a push recipe add this receiver in the *application* tag of your app *manifest*
+```xml
+<application ...>
+...
+    <receiver
+         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
+         android:exported="false">
+         <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+         </intent-filter>
+    </receiver>
+</application>
+```
+
+Every push notification tracks itself as received when the SDK receives it.
+If you want to track notification taps, simply do
+```java
+// the recipeId will be included in the extras bundle of the intent with the key IntentConstants.RECIPE_ID
+Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
+```
+
+### Custom Push Notification ###
+
+Just like with region messages you can add your own receiver for the push notification to have total control of your app behaviour. [see above](#custom-background-behavior)
+And add them to your manifest (see the Android samples repository for an implementation of this scenario). 
+```xml
+<service android:name=".MyFcmIntentService"
+            android:exported="false"/>
+
+<receiver
+    android:name=".MyFcmBroadcastReceiver"
+    android:exported="false">
+    <intent-filter>
+        <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter>
+</receiver>
+```
+Also, you need to omit this receiver from your manifest
+```xml
+<receiver
+         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
+         android:exported="false">
+         <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+         </intent-filter>
+    </receiver>
+```
+We futhermore suggest to create an unique receiver for both region messages and push messages if their custom behavior matches. Just add both intent filters inside the receiver and deal with those messages in the same receiver.
+
+WARNING: If you are using some gms play services in your app and experience malfunctioning, please be sure to use the 9.6.1 version of the gms dependency you are pulling in your app.
