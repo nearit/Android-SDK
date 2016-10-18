@@ -135,7 +135,7 @@ NearIt offers a default push reception and visualization. It shows a system noti
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
 
 To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app (add an app in the firebase console, download the google-services.json file and add the proper dependencies into the project level and app level gradle file).
-The NearIt SDK already has the dependency related to the FCM messaging service and has registered the proper service and receivers for handling our internal push notification resolution. The data will be fetched directly from the config file (google-services.json).
+The NearIt SDK already has the dependency related to the FCM messaging service and has registered the proper service and receivers for handling our internal push notification resolution in its manifest. The data will be fetched directly from the config file (google-services.json).
 
 To receive the system notification of a push recipe add this receiver in the *application* tag of your app *manifest*
 ```xml
