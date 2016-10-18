@@ -9,7 +9,7 @@ import android.util.Log;
 /**
  * WakefulBroadcastReceiver to receive region messages. This receiver should be initiated in the manifest to use the default implementation
  * or extended to create a custom implementation (In this case the extended receiver it's the one to include in the app manifest).
- * The action to register in the manifest is <code>it.near.sdk.permission.REGION_MESSAGE</code>
+ * The action to register in the manifest is <code>it.near.sdk.permission.GEO_MESSAGE</code>
  *
  * <pre>
  *     {@code
@@ -17,7 +17,7 @@ import android.util.Log;
  *           <receiver android:name="it.near.sdk.Beacons.Monitoring.RegionBroadcastReceiver"
  *           android:exported="false">
  *              <intent-filter>
- *                  <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
+ *                  <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
  *                  <category android:name="android.intent.category.DEFAULT" />
  *              </intent-filter>
  *           </receiver>

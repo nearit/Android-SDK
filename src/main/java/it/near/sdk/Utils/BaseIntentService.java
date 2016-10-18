@@ -8,12 +8,6 @@ import org.json.JSONException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
-import it.near.sdk.Reactions.Content.Content;
-import it.near.sdk.Reactions.Coupon.Coupon;
-import it.near.sdk.Reactions.CustomJSON.CustomJSON;
-import it.near.sdk.Reactions.Feedback.Feedback;
-import it.near.sdk.Reactions.Poll.Poll;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 import it.near.sdk.Recipes.Models.Recipe;
 
 /**
@@ -57,7 +51,7 @@ public abstract class BaseIntentService extends IntentService {
     private int imgResFromIntent (Intent intent) {
         if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)){
             return R.drawable.ic_send_white_24dp;
-        } else if (intent.getAction().equals(NearItManager.REGION_MESSAGE_ACTION)){
+        } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)){
             return GlobalConfig.getInstance(this).getNotificationImage();
         }
         return GlobalConfig.getInstance(this).getNotificationImage();
@@ -67,7 +61,7 @@ public abstract class BaseIntentService extends IntentService {
         switch (intent.getAction()){
             case NearItManager.PUSH_MESSAGE_ACTION:
                 return PUSH_NOTIFICATION_ID;
-            case NearItManager.REGION_MESSAGE_ACTION:
+            case NearItManager.GEO_MESSAGE_ACTION:
                 return REGION_NOTIFICATION_ID;
             default:
                 return REGION_NOTIFICATION_ID;

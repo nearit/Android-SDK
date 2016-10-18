@@ -60,7 +60,7 @@ import it.near.sdk.Utils.ULog;
 public class NearItManager {
 
     private static final String TAG = "NearItManager";
-    public static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
+    public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
     public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
@@ -230,7 +230,7 @@ public class NearItManager {
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
         public void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe) {
-            deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION, null);
+            deliverBeackgroundEvent(parcelable, recipe, GEO_MESSAGE_ACTION, null);
         }
 
         @Override
