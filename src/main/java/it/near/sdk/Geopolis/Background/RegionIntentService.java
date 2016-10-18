@@ -28,7 +28,6 @@ public class RegionIntentService extends BaseIntentService {
     /**
      * Constant for the notification
      */
-    public static final int NOTIFICATION_ID = 1;
 
     /**
      * Default constructor.
@@ -47,26 +46,7 @@ public class RegionIntentService extends BaseIntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        String notificationTitle = intent.getStringExtra(IntentConstants.NOTIF_TITLE);
-        String notificationBody = intent.getStringExtra(IntentConstants.NOTIF_BODY);
-
-        // create simple intent to open app launcher
-        Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
-        targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        targetIntent.putExtras(intent.getExtras());
-        if (notificationTitle == null) {
-            notificationTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        }
-        String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
-        try {
-            Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // sends system notification
-        NearNotification.send(this, GlobalConfig.getInstance(this).getNotificationImage(), notificationTitle, notificationBody, targetIntent, NOTIFICATION_ID);
+        sendSimpleNotification(intent);
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         RegionBroadcastReceiver.completeWakefulIntent(intent);

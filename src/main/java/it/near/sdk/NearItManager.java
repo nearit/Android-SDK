@@ -60,8 +60,8 @@ import it.near.sdk.Utils.ULog;
 public class NearItManager {
 
     private static final String TAG = "NearItManager";
-    private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
-    private static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
+    public static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
+    public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;

@@ -33,7 +33,7 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Trackings.Events;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -309,7 +309,7 @@ public class GeopolisManager {
         map.put("tracked_at", formatted);
         map.put("profile_id", GlobalConfig.getInstance(mApplication).getProfileId());
         map.put("installation_id", GlobalConfig.getInstance(mApplication).getInstallationId());
-        return NearUtils.toJsonAPI("trackings", map);
+        return NearJsonAPIUtils.toJsonAPI("trackings", map);
     }
 
 

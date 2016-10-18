@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Event;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 
 /**
  * Action for submitting a poll answer.
@@ -91,6 +91,6 @@ public class PollEvent extends Event{
         attributeMap.put(PROFILE_ID, profileId);
         attributeMap.put(RECIPE_ID, recipeId);
         attributeMap.put(POLL_ID, pollId);
-        return NearUtils.toJsonAPI(RES_TYPE, attributeMap);
+        return NearJsonAPIUtils.toJsonAPI(RES_TYPE, attributeMap);
     }
 }

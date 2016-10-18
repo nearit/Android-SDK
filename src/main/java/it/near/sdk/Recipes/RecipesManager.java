@@ -31,7 +31,7 @@ import it.near.sdk.Recipes.Models.PulseBundle;
 import it.near.sdk.Recipes.Models.ReactionAction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -135,7 +135,7 @@ public class RecipesManager {
         map.put("core", evalCoreObject);
         String requestBody = null;
         try {
-            requestBody = NearUtils.toJsonAPI("evaluation", map);
+            requestBody = NearJsonAPIUtils.toJsonAPI("evaluation", map);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Can't build request body");
@@ -146,7 +146,7 @@ public class RecipesManager {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Got recipes: " + response.toString());
-                    recipes = NearUtils.parseList(morpheus, response, Recipe.class);
+                    recipes = NearJsonAPIUtils.parseList(morpheus, response, Recipe.class);
                     persistList(recipes);
                     listener.onRecipesRefresh();
                 }
@@ -244,7 +244,7 @@ public class RecipesManager {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
+                    Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
                     ULog.d(TAG, recipe.toString());
                     String reactionPluginName = recipe.getReaction_plugin_id();
                     Reaction reaction = reactions.get(reactionPluginName);
@@ -290,7 +290,7 @@ public class RecipesManager {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    Recipe recipe = NearUtils.parseElement(morpheus, response, Recipe.class);
+                    Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
                     ULog.d(TAG, recipe.toString());
                     // TODO refactor plugin
                     String reactionPluginName = recipe.getReaction_plugin_id();
@@ -321,6 +321,6 @@ public class RecipesManager {
         coreObj.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put("core" , coreObj);
-        return NearUtils.toJsonAPI("evaluation", attributes);
+        return NearJsonAPIUtils.toJsonAPI("evaluation", attributes);
     }
 }

@@ -22,7 +22,7 @@ import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 
 /**
  * @author cattaneostefano
@@ -221,7 +221,7 @@ public class Recipe extends Resource {
         attributes.put("recipe_id", recipeId);
         attributes.put("event", trackingEvent);
         attributes.put("tracked_at", formattedDate);
-        return NearUtils.toJsonAPI("trackings", attributes);
+        return NearJsonAPIUtils.toJsonAPI("trackings", attributes);
     }
 
     public boolean isForegroundRecipe() {

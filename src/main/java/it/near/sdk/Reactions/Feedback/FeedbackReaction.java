@@ -24,7 +24,7 @@ import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -59,7 +59,7 @@ public class FeedbackReaction extends CoreReaction {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    feedbackList = NearUtils.parseList(morpheus, response, Feedback.class);
+                    feedbackList = NearJsonAPIUtils.parseList(morpheus, response, Feedback.class);
                     persistList(TAG, feedbackList);
                 }
 
@@ -115,7 +115,7 @@ public class FeedbackReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
-                Feedback feedback = NearUtils.parseElement(morpheus, response, Feedback.class);
+                Feedback feedback = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
                 feedback.setRecipeId(recipe.getId());
                 nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
             }
@@ -133,7 +133,7 @@ public class FeedbackReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
-                Feedback feedback = NearUtils.parseElement(morpheus, response, Feedback.class);
+                Feedback feedback = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
                 feedback.setRecipeId(recipe.getId());
                 nearNotifier.deliverBackgroundReaction(feedback, recipe);
             }

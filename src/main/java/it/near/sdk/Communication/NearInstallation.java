@@ -19,7 +19,7 @@ import java.util.HashMap;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -109,7 +109,7 @@ public class NearInstallation {
         map.put("resource_id", resource);
         String body;
         try {
-            body = NearUtils.toJsonAPI("plugin_resource", map);
+            body = NearJsonAPIUtils.toJsonAPI("plugin_resource", map);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Set resources: error in building body");
@@ -164,7 +164,7 @@ public class NearInstallation {
         attributeMap.put(BLUETOOTH, getBluetoothStatus());
         // Set location permission
         attributeMap.put(LOCATION, ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
-        return NearUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
+        return NearJsonAPIUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
     }
 
     public static boolean getBluetoothStatus() {

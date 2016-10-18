@@ -24,7 +24,7 @@ import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -90,7 +90,7 @@ public class CouponReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
-                Coupon coupon = NearUtils.parseElement(morpheus, response, Coupon.class);
+                Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
                 formatLinks(coupon);
                 nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
             }
@@ -108,7 +108,7 @@ public class CouponReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
-                Coupon coupon = NearUtils.parseElement(morpheus, response, Coupon.class);
+                Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
                 formatLinks(coupon);
                 nearNotifier.deliverBackgroundReaction(coupon, recipe);
             }
@@ -155,7 +155,7 @@ public class CouponReaction extends CoreReaction {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Copuns downloaded: " + response.toString());
-                    List<Coupon> coupons = NearUtils.parseList(morpheus, response, Coupon.class);
+                    List<Coupon> coupons = NearJsonAPIUtils.parseList(morpheus, response, Coupon.class);
                     formatLinks(coupons);
                     listener.onCouponsDownloaded(coupons);
                 }

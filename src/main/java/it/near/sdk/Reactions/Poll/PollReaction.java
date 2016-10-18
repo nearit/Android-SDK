@@ -24,7 +24,7 @@ import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -65,7 +65,7 @@ public class PollReaction extends CoreReaction {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, response.toString());
-                        Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
+                        Poll content = NearJsonAPIUtils.parseElement(morpheus, response, Poll.class);
                         content.setRecipeId(recipe.getId());
                         nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
                     }
@@ -97,7 +97,7 @@ public class PollReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 ULog.d(TAG, response.toString());
-                Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
+                Poll content = NearJsonAPIUtils.parseElement(morpheus, response, Poll.class);
                 content.setRecipeId(recipe.getId());
                 nearNotifier.deliverBackgroundReaction(content, recipe);
             }
@@ -132,7 +132,7 @@ public class PollReaction extends CoreReaction {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    pollList = NearUtils.parseList(morpheus, response, Poll.class);
+                    pollList = NearJsonAPIUtils.parseList(morpheus, response, Poll.class);
                     persistList(TAG, pollList);
                 }
 

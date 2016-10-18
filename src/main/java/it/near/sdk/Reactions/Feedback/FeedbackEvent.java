@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Event;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 
 
 /**
@@ -94,6 +94,6 @@ public class FeedbackEvent extends Event {
         attributeMap.put(COMMENT, comment);
         attributeMap.put(PROFILE_ID, profileId);
         attributeMap.put(RECIPE_ID, recipeId);
-        return NearUtils.toJsonAPI(RES_TYPE, attributeMap);
+        return NearJsonAPIUtils.toJsonAPI(RES_TYPE, attributeMap);
     }
 }

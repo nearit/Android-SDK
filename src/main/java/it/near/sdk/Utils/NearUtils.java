@@ -1,6 +1,7 @@
 package it.near.sdk.Utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -16,114 +17,18 @@ import java.util.Map;
 import it.near.sdk.MorpheusNear.JsonApiObject;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Reactions.Content.Content;
+import it.near.sdk.Reactions.Coupon.Coupon;
+import it.near.sdk.Reactions.CustomJSON.CustomJSON;
+import it.near.sdk.Reactions.Feedback.Feedback;
+import it.near.sdk.Reactions.Poll.Poll;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
 
 /**
  * Near utilities
  * @author cattaneostefano
  */
 public class NearUtils {
-    
-    /**
-     * Parse a list.
-     * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
-     * @param json json to parse.
-     * @param clazz class of the list object.
-     * @param <T> generic type.
-     * @return list of objects.
-     */
-    public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
-        JsonApiObject jsonApiObject = null;
-        try {
-            jsonApiObject = morpheus.parse(json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        List<T> returnList = new ArrayList<T>();
-
-        if (jsonApiObject.getResources() == null) return returnList;
-
-        for (Resource r : jsonApiObject.getResources()){
-            returnList.add((T) r);
-        }
-
-        return returnList;
-    }
-
-    /**
-     * Parse an object.
-     * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
-     * @param json json to parse.
-     * @param clazz class of the object.
-     * @param <T> generic type.
-     * @return casted object.
-     */
-    public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz){
-        JsonApiObject jsonApiObject = null;
-        try {
-            jsonApiObject = morpheus.parse(json.toString());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return (T) jsonApiObject.getResource();
-    }
-
-    /**
-     * Turns an hashmap of values to a jsonapi resource string.
-     * @param type the type of the jsonapi resource.
-     * @param map values map.
-     * @return codified string.
-     * @throws JSONException
-     */
-    public static String toJsonAPI(String type, HashMap<String, Object> map) throws JSONException{
-        return toJsonAPI(type, null, map);
-    }
-
-    public static String toJsonAPI(String type, List<HashMap<String, Object>> maps) throws JSONException{
-        JSONArray array = new JSONArray();
-        for (HashMap<String, Object> map : maps) {
-            array.put(getResObj(type, null, map));
-        }
-        JSONObject outerObj = new JSONObject();
-        outerObj.put("data", array);
-        return outerObj.toString();
-    }
-    /**
-     * Turns an hasmap of values to a jsonapi resource string. Also sets the id.
-     * @param type the type of the jsonapi resource.
-     * @param id id of the resource.
-     * @param map values map.
-     * @return codified string.
-     * @throws JSONException
-     */
-    public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
-        JSONObject dataObject = getResObj(type, id, map);
-
-        JSONObject outerObj = new JSONObject();
-        outerObj.put("data", dataObject);
-
-        return outerObj.toString();
-    }
-
-    private static JSONObject getResObj(String type, String id, HashMap<String, Object> map) throws JSONException {
-        JSONObject attributesObj = new JSONObject();
-
-        for (Map.Entry<String, Object> entry : map.entrySet() ){
-            if (entry.getValue() instanceof HashMap){
-                attributesObj.put(entry.getKey(), new JSONObject((Map) entry.getValue()));
-            } else {
-                attributesObj.put(entry.getKey(), entry.getValue()!=null ? entry.getValue() : JSONObject.NULL);
-            }
-        }
-
-        JSONObject dataObject = new JSONObject();
-        if (id != null){
-            dataObject.put("id", id);
-        }
-        dataObject.put("type", type);
-        dataObject.put("attributes", attributesObj);
-        return dataObject;
-    }
 
     /**
      * Decode base 64 string
@@ -168,7 +73,7 @@ public class NearUtils {
      * @param close
      * @return
      */
-    public static String substringBetween(String str, String open, String close) {
+    private static String substringBetween(String str, String open, String close) {
         if (str == null || open == null || close == null) {
             return null;
         }
@@ -181,5 +86,60 @@ public class NearUtils {
         }
         return null;
     }
+
+    /**
+     * Utility method for automatically casting content. It notifies the listener if the intent contains a recognized core content.
+     * @param intent The intent to analyze.
+     * @param listener Contains a callback method for each content type.
+     * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
+     */
+    public static boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
+
+        String reaction_plugin = intent.getExtras().getString("reaction-plugin");
+        String reaction_action = intent.getExtras().getString("reaction-action");
+        String notif_body = intent.getExtras().getString(IntentConstants.NOTIF_BODY);
+
+        String pulse_plugin = intent.getExtras().getString("pulse-plugin");
+        String pulse_action = intent.getExtras().getString("pulse-action");
+        String pulse_bundle = intent.getExtras().getString("pulse-bundle");
+
+
+        boolean coreContent = false;
+        if (reaction_plugin == null) return false;
+        switch (reaction_plugin) {
+            case "content-notification" :
+                Content c_notif = intent.getParcelableExtra("content");
+                listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "simple-notification" :
+                SimpleNotification s_notif = intent.getParcelableExtra("content");
+                listener.getSimpleNotification(intent, s_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "poll-notification" :
+                Poll p_notif = intent.getParcelableExtra("content");
+                listener.getPollNotification(intent, p_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "coupon-blaster" :
+                Coupon coup_notif = intent.getParcelableExtra("content");
+                listener.getCouponNotification(intent, coup_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "json-sender" :
+                CustomJSON custom_notif = intent.getParcelableExtra("content");
+                listener.getCustomJSONNotification(intent, custom_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+            case "feedbacks" :
+                Feedback f_notif = intent.getParcelableExtra("content");
+                listener.getFeedbackNotification(intent, f_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
+                coreContent = true;
+                break;
+        }
+        return coreContent;
+    }
+
 
 }

@@ -6,13 +6,12 @@ import android.content.SharedPreferences;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.Geopolis.Beacons.BeaconNode;
 import it.near.sdk.Geopolis.GeoFences.GeoFenceNode;
 import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 
 /**
  * Manages the geopolis node structure.
@@ -58,7 +57,7 @@ public class NodesManager {
      */
     public List<Node> parseAndSetNodes(JSONObject jsonObject) {
         saveConfig(jsonObject.toString());
-        this.nodes = NearUtils.parseList(morpheus, jsonObject, Node.class);
+        this.nodes = NearJsonAPIUtils.parseList(morpheus, jsonObject, Node.class);
         return nodes;
     }
 
@@ -131,7 +130,7 @@ public class NodesManager {
         String config = getSavedConfig();
         if (config == null) return null;
         JSONObject configJson = new JSONObject(config);
-        return NearUtils.parseList(morpheus, configJson, Node.class);
+        return NearJsonAPIUtils.parseList(morpheus, configJson, Node.class);
     }
 
     private void saveConfig(String json){

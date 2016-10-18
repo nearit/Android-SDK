@@ -19,7 +19,7 @@ import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -134,7 +134,7 @@ public class NearItUserProfile {
         String appId = GlobalConfig.getInstance(context).getAppId();
         HashMap<String, Object> map = new HashMap<>();
         map.put("app_id", appId);
-        return NearUtils.toJsonAPI("profiles", map);
+        return NearJsonAPIUtils.toJsonAPI("profiles", map);
     }
 
     /**
@@ -167,7 +167,7 @@ public class NearItUserProfile {
         map.put("value", value);
         String reqBody= null;
         try {
-            reqBody = NearUtils.toJsonAPI("data_points", map);
+            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", map);
         } catch (JSONException e) {
             e.printStackTrace();
             listener.onDataNotSetError("Request creation error");
@@ -232,7 +232,7 @@ public class NearItUserProfile {
         }
         String reqBody = null;
         try {
-            reqBody = NearUtils.toJsonAPI("data_points", maps);
+            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
         } catch (JSONException e) {
             e.printStackTrace();
             listener.onDataNotSetError("Request creatin error");

@@ -1,7 +1,6 @@
 package it.near.sdk.Push;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 
 import org.json.JSONException;
@@ -16,7 +15,7 @@ import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
 import it.near.sdk.Recipes.RecipesManager;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 
 /**
  * Manager for push notifications.
@@ -52,7 +51,7 @@ public class PushManager {
         HashMap<String, Object> map = buildPushTrackMap();
 
         try {
-            String body = NearUtils.toJsonAPI("status", null, map);
+            String body = NearJsonAPIUtils.toJsonAPI("status", null, map);
             NearNetworkUtil.sendTrack(mContext, url.toString(), body);
         } catch (JSONException e) {
             e.printStackTrace();
