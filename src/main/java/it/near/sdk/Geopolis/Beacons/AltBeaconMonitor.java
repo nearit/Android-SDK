@@ -43,7 +43,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private static final float DEFAULT_THRESHOLD = 0.5f;
     private static final long BACKGROUND_BETWEEN_SCAN_PERIODS = 30000;
     private static final long BACKGROUND_SCAN_PERIOD = 1500;
-    private static final long FOREGROUND_SCAN_PERIOD = 3000;
+    private static final long FOREGROUND_SCAN_PERIOD = 1000;
     private static final long REGION_EXIT_PERIOD = 30000;
 
     private final BeaconManager beaconManager;
