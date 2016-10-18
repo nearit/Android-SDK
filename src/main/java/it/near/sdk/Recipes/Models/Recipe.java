@@ -60,8 +60,6 @@ public class Recipe extends Resource {
     private static final String TRACKINGS_PATH = "trackings";
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";
-    private SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
-    private SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
 
     public String getName() {
         return name;
@@ -233,9 +231,10 @@ public class Recipe extends Resource {
      * @return the validity of the recipe.
      */
     public boolean isScheduledNow(){
-        return isDateValid() &&
+        return scheduling == null ||
+                ( isDateValid() &&
                 isTimetableValid() &&
-                isDaysValid();
+                isDaysValid() );
     }
 
     /**
@@ -250,6 +249,8 @@ public class Recipe extends Resource {
         boolean valid = true;
         try {
             Calendar now = Calendar.getInstance();
+            // do not move the dateformatter to be an instance variable, it messes the parsing
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
             if (fromDateString != null) {
                 Date fromDate = dateFormatter.parse(fromDateString);
@@ -282,6 +283,7 @@ public class Recipe extends Resource {
         boolean valid = true;
         try {
             Calendar now = Calendar.getInstance();
+            SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
             if (fromHour != null) {
                 Date fromHourDate = timeFormatter.parse(fromHour);
                 Calendar fromHourCalendar = Calendar.getInstance();
