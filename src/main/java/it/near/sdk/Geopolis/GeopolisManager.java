@@ -142,7 +142,7 @@ public class GeopolisManager {
                     .appendPath(BEACON_FOREST_BEACONS).build();
         url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
-                .appendPath("nodesd")
+                .appendPath("nodes")
                 .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
                 .appendQueryParameter("include", "children.*.children")
                 .build();
