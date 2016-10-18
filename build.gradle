@@ -140,16 +140,19 @@ task uploadDocs {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:support-annotations:23.3.0'
+    compile 'com.android.support:support-annotations:24.2.1'
     javadocDeps 'com.android.support:support-annotations:23.3.0'
     javadocDeps 'org.altbeacon:android-beacon-library:2.8.1'
-    compile 'com.android.support:support-v4:23.3.0'
     compile 'org.apache.commons:commons-lang3:3.4'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.google.code.gson:gson:2.6.2'
     compile 'org.altbeacon:android-beacon-library:2.9.1'
-    compile 'com.google.firebase:firebase-messaging:9.4.0'
-    compile 'com.google.android.gms:play-services-location:9.4.0'
+    compile 'com.google.firebase:firebase-messaging:9.6.1'
+    compile 'com.google.firebase:firebase-core:9.6.1'
+    compile 'com.google.android.gms:play-services-location:9.6.1'
+
+    // remove this
+    compile 'com.jraska:console:0.4.3'
 
 }
 
