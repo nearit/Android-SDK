@@ -56,8 +56,6 @@ When you want to start the radar for geofences and beacons call this method
 
 ## Advanced topics ##
 
-* Region scanning is set to a scan every 60 seconds when outside your beacons range. As soon as beacons are picked up, it switches to 20 seconds.
-* You can set the minimum parameter for determine the distance upon which the SDK must detect beacons recipes with the method *setThreshold(floatParam)* or the *NearItManager*. The default value is *0.5f*
 * The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
 * You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of the *NearItManager*
 
@@ -82,7 +80,7 @@ public void foregroundEvent(Parcelable content, Recipe recipe) {
 If you want to be notified when a user enters a region (bluetooth or geofence) using the built-in background region notifications put this in your app manifest.
 ```xml
 <!-- built in region receivers -->
-<receiver android:name="it.near.sdk.Beacons.Monitoring.RegionBroadcastReceiver"
+<receiver android:name="it.near.sdk.Geopolis.Background.RegionBroadcastReceiver"
     android:exported="false">
     <intent-filter>
         <action android:name="it.near.sdk.permission.GEO_MESSAGE"/>

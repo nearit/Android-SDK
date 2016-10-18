@@ -335,7 +335,6 @@ public class Recipe extends Resource {
      * @param intent the intent for the background event.
      * @param recipe the recipe causing the intent.
      * @param parcelable the content to be delivered.
-     * @return the intent with the extra arguments.
      */
     public static void fillIntentExtras(Intent intent, Recipe recipe, Parcelable parcelable) {
 
