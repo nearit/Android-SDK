@@ -67,7 +67,7 @@ To receive foreground contents (e.g. ranging recipes) set a proximity listener w
 
 @Override
 public void foregroundEvent(Parcelable content, Recipe recipe) {
-    Toast.makeText(this, "range event: ", Toast.LENGTH_SHORT).show();
+    // handle the event
 }   
 ```
 
