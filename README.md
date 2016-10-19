@@ -45,7 +45,7 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 When you want to start the radar for geofences and beacons call this method
 
 ```java
-    // tipically call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
+    // call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
     nearItManager.startRadar()
     // to stop call this method nearItManager.stopRadar()
 ```
