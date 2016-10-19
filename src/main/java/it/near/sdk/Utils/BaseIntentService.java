@@ -27,10 +27,7 @@ public abstract class BaseIntentService extends IntentService {
         super(name);
     }
 
-    /**
-     * Send a simple notification, and also tracks the recipe as notified.
-     * @param intent the intent from the receiver.
-     */
+
     protected void sendSimpleNotification(Intent intent){
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
