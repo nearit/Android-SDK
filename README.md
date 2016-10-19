@@ -71,7 +71,7 @@ public void foregroundEvent(Parcelable content, Recipe recipe) {
 }   
 ```
 
-### Built-in region background receivers ###
+## Built-in region background receivers ##
 
 If you want to be notified when a user enters a region (bluetooth or geofence) using the built-in background region notifications put this in your app manifest. Any content will be delivered through a notification that will call your launcher app and carry some extras.
 ```xml
@@ -105,7 +105,7 @@ If you need a different approach for notifying region enter, other than having a
 </receiver>
 ```
 
-### Answer Polls###
+### Answer Polls ###
 
 To answer a poll add this to your code
 ```java
@@ -132,7 +132,7 @@ Recipes tracks themselves as received, but you need to track the tap event, by c
 Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
-### User profilation ###
+## User profilation ##
 
 To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
 
@@ -204,7 +204,7 @@ NearItUserProfile.resetProfileId(context)
 ```
 Further calls to NearItUserProfile.getProfileId(context) will return null.
 
-### Enable Push Notifications ###
+## Enable Push Notifications ##
 
 NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display) just like the region notifications.
