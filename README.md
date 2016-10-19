@@ -9,14 +9,10 @@ This is the NearIt Android SDK. With this component you can integrate the NearIt
 * NearIt services integration
 * Beacon detection with app in the foreground.
 * Content delivery
-* Beacon monitoring with app in the background.
+* Beacon and geofence monitoring with app in the background.
 * Different types of contents.
 * Push Notification
 * User Segmentation
-
-## Coming soon ##
-
-* Different type of detectors
 
 ## Behaviour ##
 
