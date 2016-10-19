@@ -52,7 +52,7 @@ When you want to start the radar for geofences and beacons call this method
 
 ## Advanced topics ##
 
-* The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
+* The SDK automatically includes the permission for location access in its manifest (necessary for beacon and geofence monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
 * You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of the *NearItManager*
 
 ## Foreground updates ##
@@ -73,7 +73,7 @@ public void foregroundEvent(Parcelable content, Recipe recipe) {
 
 ### Built-in region background receivers ###
 
-If you want to be notified when a user enters a region (bluetooth or geofence) using the built-in background region notifications put this in your app manifest.
+If you want to be notified when a user enters a region (bluetooth or geofence) using the built-in background region notifications put this in your app manifest. Any content will be delivered through a notification that will call your launcher app and carry some extras.
 ```xml
 <!-- built in region receivers -->
 <receiver android:name="it.near.sdk.Geopolis.Background.RegionBroadcastReceiver"
@@ -84,6 +84,8 @@ If you want to be notified when a user enters a region (bluetooth or geofence) u
     </intent-filter>
 </receiver>
 ```
+
+Recipes either deliver content in the background or in the foreground but not both. Check this table to see how you will be notified.
 
 ### Custom background behavior ###
 
@@ -121,6 +123,13 @@ To send a rating to a feedback
 nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
 // if you don't hold the feedback object use this constructor
 nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
+```
+
+### Track recipes ###
+
+Recipes tracks themselves as received, but you need to track the tap event, by calling
+```java
+Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
 ### User profilation ###
@@ -198,13 +207,13 @@ Further calls to NearItUserProfile.getProfileId(context) will return null.
 ### Enable Push Notifications ###
 
 NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
-When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
+When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display) just like the region notifications.
 
-To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app (add an app in the firebase console, download the google-services.json file and add the proper dependencies into the project level and app level gradle file).
+To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app (create a project in the firebase console, download the google-services.json file and add the proper dependencies into the project level and app level gradle file).
 The NearIt SDK already has the dependency related to the FCM messaging service and has registered the proper service and receivers for handling our internal push notification resolution in its manifest. The data will be fetched directly from the config file (google-services.json).
 The only extra step is to enter the cloud messaging server key into the CMS. Push notification only work if a profile is created.
 
-To receive the system notification of a push recipe add this receiver in the *application* tag of your app *manifest*
+To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
 ```xml
 <application ...>
 ...
@@ -254,6 +263,6 @@ Also, you need to omit this receiver from your manifest
          </intent-filter>
     </receiver>
 ```
-We futhermore suggest to create an unique receiver for both region messages and push messages if their custom behavior matches. Just add both intent filters inside the receiver and deal with those messages in the same receiver.
+We futhermore suggest to create an unique receiver for both region messages and push messages if their custom behavior matches. Just add both intent filters inside the receiver and deal with those messages in the same receiver. Check the intent action string to find out the source of the intent.
 
 WARNING: If you are using some gms play services in your app and experience malfunctioning, please be sure to use the 9.6.1 version of the gms dependency you are pulling in your app.
