@@ -62,6 +62,7 @@ To receive foreground contents (e.g. ranging recipes) set a proximity listener w
 {
     ...
     nearItManager.addProximityListener(this);
+    // remember to remove the listener whenthe object is being destroyed with nearItManager.removeProximityListener(this);
     ...
 }
 
@@ -86,6 +87,13 @@ If you want to be notified when a user enters a region (bluetooth or geofence) u
 ```
 
 Recipes either deliver content in the background or in the foreground but not both. Check this table to see how you will be notified.
+
+| Type of trigger                  | Delivery           |
+|----------------------------------|--------------------|
+| Push (immediate or scheduled)    | Background intent  |
+| Enter and Exit on geofences      | Background intent  |
+| Enter and Exit on beacon regions | Background intent  |
+| Enter in a specific beacon range | Proximity listener |
 
 ### Custom background behavior ###
 
