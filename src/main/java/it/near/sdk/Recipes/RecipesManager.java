@@ -205,7 +205,7 @@ public class RecipesManager {
         if (matchingRecipes.isEmpty()){return;}
         List<Recipe> validRecipes = new ArrayList<>();
         for (Recipe matchingRecipe : matchingRecipes) {
-            if (matchingRecipe.isScheduledNow()){
+            if (true /*matchingRecipe.isScheduledNow()*/){
                 validRecipes.add(matchingRecipe);
             }
         }
