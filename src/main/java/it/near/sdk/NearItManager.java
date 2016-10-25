@@ -301,6 +301,10 @@ public class NearItManager {
         }
     }
 
+    /**
+     * Start the monitoring radar that works in the background.
+     * This should be stopped only if you don't want to be notified anymore (even in background) and don't want to track the user location.
+     */
     public void startRadar() {
         geopolis.startRadar();
     }

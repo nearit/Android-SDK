@@ -26,7 +26,7 @@ public abstract class BaseIntentService extends IntentService {
     public BaseIntentService(String name) {
         super(name);
     }
-    
+
     /**
      * Send a simple notification, and also tracks the recipe as notified.
      * @param intent the intent from the receiver.

@@ -67,7 +67,7 @@ public class NearGeofenceTransitionsIntentService extends IntentService {
             Log.wtf(TAG, geofenceTransitionDetails);
             // Send notification and log the transition details.
         } else {
-            Log.e(TAG, getString(R.string.geofence_transition_invalid_type, geofenceTransition));
+            Log.d(TAG, getString(R.string.geofence_transition_invalid_type, geofenceTransition));
         }
     }
 
