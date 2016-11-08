@@ -14,6 +14,8 @@ This is the NearIt Android SDK. With this component you can integrate the NearIt
 * Push Notification
 * User Segmentation
 
+[This is a link!](docs/firebase.md)
+
 ## Behaviour ##
 
 The SDK will start monitoring the regions configured in the CMS of your app. Any content will be delivered through a notification that will call your launcher app and carry some extras.
