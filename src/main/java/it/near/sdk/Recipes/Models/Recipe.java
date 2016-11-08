@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.internal.LinkedTreeMap;
 
 import org.json.JSONException;
 
@@ -245,7 +246,7 @@ public class Recipe extends Resource {
      * @return if the date range is respected.
      */
     private boolean isDateValid(){
-        HashMap<String, Object> date = (HashMap<String, Object>) scheduling.get("date");
+        Map<String, Object> date = (LinkedTreeMap<String, Object>) scheduling.get("date");
         if (date == null) return true;
         String fromDateString = (String) date.get("from");
         String toDateString = (String) date.get("to");
@@ -279,7 +280,7 @@ public class Recipe extends Resource {
      * @return if the time range is respected.
      */
     private boolean isTimetableValid() {
-        Map<String, Object> timetable = (HashMap<String, Object>) scheduling.get("timetable");
+        Map<String, Object> timetable = (LinkedTreeMap<String, Object>) scheduling.get("timetable");
         if (timetable == null) return true;
         String fromHour = (String) timetable.get("from");
         String toHour = (String) timetable.get("to");
