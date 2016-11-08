@@ -14,12 +14,13 @@ This is the NearIt Android SDK. With this component you can integrate the NearIt
 * Push Notification
 * User Segmentation
 
+
 ## Behaviour ##
 
 The SDK will start monitoring the regions configured in the CMS of your app. Any content will be delivered through a notification that will call your launcher app and carry some extras.
 To implement a custom background behaviour look in the advanced topics section.
 
-## How do I get set up? ##
+## Getting started ##
 
 To start using the SDK, include this in your app *build.gradle*
 
@@ -62,6 +63,8 @@ To receive foreground contents (e.g. ranging recipes) set a proximity listener w
 {
     ...
     nearItManager.addProximityListener(this);
+    // remember to remove the listener when the object is being destroyed with 
+    // nearItManager.removeProximityListener(this);
     ...
 }
 
