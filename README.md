@@ -14,14 +14,13 @@ This is the NearIt Android SDK. With this component you can integrate the NearIt
 * Push Notification
 * User Segmentation
 
-[This is a link!](docs/firebase.md)
 
 ## Behaviour ##
 
 The SDK will start monitoring the regions configured in the CMS of your app. Any content will be delivered through a notification that will call your launcher app and carry some extras.
 To implement a custom background behaviour look in the advanced topics section.
 
-## Getting started? ##
+## Getting started ##
 
 To start using the SDK, include this in your app *build.gradle*
 
@@ -61,7 +60,8 @@ To receive foreground contents (e.g. ranging recipes) set a proximity listener w
 {
     ...
     nearItManager.addProximityListener(this);
-    // remember to remove the listener whenthe object is being destroyed with nearItManager.removeProximityListener(this);
+    // remember to remove the listener when the object is being destroyed with 
+    // nearItManager.removeProximityListener(this);
     ...
 }
 
@@ -101,7 +101,7 @@ Recipes either deliver content in the background or in the foreground but not bo
 | Enter and Exit on beacon regions | Background intent  |
 | Enter in a specific beacon range | Proximity listener |
 
-[Custom background notification behaviour](docs/custom-background-notifications.md)
+If you want to customize the behavior of background notification see [this page](docs/custom-background-notifications.md)
 
 ### Answer Polls ###
 
@@ -122,8 +122,6 @@ nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
 // if you don't hold the feedback object use this constructor
 nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
 ```
-
-[User Profilation](docs/user-profilation.md)
 
 ## Enable Push Notifications ##
 
@@ -156,3 +154,11 @@ Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
 [Custom Push Notification](docs/custom-push-notification)
+
+## Other resources ##
+
+[Custom background notifications](docs/custom-background-notifications.md)
+
+[Custom Push Notification](docs/custom-push-notification)
+
+[User Profilation](docs/user-profilation.md)

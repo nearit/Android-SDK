@@ -63,6 +63,7 @@ public class GeopolisManager {
     private static final String TAG = "GeopolisManager";
     private static final String PREFS_SUFFIX = "GeopolisManager";
     private static final String PLUGIN_NAME = "geopolis";
+    private static final String TRACKING_RES = "trackings";
 
     private static final String RADAR_ON = "radar_on";
     private static final String GEOPOLIS_CONFIG = "cached_config";
@@ -283,8 +284,8 @@ public class GeopolisManager {
     private void trackEvent(String identifier, String event) {
         try {
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                    .appendPath(BEACON_FOREST_PATH)
-                    .appendPath(BEACON_FOREST_TRACKINGS).build();
+                    .appendPath(PLUGIN_NAME)
+                    .appendPath(TRACKING_RES).build();
             NearNetworkUtil.sendTrack(mApplication, url.toString(), buildTrackBody(identifier, event));
         } catch (JSONException e) {
             ULog.d(TAG, "Unable to send track: " +  e.toString());
