@@ -7,6 +7,9 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.RemoteException;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -18,6 +21,7 @@ import org.altbeacon.beacon.service.RangedBeacon;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -151,11 +155,24 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
             this.regions.add(region);
             addRegion(region);
         }
+        persistRegions(regions);
         if (regionBootstrap == null && regions.size() > 0) {
             resetRanging();
             resetMonitoring();
             startRadar();
         }
+    }
+
+    private void persistRegions(List<Region> regions) {
+        String regionString = new Gson().toJson(regions);
+        sp.edit().putString("regions", regionString).commit();
+    }
+
+    private List<Region> loadRegions(){
+        String regions = sp.getString("regions", null);
+        Type type = new TypeToken<List<Region>>(){}.getType();
+        List<Region> regionsList = new Gson().fromJson(regions, type);
+        return regionsList;
     }
 
     public void addRegion(Region region){
@@ -243,8 +260,15 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     public void onForeground() {
         ULog.wtf(TAG, "onForeground");
         // When going to the foreground, if we have regions to range, start ranging
-        if (beaconManager.getRangedRegions().size() > 0) {
-            startRanging();
+
+        refreshRangingList();
+        startRanging();
+    }
+
+    private void refreshRangingList() {
+        if (loadRegions() == null) return;
+        for (Region region : loadRegions()) {
+            beaconManager.requestStateForRegion(region);
         }
     }
 
