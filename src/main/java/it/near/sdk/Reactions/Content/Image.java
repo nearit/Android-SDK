@@ -28,7 +28,6 @@ public class Image extends Resource {
     public ImageSet toImageSet(){
         ImageSet imageSet = new ImageSet();
         imageSet.setFullSize((String) image.get("url"));
-        imageSet.setBigSize(((LinkedTreeMap<String, Object>)image.get("max_1920_jpg")).get("url").toString());
         imageSet.setSmallSize(((LinkedTreeMap<String, Object>)image.get("square_300")).get("url").toString());
         return imageSet;
     }

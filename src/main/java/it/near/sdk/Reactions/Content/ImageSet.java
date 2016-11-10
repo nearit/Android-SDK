@@ -8,7 +8,6 @@ import android.os.Parcelable;
  */
 public class ImageSet implements Parcelable{
     String fullSize;
-    String bigSize;
     String smallSize;
 
     public ImageSet() {
@@ -16,7 +15,6 @@ public class ImageSet implements Parcelable{
 
     protected ImageSet(Parcel in) {
         fullSize = in.readString();
-        bigSize = in.readString();
         smallSize = in.readString();
     }
 
@@ -40,14 +38,6 @@ public class ImageSet implements Parcelable{
         this.fullSize = fullSize;
     }
 
-    public String getBigSize() {
-        return bigSize;
-    }
-
-    public void setBigSize(String bigSize) {
-        this.bigSize = bigSize;
-    }
-
     public String getSmallSize() {
         return smallSize;
     }
@@ -64,7 +54,6 @@ public class ImageSet implements Parcelable{
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(fullSize);
-        dest.writeString(bigSize);
         dest.writeString(smallSize);
     }
 }
