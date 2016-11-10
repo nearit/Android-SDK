@@ -62,14 +62,6 @@ public class SimpleNotificationReaction extends CoreReaction {
         return simpleNotification;
     }
 
-
-
-    @Override
-    public void handleEvaluatedReaction(Recipe recipe, String bundle_id) {
-        // This is not supposed to be called, a simple notification, right now is not going to be attached to a recipe needing evaluation
-        showContent(null, recipe);
-    }
-
     @Override
     public String getPrefSuffix() {
         return PREFS_SUFFIX;

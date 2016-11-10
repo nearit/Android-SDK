@@ -82,13 +82,4 @@ public abstract class Reaction {
      */
     public abstract void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle);
 
-    /**
-     * Handle a reaction that was evaluated online, including the call to NearNotifier object. This should check if the bundle_id refers to not cached contents
-     * and fetch the reaction bundle object if necessary.
-     * @param recipe the recipe object.
-     * @param bundle_id the id of the reaction bundle.
-     */
-    public abstract void handleEvaluatedReaction(Recipe recipe, String bundle_id);
-
-
 }

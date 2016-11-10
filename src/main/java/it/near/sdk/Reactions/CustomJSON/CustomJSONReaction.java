@@ -147,22 +147,6 @@ public class CustomJSONReaction extends CoreReaction {
         });
     }
 
-    @Override
-    public void handleEvaluatedReaction(final Recipe recipe, String bundle_id) {
-        requestSingleReaction(bundle_id, new NearJsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                CustomJSON customJSON = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
-                nearNotifier.deliverBackgroundReaction(customJSON, recipe);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                ULog.d(TAG, "Error downloading content: " + statusCode);
-            }
-        });
-    }
 
     public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()

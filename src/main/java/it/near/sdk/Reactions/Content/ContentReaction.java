@@ -120,24 +120,6 @@ public class ContentReaction extends CoreReaction {
         });
     }
 
-    @Override
-    public void handleEvaluatedReaction(final Recipe recipe, String bundleId) {
-        // TODO test this method. Since recipes with a content won't need online evaluation this won't get called for now
-        requestSingleReaction(bundleId, new NearJsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                formatLinks(content);
-                nearNotifier.deliverBackgroundReaction(content, recipe);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                ULog.d(TAG, "Error downloading content:" + statusCode);
-            }
-        });
-    }
 
     public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
