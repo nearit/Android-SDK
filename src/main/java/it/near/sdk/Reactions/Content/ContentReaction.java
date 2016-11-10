@@ -101,23 +101,10 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundleId) {
-        // TODO not tested
-        requestSingleReaction(bundleId.getId(), new NearJsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                formatLinks(content);
-                nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                ULog.d(TAG, "Error downloading push content: " + statusCode);
-            }
-
-        });
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
+        Content content = (Content) reactionBundle;
+        formatLinks(content);
+        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
     }
 
 

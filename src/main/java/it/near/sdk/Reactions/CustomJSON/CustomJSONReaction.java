@@ -131,20 +131,9 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
-        requestSingleReaction(bundle.getId(), new NearJsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                CustomJSON customJson = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
-                nearNotifier.deliverBackgroundPushReaction(customJson, recipe, push_id);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                ULog.d(TAG, "Error downloading push content: " + statusCode);
-            }
-        });
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
+        CustomJSON customJSON = (CustomJSON) reactionBundle;
+        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe, push_id);
     }
 
 

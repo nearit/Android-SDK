@@ -80,26 +80,17 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        // TODO this will likely never get called because coupon recipes are online evaluated or push recipes.
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
+        Coupon coupon = (Coupon) reaction_bundle;
+        formatLinks(coupon);
+        nearNotifier.deliverBackgroundReaction(coupon, recipe);
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
-        requestSingleResource(bundle.getId(), new NearJsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                formatLinks(coupon);
-                nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                ULog.d(TAG, "Error in downloading push content: " + statusCode);
-            }
-        });
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
+        Coupon coupon = (Coupon) reaction_bundle;
+        formatLinks(coupon);
+        nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
     }
 
 

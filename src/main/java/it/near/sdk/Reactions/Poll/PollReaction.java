@@ -59,24 +59,10 @@ public class PollReaction extends CoreReaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle bundle) {
-        // TODO not tested
-        requestSingleReaction(bundle.getId(), new NearJsonHttpResponseHandler(){
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        Poll content = NearJsonAPIUtils.parseElement(morpheus, response, Poll.class);
-                        content.setRecipeId(recipe.getId());
-                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
-                    }
-
-                    @Override
-                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        ULog.d(TAG, "Error downloading push content: " + statusCode);
-                    }
-                }
-
-        );
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
+        Poll poll = (Poll) reactionBundle;
+        poll.setRecipeId(recipe.getId());
+        nearNotifier.deliverBackgroundPushReaction(poll, recipe, push_id);
     }
 
     public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){

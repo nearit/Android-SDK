@@ -111,38 +111,9 @@ public class FeedbackReaction extends CoreReaction {
 
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
-        requestSingleReaction(reaction_bundle.getId(), new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Feedback feedback = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
-                feedback.setRecipeId(recipe.getId());
-                nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ULog.d(TAG, "Error downloading feedback: " + statusCode);
-            }
-        });
-    }
-
-    @Override
-    public void handleEvaluatedReaction(final Recipe recipe, String bundle_id) {
-        requestSingleReaction(bundle_id, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Feedback feedback = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
-                feedback.setRecipeId(recipe.getId());
-                nearNotifier.deliverBackgroundReaction(feedback, recipe);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ULog.d(TAG, "Error downloading feedback:" + statusCode);
-            }
-        });
+        Feedback feedback = (Feedback) reaction_bundle;
+        feedback.setRecipeId(recipe.getId());
+        nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
     }
 
     public void sendEvent(FeedbackEvent event) {
