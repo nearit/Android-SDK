@@ -6,12 +6,13 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 
 /**
  * Created by cattaneostefano on 11/10/2016.
  */
 
-public class Feedback extends Resource implements Parcelable{
+public class Feedback extends ReactionBundle implements Parcelable{
 
     @SerializedName("question")
     String question;

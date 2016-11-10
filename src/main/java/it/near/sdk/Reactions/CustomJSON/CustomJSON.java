@@ -9,11 +9,12 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 
 /**
  * @author cattaneostefano.
  */
-public class CustomJSON extends Resource implements Parcelable{
+public class CustomJSON extends ReactionBundle implements Parcelable{
 
     @SerializedName("content")
     HashMap<String, Object> content;
