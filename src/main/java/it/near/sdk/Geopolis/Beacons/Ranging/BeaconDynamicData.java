@@ -91,7 +91,9 @@ public class BeaconDynamicData {
         int proximity = distanceToProximity(_distance);
 
         if (_distance>0) {
-            proximityValues.remove(proximityValues.size()-1);
+            if (proximityValues.size() > 0){
+                proximityValues.remove(proximityValues.size()-1);
+            }
             proximityValues.add(proximity);
         }
 
