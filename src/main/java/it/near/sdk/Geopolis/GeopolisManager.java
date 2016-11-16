@@ -310,6 +310,7 @@ public class GeopolisManager {
         map.put("tracked_at", formatted);
         map.put("profile_id", GlobalConfig.getInstance(mApplication).getProfileId());
         map.put("installation_id", GlobalConfig.getInstance(mApplication).getInstallationId());
+        map.put("app_id", GlobalConfig.getInstance(mApplication).getAppId());
         return NearJsonAPIUtils.toJsonAPI("trackings", map);
     }
 
