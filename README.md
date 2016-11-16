@@ -68,6 +68,10 @@ To receive foreground contents (e.g. ranging recipes) set a proximity listener w
 @Override
 public void foregroundEvent(Parcelable content, Recipe recipe) {
     // handle the event
+    // if you show the notification to the user track the recipe as notified with
+    // Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
+    // when the user interacts with the content, track the event with
+    // Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
 }   
 ```
 
