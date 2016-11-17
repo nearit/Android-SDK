@@ -34,12 +34,13 @@ android {
         targetSdkVersion 23
         versionCode 0
         versionName version
+        buildConfigField("int", "API_VERSION", "2")
         multiDexEnabled true
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }

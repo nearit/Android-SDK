@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Looper;
 
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.BuildConfig;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.SyncHttpClient;
@@ -101,7 +102,8 @@ public class NearAsyncHttpClient {
         return new Header[]{
                 new BasicHeader(Constants.Headers.accessToken, "bearer " + GlobalConfig.getInstance(context).getApiKey()),
                 new BasicHeader(Constants.Headers.contentType, Constants.Headers.jsonApiHeader),
-                new BasicHeader(Constants.Headers.accept, Constants.Headers.jsonApiHeader)
+                new BasicHeader(Constants.Headers.accept, Constants.Headers.jsonApiHeader),
+                new BasicHeader(Constants.Headers.version_header_key, String.valueOf(it.near.sdk.BuildConfig.API_VERSION))
         };
     }
 
