@@ -307,7 +307,9 @@ public class RecipesManager {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    gotRecipe(recipe);
+                    if (recipe != null){
+                        gotRecipe(recipe);
+                    }
                 }
 
                 @Override
