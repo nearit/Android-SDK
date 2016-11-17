@@ -33,32 +33,32 @@ public class FcmIntentService extends BaseIntentService implements CoreContentsL
     }
 
     @Override
-    public void getPollNotification(Intent intent, Poll notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getPollNotification(Intent intent, Poll notification, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getContentNotification(Intent intent, Content notification, String notifText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getContentNotification(Intent intent, Content notification, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getCouponNotification(Intent intent, Coupon notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getCouponNotification(Intent intent, Coupon notification, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getCustomJSONNotification(Intent intent, CustomJSON notification, String notificationText, String content_plugin, String content_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getCustomJSONNotification(Intent intent, CustomJSON notification, String recipeId) {
         // TODO this was a custom json, implementation may vary, it's usually overriden
     }
 
     @Override
-    public void getSimpleNotification(Intent intent, SimpleNotification s_notif, String notif_body, String reaction_plugin, String reaction_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getSimpleNotification(Intent intent, SimpleNotification s_notif, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getFeedbackNotification(Intent intent, Feedback s_notif, String notif_body, String reaction_plugin, String reaction_action, String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void getFeedbackNotification(Intent intent, Feedback s_notif, String recipeId) {
         sendSimpleNotification(intent);
     }
 
