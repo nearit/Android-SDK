@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Base64;
+import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -37,7 +38,7 @@ public class NearUtils {
      * @param encoded encoded string
      * @return decoded string
      */
-    public static String decodeString(String encoded) {
+    public static String decodeString(String encoded) throws NullPointerException{
         byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
         String decodedString = "";
         try {
@@ -56,14 +57,15 @@ public class NearUtils {
      */
     public static String fetchAppIdFrom(String apiKey) {
         String secondSegment = substringBetween(apiKey, ".",".");
-        String decodedAK = decodeString(secondSegment);
         String appId = "";
         try {
+            String decodedAK = decodeString(secondSegment);
             JSONObject jwt = new JSONObject(decodedAK);
             JSONObject account = jwt.getJSONObject("data").getJSONObject("account");
             appId = account.getString("id");
-        } catch (JSONException e) {
+        } catch (Exception e) {
             e.printStackTrace();
+            Log.e("NearITErrors", "Error while processing NearIT API token. Please check if you are using the correct key.");
         }
         return appId;
     }
