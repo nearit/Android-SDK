@@ -357,9 +357,10 @@ public class RecipesManager {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    ULog.d(TAG, recipe.toString());
                     // TODO refactor plugin
-                    gotRecipe(recipe);
+                    if (recipe != null){
+                        gotRecipe(recipe);
+                    }
                 }
 
                 @Override
