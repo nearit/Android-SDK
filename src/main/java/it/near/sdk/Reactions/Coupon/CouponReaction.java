@@ -83,7 +83,11 @@ public class CouponReaction extends CoreReaction {
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
         Coupon coupon = (Coupon) reaction_bundle;
         formatLinks(coupon);
-        nearNotifier.deliverBackgroundReaction(coupon, recipe);
+        if (recipe.isForegroundRecipe()){
+            nearNotifier.deliverForegroundReaction(coupon, recipe);
+        } else {
+            nearNotifier.deliverBackgroundReaction(coupon, recipe);
+        }
     }
 
     @Override
