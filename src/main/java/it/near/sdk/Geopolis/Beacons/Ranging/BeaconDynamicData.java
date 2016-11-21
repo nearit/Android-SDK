@@ -152,7 +152,7 @@ public class BeaconDynamicData {
             // negative distance, FAR
             return INDETERMINED;
 
-        else if (distance<=0.2)
+        else if (distance<=0.16)
             // IMMEDIATE
             return IMMEDIATE;
 
