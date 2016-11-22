@@ -9,21 +9,18 @@ This is the NearIt Android SDK. With this component you can integrate the NearIt
 * NearIt services integration
 * Beacon detection with app in the foreground.
 * Content delivery
-* Beacon monitoring with app in the background.
+* Beacon and geofence monitoring with app in the background.
 * Different types of contents.
 * Push Notification
 * User Segmentation
 
-## Coming soon ##
-
-* Different type of detectors
 
 ## Behaviour ##
 
 The SDK will start monitoring the regions configured in the CMS of your app. Any content will be delivered through a notification that will call your launcher app and carry some extras.
 To implement a custom background behaviour look in the advanced topics section.
 
-## How do I get set up? ##
+## Getting started ##
 
 To start using the SDK, include this in your app *build.gradle*
 
@@ -46,46 +43,71 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 
 ```
 
-## Advanced topics ##
+When you want to start the radar for geofences and beacons call this method
 
-* Region scanning is set to a scan every 60 seconds when outside your beacons range. As soon as beacons are picked up, it switches to 20 seconds.
-* You can set the minimum parameter for determine the distance upon which the SDK must detect beacons recipes with the method *setThreshold(floatParam)* or the *NearItManager*. The default value is *0.5f*
-* The SDK automatically includes the permission for location access in its manifest (necessary for beacon monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_COARSE_LOCATION permissions at runtime.
-* You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of the *NearItManager*
+```java
+    // call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
+    nearItManager.startRadar()
+    // to stop call this method nearItManager.stopRadar()
+```
 
-### Built-in region background receivers ###
+The SDK automatically includes the permission for location access in its manifest (necessary for beacon and geofence monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
 
-If you want to be notified when a user enters a region using the built-in background region notifications put this in your app manifest.
+## Foreground updates ##
+
+To receive foreground contents (e.g. ranging recipes) set a proximity listener with the method
+```java
+{
+    ...
+    nearItManager.addProximityListener(this);
+    // remember to remove the listener when the object is being destroyed with 
+    // nearItManager.removeProximityListener(this);
+    ...
+}
+
+@Override
+public void foregroundEvent(Parcelable content, Recipe recipe) {
+    // handle the event
+    // if you show the notification to the user track the recipe as notified with
+    // Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
+    // when the user interacts with the content, track the event with
+    // Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
+}   
+```
+
+## Built-in region background receivers ##
+
+If you want to be notified when a user enters a region (bluetooth or geofence) using the built-in background region notifications put this in your app manifest. 
+Any content will be delivered through a notification that will call your launcher app and carry some extras.
 ```xml
 <!-- built in region receivers -->
-<receiver android:name="it.near.sdk.Beacons.Monitoring.RegionBroadcastReceiver"
+<receiver android:name="it.near.sdk.Geopolis.Background.RegionBroadcastReceiver"
     android:exported="false">
     <intent-filter>
-        <action android:name="it.near.sdk.permission.REGION_MESSAGE"/>
+        <action android:name="it.near.sdk.permission.GEO_MESSAGE"/>
         <category android:name="android.intent.category.DEFAULT"/>
     </intent-filter>
 </receiver>
 ```
+You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of the *NearItManager*
 
-### Custom background behavior ###
-
-If you need a different approach for notifying region enter, other than having a notification at every instance of this event, you need to subclass 2 classes (a BroadcastReceiver and an IntentService) and properly add them in your manifest. See the sample for an implementation of this scenario (including how to track a notified recipe). Here's a snippet of the manifest:
-
-```xml
-<!-- region messages -->
-<service android:name=".MyRegionIntentService" />
-
-<!-- Region related messages -->
-<receiver android:name=".MyRegionBroadcastReceiver"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-</receiver>
+Recipes tracks themselves as received, but you need to track the tap event, by calling
+```java
+Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
-### Answer Polls###
+Recipes either deliver content in the background or in the foreground but not both. Check this table to see how you will be notified.
+
+| Type of trigger                  | Delivery           |
+|----------------------------------|--------------------|
+| Push (immediate or scheduled)    | Background intent  |
+| Enter and Exit on geofences      | Background intent  |
+| Enter and Exit on beacon regions | Background intent  |
+| Enter in a specific beacon range | Proximity listener |
+
+If you want to customize the behavior of background notification see [this page](docs/custom-background-notifications.md)
+
+### Answer Polls ###
 
 To answer a poll add this to your code
 ```java
@@ -95,31 +117,30 @@ nearItManager.sendEvent(new PollEvent(poll, answer);
 nearItManager.sendEvent(new PollEvent(pollId, answer, recipeId));
 ```
 
-### Enable Push Notifications ###
+### Give feedback ###
 
-NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
-When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display).
-
-To enable push notification,set your push senderId
+To send a rating to a feedback
 ```java
-nearItManager.setPushSenderId("your-app-sender-id");
+// rating must be an integer between 0 and 5, and you can set a comment string.
+nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
+// if you don't hold the feedback object use this constructor
+nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
 ```
 
-Add these receivers in the *application* tag of your app *manifest*
+## Enable Push Notifications ##
+
+NearIt offers a default push reception and visualization. It shows a system notification with the notification message.
+When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display) just like the region notifications.
+
+To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app. [If you need help follow those steps](docs/firebase.md)
+Enter the cloud messaging server key into the CMS. Push notification only work if a profile is created [How to create a profile](docs/user-profilation).
+
+To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
 ```xml
 <application ...>
 ...
     <receiver
-        android:name="com.google.android.gms.gcm.GcmReceiver"
-        android:exported="true"
-        android:permission="com.google.android.c2dm.permission.SEND" >
-        <intent-filter>
-            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            <category android:name="<YOUR_APP_PACKAGE_NAME>" />
-        </intent-filter>
-    </receiver>
-    <receiver
-         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
+         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
          android:exported="false">
          <intent-filter>
                 <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
@@ -136,105 +157,12 @@ If you want to track notification taps, simply do
 Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
-### Custom Push Notification ###
+[Custom Push Notification](docs/custom-push-notification)
 
-If you need a custom handling of push notification (anything that must happens before or instead of the local notification), subclass these two classes
-* GcmIntentService
-* GcmBroadcastReceiver
-in the same way it was done with MyRegionIntentService and MyRegionBroadcastReceiver
-And add them to your manifest
-```xml
-<service android:name=".MyGcmIntentService"
-            android:exported="false"/>
+## Other resources ##
 
-<receiver
-    android:name=".MyGcmBroadcastReceiver"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-</receiver>
-```
-Also, you need to omit this receiver from your manifest
-```xml
-<receiver
-         android:name="it.near.sdk.Push.GcmBroadcastReceiver"
-         android:exported="false">
-         <intent-filter>
-                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-                <category android:name="android.intent.category.DEFAULT" />
-         </intent-filter>
-    </receiver>
-```
-### User profilation ###
+[Custom background notifications](docs/custom-background-notifications.md)
 
-To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
+[Custom Push Notification](docs/custom-push-notification)
 
-To register an user in our platform call the method
-```java
-NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
-    @Override
-    public void onProfileCreated() {
-        // your profile was created
-    }
-                                            
-    @Override
-    public void onProfileCreationError(String error) {
-        // there was an error
-    }
-});
-```
-Calling this method multiple times will results in multiple profiles being created, each time with no profilation data.
-
-To be sure to call this method only when necessary, check if you already created a profile with this method
-```java
-String profileId = NearItUserProfile.getProfileId(context);
-```
-If the result is null, it means that no profile is associated with the app installation.
-
-After the profile is created set user data
-```java
-NearItUserProfile.setUserData(context, "name", "John", new UserDataNotifier() {
-    @Override
-    public void onDataCreated() {
-        // data was set/created                                                
-    }
-                                                       
-    @Override
-    public void onDataNotSetError(String error) {
-        // there was an error                        
-    }
-});
-```
-
-If you have multiple data properties, set them in batch
-```java
-HashMap<String, String> userDataMap = new HashMap<>();
-userDataMap.put("name", "John");
-userDataMap.put("age", "23");           // set everything as String
-userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
-NearItUserProfile.setBatchUserData(context, userDataMap, new UserDataNotifier() {
-            @Override
-            public void onDataCreated() {
-                // data was set/created 
-            }
-
-            @Override
-            public void onDataNotSetError(String error) {
-
-            }
-        });
-```
-If you try to set user data before creating a profile the error callback will be called.
-
-If you want to set a profileId manually (if it's coming from your user management systems) use the method
-```java
-NearItUserProfile.setProfileId(context, profileId);
-```
-
-If you want to reset your profile use this method
-```java
-NearItUserProfile.resetProfileId(context)
-```
-Further calls to NearItUserProfile.getProfileId(context) will return null.
+[User Profilation](docs/user-profilation.md)

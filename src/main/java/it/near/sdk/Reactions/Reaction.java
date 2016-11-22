@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.List;
 
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 
@@ -46,7 +47,7 @@ public abstract class Reaction {
         if (!getPluginName().equals(recipe.getReaction_plugin_id())){
             return;
         }
-        handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle().getId(), recipe);
+        handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe);
     }
 
     /**
@@ -70,24 +71,15 @@ public abstract class Reaction {
      * @param reaction_bundle the reaction bundle of the recipe.
      * @param recipe the entire recipe object.
      */
-    protected abstract void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe);
+    protected abstract void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe);
 
     /**
      * Handle a reaction from a push notification, including the call to the NearNotifier object. Since this will be called after the insertion
      * of a push based recipe, it's highly unlikely that the recipe information will be cached.
      * @param recipe the recipe object.
      * @param push_id the id of the push notification.
-     * @param bundle_id the id of the reaction bundle.
+     * @param reaction_bundle the reaction bundle.
      */
-    public abstract void handlePushReaction(Recipe recipe, String push_id, String bundle_id);
-
-    /**
-     * Handle a reaction that was evaluated online, including the call to NearNotifier object. This should check if the bundle_id refers to not cached contents
-     * and fetch the reaction bundle object if necessary.
-     * @param recipe the recipe object.
-     * @param bundle_id the id of the reaction bundle.
-     */
-    public abstract void handleEvaluatedReaction(Recipe recipe, String bundle_id);
-
+    public abstract void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle);
 
 }

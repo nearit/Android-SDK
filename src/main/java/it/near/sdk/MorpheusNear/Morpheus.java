@@ -4,6 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Morpheus is a library to map JSON with the json:api specification format.
  * (http://jsonapi.org/).
@@ -70,11 +73,15 @@ public class Morpheus {
       Logger.debug("JSON does not contain included");
     }
 
+    List<Resource> resourcesToLink = new ArrayList<>();
+
     //data array
     JSONArray dataArray = null;
     try {
       dataArray = jsonObject.getJSONArray("data");
       jsonApiObject.setResources(factory.newObjectFromJSONArray(dataArray, jsonApiObject.getIncluded()));
+      resourcesToLink.addAll(jsonApiObject.getResources());
+
     } catch (JSONException e) {
       Logger.debug("JSON does not contain data array");
     }
@@ -84,9 +91,23 @@ public class Morpheus {
     try {
       dataObject = jsonObject.getJSONObject("data");
       jsonApiObject.setResource(factory.newObjectFromJSONObject(dataObject, jsonApiObject.getIncluded()));
+      resourcesToLink.add((Resource) jsonApiObject.getResource());
     } catch (JSONException e) {
       Logger.debug("JSON does not contain data object");
     }
+
+    //map relationships
+    try {
+      if (jsonApiObject.getIncluded() != null) {
+        resourcesToLink.addAll(jsonApiObject.getIncluded());
+      }
+      for (Resource resource : resourcesToLink) {
+        mapper.mapRelations(resource, resourcesToLink);
+      }
+    } catch (Exception e) {
+      Logger.debug("unable to resolve relationships");
+    }
+
 
     //link object
     JSONObject linkObject = null;

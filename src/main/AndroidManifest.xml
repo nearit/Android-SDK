@@ -1,11 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="it.near.sdk">
 
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -13,27 +15,36 @@
         android:supportsRtl="true">
 
         <!-- region messages -->
-        <service android:name=".Beacons.Monitoring.RegionIntentService"
+        <service android:name=".Geopolis.Background.RegionIntentService"
             android:exported="false"/>
 
         <!-- GCM registration -->
-        <service android:name=".Push.GCMRegistration.RegistrationIntentService"
-            android:exported="false">
-        </service>
 
         <!-- push messages -->
         <!-- service that receives push from GCM and does internal SDK work -->
         <service
-            android:name="it.near.sdk.Push.MyGcmListenerService"
+            android:name="it.near.sdk.Push.MyFcmListenerService"
             android:exported="false" >
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
         <!-- internal service to send local notifications -->
-        <service android:name=".Push.GcmIntentService"
+        <service android:name=".Push.FcmIntentService"
             android:exported="false"/>
+
+        <service
+            android:name=".Geopolis.GeoFences.GeoFenceService"
+            android:exported="false" />
+        <service android:name=".Geopolis.GeoFences.NearGeofenceTransitionsIntentService"
+            android:exported="false" />
+        <receiver android:name=".Geopolis.GeoFences.GeoFenceSystemEventsReceiver">
+            <intent-filter>
+                <action android:name="android.location.PROVIDERS_CHANGED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
 
 
         <receiver android:name=".Trackings.BluetoothStatusReceiver"
@@ -44,10 +55,10 @@
         </receiver>
 
         <service
-            android:name=".Push.GCMRegistration.MyInstanceIDListenerService"
+            android:name=".Push.FCMRegistration.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
 

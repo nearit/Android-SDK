@@ -15,10 +15,10 @@ import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.Beacons.BeaconForest.Beacon;
-import it.near.sdk.Beacons.BeaconForest.ForestManager;
-import it.near.sdk.Beacons.BeaconForest.AltBeaconMonitor;
+import it.near.sdk.Geopolis.GeopolisManager;
+import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
+import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
@@ -26,8 +26,11 @@ import it.near.sdk.Reactions.Coupon.CouponListener;
 import it.near.sdk.Reactions.Coupon.CouponReaction;
 import it.near.sdk.Reactions.CustomJSON.CustomJSONReaction;
 import it.near.sdk.Reactions.Event;
+import it.near.sdk.Reactions.Feedback.FeedbackEvent;
+import it.near.sdk.Reactions.Feedback.FeedbackReaction;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipeRefreshListener;
@@ -41,14 +44,13 @@ import it.near.sdk.Utils.ULog;
 
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
- * This class starts all the plugins manually and initialize global values like the apiKey and the push senderId.
+ * This class starts all the plugins manually and initialize global values like the apiKey.
  * To be able to use beacon technology, make sure to ask for the proper permission in the manifest or runtime, depending on your targeted API.
  *
  * <pre>
  * {@code
  * // inside the custom Application onCreate method
  * nearItManager = new NearItManager(this, getResources().getString(R.string.api_key));
- * nearItManager.setSenderId(R.string.sender_id);
  * nearItManager.setNotificationImage(R.drawable.beacon_notif_icon);
  * }
  * </pre>
@@ -58,19 +60,19 @@ import it.near.sdk.Utils.ULog;
 public class NearItManager {
 
     private static final String TAG = "NearItManager";
-    private static final String ENTER = "enter";
-    private static final String LEAVE = "leave";
-    private static final String REGION_MESSAGE_ACTION = "it.near.sdk.permission.REGION_MESSAGE";
-    private static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
-    private static String APP_PACKAGE_NAME;
-    private ForestManager forest;
+    public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
+    public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
+    private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
+    private SimpleNotificationReaction simpleNotification;
     private PollReaction pollNotification;
     private CouponReaction couponReaction;
     private CustomJSONReaction customJSONReaction;
+    private FeedbackReaction feedbackReaction;
     private PushManager pushManager;
     private NearSimpleLogger logger;
+    private List<ProximityListener> proximityListenerList = new ArrayList<>();
 
     private AltBeaconMonitor monitor;
 
@@ -88,13 +90,16 @@ public class NearItManager {
 
         GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
-        GlobalState.getInstance(application).setNearNotifier(nearNotifier);
 
         plugInSetup();
 
         NearInstallation.registerInstallation(application);
 
         registerLogReceiver();
+
+        pushManager = new PushManager(application);
+        GlobalState.getInstance(application).setPushManager(pushManager);
+
     }
 
     /**
@@ -117,20 +122,25 @@ public class NearItManager {
         recipesManager = new RecipesManager(application);
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
-        monitor = new AltBeaconMonitor(application);
-        forest = new ForestManager(application, monitor, recipesManager);
+        geopolis = new GeopolisManager(application, recipesManager);
 
         contentNotification = new ContentReaction(application, nearNotifier);
-        recipesManager.addReaction(contentNotification.getPluginName(), contentNotification);
+        recipesManager.addReaction(contentNotification);
+
+        simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
+        recipesManager.addReaction(simpleNotification);
 
         pollNotification = new PollReaction(application, nearNotifier);
-        recipesManager.addReaction(pollNotification.getPluginName(), pollNotification);
+        recipesManager.addReaction(pollNotification);
 
         couponReaction = new CouponReaction(application, nearNotifier);
-        recipesManager.addReaction(couponReaction.getPluginName(), couponReaction);
+        recipesManager.addReaction(couponReaction);
 
         customJSONReaction = new CustomJSONReaction(application, nearNotifier);
-        recipesManager.addReaction(customJSONReaction.getPluginName(), customJSONReaction);
+        recipesManager.addReaction(customJSONReaction);
+
+        feedbackReaction = new FeedbackReaction(application, nearNotifier);
+        recipesManager.addReaction(feedbackReaction);
 
     }
 
@@ -142,15 +152,6 @@ public class NearItManager {
     }
 
     /**
-     * Set the senderId for the push notifications
-     * @param senderId
-     */
-    public void setPushSenderId(String senderId){
-        pushManager = new PushManager(application, senderId);
-        GlobalState.getInstance(application).setPushManager(pushManager);
-    }
-
-    /**
      * Return the recipes manager
      * @return the recipes manager
      */
@@ -158,14 +159,7 @@ public class NearItManager {
         return recipesManager;
     }
 
-    /**
-     * Returns the list of beacons. Since they are downloaded, it may return an empty list.
-     * @return the beacon list, can be empty if recipes were not yet downloaded or an error occurred.
-     */
-    public List<Beacon> getBeaconList(){
-        if (forest == null) return new ArrayList<Beacon>();
-        return forest.getBeaconList();
-    }
+
 
     /**
      * Checks the device capacity to detect beacons
@@ -227,7 +221,7 @@ public class NearItManager {
      */
     public void refreshConfigs(RecipeRefreshListener listener){
         recipesManager.refreshConfig(listener);
-        forest.refreshConfig();
+        geopolis.refreshConfig();
         contentNotification.refreshConfig();
         pollNotification.refreshConfig();
     }
@@ -236,38 +230,31 @@ public class NearItManager {
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
         public void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe) {
-            deliverBeackgroundEvent(parcelable, recipe, REGION_MESSAGE_ACTION, null);
+            deliverBeackgroundEvent(parcelable, recipe, GEO_MESSAGE_ACTION, null);
         }
 
         @Override
         public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id) {
             deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION, push_id);
         }
+
+        @Override
+        public void deliverForegroundReaction(Parcelable content, Recipe recipe) {
+            for (ProximityListener proximityListener : proximityListenerList) {
+                proximityListener.foregroundEvent(content, recipe);
+            }
+
+        }
     };
 
 
     private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
         ULog.d(TAG, "deliver Event: " + parcelable.toString());
-
         Intent resultIntent = new Intent(action);
+        Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
         if (action.equals(PUSH_MESSAGE_ACTION)){
             resultIntent.putExtra(IntentConstants.PUSH_ID, pushId);
         }
-        // set recipe id
-        resultIntent.putExtra(IntentConstants.RECIPE_ID, recipe.getId());
-        // set notification text
-        resultIntent.putExtra(IntentConstants.NOTIF_TITLE, recipe.getNotificationTitle());
-        resultIntent.putExtra(IntentConstants.NOTIF_BODY, recipe.getNotificationBody());
-        // set contet to show
-        resultIntent.putExtra(IntentConstants.CONTENT, parcelable);
-        // set the content type so the app can cast the parcelable to correct content
-        resultIntent.putExtra(IntentConstants.REACTION_PLUGIN, recipe.getReaction_plugin_id());
-        resultIntent.putExtra(IntentConstants.REACTION_ACTION, recipe.getReaction_action().getId());
-        // set the pulse info
-        resultIntent.putExtra(IntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
-        resultIntent.putExtra(IntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
-        resultIntent.putExtra(IntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle().getId());
-
         application.sendOrderedBroadcast(resultIntent, null);
     }
 
@@ -283,6 +270,9 @@ public class NearItManager {
                 return true;
             case OpenPushEvent.PLUGIN_NAME:
                 pushManager.sendEvent((OpenPushEvent) event);
+                return true;
+            case FeedbackEvent.PLUGIN_NAME:
+                feedbackReaction.sendEvent((FeedbackEvent) event);
                 return true;
         }
         return false;
@@ -310,4 +300,35 @@ public class NearItManager {
             listener.onCouponDownloadError("Error");
         }
     }
+
+    /**
+     * Start the monitoring radar that works in the background.
+     * This should be stopped only if you don't want to be notified anymore (even in background) and don't want to track the user location.
+     */
+    public void startRadar() {
+        geopolis.startRadar();
+    }
+
+    public void stopRadar() {
+        geopolis.stopRadar();
+    }
+
+    public void addProximityListener(ProximityListener proximityListener){
+        synchronized (proximityListenerList) {
+            proximityListenerList.add(proximityListener);
+        }
+    }
+
+    public void removeProximityListener(ProximityListener proximityListener) {
+        synchronized (proximityListenerList){
+            proximityListenerList.remove(proximityListener);
+        }
+    }
+
+    public void removeAllProximityListener(){
+        synchronized (proximityListenerList) {
+            proximityListenerList.clear();
+        }
+    }
+
 }

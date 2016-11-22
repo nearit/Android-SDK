@@ -3,16 +3,20 @@ package it.near.sdk.Utils;
 import android.app.IntentService;
 import android.content.Intent;
 
-import it.near.sdk.Reactions.Content.Content;
-import it.near.sdk.Reactions.CoreContentsListener;
-import it.near.sdk.Reactions.Coupon.Coupon;
-import it.near.sdk.Reactions.CustomJSON.CustomJSON;
-import it.near.sdk.Reactions.Poll.Poll;
+import org.json.JSONException;
+
+import it.near.sdk.GlobalConfig;
+import it.near.sdk.NearItManager;
+import it.near.sdk.R;
+import it.near.sdk.Recipes.Models.Recipe;
 
 /**
  * @author cattaneostefano.
  */
 public abstract class BaseIntentService extends IntentService {
+
+    public static final int REGION_NOTIFICATION_ID = 1;
+    public static final int PUSH_NOTIFICATION_ID = 2;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -24,50 +28,47 @@ public abstract class BaseIntentService extends IntentService {
     }
 
     /**
-     * Utility method for extensions of this class. It notifies the listener if the intent contains a recognized core content.
-     * @param intent The intent to analyze.
-     * @param listener Contains a callback method for each content type.
-     * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
+     * Send a simple notification, and also tracks the recipe as notified.
+     * @param intent the intent from the receiver.
      */
-    protected boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
+    protected void sendSimpleNotification(Intent intent){
+        Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
+        targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        String reaction_plugin = intent.getExtras().getString("reaction-plugin");
-        String reaction_action = intent.getExtras().getString("reaction-action");
-        String notif_body = intent.getExtras().getString("notif_body");
-
-        String pulse_plugin = intent.getExtras().getString("pulse-plugin");
-        String pulse_action = intent.getExtras().getString("pulse-action");
-        String pulse_bundle = intent.getExtras().getString("pulse-bundle");
-
-        Content c_notif;
-        Poll p_notif;
-        Coupon coup_notif;
-        CustomJSON custom_notif;
-
-        boolean coreContent = false;
-        if (reaction_plugin == null) return false;
-        switch (reaction_plugin) {
-            case "content-notification" :
-                c_notif = intent.getParcelableExtra("content");
-                listener.getContentNotification(intent, c_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
-                coreContent = true;
-                break;
-            case "poll-notification" :
-                p_notif = intent.getParcelableExtra("content");
-                listener.getPollNotification(intent, p_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
-                coreContent = true;
-                break;
-            case "coupon-blaster" :
-                coup_notif = intent.getParcelableExtra("content");
-                listener.getCouponNotification(intent, coup_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
-                coreContent = true;
-                break;
-            case "json-sender" :
-                custom_notif = intent.getParcelableExtra("content");
-                listener.getCustomJSONNotification(intent, custom_notif, notif_body, reaction_plugin, reaction_action, pulse_plugin, pulse_action, pulse_bundle);
-                coreContent = true;
-                break;
+        targetIntent.putExtras(intent.getExtras());
+        String notif_title = intent.getStringExtra(IntentConstants.NOTIF_TITLE);
+        String notifText = intent.getStringExtra(IntentConstants.NOTIF_BODY);
+        if (notif_title == null) {
+            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
-        return coreContent;
+        String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
+        try {
+            Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        NearNotification.send(this, imgResFromIntent(intent), notif_title, notifText, targetIntent, notificationCodeFromIntent(intent));
+
     }
+
+    private int imgResFromIntent (Intent intent) {
+        if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)){
+            return R.drawable.ic_send_white_24dp;
+        } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)){
+            return GlobalConfig.getInstance(this).getNotificationImage();
+        }
+        return GlobalConfig.getInstance(this).getNotificationImage();
+    }
+
+    private int notificationCodeFromIntent(Intent intent) {
+        switch (intent.getAction()){
+            case NearItManager.PUSH_MESSAGE_ACTION:
+                return PUSH_NOTIFICATION_ID;
+            case NearItManager.GEO_MESSAGE_ACTION:
+                return REGION_NOTIFICATION_ID;
+            default:
+                return REGION_NOTIFICATION_ID;
+        }
+    }
+
 }

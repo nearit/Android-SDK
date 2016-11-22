@@ -2,8 +2,6 @@ package it.near.sdk.Communication;
 
 import android.content.Context;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -19,7 +17,6 @@ import it.near.sdk.Utils.ULog;
 public class NearNetworkUtil {
     public static final String TAG = "NearNetworkUtil";
 
-
     /**
      * Send tracking information to the back-end.
      * @param context the app context.
@@ -30,7 +27,7 @@ public class NearNetworkUtil {
         // TODO not tested
         NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
         try {
-            httpClient.nearPost(context, url, body, new JsonHttpResponseHandler(){
+            httpClient.nearPost(context, url, body, new NearJsonHttpResponseHandler(){
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
@@ -42,28 +39,13 @@ public class NearNetworkUtil {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Tracking data not sent. Error: " + statusCode);
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(
-                new CustomJsonRequest(context, Request.Method.POST, url, body, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "Tracking data sent.");
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Tracking data not sent. Error: " + error.toString());
-                    }
-                })
-        );
-*/
     }
 
     /**
@@ -73,7 +55,7 @@ public class NearNetworkUtil {
      * @param body the HHTP request body.
      * @param handler the response handler.
      */
-    public static void sendTrack (Context context, String url, String body, JsonHttpResponseHandler handler) throws UnsupportedEncodingException, AuthenticationException {
+    public static void sendTrack (Context context, String url, String body, NearJsonHttpResponseHandler handler) throws UnsupportedEncodingException, AuthenticationException {
         NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
         httpClient.nearPost(context, url, body, handler);
     }

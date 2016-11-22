@@ -2,10 +2,10 @@ package it.near.sdk.Reactions.Poll;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,10 +19,12 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.Reactions.CoreReaction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -48,48 +50,19 @@ public class PollReaction extends CoreReaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch(reaction_action){
             case SHOW_POLL_ACTION_NAME:
-                showPoll(reaction_bundle, recipe);
+                showContent(reaction_bundle.getId(), recipe);
                 break;
         }
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, String bundleId) {
-        // TODO not tested
-        requestSingleReaction(bundleId, new JsonHttpResponseHandler(){
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
-                        content.setRecipeId(recipe.getId());
-                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
-                    }
-
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        ULog.d(TAG, "Error downloading push content: " + statusCode);
-                    }
-                }
-
-        );
-        /*GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
-                        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error downloading push content: " + error.toString());
-                    }
-                })
-        );*/
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
+        Poll poll = (Poll) reactionBundle;
+        poll.setRecipeId(recipe.getId());
+        nearNotifier.deliverBackgroundPushReaction(poll, recipe, push_id);
     }
 
     public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
@@ -105,35 +78,11 @@ public class PollReaction extends CoreReaction {
     }
 
     @Override
-    public void handleEvaluatedReaction(final Recipe recipe, String bundle_id) {
-        requestSingleReaction(bundle_id, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Poll content = NearUtils.parseElement(morpheus, response, Poll.class);
-                content.setRecipeId(recipe.getId());
-                nearNotifier.deliverBackgroundReaction(content, recipe);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ULog.d(TAG, "Error donwloading content: " + statusCode);
-            }
-        });
-    }
-
-    private void showPoll(String reaction_bundle, Recipe recipe) {
-        ULog.d(TAG , "Show poll: " + reaction_bundle);
-        Poll notification = getNotification(reaction_bundle);
-        if (notification==null) return;
-        notification.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundReaction(notification, recipe);
-    }
-
-    private Poll getNotification(String reaction_bundle) {
+    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
         if (pollList == null) return null;
         for (Poll pn : pollList){
             if (pn.getId().equals(reaction_bundle)){
+                pn.setRecipeId(recipe.getId());
                 return pn;
             }
         }
@@ -147,16 +96,16 @@ public class PollReaction extends CoreReaction {
                     .appendPath(POLL_NOTIFICATION_RESOURCE).build();
         // TODO not tested
         try {
-            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, response.toString());
-                    pollList = NearUtils.parseList(morpheus, response, Poll.class);
+                    pollList = NearJsonAPIUtils.parseList(morpheus, response, Poll.class);
                     persistList(TAG, pollList);
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error: " + statusCode);
                     try {
                         pollList = loadList();
@@ -168,26 +117,6 @@ public class PollReaction extends CoreReaction {
         } catch (AuthenticationException e) {
             e.printStackTrace();
         }
-        /*GlobalState.getInstance(mContext).getRequestQueue().add(
-                new CustomJsonRequest(mContext, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        pollList = NearUtils.parseList(morpheus, response, Poll.class);
-                        persistList(TAG, pollList);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error: " + error.toString());
-                        try {
-                            pollList = loadList();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                })
-        );*/
     }
 
     private ArrayList<Poll> loadList() throws JSONException {
@@ -230,32 +159,20 @@ public class PollReaction extends CoreReaction {
                     .appendPath("answers").build();
             // TODO not tested
             try {
-                httpClient.nearPost(mContext, url.toString(), answerBody, new JsonHttpResponseHandler(){
+                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, "Answer sent successfully");
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         ULog.d(TAG, "Error in sending answer: " + statusCode);
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            /*GlobalState.getInstance(mContext).getRequestQueue().add(new CustomJsonRequest(mContext, Request.Method.POST, path.toString(), answerBody , new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse(JSONObject response) {
-                    ULog.d(TAG, "Answer sent successfully");
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    ULog.d(TAG, "Error in sending answer: " + error.toString());
-                }
-            }));*/
-
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Error: incorrect format " + e.toString());

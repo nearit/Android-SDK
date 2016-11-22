@@ -2,6 +2,7 @@ package it.near.sdk.Reactions;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Parcelable;
 
 import com.google.gson.Gson;
 
@@ -13,6 +14,7 @@ import java.util.Map;
 
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.MorpheusNear.Morpheus;
+import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.ULog;
 
@@ -81,6 +83,18 @@ public abstract class CoreReaction extends Reaction {
         editor.putString(key, persistedString);
         editor.apply();
     }
+
+    protected void showContent(String reaction_bundle, Recipe recipe){
+        Parcelable content = getContent(reaction_bundle, recipe);
+        if (content == null) return;
+        if (recipe.isForegroundRecipe()){
+            nearNotifier.deliverForegroundReaction(content, recipe);
+        } else {
+            nearNotifier.deliverBackgroundReaction(content, recipe);
+        }
+    }
+
+    protected abstract Parcelable getContent(String reaction_bundle, Recipe recipe);
 
     /**
      * Returns a String stored in SharedPreferences.

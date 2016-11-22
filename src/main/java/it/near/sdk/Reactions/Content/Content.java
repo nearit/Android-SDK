@@ -10,11 +10,12 @@ import java.util.List;
 
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 
 /**
  * @author cattaneostefano
  */
-public class Content extends Resource implements Parcelable {
+public class Content extends ReactionBundle implements Parcelable {
     @SerializedName("content")
     String content;
     @SerializedName("video_link")

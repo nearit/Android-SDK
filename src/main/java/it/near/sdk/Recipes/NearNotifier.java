@@ -22,4 +22,11 @@ public interface NearNotifier {
      * @param push_id the push message identifier, used for tracking.
      */
     void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id);
+
+    /**
+     * Deliver a reaction for a foreground-only recipe e.g. ranging recipe.
+     * @param parcelable the generic parcelable reaction object.
+     * @param recipe the recipe object.
+     */
+    void deliverForegroundReaction(Parcelable parcelable, Recipe recipe);
 }

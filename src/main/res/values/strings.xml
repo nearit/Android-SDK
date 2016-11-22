@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name" translatable="false">NearSDK</string>
+
+    <!-- TODO remove those strings? -->
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_exited">Exited</string>
+    <string name="unknown_geofence_transition">Unknown Transition</string>
+    <string name="geofence_transition_dwell">Dwelling</string>
+    <string name="geofence_transition_invalid_type">
+        Geofence transition error: invalid transition type %1$d
+    </string>
 </resources>

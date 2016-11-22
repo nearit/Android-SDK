@@ -13,11 +13,12 @@ import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.Content.Image;
 import it.near.sdk.Reactions.Content.ImageSet;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 
 /**
  * @author cattaneostefano.
  */
-public class Coupon extends Resource implements Parcelable{
+public class Coupon extends ReactionBundle implements Parcelable{
     @SerializedName("name")
     String name;
     @SerializedName("description")

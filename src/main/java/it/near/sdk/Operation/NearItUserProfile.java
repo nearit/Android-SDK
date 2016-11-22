@@ -3,8 +3,6 @@ package it.near.sdk.Operation;
 import android.content.Context;
 import android.net.Uri;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,9 +16,10 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearInstallation;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -98,7 +97,7 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE).build();
 
         try {
-            httpClient.nearPost(context, url.toString(), requestBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "got profile: " + response.toString());
@@ -118,49 +117,16 @@ public class NearItUserProfile {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "profile erro: " + statusCode);
                     listener.onProfileCreationError("network error: " + statusCode);
                 }
+
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
             listener.onProfileCreationError("error: impossible to make a request" );
         }
-
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
-                context,
-                Request.Method.POST,
-                url.toString(),
-                requestBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "got profile: " + response.toString());
-
-                        String profileId = null;
-                        try {
-                            profileId = response.getJSONObject("data").getString("id");
-                            GlobalConfig.getInstance(context).setProfileId(profileId);
-                            setProfilePluginProperty(context, profileId);
-                            GlobalState.getInstance(context).getRecipesManager().refreshConfig();
-                            listener.onProfileCreated(true, profileId);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                            listener.onProfileCreationError("unknown server format");
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "profile erro: " + error.toString());
-                        listener.onProfileCreationError("volley network error: " + error.toString());
-                    }
-                }
-        ));
-*/
 
     }
 
@@ -168,7 +134,7 @@ public class NearItUserProfile {
         String appId = GlobalConfig.getInstance(context).getAppId();
         HashMap<String, Object> map = new HashMap<>();
         map.put("app_id", appId);
-        return NearUtils.toJsonAPI("profiles", map);
+        return NearJsonAPIUtils.toJsonAPI("profiles", map);
     }
 
     /**
@@ -201,7 +167,7 @@ public class NearItUserProfile {
         map.put("value", value);
         String reqBody= null;
         try {
-            reqBody = NearUtils.toJsonAPI("data_points", map);
+            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", map);
         } catch (JSONException e) {
             e.printStackTrace();
             listener.onDataNotSetError("Request creation error");
@@ -214,7 +180,7 @@ public class NearItUserProfile {
                 .appendPath(DATA_POINTS_RES_TYPE).build();
   //TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "datapoint created: " + response.toString());
@@ -223,7 +189,7 @@ public class NearItUserProfile {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     listener.onDataNotSetError("network error: " + statusCode);
                 }
             });
@@ -231,29 +197,6 @@ public class NearItUserProfile {
             e.printStackTrace();
             listener.onDataNotSetError("error: impossible to send requests");
         }
-
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
-                context,
-                Request.Method.POST,
-                url.toString(),
-                reqBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "datapoint created: " + response.toString());
-                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
-                        listener.onDataCreated();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        listener.onDataNotSetError("volley network error: " + error.toString());
-                    }
-                }
-        ));
-*/
     }
 
     /**
@@ -289,7 +232,7 @@ public class NearItUserProfile {
         }
         String reqBody = null;
         try {
-            reqBody = NearUtils.toJsonAPI("data_points", maps);
+            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
         } catch (JSONException e) {
             e.printStackTrace();
             listener.onDataNotSetError("Request creatin error");
@@ -303,7 +246,7 @@ public class NearItUserProfile {
 
                 // TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new JsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "datapoint created: " + response.toString());
@@ -312,7 +255,7 @@ public class NearItUserProfile {
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     listener.onDataNotSetError("network error: " + statusCode);
                 }
             });
@@ -320,29 +263,6 @@ public class NearItUserProfile {
             e.printStackTrace();
             listener.onDataNotSetError("error: impossible to send request");
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(new CustomJsonRequest(
-                context,
-                Request.Method.POST,
-                url.toString(),
-                reqBody,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "datapoint created: " + response.toString());
-                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
-                        listener.onDataCreated();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        listener.onDataNotSetError("volley network error: " + error.toString());
-                    }
-                }
-        ));
-*/
-
     }
 
 }

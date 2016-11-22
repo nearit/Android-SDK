@@ -8,7 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -59,7 +59,7 @@ public class NearInstallation {
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
             try {
-                registerOrEditInstallation(context, installationId, installBody, new JsonHttpResponseHandler(){
+                registerOrEditInstallation(context, installationId, installBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG , "Installation data sent");
@@ -73,7 +73,7 @@ public class NearInstallation {
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, String responseString , Throwable throwable) {
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         ULog.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
                     }
                 });
@@ -88,7 +88,7 @@ public class NearInstallation {
     }
 
 
-    private static void registerOrEditInstallation(Context context, String installationId, String installBody, JsonHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
+    private static void registerOrEditInstallation(Context context, String installationId, String installBody, AsyncHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
         if (installationId == null){
             httpClient.nearPost(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler );
         } else {
@@ -109,7 +109,7 @@ public class NearInstallation {
         map.put("resource_id", resource);
         String body;
         try {
-            body = NearUtils.toJsonAPI("plugin_resource", map);
+            body = NearJsonAPIUtils.toJsonAPI("plugin_resource", map);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Set resources: error in building body");
@@ -121,39 +121,20 @@ public class NearInstallation {
                 .build();
         // TODO not tested
         try {
-            httpClient.nearPut(context, url.toString(), body, new JsonHttpResponseHandler(){
+            httpClient.nearPut(context, url.toString(), body, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
-                }
-
-                public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
                 }
             });
         } catch (UnsupportedEncodingException | AuthenticationException e) {
             e.printStackTrace();
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(
-                new CustomJsonRequest(context, Request.Method.PUT, url.toString(), body, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
-                    }
-                })
-        );
-*/
     }
 
 
@@ -183,7 +164,7 @@ public class NearInstallation {
         attributeMap.put(BLUETOOTH, getBluetoothStatus());
         // Set location permission
         attributeMap.put(LOCATION, ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
-        return NearUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
+        return NearJsonAPIUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
     }
 
     public static boolean getBluetoothStatus() {

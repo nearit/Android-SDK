@@ -2,9 +2,9 @@ package it.near.sdk.Reactions.Coupon;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Parcelable;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
@@ -17,12 +17,14 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Content.Image;
 import it.near.sdk.Reactions.CoreReaction;
+import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
-import it.near.sdk.Utils.NearUtils;
+import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -78,45 +80,23 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, String reaction_bundle, Recipe recipe) {
-        // TODO this will likely never get called because coupon recipes are online evaluated or push recipes.
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
+        Coupon coupon = (Coupon) reaction_bundle;
+        formatLinks(coupon);
+        if (recipe.isForegroundRecipe()){
+            nearNotifier.deliverForegroundReaction(coupon, recipe);
+        } else {
+            nearNotifier.deliverBackgroundReaction(coupon, recipe);
+        }
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, String bundle_id) {
-        requestSingleResource(bundle_id, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Coupon coupon = NearUtils.parseElement(morpheus, response, Coupon.class);
-                formatLinks(coupon);
-                nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ULog.d(TAG, "Error in downloading push content: " + statusCode);
-            }
-        });
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
+        Coupon coupon = (Coupon) reaction_bundle;
+        formatLinks(coupon);
+        nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
     }
 
-    @Override
-    public void handleEvaluatedReaction(final Recipe recipe, String bundle_id) {
-        requestSingleResource(bundle_id, new JsonHttpResponseHandler(){
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                ULog.d(TAG, response.toString());
-                Coupon coupon = NearUtils.parseElement(morpheus, response, Coupon.class);
-                formatLinks(coupon);
-                nearNotifier.deliverBackgroundReaction(coupon, recipe);
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                ULog.d(TAG, "Error in downloading content: " + statusCode);
-            }
-        });
-    }
 
     public void requestSingleResource(String bundleId, AsyncHttpResponseHandler responseHandler){
         String profileId = GlobalConfig.getInstance(mContext).getProfileId();
@@ -149,17 +129,17 @@ public class CouponReaction extends CoreReaction {
         String output = url.toString();
         ULog.d(TAG, output);
         try {
-            httpClient.nearGet(context, url.toString(), new JsonHttpResponseHandler(){
+            httpClient.nearGet(context, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     ULog.d(TAG, "Copuns downloaded: " + response.toString());
-                    List<Coupon> coupons = NearUtils.parseList(morpheus, response, Coupon.class);
+                    List<Coupon> coupons = NearJsonAPIUtils.parseList(morpheus, response, Coupon.class);
                     formatLinks(coupons);
                     listener.onCouponsDownloaded(coupons);
                 }
 
                 @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     listener.onCouponDownloadError("Download error");
                 }
             });
@@ -167,23 +147,11 @@ public class CouponReaction extends CoreReaction {
             e.printStackTrace();
             listener.onCouponDownloadError("Download error");
         }
-/*
-        GlobalState.getInstance(context).getRequestQueue().add(
-                new CustomJsonRequest(context, url.toString(), new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        ULog.d(TAG, response.toString());
-                        List<Claim> claims = NearUtils.parseList(morpheus, response, Claim.class);
-                        listener.onCouponsDownloaded(claims);
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        listener.onCouponDownloadError("Download error");
-                    }
-                })
-        );
-*/
+    }
+
+    @Override
+    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
+        return null;
     }
 
 
