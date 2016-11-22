@@ -60,6 +60,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 
     public AltBeaconMonitor(Application application, NodesManager nodesManager) {
+        ULog.wtf(TAG, "Altbeacon started");
         this.mApplication = application;
         this.nodesManager = nodesManager;
         this.rangingRadars = new HashMap<>();
@@ -77,6 +78,8 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         String PACK_NAME = application.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + prefsNameSuffix;
         sp = application.getSharedPreferences(PREFS_NAME, 0);
+
+        addAltRegions(loadRegions());
 
     }
 
@@ -151,6 +154,11 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     public void addRegions(List<Node> nodes){
         List<Region> regions = filterBeaconRegions(nodes);
+        addAltRegions(regions);
+    }
+
+    public void addAltRegions(List<Region> regions){
+        ULog.wtf(TAG, "add regions with " + regions.size());
         for (Region region : regions) {
             this.regions.add(region);
             addRegion(region);
@@ -203,6 +211,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * Switch to ranging mode
      */
     private void startRanging() {
+        ULog.wtf(TAG, "startRanging");
         RangedBeacon.setSampleExpirationMilliseconds(5000);
         beaconManager.setBackgroundMode(false);
         beaconManager.addRangeNotifier(this);
@@ -218,7 +227,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     @Override
     public void onBeaconServiceConnect() {
-
+        ULog.wtf(TAG, "onBeaconServiceConnect");
     }
 
     @Override
@@ -267,6 +276,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private void refreshRangingList() {
         if (loadRegions() == null) return;
+        ULog.wtf(TAG, "refreshranging list on: " + loadRegions().size());
         for (Region region : loadRegions()) {
             beaconManager.requestStateForRegion(region);
         }
