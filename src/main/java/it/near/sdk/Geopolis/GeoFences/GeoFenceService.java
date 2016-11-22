@@ -7,6 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -57,19 +61,59 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     public int onStartCommand(Intent intent, int flags, int startId) {
         // can be called multiple times
         Log.d(TAG, "onStartCommand()");
-        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()){
+        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
             startGoogleApiClient();
         }
 
-        if (intent != null && intent.hasExtra(GEOFENCES)){
+        if (intent != null && intent.hasExtra(GEOFENCES)) {
             List<GeoFenceNode> nodes = intent.getParcelableArrayListExtra(GEOFENCES);
             mPendingGeofences = GeoFenceNode.toGeofences(nodes);
-            if (GeopolisManager.isRadarStarted(this)){
+            if (GeopolisManager.isRadarStarted(this)) {
                 setGeoFences(nodes);
+                pingSingleLocation();
             }
         }
 
         return Service.START_STICKY;
+    }
+
+    private void pingSingleLocation() {
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        criteria.setPowerRequirement(Criteria.POWER_HIGH);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        locationManager.requestSingleUpdate(criteria, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                ULog.wtf(TAG, "onLocationChanged");
+                ULog.wtf(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
+            }
+
+            @Override
+            public void onStatusChanged(String s, int i, Bundle bundle) {
+                ULog.wtf(TAG, "onStatusChanged");
+            }
+
+            @Override
+            public void onProviderEnabled(String s) {
+                ULog.wtf(TAG, "onProviderEnabled");
+            }
+
+            @Override
+            public void onProviderDisabled(String s) {
+                ULog.wtf(TAG, "onProviderDisabled");
+            }
+        }, null);
     }
 
     @Override
@@ -242,6 +286,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                 request,
                 getGeofencePendingIntent()
         ).setResultCallback(this);
+        pingSingleLocation();
     }
 
 
@@ -255,7 +300,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             return null;
         }
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
-        // builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofences(geofences);
         return builder.build();
     }
