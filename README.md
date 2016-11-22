@@ -2,8 +2,6 @@
 
 This is the NearIt Android SDK. With this component you can integrate the NearIt services into your app to engage with your users.
 
-- This is a pre-release software and features can change.
-
 ## Features ##
 
 * NearIt services integration
@@ -27,7 +25,7 @@ To start using the SDK, include this in your app *build.gradle*
 ```java
 
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:0.2.16'
+    compile 'it.near.sdk.core:nearitsdk:2.0.0'
 }
 ```
 
