@@ -7,6 +7,9 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.RemoteException;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
@@ -18,6 +21,7 @@ import org.altbeacon.beacon.service.RangedBeacon;
 import org.altbeacon.beacon.startup.BootstrapNotifier;
 import org.altbeacon.beacon.startup.RegionBootstrap;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -56,6 +60,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 
     public AltBeaconMonitor(Application application, NodesManager nodesManager) {
+        ULog.wtf(TAG, "Altbeacon started");
         this.mApplication = application;
         this.nodesManager = nodesManager;
         this.rangingRadars = new HashMap<>();
@@ -73,6 +78,8 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         String PACK_NAME = application.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + prefsNameSuffix;
         sp = application.getSharedPreferences(PREFS_NAME, 0);
+
+        addAltRegions(loadRegions());
 
     }
 
@@ -147,15 +154,36 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     public void addRegions(List<Node> nodes){
         List<Region> regions = filterBeaconRegions(nodes);
+        addAltRegions(regions);
+    }
+
+    public void addAltRegions(List<Region> regions){
+        if (regions == null) {
+            return;
+        }
+        ULog.wtf(TAG, "add regions with " + regions.size());
         for (Region region : regions) {
             this.regions.add(region);
             addRegion(region);
         }
+        persistRegions(regions);
         if (regionBootstrap == null && regions.size() > 0) {
             resetRanging();
             resetMonitoring();
             startRadar();
         }
+    }
+
+    private void persistRegions(List<Region> regions) {
+        String regionString = new Gson().toJson(regions);
+        sp.edit().putString("regions", regionString).commit();
+    }
+
+    private List<Region> loadRegions(){
+        String regions = sp.getString("regions", null);
+        Type type = new TypeToken<List<Region>>(){}.getType();
+        List<Region> regionsList = new Gson().fromJson(regions, type);
+        return regionsList;
     }
 
     public void addRegion(Region region){
@@ -186,6 +214,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * Switch to ranging mode
      */
     private void startRanging() {
+        ULog.wtf(TAG, "startRanging");
         RangedBeacon.setSampleExpirationMilliseconds(5000);
         beaconManager.setBackgroundMode(false);
         beaconManager.addRangeNotifier(this);
@@ -201,7 +230,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     @Override
     public void onBeaconServiceConnect() {
-
+        ULog.wtf(TAG, "onBeaconServiceConnect");
     }
 
     @Override
@@ -243,8 +272,16 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     public void onForeground() {
         ULog.wtf(TAG, "onForeground");
         // When going to the foreground, if we have regions to range, start ranging
-        if (beaconManager.getRangedRegions().size() > 0) {
-            startRanging();
+
+        refreshRangingList();
+        startRanging();
+    }
+
+    private void refreshRangingList() {
+        if (loadRegions() == null) return;
+        ULog.wtf(TAG, "refreshranging list on: " + loadRegions().size());
+        for (Region region : loadRegions()) {
+            beaconManager.requestStateForRegion(region);
         }
     }
 
@@ -358,6 +395,10 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         ULog.wtf(TAG, msg);
 
         BeaconDynamicRadar radar = rangingRadars.get(region);
+        if (radar == null){
+            radar = new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region));
+            rangingRadars.put(region, radar);
+        }
         radar.beaconsDiscovered((List<Beacon>) collection);
 
     }
