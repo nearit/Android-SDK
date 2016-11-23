@@ -131,7 +131,7 @@ NearIt offers a default push reception and visualization. It shows a system noti
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display) just like the region notifications.
 
 To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app. [If you need help follow those steps](docs/firebase.md)
-Enter the cloud messaging server key into the CMS. Push notification only work if a profile is created [How to create a profile](docs/user-profilation).
+Enter the cloud messaging server key into the CMS. Push notification only work if a profile is created [How to create a profile](docs/user-profilation.md).
 
 To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
 ```xml
@@ -155,12 +155,12 @@ If you want to track notification taps, simply do
 Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 
-[Custom Push Notification](docs/custom-push-notification)
+[Custom Push Notification](docs/custom-push-notification.md)
 
 ## Other resources ##
 
 [Custom background notifications](docs/custom-background-notifications.md)
 
-[Custom Push Notification](docs/custom-push-notification)
+[Custom Push Notification](docs/custom-push-notification.md)
 
 [User Profilation](docs/user-profilation.md)
