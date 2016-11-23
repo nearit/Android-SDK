@@ -158,6 +158,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
     public void addAltRegions(List<Region> regions){
+        if (regions == null) {
+            return;
+        }
         ULog.wtf(TAG, "add regions with " + regions.size());
         for (Region region : regions) {
             this.regions.add(region);
@@ -392,6 +395,10 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         ULog.wtf(TAG, msg);
 
         BeaconDynamicRadar radar = rangingRadars.get(region);
+        if (radar == null){
+            radar = new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region));
+            rangingRadars.put(region, radar);
+        }
         radar.beaconsDiscovered((List<Beacon>) collection);
 
     }
