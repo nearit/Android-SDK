@@ -132,7 +132,6 @@ public class CustomJSONReaction extends CoreReaction {
                 e.printStackTrace();
             }
         }
-        jsonList.clear();
         for (CustomJSON json : jsonList){
             if (json.getId().equals(reaction_bundle)){
                 listener.onContentFetched(json, true);

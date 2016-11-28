@@ -20,6 +20,8 @@ import java.util.List;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
+import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -150,15 +152,33 @@ public class FeedbackReaction extends CoreReaction {
     }
 
     @Override
-    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
-        if (feedbackList == null) return null;
+    protected void getContent(String reaction_bundle, final Recipe recipe, final ContentFetchListener listener) {
+        if (feedbackList == null) {
+            try {
+                feedbackList = loadList();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         for ( Feedback fb : feedbackList){
             if (fb.getId().equals(reaction_bundle)){
                 fb.setRecipeId(recipe.getId());
-                return fb;
+                listener.onContentFetched(fb, true);
             }
         }
-        return null;
+        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Feedback fb = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
+                fb.setRecipeId(recipe.getId());
+                listener.onContentFetched(fb, false);
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
+            }
+        });
     }
 
     @Override

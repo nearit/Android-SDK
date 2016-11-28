@@ -6,6 +6,7 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Reactions.Reaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
@@ -52,14 +53,16 @@ public class SimpleNotificationReaction extends CoreReaction {
 
     @Override
     public void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle) {
-        nearNotifier.deliverBackgroundPushReaction(getContent(null, recipe), recipe, push_id);
+        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(recipe), recipe, push_id);
     }
 
+    private SimpleNotification contentFromRecipe(Recipe recipe) {
+        return new SimpleNotification(recipe.getNotificationBody(), recipe.getNotificationTitle());
+    }
 
     @Override
-    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
-        SimpleNotification simpleNotification = new SimpleNotification(recipe.getNotificationBody(), recipe.getNotificationTitle());
-        return simpleNotification;
+    protected void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener) {
+        listener.onContentFetched(contentFromRecipe(recipe), false);
     }
 
     @Override
