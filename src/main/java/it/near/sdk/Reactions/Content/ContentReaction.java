@@ -70,6 +70,7 @@ public class ContentReaction extends CoreReaction {
         for ( Content cn : contentList){
             if (cn.getId().equals(reaction_bundle)){
                 listener.onContentFetched(cn, true);
+                return;
             }
         }
         requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {

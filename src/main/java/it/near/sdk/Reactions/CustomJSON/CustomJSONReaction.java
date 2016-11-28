@@ -135,6 +135,7 @@ public class CustomJSONReaction extends CoreReaction {
         for (CustomJSON json : jsonList){
             if (json.getId().equals(reaction_bundle)){
                 listener.onContentFetched(json, true);
+                return;
             }
         }
         requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler(){

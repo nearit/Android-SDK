@@ -164,6 +164,7 @@ public class FeedbackReaction extends CoreReaction {
             if (fb.getId().equals(reaction_bundle)){
                 fb.setRecipeId(recipe.getId());
                 listener.onContentFetched(fb, true);
+                return;
             }
         }
         requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler(){
