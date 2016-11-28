@@ -3,6 +3,7 @@ package it.near.sdk.Reactions;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -23,6 +24,7 @@ import it.near.sdk.Utils.ULog;
  * @author cattaneostefano.
  */
 public abstract class CoreReaction extends Reaction {
+    private static final String TAG = "CoreReaction";
     /**
      * Gson object to serialize and de-serialize the cache.
      */
@@ -84,17 +86,27 @@ public abstract class CoreReaction extends Reaction {
         editor.apply();
     }
 
-    protected void showContent(String reaction_bundle, Recipe recipe){
-        Parcelable content = getContent(reaction_bundle, recipe);
-        if (content == null) return;
-        if (recipe.isForegroundRecipe()){
-            nearNotifier.deliverForegroundReaction(content, recipe);
-        } else {
-            nearNotifier.deliverBackgroundReaction(content, recipe);
-        }
+    protected void showContent(String reaction_bundle, final Recipe recipe){
+        getContent(reaction_bundle, recipe, new ContentFetchListener() {
+            @Override
+            public void onContentFetched(Parcelable content, boolean cached) {
+                if (content == null) return;
+                if (recipe.isForegroundRecipe()){
+                    nearNotifier.deliverForegroundReaction(content, recipe);
+                } else {
+                    nearNotifier.deliverBackgroundReaction(content, recipe);
+                }
+            }
+
+            @Override
+            public void onContentFetchError(String error) {
+                Log.d(TAG, "Content not found");
+            }
+        });
+
     }
 
-    protected abstract Parcelable getContent(String reaction_bundle, Recipe recipe);
+    protected abstract void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener);
 
     /**
      * Returns a String stored in SharedPreferences.
