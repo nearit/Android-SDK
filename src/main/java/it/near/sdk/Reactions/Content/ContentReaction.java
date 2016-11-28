@@ -18,6 +18,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
@@ -58,14 +59,32 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
-        if (contentList == null) return null;
-        for ( Content cn : contentList){
-            if (cn.getId().equals(reaction_bundle)){
-                return cn;
+    protected void getContent(String reaction_bundle, Recipe recipe, final ContentFetchListener listener) {
+        if (contentList == null){
+            try {
+                contentList = loadList();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
-        return null;
+        for ( Content cn : contentList){
+            if (cn.getId().equals(reaction_bundle)){
+                listener.onContentFetched(cn, true);
+                return;
+            }
+        }
+        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
+                listener.onContentFetched(content, false);
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
+            }
+        });
     }
 
     public void refreshConfig() {

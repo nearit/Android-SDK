@@ -20,6 +20,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -87,6 +88,9 @@ public class CustomJSONReaction extends CoreReaction {
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     ULog.d(TAG, "Error: " + statusCode);
+                    if (statusCode == 0){
+                        ULog.d(TAG, throwable.toString());
+                    }
                     try {
                         jsonList = loadList();
                     } catch (JSONException e) {
@@ -120,14 +124,32 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
     @Override
-    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
-        if (jsonList == null) return null;
-        for (CustomJSON json : jsonList){
-            if (json.getId().equals(reaction_bundle)){
-                return json;
+    protected void getContent(String reaction_bundle, Recipe recipe, final ContentFetchListener listener) {
+        if (jsonList == null) {
+            try {
+                jsonList = loadList();
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
         }
-        return null;
+        for (CustomJSON json : jsonList){
+            if (json.getId().equals(reaction_bundle)){
+                listener.onContentFetched(json, true);
+                return;
+            }
+        }
+        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
+                listener.onContentFetched(json, false);
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
+            }
+        });
     }
 
     @Override

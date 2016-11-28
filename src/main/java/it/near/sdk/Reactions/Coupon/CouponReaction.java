@@ -3,6 +3,7 @@ package it.near.sdk.Reactions.Coupon;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -20,6 +21,7 @@ import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.Content.Image;
+import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
@@ -150,8 +152,8 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
-    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
-        return null;
+    protected void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener) {
+        Log.d(TAG, "Not implemented");
     }
 
 

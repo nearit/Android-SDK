@@ -163,10 +163,12 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         }
         ULog.wtf(TAG, "add regions with " + regions.size());
         for (Region region : regions) {
-            this.regions.add(region);
-            addRegion(region);
+            if (!this.regions.contains(region)) {
+                this.regions.add(region);
+                addRegion(region);
+            }
         }
-        persistRegions(regions);
+        persistRegions(this.regions);
         if (regionBootstrap == null && regions.size() > 0) {
             resetRanging();
             resetMonitoring();

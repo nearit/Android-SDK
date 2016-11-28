@@ -20,6 +20,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
@@ -78,15 +79,34 @@ public class PollReaction extends CoreReaction {
     }
 
     @Override
-    protected Parcelable getContent(String reaction_bundle, Recipe recipe) {
-        if (pollList == null) return null;
+    protected void getContent(String reaction_bundle, final Recipe recipe, final ContentFetchListener listener) {
+        if (pollList == null) {
+            try {
+                pollList = loadList();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         for (Poll pn : pollList){
             if (pn.getId().equals(reaction_bundle)){
                 pn.setRecipeId(recipe.getId());
-                return pn;
+                listener.onContentFetched(pn, true);
+                return;
             }
         }
-        return null;
+        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Poll poll = NearJsonAPIUtils.parseElement(morpheus, response, Poll.class);
+                poll.setRecipeId(recipe.getId());
+                listener.onContentFetched(poll, false);
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
+            }
+        });
     }
 
     @Override
