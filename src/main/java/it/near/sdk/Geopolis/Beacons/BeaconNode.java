@@ -54,7 +54,7 @@ public class BeaconNode extends Node {
     }
 
     public static Region toAltRegion(BeaconNode beaconNode) throws NullPointerException {
-        if (beaconNode.getIdentifier() == null) throw new NullPointerException();
+        if (beaconNode.getIdentifier() == null || beaconNode.getMinor() != null) throw new NullPointerException();
         Region region = new Region(beaconNode.getId(),
                                 Identifier.fromUuid(UUID.fromString(beaconNode.getProximityUUID())),
                                 beaconNode.getMajor() != null ? Identifier.fromInt(beaconNode.getMajor()) : null,
