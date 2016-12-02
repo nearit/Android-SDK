@@ -30,8 +30,6 @@ public class GlobalConfig {
     private String profileId;
     private final String NOTIFICATIONIMAGE = "notification_image";
     private int notificationImage = 0;
-    private final String THRESHOLD = "threshold";
-    private float threshold = 0;
     // ---------- suffix for sharedpreferences ----------
     private String prefsNameSuffix = "NearConfig";
     private SharedPreferences sp;
@@ -105,18 +103,6 @@ public class GlobalConfig {
     public void setSenderId(String senderId) {
         this.senderId = senderId;
         setLocalString(SENDERID, senderId);
-    }
-
-    public float getThreshold() {
-        if (threshold == 0){
-            threshold = sp.getFloat(THRESHOLD, 0);
-        }
-        return threshold;
-    }
-
-    public void setThreshold(float threshold) {
-        this.threshold = threshold;
-        editor.putFloat(THRESHOLD, threshold).apply();
     }
 
     public String getDeviceToken() {
