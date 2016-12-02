@@ -1,27 +1,26 @@
 
 To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
-
-To register an user in our platform call the method
-```java
-NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
-    @Override
-    public void onProfileCreated() {
-        // your profile was created
-    }
-                                            
-    @Override
-    public void onProfileCreationError(String error) {
-        // there was an error
-    }
-});
-```
-Calling this method multiple times will results in multiple profiles being created, each time with no profilation data.
-
-To be sure to call this method only when necessary, check if you already created a profile with this method
+We automatically create an anonymous profile for every installation of the app. You can check that a profile was created by checking the existance of a profile ID.
 ```java
 String profileId = NearItUserProfile.getProfileId(context);
 ```
-If the result is null, it means that no profile is associated with the app installation.
+If the result is null, it means that no profile is associated with the app installation (probably due to a network error).
+
+To explicitly register an user in our platform call the method
+```java
+NearItUserProfile.createNewProfile(this, new ProfileCreationListener() {
+            @Override
+            public void onProfileCreated(boolean created, String profileId) {
+                // see the created boolean to know if the profile was freshly created or was already created 
+            }
+
+            @Override
+            public void onProfileCreationError(String error) {
+                
+            }
+        });
+```
+Calling this method multiple times will not results in multiple profiles being created.
 
 After the profile is created set user data
 ```java
@@ -68,3 +67,4 @@ If you want to reset your profile use this method
 NearItUserProfile.resetProfileId(context)
 ```
 Further calls to NearItUserProfile.getProfileId(context) will return null.
+A creation of a new profile after the reset will create a profile with no user data.

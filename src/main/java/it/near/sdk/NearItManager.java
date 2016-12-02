@@ -19,6 +19,8 @@ import it.near.sdk.Geopolis.GeopolisManager;
 import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
 import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
+import it.near.sdk.Operation.NearItUserProfile;
+import it.near.sdk.Operation.ProfileCreationListener;
 import it.near.sdk.Push.OpenPushEvent;
 import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
@@ -84,7 +86,7 @@ public class NearItManager {
      * @param application the application object
      * @param apiKey the apiKey string
      */
-    public NearItManager(Application application, String apiKey) {
+    public NearItManager(final Application application, String apiKey) {
         this.application = application;
         initLifecycleMonitor();
 
@@ -93,7 +95,20 @@ public class NearItManager {
 
         plugInSetup();
 
-        NearInstallation.registerInstallation(application);
+        NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
+            @Override
+            public void onProfileCreated(boolean created, String profileId) {
+                ULog.d(TAG, created ? "Profile created successfully." : "Profile is present");
+            }
+
+            @Override
+            public void onProfileCreationError(String error) {
+                ULog.wtf(TAG, "Error creating profile. Profile not present");
+                // in case of success, the installation is automatically registered
+                // so we update/create the installation only on profile failure
+                NearInstallation.registerInstallation(application);
+            }
+        });
 
         registerLogReceiver();
 
@@ -192,11 +207,6 @@ public class NearItManager {
      */
     public void setNotificationImage(int imgRes){
         GlobalConfig.getInstance(application).setNotificationImage(imgRes);
-    }
-
-
-    public void setThreshold(float threshold) {
-        GlobalConfig.getInstance(application).setThreshold(threshold);
     }
 
     /**
