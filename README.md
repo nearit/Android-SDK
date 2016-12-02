@@ -74,8 +74,7 @@ public void foregroundEvent(Parcelable content, Recipe recipe) {
 
 ## Built-in region background receivers ##
 
-If you want to be notified when a user enters a region (bluetooth or geofence) using the built-in background region notifications put this in your app manifest. 
-Any content will be delivered through a intent that will call your launcher app and carry some extras.
+If you want to be notified with content from recipes working on the background (bluetooth or geofence) using the NearIT built-in background notifications, put this in your app manifest. 
 ```xml
 <!-- built in region receivers -->
 <receiver android:name="it.near.sdk.Geopolis.Background.RegionBroadcastReceiver"
@@ -86,6 +85,7 @@ Any content will be delivered through a intent that will call your launcher app 
     </intent-filter>
 </receiver>
 ```
+Any content will be delivered through a intent that will call your launcher app and carry some extras.
 You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of *NearItManager*
 
 Recipes tracks themselves as notified, but you need to track the tap event, by calling
