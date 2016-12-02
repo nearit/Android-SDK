@@ -209,11 +209,6 @@ public class NearItManager {
         GlobalConfig.getInstance(application).setNotificationImage(imgRes);
     }
 
-
-    public void setThreshold(float threshold) {
-        GlobalConfig.getInstance(application).setThreshold(threshold);
-    }
-
     /**
      * Force the refresh of all SDK configurations.
      */
