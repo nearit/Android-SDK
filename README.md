@@ -156,8 +156,9 @@ Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 If you want to customize the behavior of push notification see the section [Custom Push Notification](docs/custom-push-notification.md)
 
 ## Other resources ##
-
 [Custom background notifications](docs/custom-background-notifications.md)
+
+[Firebase integration](docs/firebase.md)
 
 [Custom Push Notification](docs/custom-push-notification.md)
 
