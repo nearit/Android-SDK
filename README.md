@@ -164,3 +164,5 @@ Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 [Custom Push Notification](docs/custom-push-notification.md)
 
 [User Profilation](docs/user-profilation.md)
+
+[Using Pro-Guard?](docs/proguard.md)
