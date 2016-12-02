@@ -13,9 +13,9 @@ As of late 2016, these are the instructions to integrate firebase:
 
 In the setting section of your Firebase project, you will find the cloud messaging server key to enter in the "Push notification" section of our CMS.
 
-Do not follow FCM-specific instructions: that part of the process is automatically handled by our library. We ask FCM for a device token and sync it with the NearIT user. We also already include the proper services in our manifest.
+Do not follow FCM-specific instructions: that part of the process is automatically handled by our library. We ask FCM for a device token and sync it with the NearIT user. We've also already included the proper services in our manifest.
 
-If you experience build problems make sure to include the 9.6.1 version of any gms dependency in your app.
+If you experience build or runtime problems with google play services components, make sure to include the 9.6.1 version of any gms dependency in your app.
 Example:
 ```
 compile 'com.google.android.gms:play-services-analytics:9.6.1'
