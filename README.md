@@ -25,7 +25,7 @@ To start using the SDK, include this in your app *build.gradle*
 ```java
 
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:2.0.3'
+    compile 'it.near.sdk.core:nearitsdk:2.0.4'
 }
 ```
 
@@ -131,7 +131,7 @@ NearIt offers a default push reception and visualization. It shows a system noti
 When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display) just like the region notifications.
 
 To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app. [If you need help follow those steps](docs/firebase.md)
-Enter the cloud messaging server key into the CMS. Push notification only work if a profile is created [How to create a profile](docs/user-profilation.md).
+Enter the cloud messaging firebase server key into the CMS. Push notification only work if a profile is created. We automatically create an anonymous profile for every user, but if you want to know more about profiles check [the user profilation section](docs/user-profilation.md).
 
 To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
 ```xml
