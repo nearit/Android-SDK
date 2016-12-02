@@ -101,7 +101,7 @@ Recipes either deliver content in the background or in the foreground but not bo
 | Push (immediate or scheduled)    | Background intent  |
 | Enter and Exit on geofences      | Background intent  |
 | Enter and Exit on beacon regions | Background intent  |
-| Enter in a specific beacon range | Proximity listener |
+| Enter in a specific beacon range | Proximity listener (foreground) |
 
 If you want to customize the behavior of background notification see [this page](docs/custom-background-notifications.md)
 
