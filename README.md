@@ -15,8 +15,7 @@ This is the NearIt Android SDK. With this component you can integrate the NearIt
 
 ## Behaviour ##
 
-The SDK will start monitoring the regions configured in the CMS of your app. Any content will be delivered through a notification that will call your launcher app and carry some extras.
-To implement a custom background behaviour look in the advanced topics section.
+The SDK will synchronize with our servers and behave accordingly to the CMS settings and the recipes. Any content from triggered recipes will be delivered to your app.
 
 ## Getting started ##
 
@@ -36,7 +35,7 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
  @Override
     public void onCreate() {
         super.onCreate();
-        nearItManager = new NearItManager(this, getResources().getString(R.string.api_key));
+        nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
     }
 
 ```
