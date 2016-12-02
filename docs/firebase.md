@@ -14,6 +14,6 @@ Do not follow FCM-specific instructions: that part of the process is automatical
 
 If you experience build problems make sure to include the 9.6.1 version of any gms dependency.
 Example:
-‘‘‘
-compile 'com.google.android.gms:play-services-analytics:9.6.1'
-‘‘‘
+```
+compile 'com.google.android.gms:play-services-analytics:**9.6.1**'
+```
