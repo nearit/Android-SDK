@@ -1,7 +1,9 @@
 To enable push notification with our platform you need to integrate firebase in your app.
 
 We encourage to follow the official Firebase documentation.
+
 https://firebase.google.com/
+
 As of late 2016, these are the instructions to integrate firebase:
 * Create a project in the firebase console. Pick a name for your project and select your company country.
 * Inside the project, select "Add Firebase to your Android app"
