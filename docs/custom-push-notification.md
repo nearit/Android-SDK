@@ -1,7 +1,7 @@
 ### Custom Push Notification ###
 
-Just like with region messages you can add your own receiver for the push notification to have total control of your app behaviour. [see above](#custom-background-behavior)
-And add them to your manifest (see the Android samples repository for an implementation of this scenario). 
+Just like with region messages you can add your own receiver for the push notification to have total control of your app behaviour.
+And these components to your manifest (see the Android samples repository for an implementation of this scenario). 
 ```xml
 <service android:name=".MyFcmIntentService"
             android:exported="false"/>
