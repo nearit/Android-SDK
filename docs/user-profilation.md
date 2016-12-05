@@ -20,7 +20,7 @@ NearItUserProfile.createNewProfile(this, new ProfileCreationListener() {
             }
         });
 ```
-Calling this method multiple times will not results in multiple profiles being created.
+Calling this method multiple times will NOT results in multiple profiles being created.
 
 After the profile is created set user data
 ```java
