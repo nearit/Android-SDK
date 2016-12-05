@@ -126,10 +126,10 @@ nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId))
 
 ## Enable Push Notifications ##
 
-NearIt offers a default push notification reception and visualization. It shows a system notification with the notification message.
-When a user taps on a notification, it starts your app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display) just like the proximity-driven notifications.
+NearIt offers a default push notification reception and visualization. It shows a system notification with the notification message and title entered in the what section of a recipe.
+When a user taps on a notification, it starts the app launcher and passes the intent with all the necessary information about the push, including the reaction bundle (the content to display) just like a proximity-driven notifications.
 
-To enable push notification, set up a firebase project and follow the official instruction to integrate it into an app. [If you need help follow those steps](docs/firebase.md)
+To enable push notification, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps](docs/firebase.md)
 Enter the cloud messaging firebase server key into the CMS. Push notification only work if a profile is created. We automatically create an anonymous profile for every user, but if you want to know more about profiles check [the user profilation section](docs/user-profilation.md).
 
 To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
@@ -153,7 +153,7 @@ If you want to track notification taps, simply do
 // the recipeId will be included in the extras bundle of the intent with the key IntentConstants.RECIPE_ID
 Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
-If you want to customize the behavior of push notification see the section [Custom Push Notification](docs/custom-push-notification.md)
+If you want to customize the behavior of push notification (custom notification layout, blocking some notifications, different behaviour on tap, et al.) see the section [Custom Push Notification](docs/custom-push-notification.md)
 
 ## Other resources ##
 [Custom background notifications](docs/custom-background-notifications.md)
