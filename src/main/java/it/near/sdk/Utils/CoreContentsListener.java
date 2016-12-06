@@ -16,10 +16,10 @@ import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
  * @author cattaneostefano
  */
 public interface CoreContentsListener {
-    void getPollNotification(@Nullable Intent intent, Poll notification, String recipeId);
-    void getContentNotification(@Nullable Intent intent, Content notification, String recipeId);
-    void getCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId);
-    void getCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId);
-    void getSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId);
-    void getFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId);
+    void gotPollNotification(@Nullable Intent intent, Poll notification, String recipeId);
+    void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId);
+    void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId);
+    void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId);
+    void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId);
+    void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId);
 }
