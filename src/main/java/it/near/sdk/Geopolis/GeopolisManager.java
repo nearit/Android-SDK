@@ -55,18 +55,12 @@ import it.near.sdk.Utils.ULog;
  */
 public class GeopolisManager {
 
-    // ---------- beacon forest ----------
-    public static final String BEACON_FOREST_PATH =         "beacon-forest";
-    public static final String BEACON_FOREST_TRACKINGS =    "trackings";
-    public static final String BEACON_FOREST_BEACONS =      "beacons";
-
     private static final String TAG = "GeopolisManager";
     private static final String PREFS_SUFFIX = "GeopolisManager";
     private static final String PLUGIN_NAME = "geopolis";
     private static final String TRACKING_RES = "trackings";
 
     private static final String RADAR_ON = "radar_on";
-    private static final String GEOPOLIS_CONFIG = "cached_config";
     public static final String GF_ENTRY_ACTION_SUFFIX = "REGION_ENTRY";
     public static final String GF_EXIT_ACTION_SUFFIX = "REGION_EXIT";
     public static final String BT_ENTRY_ACTION_SUFFIX = "BT_REGION_ENTRY";
@@ -139,9 +133,6 @@ public class GeopolisManager {
      */
     public void refreshConfig(){
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                    .appendPath(BEACON_FOREST_PATH)
-                    .appendPath(BEACON_FOREST_BEACONS).build();
-        url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
                 .appendPath("nodes")
                 .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
