@@ -101,41 +101,9 @@ public class NearUtils {
         String reaction_plugin = intent.getExtras().getString("reaction-plugin");
         String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
 
-        boolean coreContent = false;
-        if (reaction_plugin == null) return false;
-        switch (reaction_plugin) {
-            case "content-notification" :
-                Content c_notif = intent.getParcelableExtra("content");
-                listener.gotContentNotification(intent, c_notif, recipeId);
-                coreContent = true;
-                break;
-            case "simple-notification" :
-                SimpleNotification s_notif = intent.getParcelableExtra("content");
-                listener.gotSimpleNotification(intent, s_notif, recipeId);
-                coreContent = true;
-                break;
-            case "poll-notification" :
-                Poll p_notif = intent.getParcelableExtra("content");
-                listener.gotPollNotification(intent, p_notif, recipeId);
-                coreContent = true;
-                break;
-            case "coupon-blaster" :
-                Coupon coup_notif = intent.getParcelableExtra("content");
-                listener.gotCouponNotification(intent, coup_notif, recipeId);
-                coreContent = true;
-                break;
-            case "json-sender" :
-                CustomJSON custom_notif = intent.getParcelableExtra("content");
-                listener.gotCustomJSONNotification(intent, custom_notif, recipeId);
-                coreContent = true;
-                break;
-            case "feedbacks" :
-                Feedback f_notif = intent.getParcelableExtra("content");
-                listener.gotFeedbackNotification(intent, f_notif, recipeId);
-                coreContent = true;
-                break;
-        }
-        return coreContent;
+        if (!intent.hasExtra(IntentConstants.CONTENT)) return false;
+
+        return parseContent(intent, intent.getParcelableExtra(IntentConstants.CONTENT), recipeId, reaction_plugin, listener);
     }
 
 
@@ -150,42 +118,45 @@ public class NearUtils {
         String reaction_plugin = recipe.getReaction_plugin_id();
         String recipeId = recipe.getId();
 
+        return parseContent(null, content, recipeId, reaction_plugin, listener);
+    }
+
+    private static boolean parseContent(Intent intent, Parcelable content, String recipeId, String reaction_plugin, CoreContentsListener listener) {
         boolean coreContent = false;
         if (reaction_plugin == null) return false;
         switch (reaction_plugin) {
             case "content-notification" :
                 Content c_notif = (Content) content;
-                listener.gotContentNotification(null, c_notif, recipeId);
+                listener.gotContentNotification(intent, c_notif, recipeId);
                 coreContent = true;
                 break;
             case "simple-notification" :
                 SimpleNotification s_notif = (SimpleNotification) content;
-                listener.gotSimpleNotification(null, s_notif, recipeId);
+                listener.gotSimpleNotification(intent, s_notif, recipeId);
                 coreContent = true;
                 break;
             case "poll-notification" :
                 Poll p_notif = (Poll) content;
-                listener.gotPollNotification(null, p_notif, recipeId);
+                listener.gotPollNotification(intent, p_notif, recipeId);
                 coreContent = true;
                 break;
             case "coupon-blaster" :
                 Coupon coup_notif = (Coupon) content;
-                listener.gotCouponNotification(null, coup_notif, recipeId);
+                listener.gotCouponNotification(intent, coup_notif, recipeId);
                 coreContent = true;
                 break;
             case "json-sender" :
                 CustomJSON custom_notif = (CustomJSON) content;
-                listener.gotCustomJSONNotification(null, custom_notif, recipeId);
+                listener.gotCustomJSONNotification(intent, custom_notif, recipeId);
                 coreContent = true;
                 break;
             case "feedbacks" :
                 Feedback f_notif = (Feedback) content;
-                listener.gotFeedbackNotification(null, f_notif, recipeId);
+                listener.gotFeedbackNotification(intent, f_notif, recipeId);
                 coreContent = true;
                 break;
         }
         return coreContent;
-
     }
 
 
