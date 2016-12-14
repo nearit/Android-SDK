@@ -86,6 +86,10 @@ If you want to be notified with content from recipes working on the background (
 </receiver>
 ```
 Any content will be delivered through a intent that will call your launcher app and carry some extras.
+To extract the content from an intent use the utility method:
+```java
+NearUtils.parseCoreContents(intent, coreContentListener);
+```
 You can set your own icon for the notifications with the method *setNotificationImage(int imgRes)* of *NearItManager*
 
 Recipes tracks themselves as notified, but you need to track the tap event, by calling
