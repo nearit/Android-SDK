@@ -33,9 +33,8 @@ import it.near.sdk.Utils.ULog;
  */
 public class CustomJSONReaction extends CoreReaction {
 
-
+    public static final String PLUGIN_NAME = "json-sender";
     private static final String PREFS_SUFFIX = "NearJSON";
-    private static final String PLUGIN_NAME = "json-sender";
     private static final String SHOW_JSON_ACTION = "deliver_json";
     private static final String JSON_CONTENT_RES = "json_contents";
     private static final String TAG = "CustomJSONReaction";

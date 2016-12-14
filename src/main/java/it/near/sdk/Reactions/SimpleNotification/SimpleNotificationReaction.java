@@ -18,8 +18,8 @@ import it.near.sdk.Recipes.NearNotifier;
  */
 
 public class SimpleNotificationReaction extends CoreReaction {
-    private static final String SHOW_SIMPLE_NOTIFICATION_ACTION_NAME = "simple_notification";
     public static final String PLUGIN_NAME = "simple-notification";
+    private static final String SHOW_SIMPLE_NOTIFICATION_ACTION_NAME = "simple_notification";
     private static final String PREFS_SUFFIX = "NearSimpleNot";
 
     public SimpleNotificationReaction(Context mContext, NearNotifier nearNotifier) {
