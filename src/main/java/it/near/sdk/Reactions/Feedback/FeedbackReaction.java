@@ -35,12 +35,12 @@ import it.near.sdk.Utils.ULog;
 
 public class FeedbackReaction extends CoreReaction {
 
+    public static final String PLUGIN_NAME = "feedbacks";
     public static final String PREFS_SUFFIX = "NearFeedbackNot";
-    private static final String PLUGIN_NAME = "feedbacks";
     private static final String ASK_FEEDBACK_ACTION_NAME = "ask_feedback";
-    public static final String FEEDBACKS_NOTIFICATION_RESOURCE =  "feedbacks";
+    private static final String FEEDBACKS_NOTIFICATION_RESOURCE =  "feedbacks";
     private static final String TAG = "FeedbackReaction";
-    public static final String ANSWERS_RESOURCE = "answers";
+    private static final String ANSWERS_RESOURCE = "answers";
 
     private List<Feedback> feedbackList;
 

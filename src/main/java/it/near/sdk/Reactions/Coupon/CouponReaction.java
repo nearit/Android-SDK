@@ -34,10 +34,10 @@ import it.near.sdk.Utils.ULog;
  */
 public class CouponReaction extends CoreReaction {
 
+    public static final String PLUGIN_NAME = "coupon-blaster";
     private static final String PREFS_SUFFIX = "NearCoupon";
-    public static final String COUPONS_RES = "coupons";
-    public static final String CLAIMS_RES = "claims";
-    private static final String PLUGIN_NAME = "coupon-blaster";
+    private static final String COUPONS_RES = "coupons";
+    private static final String CLAIMS_RES = "claims";
     private static final String SHOW_COUPON_ACTION_NAME = "show_coupon";
     private static final String PLUGIN_ROOT_PATH = "coupon-blaster";
     private static final String TAG = "CouponReactiom";

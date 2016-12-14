@@ -33,9 +33,9 @@ import it.near.sdk.Utils.ULog;
  */
 public class PollReaction extends CoreReaction {
     // ---------- poll notification plugin ----------
-    public static final String POLL_NOTIFICATION =          "poll-notification";
-    public static final String POLL_NOTIFICATION_RESOURCE = "polls";
-    private static final String PLUGIN_NAME = "poll-notification";
+    public static final String PLUGIN_NAME = "poll-notification";
+    private static final String POLL_NOTIFICATION =          "poll-notification";
+    private static final String POLL_NOTIFICATION_RESOURCE = "polls";
     private static final String SHOW_POLL_ACTION_NAME = "show_poll";
     private static final String TAG = "PollReaction";
     public static final String PREFS_SUFFIX = "NearPollNot";
