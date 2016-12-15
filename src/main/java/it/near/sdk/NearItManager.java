@@ -38,7 +38,7 @@ import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipeRefreshListener;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
-import it.near.sdk.Utils.IntentConstants;
+import it.near.sdk.Utils.NearItIntentConstants;
 import it.near.sdk.Utils.NearSimpleLogger;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.OnLifecycleEventListener;
@@ -263,7 +263,7 @@ public class NearItManager {
         Intent resultIntent = new Intent(action);
         Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
         if (action.equals(PUSH_MESSAGE_ACTION)){
-            resultIntent.putExtra(IntentConstants.PUSH_ID, pushId);
+            resultIntent.putExtra(NearItIntentConstants.PUSH_ID, pushId);
         }
         application.sendOrderedBroadcast(resultIntent, null);
     }
