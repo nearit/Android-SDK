@@ -1,24 +1,14 @@
 package it.near.sdk.Utils;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JsonApiObject;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.Content.ContentReaction;
 import it.near.sdk.Reactions.Coupon.Coupon;
@@ -104,12 +94,12 @@ public class NearUtils {
      * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
      */
     public static boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
-        String reaction_plugin = intent.getExtras().getString(IntentConstants.REACTION_PLUGIN);
-        String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
+        String reaction_plugin = intent.getExtras().getString(NearItIntentConstants.REACTION_PLUGIN);
+        String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
 
-        if (!intent.hasExtra(IntentConstants.CONTENT)) return false;
+        if (!intent.hasExtra(NearItIntentConstants.CONTENT)) return false;
 
-        return parseContent(intent, intent.getParcelableExtra(IntentConstants.CONTENT), recipeId, reaction_plugin, listener);
+        return parseContent(intent, intent.getParcelableExtra(NearItIntentConstants.CONTENT), recipeId, reaction_plugin, listener);
     }
 
 

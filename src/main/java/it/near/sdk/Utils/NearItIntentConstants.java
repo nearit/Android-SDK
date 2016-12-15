@@ -3,7 +3,7 @@ package it.near.sdk.Utils;
 /**
  * Created by cattaneostefano on 01/08/16.
  */
-public class IntentConstants {
+public class NearItIntentConstants {
     public static final String RECIPE_ID = "recipe_id";
     public static final String PUSH_ID = "push_id";
     public static final String NOTIF_TITLE = "notif_title";

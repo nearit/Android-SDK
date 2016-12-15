@@ -36,12 +36,12 @@ public abstract class BaseIntentService extends IntentService {
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
         targetIntent.putExtras(intent.getExtras());
-        String notif_title = intent.getStringExtra(IntentConstants.NOTIF_TITLE);
-        String notifText = intent.getStringExtra(IntentConstants.NOTIF_BODY);
+        String notif_title = intent.getStringExtra(NearItIntentConstants.NOTIF_TITLE);
+        String notifText = intent.getStringExtra(NearItIntentConstants.NOTIF_BODY);
         if (notif_title == null) {
             notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
-        String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
+        String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
             Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
