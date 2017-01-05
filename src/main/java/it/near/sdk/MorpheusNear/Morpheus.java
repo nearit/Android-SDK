@@ -59,6 +59,10 @@ public class Morpheus {
     return parseFromJSONObject(jsonObject);
   }
 
+  public JsonApiObject parse(JSONObject jsonObject) throws Exception {
+    return parseFromJSONObject(jsonObject);
+  }
+
   /**
    * Parse and map all the top level members.
    */
