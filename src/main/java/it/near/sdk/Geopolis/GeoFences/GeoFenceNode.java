@@ -26,7 +26,7 @@ public class GeoFenceNode extends Node implements Parcelable{
     Double longitude;
 
     @SerializedName("radius")
-    Integer radius;
+    Double radius;
 
     public GeoFenceNode() {
         super();
@@ -48,18 +48,18 @@ public class GeoFenceNode extends Node implements Parcelable{
         this.longitude = longitude;
     }
 
-    public int getRadius() {
+    public Double getRadius() {
         return radius;
     }
 
-    public void setRadius(int radius) {
+    public void setRadius(double radius) {
         this.radius = radius;
     }
 
     public Geofence toGeofence(){
         return new Geofence.Builder()
                 .setRequestId(getId())
-                .setCircularRegion(getLatitude(), getLongitude(), getRadius())
+                .setCircularRegion(getLatitude(), getLongitude(), getRadius().intValue())
                 .setLoiteringDelay(LOITERING_DELAY)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
@@ -75,14 +75,14 @@ public class GeoFenceNode extends Node implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeDouble(latitude);
         dest.writeDouble(longitude);
-        dest.writeInt(radius);
+        dest.writeDouble(radius);
         dest.writeString(getId());
     }
 
     protected GeoFenceNode(Parcel in) {
         latitude = in.readDouble();
         longitude = in.readDouble();
-        radius = in.readInt();
+        radius = in.readDouble();
         setId(in.readString());
     }
 
