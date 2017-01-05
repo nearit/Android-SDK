@@ -103,7 +103,7 @@ public class NearJsonAPIUtils {
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
         JsonApiObject jsonApiObject = null;
         try {
-            jsonApiObject = morpheus.parse(json.toString());
+            jsonApiObject = morpheus.parse(json);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,7 +130,7 @@ public class NearJsonAPIUtils {
     public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz){
         JsonApiObject jsonApiObject = null;
         try {
-            jsonApiObject = morpheus.parse(json.toString());
+            jsonApiObject = morpheus.parse(json);
         } catch (Exception e) {
             e.printStackTrace();
         }
