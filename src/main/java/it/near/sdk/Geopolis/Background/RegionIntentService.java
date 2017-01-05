@@ -2,13 +2,7 @@ package it.near.sdk.Geopolis.Background;
 
 import android.content.Intent;
 
-import org.json.JSONException;
-
-import it.near.sdk.GlobalConfig;
-import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.BaseIntentService;
-import it.near.sdk.Utils.IntentConstants;
-import it.near.sdk.Utils.NearNotification;
 
 /**
  * IntentService that gets notified when we receive a region event. It is explicitly called by {@link RegionBroadcastReceiver}.

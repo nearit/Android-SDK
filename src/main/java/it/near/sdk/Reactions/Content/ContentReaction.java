@@ -31,9 +31,9 @@ import it.near.sdk.Utils.ULog;
  */
 public class ContentReaction extends CoreReaction {
     // ---------- content notification plugin ----------
-    public static final String CONTENT_NOTIFICATION_PATH =      "content-notification";
-    public static final String CONTENT_NOTIFICATION_RESOURCE =  "contents";
-    private static final String PLUGIN_NAME = "content-notification";
+    public static final String PLUGIN_NAME = "content-notification";
+    private static final String CONTENT_NOTIFICATION_PATH =      "content-notification";
+    private static final String CONTENT_NOTIFICATION_RESOURCE =  "contents";
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentReaction";
     public static final String PREFS_SUFFIX = "NearContentNot";

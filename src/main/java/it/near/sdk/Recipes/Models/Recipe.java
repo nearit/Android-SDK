@@ -25,7 +25,7 @@ import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Annotations.Relationship;
 import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Utils.IntentConstants;
+import it.near.sdk.Utils.NearItIntentConstants;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
 /**
@@ -339,18 +339,18 @@ public class Recipe extends Resource {
      */
     public static void fillIntentExtras(Intent intent, Recipe recipe, Parcelable parcelable) {
 
-        intent.putExtra(IntentConstants.RECIPE_ID, recipe.getId());
+        intent.putExtra(NearItIntentConstants.RECIPE_ID, recipe.getId());
         // set notification text
-        intent.putExtra(IntentConstants.NOTIF_TITLE, recipe.getNotificationTitle());
-        intent.putExtra(IntentConstants.NOTIF_BODY, recipe.getNotificationBody());
+        intent.putExtra(NearItIntentConstants.NOTIF_TITLE, recipe.getNotificationTitle());
+        intent.putExtra(NearItIntentConstants.NOTIF_BODY, recipe.getNotificationBody());
         // set contet to show
-        intent.putExtra(IntentConstants.CONTENT, parcelable);
+        intent.putExtra(NearItIntentConstants.CONTENT, parcelable);
         // set the content type so the app can cast the parcelable to correct content
-        intent.putExtra(IntentConstants.REACTION_PLUGIN, recipe.getReaction_plugin_id());
-        intent.putExtra(IntentConstants.REACTION_ACTION, recipe.getReaction_action().getId());
+        intent.putExtra(NearItIntentConstants.REACTION_PLUGIN, recipe.getReaction_plugin_id());
+        intent.putExtra(NearItIntentConstants.REACTION_ACTION, recipe.getReaction_action().getId());
         // set the pulse info
-        intent.putExtra(IntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
-        intent.putExtra(IntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
-        intent.putExtra(IntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle() != null ? recipe.getPulse_bundle().getId() : "");
+        intent.putExtra(NearItIntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
+        intent.putExtra(NearItIntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
+        intent.putExtra(NearItIntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle() != null ? recipe.getPulse_bundle().getId() : "");
     }
 }

@@ -1,30 +1,26 @@
 package it.near.sdk.Utils;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Base64;
 import android.util.Log;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JsonApiObject;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.MorpheusNear.Resource;
 import it.near.sdk.Reactions.Content.Content;
+import it.near.sdk.Reactions.Content.ContentReaction;
 import it.near.sdk.Reactions.Coupon.Coupon;
+import it.near.sdk.Reactions.Coupon.CouponReaction;
 import it.near.sdk.Reactions.CustomJSON.CustomJSON;
+import it.near.sdk.Reactions.CustomJSON.CustomJSONReaction;
 import it.near.sdk.Reactions.Feedback.Feedback;
+import it.near.sdk.Reactions.Feedback.FeedbackReaction;
 import it.near.sdk.Reactions.Poll.Poll;
+import it.near.sdk.Reactions.Poll.PollReaction;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
+import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.Models.Recipe;
 
 /**
@@ -98,44 +94,12 @@ public class NearUtils {
      * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
      */
     public static boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
-        String reaction_plugin = intent.getExtras().getString("reaction-plugin");
-        String recipeId = intent.getStringExtra(IntentConstants.RECIPE_ID);
+        String reaction_plugin = intent.getExtras().getString(NearItIntentConstants.REACTION_PLUGIN);
+        String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
 
-        boolean coreContent = false;
-        if (reaction_plugin == null) return false;
-        switch (reaction_plugin) {
-            case "content-notification" :
-                Content c_notif = intent.getParcelableExtra("content");
-                listener.getContentNotification(intent, c_notif, recipeId);
-                coreContent = true;
-                break;
-            case "simple-notification" :
-                SimpleNotification s_notif = intent.getParcelableExtra("content");
-                listener.getSimpleNotification(intent, s_notif, recipeId);
-                coreContent = true;
-                break;
-            case "poll-notification" :
-                Poll p_notif = intent.getParcelableExtra("content");
-                listener.getPollNotification(intent, p_notif, recipeId);
-                coreContent = true;
-                break;
-            case "coupon-blaster" :
-                Coupon coup_notif = intent.getParcelableExtra("content");
-                listener.getCouponNotification(intent, coup_notif, recipeId);
-                coreContent = true;
-                break;
-            case "json-sender" :
-                CustomJSON custom_notif = intent.getParcelableExtra("content");
-                listener.getCustomJSONNotification(intent, custom_notif, recipeId);
-                coreContent = true;
-                break;
-            case "feedbacks" :
-                Feedback f_notif = intent.getParcelableExtra("content");
-                listener.getFeedbackNotification(intent, f_notif, recipeId);
-                coreContent = true;
-                break;
-        }
-        return coreContent;
+        if (!intent.hasExtra(NearItIntentConstants.CONTENT)) return false;
+
+        return parseContent(intent, intent.getParcelableExtra(NearItIntentConstants.CONTENT), recipeId, reaction_plugin, listener);
     }
 
 
@@ -150,42 +114,45 @@ public class NearUtils {
         String reaction_plugin = recipe.getReaction_plugin_id();
         String recipeId = recipe.getId();
 
+        return parseContent(null, content, recipeId, reaction_plugin, listener);
+    }
+
+    private static boolean parseContent(Intent intent, Parcelable content, String recipeId, String reaction_plugin, CoreContentsListener listener) {
         boolean coreContent = false;
         if (reaction_plugin == null) return false;
         switch (reaction_plugin) {
-            case "content-notification" :
+            case ContentReaction.PLUGIN_NAME :
                 Content c_notif = (Content) content;
-                listener.getContentNotification(null, c_notif, recipeId);
+                listener.gotContentNotification(intent, c_notif, recipeId);
                 coreContent = true;
                 break;
-            case "simple-notification" :
+            case SimpleNotificationReaction.PLUGIN_NAME :
                 SimpleNotification s_notif = (SimpleNotification) content;
-                listener.getSimpleNotification(null, s_notif, recipeId);
+                listener.gotSimpleNotification(intent, s_notif, recipeId);
                 coreContent = true;
                 break;
-            case "poll-notification" :
+            case PollReaction.PLUGIN_NAME :
                 Poll p_notif = (Poll) content;
-                listener.getPollNotification(null, p_notif, recipeId);
+                listener.gotPollNotification(intent, p_notif, recipeId);
                 coreContent = true;
                 break;
-            case "coupon-blaster" :
+            case CouponReaction.PLUGIN_NAME :
                 Coupon coup_notif = (Coupon) content;
-                listener.getCouponNotification(null, coup_notif, recipeId);
+                listener.gotCouponNotification(intent, coup_notif, recipeId);
                 coreContent = true;
                 break;
-            case "json-sender" :
+            case CustomJSONReaction.PLUGIN_NAME :
                 CustomJSON custom_notif = (CustomJSON) content;
-                listener.getCustomJSONNotification(null, custom_notif, recipeId);
+                listener.gotCustomJSONNotification(intent, custom_notif, recipeId);
                 coreContent = true;
                 break;
-            case "feedbacks" :
+            case FeedbackReaction.PLUGIN_NAME :
                 Feedback f_notif = (Feedback) content;
-                listener.getFeedbackNotification(null, f_notif, recipeId);
+                listener.gotFeedbackNotification(intent, f_notif, recipeId);
                 coreContent = true;
                 break;
         }
         return coreContent;
-
     }
 
 
