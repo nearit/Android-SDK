@@ -33,32 +33,32 @@ public class FcmIntentService extends BaseIntentService implements CoreContentsL
     }
 
     @Override
-    public void getPollNotification(Intent intent, Poll notification, String recipeId) {
+    public void gotPollNotification(Intent intent, Poll notification, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getContentNotification(Intent intent, Content notification, String recipeId) {
+    public void gotContentNotification(Intent intent, Content notification, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getCouponNotification(Intent intent, Coupon notification, String recipeId) {
+    public void gotCouponNotification(Intent intent, Coupon notification, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getCustomJSONNotification(Intent intent, CustomJSON notification, String recipeId) {
+    public void gotCustomJSONNotification(Intent intent, CustomJSON notification, String recipeId) {
         // TODO this was a custom json, implementation may vary, it's usually overriden
     }
 
     @Override
-    public void getSimpleNotification(Intent intent, SimpleNotification s_notif, String recipeId) {
+    public void gotSimpleNotification(Intent intent, SimpleNotification s_notif, String recipeId) {
         sendSimpleNotification(intent);
     }
 
     @Override
-    public void getFeedbackNotification(Intent intent, Feedback s_notif, String recipeId) {
+    public void gotFeedbackNotification(Intent intent, Feedback s_notif, String recipeId) {
         sendSimpleNotification(intent);
     }
 
