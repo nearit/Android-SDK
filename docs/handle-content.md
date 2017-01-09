@@ -56,14 +56,14 @@ If you want to customize the behavior of background notification see [this page]
 For each callback method of the *coreContentListener* you will receive a different content object. 
 Here are the details for each one:
 
--```SimpleNotification``` with the following getters:
-    - ```getNotificationMessage()``` returns the notification message
-    - ```getNotificationTitle()``` returns the notification title
+- `SimpleNotification` with the following getters:
+    - `getNotificationMessage()` returns the notification message
+    - `getNotificationTitle()` returns the notification title
     
--```Content``` for the notification with content, with the following getters:
-    -```getContent``` returns the text content
-    -```getVideo_link``` returns the video link string
-    -```getImages_links``` returns a list of *ImageSet* object containing the source link for the images
+- `Content` for the notification with content, with the following getters:
+    - `getContent` returns the text content
+    - `getVideo_link` returns the video link string
+    - `getImages_links` returns a list of *ImageSet* object containing the source link for the images
 
 
 
