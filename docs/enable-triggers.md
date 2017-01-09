@@ -1,3 +1,7 @@
+# Enable triggers #
+
+Based on what recipe triggers you want to use some setup will be necessary.
+
 ## Location based Triggers ##
 
 When you want to start the radar for geofences and beacons call this method
