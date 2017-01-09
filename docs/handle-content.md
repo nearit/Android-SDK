@@ -39,7 +39,7 @@ public void foregroundEvent(Parcelable content, Recipe recipe) {
 
 ## Background content ##
 
-Once you have added at least one of the receivers for any background working trigger (ADD LINK) you will be delivered the actual content through an intent that will call your app launcher activity and carry some extras.
+Once you have added at least one of the receivers for any background working trigger ([learn more](enable-triggers.md)) you will be delivered the actual content through an intent that will call your app launcher activity and carry some extras.
 To extract the content from an intent use the utility method:
 ```java
 NearUtils.parseCoreContents(intent, coreContentListener);
