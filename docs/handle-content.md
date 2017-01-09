@@ -68,6 +68,13 @@ Here are the details for each one:
 - `Feedback` with the following getters:
     - `getQuestion()` returns the feedback request string
     - `getRecipeId()` returns the recipeId associated with the feedback (you'll need it for answer it)
+To give a feedback call this method:
+```java
+// rating must be an integer between 0 and 5, and you can set a comment string.
+nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
+// if you don't hold the feedback object use this constructor
+nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
+```
     
 - `Coupon` with the following getters:
     - `getName()` returns the coupon name
