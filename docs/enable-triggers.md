@@ -51,5 +51,5 @@ To receive the system notification of a push recipe, add this receiver in the *a
      </intent-filter>
 </receiver>
 ```
-
+WARNING: If you are using some gms play services in your app and experience runtime malfunctioning, please be sure to use the 10.0.1 version of the gms dependency you are pulling in your app. Conflicting play services version may result in compile-time and run-time errors.
 
