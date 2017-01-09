@@ -1,4 +1,6 @@
 site_name: NearIT Android
 pages:
-  - 'Index' : 'index.md'
-  - 'Enable Triggers' : 'enable-triggers.md'
+  - Index : 'index.md'
+  - User Guide: 
+    - 'Enable Triggers' : 'enable-triggers.md'
+    - 'Handle recipe content' : 'handle-content.md'
