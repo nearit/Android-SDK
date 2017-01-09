@@ -1,3 +1,4 @@
+# Segmentation
 
 To profile users, you need to either create a new profile in our server or pass us a profileId obtained from your authentication services in the SDK.
 We automatically create an anonymous profile for every installation of the app. You can check that a profile was created by checking the existance of a profile ID.
