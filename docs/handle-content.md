@@ -61,9 +61,26 @@ Here are the details for each one:
     - `getNotificationTitle()` returns the notification title
     
 - `Content` for the notification with content, with the following getters:
-    - `getContent` returns the text content
-    - `getVideo_link` returns the video link string
-    - `getImages_links` returns a list of *ImageSet* object containing the source link for the images
+    - `getContent()` returns the text content
+    - `getVideo_link()` returns the video link string
+    - `getImages_links()` returns a list of *ImageSet* object containing the source links for the images
+    
+- `Feedback` with the following getters:
+    - `getQuestion()` returns the feedback request string
+    - `getRecipeId()` returns the recipeId associated with the feedback (you'll need it for answer it)
+    
+- `Coupon` with the following getters:
+    - `getName()` returns the coupon name
+    - `getDescription()` returns the coupon description
+    - `getValue()` returns the value string
+    - `getExpires_at()` returns the expiring date (as a string)
+    - `getIconSet()` returns an *ImageSet* object containing the source links for the icon
+    - `getSerial()` returns the serial code of the single coupon as a string
+    - `getClaimedAt()` returns the claimed date (when the coupon was earned) of the coupon as a string
+    - `getRedeemedAt()` returns the redeemed date (when the coupon was used) of the coupon as a string
+    
+- `CustomJSON` with the following getters:
+    - `getContent()` returns the json content as an *HashMap<String, Object>* (just like Gson)
 
 
 
