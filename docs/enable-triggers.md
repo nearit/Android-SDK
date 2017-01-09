@@ -14,8 +14,6 @@ When you want to start the radar for geofences and beacons call this method
 
 The SDK automatically includes the permission for location access in its manifest (necessary for beacon and geofence monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
 
-### Built-in background location receivers ###
-
 If you want to be notified from location recipes working on the background (bluetooth or geofence) using the NearIT built-in background notifications, put this in your app manifest application element. 
 ```xml
 <!-- built in region receivers -->
