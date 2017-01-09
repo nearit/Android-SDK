@@ -53,8 +53,7 @@ If you want to customize the behavior of background notification see [this page]
 
 ## Content objects ##
 
-For each callback method of the *coreContentListener* you will receive a different content object. 
-Here are the details for each one:
+For each callback method of the *coreContentListener* you will receive a different content object. Every object type has a *getId()* getter, and here are the details for every other one:
 
 - `SimpleNotification` with the following getters:
     - `getNotificationMessage()` returns the notification message
