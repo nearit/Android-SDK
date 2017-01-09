@@ -2,7 +2,7 @@
 
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
-[![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=15)[![license](https://img.shields.io/github/license/mashape/apistatus.svg)]()
+[![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://android-arsenal.com/api?level=15) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE.txt)
 [ ![Download](https://api.bintray.com/packages/catt-stefano/maven/it.near.sdk.core/images/download.svg) ](https://bintray.com/catt-stefano/maven/it.near.sdk.core/_latestVersion) 
 [![Documentation Status](https://readthedocs.org/projects/nearit-android/badge/?version=latest)](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
 
