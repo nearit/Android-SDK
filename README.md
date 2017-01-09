@@ -19,18 +19,11 @@ NearIT SDK synchronize with servers and behave accordingly to the settings and t
 ## Features ##
 * **User Segmentation**: choose the target of your content. Profiling can be done also using external data sources and users’ past behaviour.
 * **Beacon**: manage your beacon fleet and send location-based content.
-* Content delivery
-* Beacon and geofence monitoring with app in the background.
-* Different types of contents.
-* Push Notifications
-* User Segmentation
+* **Geofence**: engage users in a specific location with relevant content.
+* **Notifications and in-app content**: send content to engage your users with your mobile app. 
+* **Analytics**: analyze in real time the results of the sent campaigns.
 
-
-## Behaviour ##
-
-The SDK will synchronize with our servers and behave accordingly to the CMS settings and the recipes. Any content from triggered recipes will be delivered to your app.
-
-## Getting started ##
+## Installation ##
 
 To start using the SDK, include this in your app *build.gradle*
 
