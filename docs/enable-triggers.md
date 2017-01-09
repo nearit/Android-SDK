@@ -26,7 +26,7 @@ If you want to be notified from location recipes working on the background (blue
 </receiver>
 ```
 The NearIT SDK offers a default recipe reception and visualization. It creates a system notification with the notification message and title entered in the what section of a recipe.
-When a user taps on the notification, it starts the app launcher and passes the intent with all necessary information about the push, including the content to display. To learn how to deal with the content see this [section](docs/handle-content.md).
+When a user taps on the notification, it starts the app launcher and passes the intent with all necessary information about the push, including the content to display. To learn how to deal with the content see this [section](handle-content.md).
 Any other behaviour can be created with an implementation of a custom receiver. See (ADD LINK).
 
 You can set your own icon for the location-based notifications with the method *setNotificationImage(int imgRes)* of *NearItManager*
@@ -35,8 +35,8 @@ You can set your own icon for the location-based notifications with the method *
 
 Just like a proximity-driven notifications, the NearIT SDK handles push notification with a default behaviour.
 
-To enable push notification, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps](docs/firebase.md)
-Enter the cloud messaging firebase server key into the appropriate CMS section. Push notifications only work if a user profile is created. We automatically create an anonymous profile for every user, but if you want to know more about profiles check [the user profilation section](docs/user-profilation.md).
+To enable push notification, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps](firebase.md)
+Enter the cloud messaging firebase server key into the appropriate CMS section. Push notifications only work if a user profile is created. We automatically create an anonymous profile for every user, but if you want to know more about profiles check [the user profilation section](user-profilation.md).
 
 To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
 ```xml
