@@ -2,14 +2,23 @@
 
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
-
 ## Recipes ##
 
 NearIT allows users to control apps by defining “recipes”, simple rules made of 3 ingredients:
 - **WHO**: define the target users
+- **WHAT**: define what action NearIT should do
+- **TRIGGER**: define when the action should be triggered
 
-* NearIt services integration
-* Beacon detection with app in the foreground.
+## How it works ##
+
+NearIT web interface allows you to configure all the features, in a snap.
+Once the settings are configured, everyone - even people without technical skills - can manage app content and send context-aware notifications, coupons and surveys.
+
+NearIT SDK synchronize with servers and behave accordingly to the settings and the recipes. Any content will be delivered at the right time, you will only need to handle its presentation.
+
+## Features ##
+* **User Segmentation**: choose the target of your content. Profiling can be done also using external data sources and users’ past behaviour.
+* **Beacon**: manage your beacon fleet and send location-based content.
 * Content delivery
 * Beacon and geofence monitoring with app in the background.
 * Different types of contents.
