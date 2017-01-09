@@ -2,6 +2,8 @@
 
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
+[ ![Download](https://api.bintray.com/packages/catt-stefano/maven/it.near.sdk.core/images/download.svg) ](https://bintray.com/catt-stefano/maven/it.near.sdk.core/_latestVersion)
+
 ## Recipes ##
 
 NearIT allows users to control apps by defining “recipes”, simple rules made of 3 ingredients:
@@ -24,6 +26,9 @@ NearIT SDK synchronize with servers and behave accordingly to the settings and t
 * **Analytics**: analyze in real time the results of the sent campaigns.
 
 ## Installation ##
+
+Minimum Requirements:
+- Android API level: 15+
 
 To start using the SDK, include this in your app *build.gradle*
 
