@@ -1,4 +1,4 @@
 site_name: NearIT Android
 pages:
-- Index: 'index.md'
-- Enable Triggers: 'enable-triggers.md'
+- 'Index' : 'index.md'
+- 'Enable Triggers' : 'enable-triggers.md'
