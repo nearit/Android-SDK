@@ -1,8 +1,12 @@
 # NearIt Android SDK #
 
-This is the NearIt Android SDK. With this component you can integrate the NearIt services into your app to engage with your users.
+NearIT allows to engage app users by sending **context-aware targeted content**.
 
-## Features ##
+
+## Recipes ##
+
+NearIT allows users to control apps by defining “recipes”, simple rules made of 3 ingredients:
+- **WHO**: define the target users
 
 * NearIt services integration
 * Beacon detection with app in the foreground.
