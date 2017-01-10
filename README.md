@@ -6,28 +6,28 @@ NearIT allows to engage app users by sending **context-aware targeted content**.
 [ ![Download](https://api.bintray.com/packages/catt-stefano/maven/it.near.sdk.core/images/download.svg)](https://bintray.com/catt-stefano/maven/it.near.sdk.core/_latestVersion)
 [![Documentation Status](https://readthedocs.org/projects/nearit-android/badge/?version=latest)](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
 
-## Recipes ##
+## Recipes
 
 NearIT allows users to control apps by defining “recipes”.Those are simple rules made of 3 ingredients:
 - **WHO**: define the target users
 - **WHAT**: define what action NearIT should do
 - **TRIGGER**: define when the action should be triggered
 
-## How it works ##
+## How it works
 
 The NearIT web interface allows you to configure all the features, in a snap.
 Once the settings are configured, everyone - even people without technical skills - can manage app content and send context-aware notifications, coupons and surveys.
 
 The NearIT SDK synchronize with servers and behave accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
 
-## Features ##
+## Features
 * **User Segmentation**: choose the target of your content. Profiling can be done also using external data sources and users’ past behaviour.
 * **Beacon**: manage your beacon fleet and send location-based content.
 * **Geofence**: engage users in a specific location with relevant content.
 * **Notifications and in-app content**: send content to engage your users with your mobile app.
 * **Analytics**: analyze the results of sent campaigns in real time.
 
-## Installation ##
+## Installation
 
 Minimum Requirements:
 - Android API level: 15+
@@ -52,4 +52,6 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
     }
 ```
 
-[Integration guide](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
+## Integration guide
+
+For information on how to integrate all of NearIT feautures in your app, visit the [documentation website](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
