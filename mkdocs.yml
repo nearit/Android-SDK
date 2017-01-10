@@ -1,4 +1,5 @@
 site_name: NearIT Android
+theme: readthedocs
 extra_css : ["css/nearitdocs.css"]
 pages:
   - 'Index' : 'index.md'
