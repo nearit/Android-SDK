@@ -1,4 +1,4 @@
-# Segmentation
+# User profiling
 
 NearIT creates an anonymous profile for every user of your app. You can choose to add data to user profiles. This data will be available inside recipes and will allow to create user targets.
 
