@@ -1,4 +1,5 @@
 site_name: NearIT Android
+extra_css: ["https://fiware.org/style/fiware_readthedocs.css"]
 pages:
   - Index : 'index.md'
   - User Guide: 
