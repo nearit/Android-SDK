@@ -54,4 +54,4 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 
 ## Integration guide
 
-For information on how to integrate all of NearIT feautures in your app, visit the [documentation website](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
+For information on how to integrate all NearIT feautures in your app, visit the [documentation website](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
