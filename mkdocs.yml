@@ -1,5 +1,4 @@
 site_name: NearIT Android
-extra_css: ["css/nearitdocs.css"]
 pages:
   - 'Index' : 'index.md'
   - 'User Guide' : 
