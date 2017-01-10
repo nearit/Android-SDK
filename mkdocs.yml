@@ -3,14 +3,14 @@ theme: readthedocs
 extra_css : ["css/nearitdocs.css"]
 pages:
   - 'Index' : 'index.md'
-  - 'User Guide' : 
+  - 'User Guide' :
     - 'Enable Triggers' : 'enable-triggers.md'
     - 'Handle recipe content' : 'handle-content.md'
     - 'User profiling' : 'user-profilation.md'
   - 'Other resources' :
+    - 'Custom background notification' : 'custom-bkg-notification.md'
     - 'Pro-guard' : 'proguard.md'
     - 'Firebase help' : 'firebase.md'
-    - 'Custom background notification' : 'custom-push-notification.md'
   - 'Samples' :
     - 'Custom background receiver' : 'custom-receiver-sample.md'
     - 'Best practice on permission request' : 'permission-request-sample.md'
