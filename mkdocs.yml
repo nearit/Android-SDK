@@ -11,3 +11,9 @@ pages:
     - 'Pro-guard' : 'proguard.md'
     - 'Firebase help' : 'firebase.md'
     - 'Custom background notification' : 'custom-push-notification.md'
+  - 'Samples' :
+    - 'Custom background receiver' : 'custom-receiver-sample.md'
+    - 'Best practice on permission request' : 'permission-request-sample.md'
+  - 'Testing NearIT' :
+    - 'Explicit recipe firing' : 'fire-recipes.md'
+    - 'Create test users' : 'test-users.md'
