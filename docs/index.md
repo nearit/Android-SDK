@@ -3,7 +3,7 @@
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
 [![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://developer.android.com/about/dashboards/index.html#Platform) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/nearit/Android-SDK/blob/master/LICENSE)
-[ ![Download](https://api.bintray.com/packages/catt-stefano/maven/it.near.sdk.core/images/download.svg)](https://bintray.com/catt-stefano/maven/it.near.sdk.core/_latestVersion)
+[![Download](https://api.bintray.com/packages/catt-stefano/maven/it.near.sdk.core/images/download.svg)](https://bintray.com/catt-stefano/maven/it.near.sdk.core/_latestVersion)
 [![Documentation Status](https://readthedocs.org/projects/nearit-android/badge/?version=latest)](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
 
 ## Recipes ##
@@ -48,12 +48,11 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 
 
 ```java
- @Override
-    public void onCreate() {
-        super.onCreate();
-        nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
-    }
-
+@Override
+public void onCreate() {
+  super.onCreate();
+  nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
+}
 ```
 
 [Enabling triggers](docs/enable-triggers.md)
@@ -63,7 +62,6 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 [User Profilation](docs/user-profilation.md)
 
 ## Other resources ##
-[Custom background notifications](docs/custom-background-notifications.md)
 
 [Custom Push Notification](docs/custom-push-notification.md)
 
