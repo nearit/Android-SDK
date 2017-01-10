@@ -1,4 +1,3 @@
 body{font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
 .wy-side-nav-search {background-color:#A69FFF !important}
-.toctree-l1 > a {padding-left:20px}
-.toctree-l1 > ul {padding-left:20px}
+.wy-menu-vertical li.current > a {padding-left:10px !important}
