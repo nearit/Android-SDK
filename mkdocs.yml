@@ -8,3 +8,4 @@ pages:
     - 'User profilinig' : 'user-profilation.md'
   - 'Other resources' :
     - 'Pro-guard' : 'proguard.md'
+    - 'Firebase help' : 'firebase.md'
