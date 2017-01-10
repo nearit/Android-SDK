@@ -1,7 +1,7 @@
 site_name: NearIT Android
 extra_css: ["css/nearitdocs.css"]
 pages:
-  - 'Index' : '../README.md'
+  - 'Index' : 'index.md'
   - 'User Guide' : 
     - 'Enable Triggers' : 'enable-triggers.md'
     - 'Handle recipe content' : 'handle-content.md'
