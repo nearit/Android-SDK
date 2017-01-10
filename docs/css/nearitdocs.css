@@ -12,6 +12,14 @@ a.icon-home {
   background-image: url(https://go.nearit.com/assets/logo.svg) !important;
 }
 
+/* Always show version selector */
+.rst-current-version { display:none }
+.rst-other-versions { display:block }
+.injected dl:not(:first-child) { display:none }
+.injected dl dt { display:inline-block }
+.injected hr { margin: 13px 0 !important }
+
+
 /* change nav header color to nearit color */
 .wy-side-nav-search {background-color:#A69FFF !important}
 /* also for the mobile version */
