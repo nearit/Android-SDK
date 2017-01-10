@@ -32,3 +32,6 @@ th, td {font-size: 100% !important}
 
 /* remove home icon */
 .fa-home:before, .icon-home:before{content:None !important}
+
+/* to avoid display version when generated from rst */
+.wy-side-nav-search .version { display:none }
