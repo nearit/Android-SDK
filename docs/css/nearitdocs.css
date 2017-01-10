@@ -1,6 +1,16 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
-body{font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
+body, h1 {font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
+
+/* add NearIT logo */
+a.icon-home {
+  color: transparent;
+  width: 225px;
+  height: 50px;
+  margin: 7px 0 15px 20px;
+  background-repeat: no-repeat !important;
+  background-image: url(https://go.nearit.com/assets/logo.svg) !important;
+}
 
 /* change nav header color to nearit color */
 .wy-side-nav-search {background-color:#A69FFF !important}
@@ -19,9 +29,6 @@ body{font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
 
 /* bigger links in left list */
 .wy-menu-vertical a {font-size: 100% !important}
-
-/* bigger nav header font */
-a.icon-home {font-size: 25px !important}
 
 /* bigger text in code elements */
 code {font-size: 14px !important}
