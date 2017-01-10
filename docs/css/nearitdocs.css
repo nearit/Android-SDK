@@ -13,8 +13,8 @@ a.icon-home {
 }
 
 /* Always show version selector */
-.rst-current-version { display:none }
-.rst-other-versions { display:block }
+.rst-current-version { display:none !important }
+.rst-other-versions { display:block !important }
 .injected dl:not(:first-child) { display:none }
 .injected dl dt { display:inline-block }
 .injected hr { margin: 13px 0 !important }
