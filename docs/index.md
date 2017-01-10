@@ -9,8 +9,11 @@ NearIT allows to engage app users by sending **context-aware targeted content**.
 ## Recipes ##
 
 NearIT allows users to control apps by defining “recipes”.Those are simple rules made of 3 ingredients:
+
 - **WHO**: define the target users
+
 - **WHAT**: define what action NearIT should do
+
 - **TRIGGER**: define when the action should be triggered
 
 ## How it works ##
