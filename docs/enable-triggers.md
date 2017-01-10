@@ -7,14 +7,14 @@ Based on what recipe triggers you want to use some setup will be necessary.
 When you want to start the radar for geofences and beacons call this method
 
 ```java
-    // call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
-    nearItManager.startRadar()
-    // to stop call this method nearItManager.stopRadar()
+// call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
+nearItManager.startRadar()
+// to stop call this method nearItManager.stopRadar()
 ```
 
 The SDK automatically includes the permission for location access in its manifest (necessary for beacon and geofence monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
 
-If you want to be notified from location recipes working on the background (bluetooth or geofence) using the NearIT built-in background notifications, put this in your app manifest application element. 
+If you want to be notified from location recipes working on the background (bluetooth or geofence) using the NearIT built-in background notifications, put this in your app manifest application element.
 ```xml
 <!-- built in region receivers -->
 <receiver android:name="it.near.sdk.Geopolis.Background.RegionBroadcastReceiver"
@@ -50,4 +50,3 @@ To receive the system notification of a push recipe, add this receiver in the *a
 </receiver>
 ```
 WARNING: If you are using some gms play services in your app and experience runtime malfunctioning, please be sure to use the 10.0.1 version of the gms dependency you are pulling in your app. Conflicting play services version may result in compile-time and run-time errors.
-
