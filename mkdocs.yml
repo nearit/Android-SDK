@@ -9,3 +9,4 @@ pages:
   - 'Other resources' :
     - 'Pro-guard' : 'proguard.md'
     - 'Firebase help' : 'firebase.md'
+    - 'Custom background notification' : 'custom-push-notification.md'
