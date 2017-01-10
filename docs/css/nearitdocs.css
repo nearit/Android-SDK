@@ -11,4 +11,4 @@ body{font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
 .fa-home, .icon-home,.fa-home:hover, a.icon-home:hover{clear:both !important; background-image: url('brand-pittogramma-bgtrasparente.png') !important; background-position: 0 5px; background-repeat: no-repeat;height:65px !important; padding:10px 0 10px 50px!important  }
 
 /* remove home icon */
-.fa-home:before, .icon-home:after{content:}
+.fa-home:before, .icon-home:before{content:None !important}
