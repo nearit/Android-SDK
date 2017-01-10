@@ -6,7 +6,7 @@ pages:
   - 'User Guide' : 
     - 'Enable Triggers' : 'enable-triggers.md'
     - 'Handle recipe content' : 'handle-content.md'
-    - 'User profilinig' : 'user-profilation.md'
+    - 'User profiling' : 'user-profilation.md'
   - 'Other resources' :
     - 'Pro-guard' : 'proguard.md'
     - 'Firebase help' : 'firebase.md'
