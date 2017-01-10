@@ -16,5 +16,8 @@ body{font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
 /* bigger nav header font */
 a.icon-home {font-size: 25px !important}
 
+/* bigger text in code elements */
+code {font-size: 14px !important}
+
 /* remove home icon */
 .fa-home:before, .icon-home:before{content:None !important}
