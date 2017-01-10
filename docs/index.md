@@ -53,17 +53,3 @@ public void onCreate() {
   nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
 }
 ```
-
-[Enabling triggers](docs/enable-triggers.md)
-
-[Handle recipe content](docs/handle-content.md)
-
-[User Profilation](docs/user-profilation.md)
-
-## Other resources ##
-
-[Custom Push Notification](docs/custom-push-notification.md)
-
-[Using Pro-Guard?](docs/proguard.md)
-
-[Javadocs](https://www.nearit.com/android-sdk-api/)
