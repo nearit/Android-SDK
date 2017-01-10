@@ -1,5 +1,14 @@
 body{font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
+
+// change nav header color to nearit color
 .wy-side-nav-search {background-color:#A69FFF !important}
+
+// indent selected items from left list
 .wy-menu-vertical li.current > a  {padding-left:30px !important}
 .wy-menu-vertical li.current ul li a {padding-left:40px !important}
+
+// change nav icon
 .fa-home, .icon-home,.fa-home:hover, a.icon-home:hover{clear:both !important; background-image: url('brand-pittogramma-bgtrasparente.png') !important; background-position: 0 5px; background-repeat: no-repeat;height:65px !important; padding:10px 0 10px 50px!important  }
+
+// remove home icon
+.fa-home:before, .icon-home:after{content:}
