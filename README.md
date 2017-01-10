@@ -52,4 +52,4 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
     }
 ```
 
-[Integration guide](https://readthedocs.org/projects/nearit-android/badge/?version=latest)
+[Integration guide](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
