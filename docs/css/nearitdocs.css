@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway');
 
-body, h1 {font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
+body, h1, h2 {font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
 
 /* add NearIT logo */
 a.icon-home {
