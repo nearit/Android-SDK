@@ -2,18 +2,19 @@ site_name: NearIT Android
 theme: readthedocs
 extra_css : ["css/nearitdocs.css"]
 pages:
-  - 'Index' : 'index.md'
+  - 'Getting started' : 'index.md'
   - 'User Guide' :
+    - 'Installation' : 'installation.md
     - 'Enable Triggers' : 'enable-triggers.md'
     - 'Handle recipe content' : 'handle-content.md'
     - 'User profiling' : 'user-profilation.md'
-  - 'Other resources' :
-    - 'Custom background notification' : 'custom-bkg-notification.md'
-    - 'Pro-guard' : 'proguard.md'
-    - 'Firebase help' : 'firebase.md'
   - 'Samples' :
     - 'Custom background receiver' : 'custom-receiver-sample.md'
     - 'Best practice on permission request' : 'permission-request-sample.md'
   - 'Testing NearIT' :
     - 'Explicit recipe firing' : 'fire-recipes.md'
     - 'Create test users' : 'test-users.md'
+  - 'Other resources' :
+    - 'Custom background notification' : 'custom-bkg-notification.md'
+    - 'Pro-guard' : 'proguard.md'
+    - 'Firebase help' : 'firebase.md'
