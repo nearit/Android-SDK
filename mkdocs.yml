@@ -4,7 +4,7 @@ extra_css : ["css/nearitdocs.css"]
 pages:
   - 'Getting started' : 'index.md'
   - 'User Guide' :
-    - 'Installation' : 'installation.md
+    - 'Installation' : 'installation.md'
     - 'Enable Triggers' : 'enable-triggers.md'
     - 'Handle recipe content' : 'handle-content.md'
     - 'User profiling' : 'user-profilation.md'
