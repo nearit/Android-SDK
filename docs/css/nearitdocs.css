@@ -26,9 +26,9 @@ a.icon-home {
 .wy-nav-top {background: #A69FFF !important}
 
 /* indent selected items from left list 
-.wy-menu-vertical li.current > a  {padding-left:30px !important}
+.wy-menu-vertical li.current > a  {padding-left:30px !important}*/
 .wy-menu-vertical li.current ul li a {padding-left:40px !important}
-*/
+
 
 /* bigger font on section names */
 .wy-menu-vertical span {font-size: 100% !important}
