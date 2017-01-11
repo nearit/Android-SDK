@@ -22,4 +22,4 @@ public void onCreate() {
 }
 ```
 
-You can find the API key on the [NearIT web interface](https://go.nearit.com/), under the "Integrate SDK" section.
+You can find the API key on the [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
