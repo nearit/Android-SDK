@@ -27,27 +27,3 @@ The **NearIT SDK** synchronize with servers and behave accordingly to the settin
 * Geofence monitoring
 * Notifications and in-app content
 * Analytics
-
-## Installation ##
-
-Minimum Requirements:
-- Android API level: 15+
-
-To start using the SDK, include this in your app *build.gradle*
-
-```java
-dependencies {
-    compile 'it.near.sdk.core:nearitsdk:2.0.5'
-}
-```
-
-In the *onCreate* method of your Application class, initialize a *NearItManager* object, passing the API key as a String
-
-
-```java
-@Override
-public void onCreate() {
-  super.onCreate();
-  nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
-}
-```
