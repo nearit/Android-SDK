@@ -33,7 +33,7 @@ a.icon-home {
 .wy-menu-vertical span {font-size: 100% !important}
 
 /* hide the first child from the list of quicklinks, so we can still have h1 elements on top of md pages */
-.wy-menu-vertical li.current ul li:first-child {display: none}
+.wy-menu-vertical li.current ul {display: none}
 
 /* bigger links in left list */
 .wy-menu-vertical a {font-size: 100% !important}
