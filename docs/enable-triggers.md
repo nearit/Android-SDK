@@ -9,7 +9,7 @@ When you want to start the radar for geofences and beacons call this method
 ```java
 // call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
 nearItManager.startRadar()
-// to stop call this method nearItManager.stopRadar()
+// to stop the radar call the method nearItManager.stopRadar()
 ```
 
 The SDK automatically includes the permission for location access in its manifest (necessary for beacon and geofence monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
