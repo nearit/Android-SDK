@@ -36,7 +36,7 @@ You can set your own icon for the location-based notifications with the method *
 Just like a proximity-driven notifications, the NearIT SDK handles push notification with a default behaviour.
 
 To enable push notification, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps.](firebase.md)
-Enter the cloud messaging firebase server key into the appropriate CMS section. Push notifications only work if a user profile is created. We automatically create an anonymous profile for every user, but if you want to know more about profiles check [the user profilation section.](user-profilation.md).
+Enter the cloud messaging firebase server key into the appropriate CMS section. Push notifications only work if a user profile is created. We automatically create an anonymous profile for every user, but if you want to know more about profiles check [the user profilation section.](user-profilation.md)
 
 To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
 ```xml
