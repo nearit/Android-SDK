@@ -1,8 +1,8 @@
-# Handle recipe content #
+# Handle recipe content
 
 NearIT takes care of delivering content at the right time, you will just need to handle content presentation. 
 
-## Foreground vs Background ##
+## Foreground vs Background
 
 Recipes either deliver content in the background or in the foreground but not both. Check this table to see how you will be notified.
 
@@ -13,7 +13,7 @@ Recipes either deliver content in the background or in the foreground but not bo
 | Enter and Exit on beacon regions | Background intent  |
 | Enter in a specific beacon range | Proximity listener (foreground) |
 
-## Foreground content ##
+## Foreground content
 
 To receive foreground contents (e.g. ranging recipes) set a proximity listener with the method
 ```java
@@ -28,16 +28,12 @@ To receive foreground contents (e.g. ranging recipes) set a proximity listener w
 @Override
 public void foregroundEvent(Parcelable content, Recipe recipe) {
     // handle the event
-    // if you show the notification to the user track the recipe as notified with
-    // Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
-    // when the user interacts with the content, track the event with
-    // Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
     // To extract the content and to have it automatically casted to the appropriate object type
     // NearUtils.parseCoreContents(content, recipe, coreContentListener)
 }   
 ```
 
-## Background content ##
+## Background content
 
 Once you have added at least one of the receivers for any background working trigger ([learn more](enable-triggers.md)) you will be delivered the actual content through an intent that will call your app launcher activity and carry some extras.
 To extract the content from an intent use the utility method:
@@ -45,13 +41,26 @@ To extract the content from an intent use the utility method:
 NearUtils.parseCoreContents(intent, coreContentListener);
 ```
 
-Recipes tracks themselves as notified, but you need to track the tap event, by calling
+If you want to customize the behavior of background notification see [this page](docs/custom-background-notifications.md)
+
+## Trackings
+
+NearIT analytics on recipes are built from trackings describing the status of user engagement with a recipe. The two recipe states are "Notified" and "Engaged" to represent a recipe delivered to the user and a recipe that the user responded to.
+
+Background recipes track themselves as notified. To track the tap event, use this method:
 ```java
 Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
-If you want to customize the behavior of background notification see [this page](docs/custom-background-notifications.md)
+You should be able to catch the event inside the activity that is started after interacting with the notification.
 
-## Content objects ##
+Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's best appropriate for you scenario.
+```java
+Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
+// and
+Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
+```
+
+## Content objects
 
 For each callback method of the *coreContentListener* you will receive a different content object. Every object type has a `getId()` getter, and here are the details for every other one:
 
