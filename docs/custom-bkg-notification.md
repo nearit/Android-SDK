@@ -106,4 +106,4 @@ In the manifest declaration for your custom broadcast receiver, add both intent 
 ```
 You should now deal with all messages in the same receiver. If you want to know the source of the event, just look the intent action string with `intent.getAction()`.
 
-WARNING: If you are using some gms play services in your app and experience malfunctioning, please be sure to use the 9.6.1 version of the gms dependency you are pulling in your app.
+WARNING: If you are using some gms play services in your app and experience malfunctioning, please be sure to use the 10.0.1 version of the gms dependency you are pulling in your app.
