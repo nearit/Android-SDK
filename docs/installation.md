@@ -23,3 +23,15 @@ public void onCreate() {
 ```
 
 You can find the API key on the [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
+
+The constructor for `NearItManager` will try to sync the recipes with our servers. If you need to sync the recipes configuration more often than you call the constructor, call this method:
+
+```java
+nearItManager.refreshConfigs();
+```
+
+If you need feedback on whether the refresh was successfull or not, you can use this other version of the method:
+
+```java
+nearItManager.refreshConfigs(recipeRefreshListener);
+```
