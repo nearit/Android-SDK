@@ -8,13 +8,12 @@ pages:
     - 'Enable Triggers' : 'enable-triggers.md'
     - 'Handle recipe content' : 'handle-content.md'
     - 'User profiling' : 'user-profilation.md'
+  - 'Advanced topics' :
+    - 'Custom background notification' : 'custom-bkg-notification.md'
+    - 'Testing' : 'testing.md'
   - 'Samples' :
     - 'Custom background receiver' : 'custom-receiver-sample.md'
     - 'Best practice on permission request' : 'permission-request-sample.md'
-  - 'Testing NearIT' :
-    - 'Explicit recipe firing' : 'fire-recipes.md'
-    - 'Create test users' : 'test-users.md'
   - 'Other resources' :
-    - 'Custom background notification' : 'custom-bkg-notification.md'
     - 'Pro-guard' : 'proguard.md'
     - 'Firebase help' : 'firebase.md'
