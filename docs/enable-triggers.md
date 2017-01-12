@@ -1,6 +1,6 @@
 # Enable triggers #
 
-Based on what recipe triggers you want to use some setup will be necessary.
+Based on what recipe triggers you want to use, some setup will be necessary.
 
 ## Location based Triggers ##
 
