@@ -12,7 +12,7 @@ pages:
     - 'Custom background notification' : 'custom-bkg-notification.md'
     - 'Testing' : 'testing.md'
   - 'Samples' :
-    - 'Custom background receiver' : 'custom-receiver-sample.md'
+    - 'Integration samples' : 'integration-samples.md'
     - 'Best practice on permission request' : 'permission-request-sample.md'
   - 'Other resources' :
     - 'Pro-guard' : 'proguard.md'
