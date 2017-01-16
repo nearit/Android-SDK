@@ -6,7 +6,7 @@ See [sample](https://github.com/nearit/Android-samples/blob/master/Application/M
 
 ## Foreground updates listener Activity
 
-See [sample TODO]().
+See [sample](https://github.com/nearit/Android-samples/blob/master/Activities/ForegroundActivity.java).
 
 ## Custom location-based background behaviour
 
