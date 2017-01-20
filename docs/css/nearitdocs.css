@@ -7,7 +7,7 @@ a.icon-home {
   color: transparent;
   width: 225px;
   height: 50px;
-  margin: 5px 0 15px 20px;
+  margin: 5px 0 15px 0;
   background-repeat: no-repeat !important;
   background-image: url('brand-docs.svg') !important;
 }
