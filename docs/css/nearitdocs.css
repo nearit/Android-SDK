@@ -9,7 +9,7 @@ a.icon-home {
   height: 50px;
   margin: 5px 0 15px 20px;
   background-repeat: no-repeat !important;
-  background-image: url(https://go.nearit.com/assets/logo.svg) !important;
+  background-image: url('brand-docs.svg') !important;
 }
 
 /* Always show version selector */
@@ -28,8 +28,11 @@ a.icon-home {
 /* indent selected items from left list */
 .wy-menu-vertical .subnav li.current > a  {padding-left:34px !important}
 
+/* color selected item like the content background */
 .wy-menu-vertical .subnav li.current {background: #fcfcfc}
 
+/* remove search box border */
+.wy-side-nav-search input {border: 0; box-shadow: inset 0 1px 1px #d8d8d8;}
 
 /* bigger font on section names */
 .wy-menu-vertical span {font-size: 100% !important}
