@@ -28,6 +28,8 @@ a.icon-home {
 /* indent selected items from left list */
 .wy-menu-vertical .subnav li.current > a  {padding-left:34px !important}
 
+.wy-menu-vertical .subnav li.current {background: #fcfcfc}
+
 
 /* bigger font on section names */
 .wy-menu-vertical span {font-size: 100% !important}
