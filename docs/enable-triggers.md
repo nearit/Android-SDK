@@ -14,7 +14,7 @@ nearItManager.startRadar()
 
 The SDK automatically includes the permission for location access in its manifest (necessary for beacon and geofence monitoring). When targeting API level 23+, please ask for and verify the presence of ACCESS_FINE_LOCATION permissions at runtime.
 
-If you want to be notified from location recipes working on the background (bluetooth or geofence) background notifications, add this in your app manifest application element.
+To enable location based notification, add this in your app manifest application element.
 ```xml
 <!-- built in region receivers -->
 <receiver android:name="it.near.sdk.Geopolis.Background.RegionBroadcastReceiver"
@@ -25,8 +25,8 @@ If you want to be notified from location recipes working on the background (blue
     </intent-filter>
 </receiver>
 ```
-To learn how to deal with the content see this [section](handle-content.md).
-Any other behaviour can be created with an implementation of a custom receiver. See this [section](custom-bkg-notification.md).
+To learn how to deal with in-app content see this [section](handle-content.md).
+You can use your own receiver for custom notification handling. See this [section](custom-bkg-notification.md).
 
 You can set your own icon for the location-based notifications with the method *setNotificationImage(int imgRes)* of *NearItManager*
 
@@ -35,7 +35,7 @@ You can set your own icon for the location-based notifications with the method *
 To enable push notification, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps.](firebase.md)
 Enter the cloud messaging firebase server key into the appropriate CMS section.
 
-To receive the system notification of a push recipe, add this receiver in the *application* tag of your app *manifest*
+To enable push driven notification, add this in your app manifest application element
 ```xml
 <receiver
      android:name="it.near.sdk.Push.FcmBroadcastReceiver"
@@ -46,4 +46,7 @@ To receive the system notification of a push recipe, add this receiver in the *a
      </intent-filter>
 </receiver>
 ```
+To learn how to deal with in-app content see this [section](handle-content.md).
+You can use your own receiver for custom notification handling. See this [section](custom-bkg-notification.md).
+
 WARNING: If you are using some gms play services in your app and experience runtime malfunctioning, please be sure to use the 10.0.1 version of the gms dependency you are pulling in your app. Conflicting play services version may result in compile-time and run-time errors.
