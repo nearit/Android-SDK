@@ -5,9 +5,9 @@ body, h1, h2 {font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!im
 /* add NearIT logo */
 a.icon-home {
   color: transparent;
-  width: 225px;
+  width: 250px;
   height: 50px;
-  margin: 5px 0 15px 0;
+  margin: 10px 0 15px 0;
   background-repeat: no-repeat !important;
   background-image: url('brand-docs.svg') !important;
 }
@@ -25,7 +25,7 @@ a.icon-home {
 /* also for the mobile version */
 .wy-nav-top {background: #A69FFF !important}
 
-.wy-side-nav-search #rtd-search-form {margin-left: 10px;margin-right: 10px;}
+.wy-side-nav-search #rtd-search-form {margin-left: 10px;margin-right: 10px;margin-bottom: 2px;}
 
 /* indent selected items from left list */
 .wy-menu-vertical .subnav li.current > a  {padding-left:34px !important; border-top: 0; border-bottom: 0;}
