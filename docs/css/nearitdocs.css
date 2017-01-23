@@ -25,6 +25,8 @@ a.icon-home {
 /* also for the mobile version */
 .wy-nav-top {background: #A69FFF !important}
 
+.wy-side-nav-search #rtd-search-form {margin-left: 10px;margin-right: 10px;}
+
 /* indent selected items from left list */
 .wy-menu-vertical .subnav li.current > a  {padding-left:34px !important; border-top: 0; border-bottom: 0;}
 
