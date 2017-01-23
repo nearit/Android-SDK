@@ -21,12 +21,12 @@ a.icon-home {
 
 
 /* change nav header color to nearit color */
-.wy-side-nav-search {background-color:#A69FFF !important}
+.wy-side-nav-search {background-color:#9F92FF !important}
 /* also for the mobile version */
 .wy-nav-top {background: #A69FFF !important}
 
 /* indent selected items from left list */
-.wy-menu-vertical .subnav li.current > a  {padding-left:34px !important}
+.wy-menu-vertical .subnav li.current > a  {padding-left:34px !important; border-top: 0; border-bottom: 0;}
 
 /* color selected item like the content background */
 .wy-menu-vertical .subnav li.current {background: #fcfcfc}
