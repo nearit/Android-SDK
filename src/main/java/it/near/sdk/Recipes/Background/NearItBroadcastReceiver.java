@@ -8,7 +8,7 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 /**
  * WakefulBroadcastReceiver to receive background messages. This receiver should be initiated in the manifest to use the default implementation
  * or extended to create a custom implementation (In this case the extended receiver it's the one to include in the app manifest).
- * The action to register in the manifest is <code>it.near.sdk.permission.GEO_MESSAGE</code> for location and <action android:name="it.near.sdk.permission.PUSH_MESSAGE" /> for push notifications.
+ * The action to register in the manifest is <code>it.near.sdk.permission.GEO_MESSAGE</code> for location and <code>it.near.sdk.permission.PUSH_MESSAGE"</code> for push notifications.
  *
  * <pre>
  *     {@code
