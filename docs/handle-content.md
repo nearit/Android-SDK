@@ -41,7 +41,7 @@ To extract the content from an intent use the utility method:
 NearUtils.parseCoreContents(intent, coreContentListener);
 ```
 
-If you want to customize the behavior of background notification see [this page](docs/custom-background-notifications.md)
+If you want to customize the behavior of background notification see [this page](docs/custom-bkg-notification.md)
 
 ## Trackings
 
