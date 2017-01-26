@@ -1,22 +1,27 @@
 # Custom background notification
 
-In both location-based and push-driven notifications, you can add our built-in receiver as shown in the [Enable Triggers](enable-triggers.md) section. Those receivers show a system notification, with the provided texts and a pre-set system icon (that can be overridden). There's no time-limit or special condition to be met to show the notification so you will always get it. To handle complex use cases, you can write your own receivers by subclassing the built-in ones.
+To receive background notifications, you can add our built-in receiver as shown in the [Enable Triggers](enable-triggers.md) section. The receiver shows a system notification, with the provided texts and a pre-set system icon. There's no time-limit or special condition to be met to show the notification so you will always get it. To handle complex use cases, you can write your own receivers by subclassing the built-in one.
 
 ## Custom receiver and service
 
-Let's look at the built-in push receiver manifest declaration:
+Let's look at the built-in receiver manifest declaration:
 ```xml
+<!-- built in background receiver -->
 <receiver
-         android:name="it.near.sdk.Push.FcmBroadcastReceiver"
-         android:exported="false">
-         <intent-filter>
-                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-                <category android:name="android.intent.category.DEFAULT" />
-         </intent-filter>
-    </receiver>
+    android:name="it.near.sdk.Recipes.Background.NearItBroadcastReceiver"
+    android:exported="false">
+    <intent-filter>
+        <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter>
+    <intent-filter>
+        <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+        <category android:name="android.intent.category.DEFAULT" />
+    </intent-filter>
+</receiver>
 ```
 This receiver, along with a built-in service (not to be declared in the app manifest), creates the background functionality.
-By extending FcmBroadcastReceiver and FcmIntentService you can customize the app background behaviour.
+By extending NearItBroadcastReceiver and NearItIntentService you can customize the app background behaviour.
 
 In the `onReceive` method of your custom receiver, start your custom service
 ```java
@@ -56,54 +61,29 @@ protected void onHandleIntent(Intent intent) {
   */
 
   // always end this method with
-  FcmBroadcastReceiver.completeWakefulIntent(intent);
+  MyCustomBroadcastReciever.completeWakefulIntent(intent);
 }
 ```
 
-Then add (or replace) the custom broadcast receiver and add the custom intent service to the manifest
+Then replace the custom broadcast receiver and add the custom intent service to the manifest
 ```xml
 <service android:name=".MyCustomIntentService"
             android:exported="false"/>
 
 <receiver
-    android:name=".MyFcmBroadcastReceiver"
+    android:name=".MyCustomBroadcastReciever"
     android:exported="false">
+    <!-- Add both intent filters to deal with both trigger notification in the same way -->
     <intent-filter>
         <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
         <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
-</receiver>
-```
-
-With the same technique, you can extend the behaviour for the location based background functionalities, just replace FcmBroadcastReceiver with RegionBroadcastReceiver and FcmIntentService with RegionIntentService. Finally use this intent filter for this custom receiver
-```xml
-<receiver
-    android:name=".MyRegionBroadcastReceiver"
-    android:exported="false">
     <intent-filter>
-        <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
+            <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
+            <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
 </receiver>
 ```
 
-## Optimal customization
-We furthermore suggest to create an unique receiver for both region messages and push messages if their custom behavior matches. This way you can define a single way to handle background behaviour regardless of the event source, since the concept of a recipe already takes care of the event-action coupling.
-In the manifest declaration for your custom broadcast receiver, add both intent filters and you will catch both location-based and push-driven notifications.
-```xml
-<receiver
-    android:name=".MyBackgroundBroadcastReceiver"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-</receiver>
-```
-You should now deal with all messages in the same receiver. If you want to know the source of the event, just look the intent action string with `intent.getAction()`.
-
-WARNING: If you are using some gms play services in your app and experience malfunctioning, please be sure to use the 10.0.1 version of the gms dependency you are pulling in your app.
+By combination of recievers and intent filters, you can customize only one kind of background notifications, or use 2 different receivers for the 2 cases.
+Remember that you can always programmatically check the action of an intent, inside `onReceive` in the receiver and inside `onHandleIntent` of the intent service with `intent.getAction()`.
