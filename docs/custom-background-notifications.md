@@ -7,7 +7,7 @@ If you need a different approach for handling background delivered content, othe
 <service android:name=".MyRegionIntentService" />
 
 <!-- Region related messages -->
-<!-- This will extend RegionBroadcastReceiver -->
+<!--NearItBroadcastReceiver-->
 <receiver android:name=".MyRegionBroadcastReceiver"
     android:exported="false">
     <intent-filter>

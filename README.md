@@ -77,7 +77,7 @@ public void foregroundEvent(Parcelable content, Recipe recipe) {
 If you want to be notified with content from recipes working on the background (bluetooth or geofence) using the NearIT built-in background notifications, put this in your app manifest. 
 ```xml
 <!-- built in region receivers -->
-<receiver android:name="it.near.sdk.Geopolis.Background.RegionBroadcastReceiver"
+<receiver android:name="it.near.sdk.Recipes.Background.NearItBroadcastReceiver"
     android:exported="false">
     <intent-filter>
         <action android:name="it.near.sdk.permission.GEO_MESSAGE"/>
