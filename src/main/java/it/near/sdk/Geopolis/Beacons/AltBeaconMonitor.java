@@ -73,7 +73,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         // set beacon layout for iBeacons
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
-        BeaconManager.setDebug(true);
+        BeaconManager.setDebug(false);
 
         String PACK_NAME = application.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + prefsNameSuffix;

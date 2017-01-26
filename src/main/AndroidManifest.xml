@@ -15,8 +15,6 @@
         android:supportsRtl="true">
 
         <!-- region messages -->
-        <service android:name=".Geopolis.Background.RegionIntentService"
-            android:exported="false"/>
 
         <!-- GCM registration -->
 
@@ -31,7 +29,7 @@
         </service>
 
         <!-- internal service to send local notifications -->
-        <service android:name=".Push.FcmIntentService"
+        <service android:name=".Recipes.Background.NearItIntentService"
             android:exported="false"/>
 
         <service

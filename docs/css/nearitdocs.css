@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,400i,700,900');
+
+body, h1, h2 {font-family:'Titillium Web',Raleway,'Helvetica Neue',sans-serif!important}
+
+/* add NearIT logo */
+a.icon-home {
+  color: transparent;
+  width: 250px;
+  height: 50px;
+  margin: 10px 0 15px 0;
+  background-repeat: no-repeat !important;
+  background-image: url('brand-docs.svg') !important;
+}
+
+/* Always show version selector */
+.rst-current-version { display:none !important }
+.rst-other-versions { display:block !important }
+.injected dl:not(:first-child) { display:none }
+.injected dl dt { display:inline-block }
+.injected hr { margin: 13px 0 !important }
+
+
+/* change nav header color to nearit color */
+.wy-side-nav-search {background-color:#9F92FF !important}
+/* also for the mobile version */
+.wy-nav-top {background: #A69FFF !important}
+
+.wy-side-nav-search #rtd-search-form {margin-left: 10px;margin-right: 10px;margin-bottom: 2px;}
+
+/* indent selected items from left list */
+.wy-menu-vertical .subnav li.current > a  {padding-left:34px !important; border-top: 0; border-bottom: 0;}
+
+/* color selected item like the content background */
+.wy-menu-vertical .subnav li.current {background: #fcfcfc}
+
+/* remove search box border */
+.wy-side-nav-search input {border: 0; box-shadow: inset 0 1px 1px #d8d8d8;}
+
+/* bigger font on section names */
+.wy-menu-vertical span {font-size: 100% !important}
+
+/* hide the first child from the list of quicklinks, so we can still have h1 elements on top of md pages */
+.wy-menu-vertical li.current ul {display: none}
+
+/* bigger links in left list */
+.wy-menu-vertical a {font-size: 100% !important}
+
+/* bigger text in code elements */
+code {font-size: 14px !important}
+
+/* bigger text in tables */
+th, td {font-size: 100% !important}
+
+/* fixaround to not show giant badges on mobile IT WILL AFFECT ALL IMG ELEMENTS */
+.rst-content img { width: auto }
+
+/* remove home icon */
+.fa-home:before, .icon-home:before {content:None !important}
