@@ -15,5 +15,5 @@ pages:
     - 'Integration samples' : 'integration-samples.md'
     - 'Best practice on permissions request' : 'permission-request-sample.md'
   - 'Other resources' :
-    - 'Pro-guard' : 'proguard.md'
+    - 'Pro-guard & logging' : 'proguard.md'
     - 'Firebase help' : 'firebase.md'
