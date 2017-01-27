@@ -1,4 +1,4 @@
-# NearIT Android SDK #
+# NearIT Android SDK
 
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
@@ -16,10 +16,10 @@ NearIT allows to manage apps by defining "recipes". Those are simple rules made 
 
 ## How it works
 
-The [**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features, in a snap.
-Once the settings are configured, **everyone** - even people without technical skills - can manage context-aware mobile contents.
+[**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features quickly.
+Once the settings are configured, **everyone** - even people without technical skills - can manage context-aware mobile content.
 
-The **NearIT SDK** synchronize with servers and behave accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
+**NearIT SDK** synchronizes with servers and behaves accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
 
 ## Features
 * User Segmentation
