@@ -4,7 +4,7 @@ NearIT takes care of delivering content at the right time, you will just need to
 
 ## Foreground vs Background
 
-Recipes either deliver content in the background or in the foreground but not both. Check this table to see how you will be notified.
+Recipes either deliver content in background or in foreground but not both. Check this table to see how you will be notified.
 
 | Type of trigger                  | Delivery           |
 |----------------------------------|--------------------|
@@ -15,7 +15,7 @@ Recipes either deliver content in the background or in the foreground but not bo
 
 ## Foreground content
 
-To receive foreground contents (e.g. ranging recipes) set a proximity listener with the method
+To receive foreground content (e.g. ranging recipes) set a proximity listener with the method
 ```java
 {
     ...
@@ -53,7 +53,7 @@ Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 You should be able to catch the event inside the activity that is started after interacting with the notification.
 
-Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's best appropriate for you scenario.
+Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
 ```java
 Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
 // and
