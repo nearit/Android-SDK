@@ -20,46 +20,58 @@ import it.near.sdk.Geopolis.Node;
 public class GeoFenceNode extends Node implements Parcelable{
     private static final int LOITERING_DELAY = 30000;
     @SerializedName("latitude")
-    Double latitude;
+    Number latitude;
 
     @SerializedName("longitude")
-    Double longitude;
+    Number longitude;
 
     @SerializedName("radius")
-    Double radius;
+    Number radius;
 
     public GeoFenceNode() {
         super();
     }
 
-    public double getLatitude() {
+    public Number getLatitude() {
         return latitude;
     }
 
-    public void setLatitude(double latitude) {
+    public void setLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public double getLongitude() {
+    public void setLatitude(Integer latitude) {
+        this.latitude = latitude.doubleValue();
+    }
+
+    public Number getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
 
-    public Double getRadius() {
+    public void setLongitude(Integer longitude) {
+        this.longitude = longitude.doubleValue();
+    }
+
+    public Number getRadius() {
         return radius;
     }
 
-    public void setRadius(double radius) {
+    public void setRadius(Double radius) {
         this.radius = radius;
     }
 
-    public Geofence toGeofence(){
+    public void setRadius(Integer radius) {
+        this.radius = radius.doubleValue();
+    }
+
+    public Geofence toGeofence() {
         return new Geofence.Builder()
                 .setRequestId(getId())
-                .setCircularRegion(getLatitude(), getLongitude(), getRadius().intValue())
+                .setCircularRegion(getLatitude().doubleValue(), getLongitude().doubleValue(), getRadius().intValue())
                 .setLoiteringDelay(LOITERING_DELAY)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)
@@ -73,9 +85,9 @@ public class GeoFenceNode extends Node implements Parcelable{
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeDouble(latitude);
-        dest.writeDouble(longitude);
-        dest.writeDouble(radius);
+        dest.writeDouble(latitude.doubleValue());
+        dest.writeDouble(longitude.doubleValue());
+        dest.writeDouble(radius.doubleValue());
         dest.writeString(getId());
     }
 

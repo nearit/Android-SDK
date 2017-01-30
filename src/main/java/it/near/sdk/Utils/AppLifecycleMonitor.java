@@ -14,7 +14,6 @@ import android.os.Bundle;
 public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbacks {
 
     private static String TAG = "AppLifecycleMonitor";
-    private static Application app;
     private static int resumed;
     private static int paused;
     private static int started;
@@ -24,7 +23,6 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
 
 
     public AppLifecycleMonitor(Application app, OnLifecycleEventListener listener){
-        this.app = app;
         this.listener = listener;
         app.registerActivityLifecycleCallbacks(this);
     }
