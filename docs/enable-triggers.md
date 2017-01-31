@@ -2,7 +2,7 @@
 
 Based on what recipe triggers you want to use, some setup is necessary.
 
-## Location based Triggers
+## Location Based Triggers
 
 When you want to start the radar for geofences and beacons call this method:
 
