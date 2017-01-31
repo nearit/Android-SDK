@@ -1,4 +1,4 @@
-# Best practice on permission request
+# Best Practice on Permission Request
 
 To fully use NearIT features, the app needs to have ACCESS_FINE_LOCATION permissions. It also needs the location settings to be enabled. The Bluetooth settings are necessary just for beacons discovery. We ask for the ACCESS_FINE_LOCATION permissions in the manifest file of the library, so apps targeting up to Lollipop, should be fine.
 
