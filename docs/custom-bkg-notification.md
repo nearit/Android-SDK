@@ -1,8 +1,8 @@
-# Custom background notification
+# Custom Background Notification
 
 To receive background notifications, you can add our built-in receiver as shown in the [Enable Triggers](enable-triggers.md) section. The receiver shows a system notification, with the provided texts and a pre-set system icon. There's no time-limit or special condition to be met to show the notification so you will always get it. To handle complex use cases, you can write your own receivers by subclassing the built-in one.
 
-## Custom receiver and service
+## Custom Receiver and Service
 
 Let's look at the built-in receiver manifest declaration:
 ```xml
