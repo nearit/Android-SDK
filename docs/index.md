@@ -14,7 +14,7 @@ NearIT allows to manage apps by defining "recipes". Those are simple rules made 
 * **WHAT**: define what action NearIT should do
 * **TRIGGER**: define when the action should be triggered
 
-## How it works
+## How It Works
 
 [**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features quickly.
 Once the settings are configured, **everyone** - even people without technical skills - can manage context-aware mobile content.
