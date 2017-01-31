@@ -1,4 +1,4 @@
-# Firebase help
+# Firebase Help
 
 To enable push notification with our platform you need to integrate firebase in your app.
 We encourage to follow the official Firebase documentation.
