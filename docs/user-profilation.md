@@ -1,8 +1,8 @@
-# User profiling
+# User Profiling
 
 NearIT creates an anonymous profile for every user of your app. You can choose to add data to user profile. This data will be available inside recipes to allow the creation of user targets.
 
-## Send user-data to NearIT
+## Send User-Data to NearIT
 
 We automatically create an anonymous profile for every installation of the app. You can check that a profile was created by checking the existance of a profile ID.
 ```java
@@ -68,7 +68,7 @@ NearItUserProfile.resetProfileId(context)
 Further calls to NearItUserProfile.getProfileId(context) will return null.
 A creation of a new profile after the reset will create a profile with no user data.
 
-## Link external data to a NearIT profile
+## Link External Data to a NearIT Profile
 
 You might want to keep a reference between the data hosted on you DBs and NearIT data.
 You can do it by setting the user ID explicitly. 
