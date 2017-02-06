@@ -29,6 +29,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
     publishNonDefault true
+    defaultPublishConfig "prodRelease"
 
 
     defaultConfig {
