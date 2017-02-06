@@ -108,7 +108,7 @@ public class NearAsyncHttpClient {
     }
 
     private static String buildUrl(Context context, String relativeUrl){
-        String baseUrl = context.getResources().getString(R.string.API_BASE_URL) + relativeUrl;
+        String baseUrl = it.near.sdk.BuildConfig.BASE_URL + relativeUrl;
 
         return baseUrl.replace("%5B", "[").replace("%5D", "]");
     }

@@ -28,6 +28,8 @@ allprojects{
 android {
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
+    publishNonDefault true
+
 
     defaultConfig {
         minSdkVersion 15
@@ -43,8 +45,16 @@ android {
             // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-}
 
+    productFlavors {
+        prod {
+            buildConfigField "String", "BASE_URL", '"https://api.nearit.com/"'
+        }
+        dev {
+            buildConfigField "String", "BASE_URL", '"https://dev-api.nearit.com/"'
+        }
+    }
+}
 
 
 configurations {
