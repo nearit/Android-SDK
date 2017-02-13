@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import it.near.sdk.Recipes.Models.Recipe;
 
@@ -25,13 +26,15 @@ public class RecipeCooler {
     private static final String NEAR_COOLDOWN_HISTORY = "NearCooldownHistory";
     private static final String LOG_MAP = "LOG_MAP";
     private static final String LATEST_LOG = "LATEST_LOG";
+
+    private static final String GLOBAL_COOLDOWN = "global_cooldown";
+    private static final String SELF_COOLDOWN = "self_cooldown";
+
     private Map<String, Long> mRecipeLogMap;
-    private Long latestLogEntry;
+    private Long mLatestLogEntry;
 
     private RecipeCooler(Context context) {
         mContext = context;
-        mRecipeLogMap = loadMap();
-        latestLogEntry = loadLatestEntry();
     }
 
     private SharedPreferences getSharedPreferences(){
@@ -49,17 +52,33 @@ public class RecipeCooler {
     }
 
     public void markRecipeAsShown(String recipeId){
-        if (mRecipeLogMap == null) mRecipeLogMap = loadMap();
         long timeStamp = System.currentTimeMillis();
-        mRecipeLogMap.put(recipeId, new Long(timeStamp));
+        getMap().put(recipeId, new Long(timeStamp));
         saveMap(mRecipeLogMap);
 
     }
 
-    public boolean canShowRecipe(Recipe recipe){
-        long timestamp = System.currentTimeMillis();
-        long latestNotificationTimestamp = loadLatestEntry();
-        return false;
+    private boolean canShowRecipe(Recipe recipe){
+        Map <String, Object> cooldown = recipe.getCooldown();
+        return cooldown != null &&
+                globalCooldownCheck(cooldown) &&
+                selfCooldownCheck(recipe, cooldown);
+    }
+
+    private boolean globalCooldownCheck(Map<String, Object> cooldown) {
+        // TODO cosa fare se non c'è?
+        if (!cooldown.containsKey(GLOBAL_COOLDOWN)) return true;
+        long expiredSeconds = (System.currentTimeMillis() - getLatestLogEntry()) / 1000;
+        return expiredSeconds >= (Long)cooldown.get(GLOBAL_COOLDOWN);
+    }
+
+    private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown){
+        // TODO cosa fare se non c'è?
+        if (!cooldown.containsKey(SELF_COOLDOWN)) return true;
+        if (!getMap().containsKey(recipe.getId())) return true;
+        long recipeLatestEntry = getMap().get(recipe.getId());
+        long expiredSeconds = (System.currentTimeMillis() - recipeLatestEntry) / 1000;
+        return expiredSeconds >= (Long)cooldown.get(SELF_COOLDOWN);
     }
 
     public void filterRecipe(List<Recipe> recipes){
@@ -69,6 +88,13 @@ public class RecipeCooler {
                 it.remove();
             }
         }
+    }
+
+    private Map<String, Long> getMap() {
+        if (mRecipeLogMap == null){
+            mRecipeLogMap = loadMap();
+        }
+        return mRecipeLogMap;
     }
 
     private void saveMap(Map<String, Long> inputMap){
@@ -101,6 +127,13 @@ public class RecipeCooler {
             e.printStackTrace();
         }
         return outputMap;
+    }
+
+    private Long getLatestLogEntry(){
+        if (mLatestLogEntry == null) {
+            mLatestLogEntry = loadLatestEntry();
+        }
+        return mLatestLogEntry;
     }
 
     private Long loadLatestEntry() {
