@@ -41,6 +41,8 @@ public class Recipe extends Resource {
     HashMap<String, Object> labels;
     @SerializedName("scheduling")
     HashMap<String, Object> scheduling;
+    @SerializedName("cooldown")
+    HashMap<String, Object> cooldown;
     @SerializedName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
@@ -169,8 +171,12 @@ public class Recipe extends Resource {
         this.reaction_action = reaction_action;
     }
 
-    public void setScheduling(HashMap<String, Object> scheduling) {
+public void setScheduling(HashMap<String, Object> scheduling) {
         this.scheduling = scheduling;
+    }    
+
+public HashMap<String, Object> getCooldown() {
+        return cooldown;
     }
 
     public String getNotificationTitle() {
