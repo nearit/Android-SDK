@@ -173,10 +173,13 @@ public class Recipe extends Resource {
 
 public void setScheduling(HashMap<String, Object> scheduling) {
         this.scheduling = scheduling;
-    }    
-
-public HashMap<String, Object> getCooldown() {
+    } 
+    public HashMap<String, Object> getCooldown() {
         return cooldown;
+    }
+
+    public void setCooldown(HashMap<String, Object> cooldown) {
+        this.cooldown = cooldown;
     }
 
     public String getNotificationTitle() {
