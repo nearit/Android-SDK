@@ -23,12 +23,12 @@ public class RecipeCooler {
     private Context mContext;
     private SharedPreferences mSharedPreferences;
 
-    private static final String NEAR_COOLDOWN_HISTORY = "NearCooldownHistory";
-    private static final String LOG_MAP = "LOG_MAP";
-    private static final String LATEST_LOG = "LATEST_LOG";
+    public static final String NEAR_COOLDOWN_HISTORY = "NearCooldownHistory";
+    public static final String LOG_MAP = "LOG_MAP";
+    public static final String LATEST_LOG = "LATEST_LOG";
 
-    private static final String GLOBAL_COOLDOWN = "global_cooldown";
-    private static final String SELF_COOLDOWN = "self_cooldown";
+    public static final String GLOBAL_COOLDOWN = "global_cooldown";
+    public static final String SELF_COOLDOWN = "self_cooldown";
 
     private Map<String, Long> mRecipeLogMap;
     private Long mLatestLogEntry;
@@ -55,6 +55,7 @@ public class RecipeCooler {
         long timeStamp = System.currentTimeMillis();
         getMap().put(recipeId, new Long(timeStamp));
         saveMap(mRecipeLogMap);
+        saveLatestEntry();
 
     }
 
@@ -124,7 +125,7 @@ public class RecipeCooler {
                 }
             }
         }catch(Exception e){
-            e.printStackTrace();
+            // e.printStackTrace();
         }
         return outputMap;
     }
