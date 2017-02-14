@@ -55,7 +55,7 @@ public class RecipeCooler {
         long timeStamp = System.currentTimeMillis();
         getMap().put(recipeId, new Long(timeStamp));
         saveMap(mRecipeLogMap);
-        saveLatestEntry();
+        saveLatestEntry(System.currentTimeMillis());
 
     }
 
@@ -130,7 +130,7 @@ public class RecipeCooler {
         return outputMap;
     }
 
-    private Long getLatestLogEntry(){
+    public Long getLatestLogEntry(){
         if (mLatestLogEntry == null) {
             mLatestLogEntry = loadLatestEntry();
         }
@@ -145,12 +145,13 @@ public class RecipeCooler {
         return 0L;
     }
 
-    private void saveLatestEntry() {
+    private void saveLatestEntry(long timestamp) {
+        mLatestLogEntry = timestamp;
         SharedPreferences pSharedPref = mContext.getSharedPreferences(NEAR_COOLDOWN_HISTORY, Context.MODE_PRIVATE);
         if (pSharedPref!=null){
             SharedPreferences.Editor editor = pSharedPref.edit();
             editor.remove(LATEST_LOG).commit();
-            editor.putLong(LATEST_LOG, System.currentTimeMillis());
+            editor.putLong(LATEST_LOG, timestamp);
             editor.commit();
         }
     }
