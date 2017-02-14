@@ -171,8 +171,12 @@ public class Recipe extends Resource {
         this.reaction_action = reaction_action;
     }
 
-    public HashMap<String, Object> getCooldown() {
+    public Map<String, Object> getCooldown() {
         return cooldown;
+    }
+
+    public void setCooldown(HashMap<String, Object> cooldown) {
+        this.cooldown = cooldown;
     }
 
     public String getNotificationTitle() {
