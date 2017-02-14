@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -40,23 +41,22 @@ public class RecipeCoolerTest {
     @Mock
     SharedPreferences.Editor mockEditor;
 
-    Recipe criticalRecipe;
+    private Recipe criticalRecipe;
+    private Recipe nonCriticalRecipe;
 
     @Before
-    public void init() {
+    public void initRecipes() {
+        criticalRecipe = buildRecipe("critical", 0L, 0L);
+        nonCriticalRecipe = buildRecipe("pedestrian", 24 * 60 * 60L, 24 * 60 * 60L);
+    }
 
+    @Before
+    public void initMocks() {
         when(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mockSharedPreferences);
         when(mockSharedPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.remove(anyString())).thenReturn(mockEditor);
         when(mockEditor.commit()).thenReturn(true);
 
-
-        criticalRecipe = new Recipe();
-        criticalRecipe.setId("recipe_id");
-        HashMap<String, Object> cooldown = Maps.newHashMap();
-        cooldown.put(GLOBAL_COOLDOWN, 0L);
-        cooldown.put(SELF_COOLDOWN, 0L);
-        criticalRecipe.setCooldown(cooldown);
     }
 
     @Before
@@ -79,21 +79,68 @@ public class RecipeCoolerTest {
 
     @Test
     public void whenRecipeShown_historyUpdated() {
-
-
-        RecipeCooler.getInstance(mockContext).markRecipeAsShown("recipe_id");
-        Map<String, Long> logMap = Maps.newHashMap();
-        logMap.put("recipe_id", System.currentTimeMillis());
-        JSONObject jsonObject = new JSONObject(logMap);
-        String jsonString = jsonObject.toString();
-        verify(mockEditor).putString(eq(LOG_MAP), contains("recipe_id"));
-
+        RecipeCooler.getInstance(mockContext).markRecipeAsShown(criticalRecipe.getId());
+        verify(mockEditor).putString(eq(LOG_MAP), contains(criticalRecipe.getId()));
     }
 
     @Test
     public void whenRecipeWithSelfCooldownShown_cantBeShownAgain() {
-        assertTrue(true);
-        RecipeCooler.getInstance(mockContext).markRecipeAsShown("recipe_id");
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        recipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
+        List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
+        recipeCooler.filterRecipe(recipeList);
+        assertEquals(0, recipeList.size());
+    }
+
+    @Test
+    public void whenRecipeHasNoCooldown_canBeShownAgain() {
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        List<Recipe> recipeList = new ArrayList(Arrays.asList(criticalRecipe));
+        recipeCooler.filterRecipe(recipeList);
+        assertEquals(1, recipeList.size());
+        recipeList.add(criticalRecipe);
+        recipeCooler.filterRecipe(recipeList);
+        assertEquals(2, recipeList.size());
+        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+    }
+
+    @Test
+    public void whenRecipeIsShown_globalCooldownApplies() {
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
+        recipeCooler.filterRecipe(recipeList);
+        assertEquals(0, recipeList.size());
+        recipeList.add(criticalRecipe);
+        recipeCooler.filterRecipe(recipeList);
+        assertEquals(1, recipeList.size());
+        recipeList.add(criticalRecipe);
+        recipeList.add(nonCriticalRecipe);
+        recipeList.add(nonCriticalRecipe);
+        recipeCooler.filterRecipe(recipeList);
+        assertEquals(2, recipeList.size());
+    }
+
+    @Test
+    public void whenRecipeIsShown_updateLastLogEntry() {
+        long beforeTimestamp = System.currentTimeMillis();
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        long afterTimestamp = System.currentTimeMillis();
+        long actualTimestamp = recipeCooler.getLatestLogEntry();
+        assertTrue(beforeTimestamp <= actualTimestamp);
+        assertTrue(actualTimestamp <= afterTimestamp);
+    }
+
+    private Recipe buildRecipe(String id, long globalCD, long selfCD) {
+        Recipe criticalRecipe = new Recipe();
+        criticalRecipe.setId(id);
+        HashMap<String, Object> cooldown = Maps.newHashMap();
+        cooldown.put(GLOBAL_COOLDOWN, globalCD);
+        cooldown.put(SELF_COOLDOWN, selfCD);
+        criticalRecipe.setCooldown(cooldown);
+        return criticalRecipe;
     }
 
 }
