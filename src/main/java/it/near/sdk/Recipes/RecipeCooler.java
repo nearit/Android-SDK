@@ -48,22 +48,23 @@ public class RecipeCooler {
 
     private boolean canShowRecipe(Recipe recipe){
         Map <String, Object> cooldown = recipe.getCooldown();
-        return cooldown != null &&
-                globalCooldownCheck(cooldown) &&
-                selfCooldownCheck(recipe, cooldown);
+        return cooldown == null ||
+                ( globalCooldownCheck(cooldown) && selfCooldownCheck(recipe, cooldown) );
     }
 
     private boolean globalCooldownCheck(Map<String, Object> cooldown) {
-        // TODO cosa fare se non c'è?
-        if (!cooldown.containsKey(GLOBAL_COOLDOWN)) return true;
+        if (!cooldown.containsKey(GLOBAL_COOLDOWN) ||
+                cooldown.get(GLOBAL_COOLDOWN) == null) return true;
+
         long expiredSeconds = (System.currentTimeMillis() - getLatestLogEntry()) / 1000;
         return expiredSeconds >= (Long)cooldown.get(GLOBAL_COOLDOWN);
     }
 
     private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown){
-        // TODO cosa fare se non c'è?
-        if (!cooldown.containsKey(SELF_COOLDOWN)) return true;
-        if (!getMap().containsKey(recipe.getId())) return true;
+        if (!cooldown.containsKey(SELF_COOLDOWN) ||
+                cooldown.get(SELF_COOLDOWN) == null ||
+                !getMap().containsKey(recipe.getId())) return true;
+
         long recipeLatestEntry = getMap().get(recipe.getId());
         long expiredSeconds = (System.currentTimeMillis() - recipeLatestEntry) / 1000;
         return expiredSeconds >= (Long)cooldown.get(SELF_COOLDOWN);

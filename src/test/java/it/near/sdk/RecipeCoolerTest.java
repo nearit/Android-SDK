@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.ObjectArrays;
 
 import org.json.JSONObject;
 import org.junit.Before;
@@ -46,8 +47,9 @@ public class RecipeCoolerTest {
 
     @Before
     public void setUp() {
-        criticalRecipe = buildRecipe("critical", 0L, 0L);
-        nonCriticalRecipe = buildRecipe("pedestrian", 24 * 60 * 60L, 24 * 60 * 60L);
+        criticalRecipe = buildRecipe("critical", buildCooldown(0L, 0L));
+        nonCriticalRecipe = buildRecipe("pedestrian", buildCooldown(24 * 60 * 60L,
+                                                                    24 * 60 * 60L));
 
         when(mockSharedPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.remove(anyString())).thenReturn(mockEditor);
@@ -124,14 +126,50 @@ public class RecipeCoolerTest {
         assertTrue(actualTimestamp <= afterTimestamp);
     }
 
-    private Recipe buildRecipe(String id, long globalCD, long selfCD) {
+    @Test
+    public void whenCooldownMissing_showRecipe() {
+        mRecipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
+        List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
+        mRecipeCooler.filterRecipe(recipeList);
+        assertEquals(0, recipeList.size());
+        nonCriticalRecipe.setCooldown(null);
+        recipeList.add(nonCriticalRecipe);
+        mRecipeCooler.filterRecipe(recipeList);
+        assertEquals(1, recipeList.size());
+    }
+
+    @Test
+    public void whenMissingSelfCooldown_considerItZero() {
+        mRecipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
+        // force the check on the selfcooldown
+        nonCriticalRecipe.setCooldown(buildCooldown(0L, null));
+        List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
+        mRecipeCooler.filterRecipe(recipeList);
+        assertEquals(1, recipeList.size());
+    }
+
+    @Test
+    public void whenMissingGlobalCoolDown_considerItZero() {
+        mRecipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        // force the check on globalcooldown
+        nonCriticalRecipe.setCooldown(buildCooldown(null, 0L));
+        List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
+        mRecipeCooler.filterRecipe(recipeList);
+        assertEquals(1, recipeList.size());
+    }
+
+    private Recipe buildRecipe(String id, HashMap<String, Object> cooldown) {
         Recipe criticalRecipe = new Recipe();
         criticalRecipe.setId(id);
+        criticalRecipe.setCooldown(cooldown);
+        return criticalRecipe;
+    }
+
+    private HashMap<String, Object> buildCooldown(Long globalCD, Long selfCD) {
         HashMap<String, Object> cooldown = Maps.newHashMap();
         cooldown.put(GLOBAL_COOLDOWN, globalCD);
         cooldown.put(SELF_COOLDOWN, selfCD);
-        criticalRecipe.setCooldown(cooldown);
-        return criticalRecipe;
+        return cooldown;
     }
 
 }
