@@ -42,26 +42,18 @@ public class RecipeCoolerTest {
 
     private Recipe criticalRecipe;
     private Recipe nonCriticalRecipe;
+    private RecipeCooler mRecipeCooler;
 
     @Before
-    public void initRecipes() {
+    public void setUp() {
         criticalRecipe = buildRecipe("critical", 0L, 0L);
         nonCriticalRecipe = buildRecipe("pedestrian", 24 * 60 * 60L, 24 * 60 * 60L);
-    }
 
-    @Before
-    public void initMocks() {
         when(mockSharedPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.remove(anyString())).thenReturn(mockEditor);
         when(mockEditor.commit()).thenReturn(true);
 
-    }
-
-    @Before
-    public void resetSingleton() throws SecurityException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        Field instance = RecipeCooler.class.getDeclaredField("INSTANCE");
-        instance.setAccessible(true);
-        instance.set(null, null);
+        mRecipeCooler = new RecipeCooler(mockSharedPreferences);
     }
 
     @Test
@@ -70,18 +62,17 @@ public class RecipeCoolerTest {
 
         List<Recipe> recipeList = new ArrayList(Arrays.asList(criticalRecipe));
         assertEquals(1, recipeList.size());
-        RecipeCooler.getInstance(mockSharedPreferences).filterRecipe(recipeList);
+        mRecipeCooler.filterRecipe(recipeList);
         assertEquals(1, recipeList.size());
 
     }
 
     @Test
     public void whenRecipeShown_historyUpdated() {
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
-        recipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
+        mRecipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
         verify(mockEditor).putString(eq(LOG_MAP), and(contains(nonCriticalRecipe.getId()),
                                                         not(contains(criticalRecipe.getId()))));
-        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        mRecipeCooler.markRecipeAsShown(criticalRecipe.getId());
         verify(mockEditor, atLeastOnce())
                 .putString(eq(LOG_MAP), and(contains(nonCriticalRecipe.getId()),
                                             contains(criticalRecipe.getId())));
@@ -89,50 +80,46 @@ public class RecipeCoolerTest {
 
     @Test
     public void whenRecipeWithSelfCooldownShown_cantBeShownAgain() {
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
-        recipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
+        mRecipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
         List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
-        recipeCooler.filterRecipe(recipeList);
+        mRecipeCooler.filterRecipe(recipeList);
         assertEquals(0, recipeList.size());
     }
 
     @Test
     public void whenRecipeHasNoCooldown_canBeShownAgain() {
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
-        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        mRecipeCooler.markRecipeAsShown(criticalRecipe.getId());
         List<Recipe> recipeList = new ArrayList(Arrays.asList(criticalRecipe));
-        recipeCooler.filterRecipe(recipeList);
+        mRecipeCooler.filterRecipe(recipeList);
         assertEquals(1, recipeList.size());
         recipeList.add(criticalRecipe);
-        recipeCooler.filterRecipe(recipeList);
+        mRecipeCooler.filterRecipe(recipeList);
         assertEquals(2, recipeList.size());
-        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        mRecipeCooler.markRecipeAsShown(criticalRecipe.getId());
     }
 
     @Test
     public void whenRecipeIsShown_globalCooldownApplies() {
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
-        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        mRecipeCooler.markRecipeAsShown(criticalRecipe.getId());
         List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
-        recipeCooler.filterRecipe(recipeList);
+        mRecipeCooler.filterRecipe(recipeList);
         assertEquals(0, recipeList.size());
         recipeList.add(criticalRecipe);
-        recipeCooler.filterRecipe(recipeList);
+        mRecipeCooler.filterRecipe(recipeList);
         assertEquals(1, recipeList.size());
         recipeList.add(criticalRecipe);
         recipeList.add(nonCriticalRecipe);
         recipeList.add(nonCriticalRecipe);
-        recipeCooler.filterRecipe(recipeList);
+        mRecipeCooler.filterRecipe(recipeList);
         assertEquals(2, recipeList.size());
     }
 
     @Test
     public void whenRecipeIsShown_updateLastLogEntry() {
         long beforeTimestamp = System.currentTimeMillis();
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
-        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        mRecipeCooler.markRecipeAsShown(criticalRecipe.getId());
         long afterTimestamp = System.currentTimeMillis();
-        long actualTimestamp = recipeCooler.getLatestLogEntry();
+        long actualTimestamp = mRecipeCooler.getLatestLogEntry();
         assertTrue(beforeTimestamp <= actualTimestamp);
         assertTrue(actualTimestamp <= afterTimestamp);
     }
