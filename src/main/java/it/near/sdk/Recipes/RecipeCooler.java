@@ -2,6 +2,7 @@ package it.near.sdk.Recipes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import org.json.JSONObject;
 
@@ -9,9 +10,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import it.near.sdk.Recipes.Models.Recipe;
+
+import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 
 /**
  * Created by cattaneostefano on 13/02/2017.
@@ -20,10 +22,9 @@ import it.near.sdk.Recipes.Models.Recipe;
 public class RecipeCooler {
 
     private static RecipeCooler INSTANCE;
-    private Context mContext;
     private SharedPreferences mSharedPreferences;
 
-    public static final String NEAR_COOLDOWN_HISTORY = "NearCooldownHistory";
+    public static final String NEAR_RECIPECOOLER_PREFSNAME = "NearRecipeCoolerPrefsName";
     public static final String LOG_MAP = "LOG_MAP";
     public static final String LATEST_LOG = "LATEST_LOG";
 
@@ -33,20 +34,14 @@ public class RecipeCooler {
     private Map<String, Long> mRecipeLogMap;
     private Long mLatestLogEntry;
 
-    private RecipeCooler(Context context) {
-        mContext = context;
+    private RecipeCooler(SharedPreferences sharedPreferences) {
+        mSharedPreferences = sharedPreferences;
     }
 
-    private SharedPreferences getSharedPreferences(){
-        if (mSharedPreferences == null){
-            mSharedPreferences = mContext.getSharedPreferences(NEAR_COOLDOWN_HISTORY, Context.MODE_PRIVATE);
-        }
-        return mSharedPreferences;
-    }
-
-    public static RecipeCooler getInstance(Context context){
+    public static RecipeCooler getInstance(@NonNull SharedPreferences sharedPreferences){
+        checkNotNull(sharedPreferences);
         if (INSTANCE == null){
-            INSTANCE = new RecipeCooler(context);
+            INSTANCE = new RecipeCooler(sharedPreferences);
         }
         return INSTANCE;
     }
@@ -99,11 +94,10 @@ public class RecipeCooler {
     }
 
     private void saveMap(Map<String, Long> inputMap){
-        SharedPreferences pSharedPref = mContext.getSharedPreferences(NEAR_COOLDOWN_HISTORY, Context.MODE_PRIVATE);
-        if (pSharedPref != null){
+        if (mSharedPreferences != null){
             JSONObject jsonObject = new JSONObject(inputMap);
             String jsonString = jsonObject.toString();
-            SharedPreferences.Editor editor = pSharedPref.edit();
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.remove(LOG_MAP).commit();
             editor.putString(LOG_MAP, jsonString);
             editor.commit();
@@ -112,10 +106,9 @@ public class RecipeCooler {
 
     private Map<String,Long> loadMap(){
         Map<String,Long> outputMap = new HashMap<String,Long>();
-        SharedPreferences pSharedPref = getSharedPreferences();
         try{
-            if (pSharedPref != null){
-                String jsonString = pSharedPref.getString(LOG_MAP, (new JSONObject()).toString());
+            if (mSharedPreferences != null){
+                String jsonString = mSharedPreferences.getString(LOG_MAP, (new JSONObject()).toString());
                 JSONObject jsonObject = new JSONObject(jsonString);
                 Iterator<String> keysItr = jsonObject.keys();
                 while(keysItr.hasNext()) {
@@ -138,18 +131,16 @@ public class RecipeCooler {
     }
 
     private Long loadLatestEntry() {
-        SharedPreferences pSharedPref = getSharedPreferences();
-        if (pSharedPref != null) {
-            return pSharedPref.getLong(LATEST_LOG, 0L);
+        if (mSharedPreferences != null) {
+            return mSharedPreferences.getLong(LATEST_LOG, 0L);
         }
         return 0L;
     }
 
     private void saveLatestEntry(long timestamp) {
         mLatestLogEntry = timestamp;
-        SharedPreferences pSharedPref = mContext.getSharedPreferences(NEAR_COOLDOWN_HISTORY, Context.MODE_PRIVATE);
-        if (pSharedPref!=null){
-            SharedPreferences.Editor editor = pSharedPref.edit();
+        if (mSharedPreferences!=null){
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
             editor.remove(LATEST_LOG).commit();
             editor.putLong(LATEST_LOG, timestamp);
             editor.commit();

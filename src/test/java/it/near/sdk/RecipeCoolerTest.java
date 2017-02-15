@@ -35,8 +35,6 @@ import static org.mockito.Mockito.*;
 public class RecipeCoolerTest {
 
     @Mock
-    Context mockContext;
-    @Mock
     SharedPreferences mockSharedPreferences;
     @Mock
     SharedPreferences.Editor mockEditor;
@@ -52,7 +50,6 @@ public class RecipeCoolerTest {
 
     @Before
     public void initMocks() {
-        when(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mockSharedPreferences);
         when(mockSharedPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.remove(anyString())).thenReturn(mockEditor);
         when(mockEditor.commit()).thenReturn(true);
@@ -72,20 +69,20 @@ public class RecipeCoolerTest {
 
         List<Recipe> recipeList = new ArrayList(Arrays.asList(criticalRecipe));
         assertEquals(1, recipeList.size());
-        RecipeCooler.getInstance(mockContext).filterRecipe(recipeList);
+        RecipeCooler.getInstance(mockSharedPreferences).filterRecipe(recipeList);
         assertEquals(1, recipeList.size());
 
     }
 
     @Test
     public void whenRecipeShown_historyUpdated() {
-        RecipeCooler.getInstance(mockContext).markRecipeAsShown(criticalRecipe.getId());
+        RecipeCooler.getInstance(mockSharedPreferences).markRecipeAsShown(criticalRecipe.getId());
         verify(mockEditor).putString(eq(LOG_MAP), contains(criticalRecipe.getId()));
     }
 
     @Test
     public void whenRecipeWithSelfCooldownShown_cantBeShownAgain() {
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
         recipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
         List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
         recipeCooler.filterRecipe(recipeList);
@@ -94,7 +91,7 @@ public class RecipeCoolerTest {
 
     @Test
     public void whenRecipeHasNoCooldown_canBeShownAgain() {
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
         recipeCooler.markRecipeAsShown(criticalRecipe.getId());
         List<Recipe> recipeList = new ArrayList(Arrays.asList(criticalRecipe));
         recipeCooler.filterRecipe(recipeList);
@@ -107,7 +104,7 @@ public class RecipeCoolerTest {
 
     @Test
     public void whenRecipeIsShown_globalCooldownApplies() {
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
         recipeCooler.markRecipeAsShown(criticalRecipe.getId());
         List<Recipe> recipeList = new ArrayList(Arrays.asList(nonCriticalRecipe));
         recipeCooler.filterRecipe(recipeList);
@@ -125,7 +122,7 @@ public class RecipeCoolerTest {
     @Test
     public void whenRecipeIsShown_updateLastLogEntry() {
         long beforeTimestamp = System.currentTimeMillis();
-        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockContext);
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
         recipeCooler.markRecipeAsShown(criticalRecipe.getId());
         long afterTimestamp = System.currentTimeMillis();
         long actualTimestamp = recipeCooler.getLatestLogEntry();
