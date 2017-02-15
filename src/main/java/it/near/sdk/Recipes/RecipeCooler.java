@@ -21,7 +21,6 @@ import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 
 public class RecipeCooler {
 
-    private static RecipeCooler INSTANCE;
     private SharedPreferences mSharedPreferences;
 
     public static final String NEAR_RECIPECOOLER_PREFSNAME = "NearRecipeCoolerPrefsName";
@@ -34,16 +33,9 @@ public class RecipeCooler {
     private Map<String, Long> mRecipeLogMap;
     private Long mLatestLogEntry;
 
-    private RecipeCooler(SharedPreferences sharedPreferences) {
-        mSharedPreferences = sharedPreferences;
-    }
-
-    public static RecipeCooler getInstance(@NonNull SharedPreferences sharedPreferences){
+    public RecipeCooler(@NonNull SharedPreferences sharedPreferences) {
         checkNotNull(sharedPreferences);
-        if (INSTANCE == null){
-            INSTANCE = new RecipeCooler(sharedPreferences);
-        }
-        return INSTANCE;
+        mSharedPreferences = sharedPreferences;
     }
 
     public void markRecipeAsShown(String recipeId){
