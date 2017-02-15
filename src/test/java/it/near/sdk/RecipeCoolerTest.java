@@ -25,6 +25,7 @@ import it.near.sdk.Recipes.RecipeCooler;
 
 import static it.near.sdk.Recipes.RecipeCooler.*;
 import static junit.framework.Assert.*;
+import static org.mockito.AdditionalMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -76,8 +77,14 @@ public class RecipeCoolerTest {
 
     @Test
     public void whenRecipeShown_historyUpdated() {
-        RecipeCooler.getInstance(mockSharedPreferences).markRecipeAsShown(criticalRecipe.getId());
-        verify(mockEditor).putString(eq(LOG_MAP), contains(criticalRecipe.getId()));
+        RecipeCooler recipeCooler = RecipeCooler.getInstance(mockSharedPreferences);
+        recipeCooler.markRecipeAsShown(nonCriticalRecipe.getId());
+        verify(mockEditor).putString(eq(LOG_MAP), and(contains(nonCriticalRecipe.getId()),
+                                                        not(contains(criticalRecipe.getId()))));
+        recipeCooler.markRecipeAsShown(criticalRecipe.getId());
+        verify(mockEditor, atLeastOnce())
+                .putString(eq(LOG_MAP), and(contains(nonCriticalRecipe.getId()),
+                                            contains(criticalRecipe.getId())));
     }
 
     @Test
