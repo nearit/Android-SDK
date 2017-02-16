@@ -56,6 +56,7 @@ public class RecipesManager {
     private HashMap<String, Reaction> reactions = new HashMap<>();
     SharedPreferences.Editor editor;
     private NearAsyncHttpClient httpClient;
+    private RecipeCooler mRecipeCooler;
 
     public RecipesManager(Context context) {
         this.mContext = context;
@@ -72,6 +73,7 @@ public class RecipesManager {
         }
         setUpMorpheusParser();
         refreshConfig();
+        setUpRecipeCooler();
     }
 
     /**
@@ -88,6 +90,11 @@ public class RecipesManager {
         morpheus.getFactory().getDeserializer().registerResourceClass("reaction_actions", ReactionAction.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("pulse_bundles", PulseBundle.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
+    }
+
+    private void setUpRecipeCooler() {
+        SharedPreferences recipeCoolerSP = mContext.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME,0);
+        mRecipeCooler = new RecipeCooler(recipeCoolerSP);
     }
 
     public void addReaction(Reaction reaction){
@@ -216,6 +223,8 @@ public class RecipesManager {
                 validRecipes.add(matchingRecipe);
             }
         }
+
+        mRecipeCooler.filterRecipe(validRecipes);
 
         if (validRecipes.isEmpty()){
             // if no recipe is found the the online fallback

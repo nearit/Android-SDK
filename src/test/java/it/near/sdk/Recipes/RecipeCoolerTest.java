@@ -179,7 +179,7 @@ public class RecipeCoolerTest {
         assertEquals(1, recipeList.size());
         assertThat(recipeList, hasItem(mNonCriticalRecipe));
     }
-    
+
     private Recipe buildRecipe(String id, HashMap<String, Object> cooldown) {
         Recipe criticalRecipe = new Recipe();
         criticalRecipe.setId(id);
