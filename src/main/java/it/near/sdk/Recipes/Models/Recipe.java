@@ -234,25 +234,24 @@ public class Recipe extends Resource {
      * Check if the recipe is valid according to the scheduling information.
      * @return the validity of the recipe.
      */
-    public boolean isScheduledNow(){
+    public boolean isScheduledNow(Calendar now){
         return scheduling == null ||
-                ( isDateValid() &&
-                isTimetableValid() &&
-                isDaysValid() );
+                ( isDateValid(now) &&
+                isTimetableValid(now) &&
+                isDaysValid(now) );
     }
 
     /**
      * Check if the date range is valid.
      * @return if the date range is respected.
      */
-    private boolean isDateValid(){
+    private boolean isDateValid(Calendar now){
         Map<String, Object> date = (LinkedTreeMap<String, Object>) scheduling.get("date");
         if (date == null) return true;
         String fromDateString = (String) date.get("from");
         String toDateString = (String) date.get("to");
         boolean valid = true;
         try {
-            Calendar now = Calendar.getInstance();
             // do not move the dateformatter to be an instance variable, it messes the parsing
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -279,14 +278,13 @@ public class Recipe extends Resource {
      * Check it the time range is valid.
      * @return if the time range is respected.
      */
-    private boolean isTimetableValid() {
+    private boolean isTimetableValid(Calendar now) {
         Map<String, Object> timetable = (LinkedTreeMap<String, Object>) scheduling.get("timetable");
         if (timetable == null) return true;
         String fromHour = (String) timetable.get("from");
         String toHour = (String) timetable.get("to");
         boolean valid = true;
         try {
-            Calendar now = Calendar.getInstance();
             SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
             if (fromHour != null) {
                 Date fromHourDate = timeFormatter.parse(fromHour);
@@ -311,10 +309,10 @@ public class Recipe extends Resource {
      * Check if the days selection is valid.
      * @return if the days selection is respected.
      */
-    private boolean isDaysValid() {
+    private boolean isDaysValid(Calendar now) {
         List<String> days = (List<String>) scheduling.get("days");
         if (days == null) return true;
-        String todaysDate = getTodaysDate();
+        String todaysDate = getTodaysDate(now);
 
         return days.contains(todaysDate);
     }
@@ -323,9 +321,8 @@ public class Recipe extends Resource {
      * Get today's day of week.
      * @return the day of week in "EE" format e.g. Sat.
      */
-    private String getTodaysDate() {
-        Calendar calendar = Calendar.getInstance();
-        Date date = calendar.getTime();
+    private String getTodaysDate(Calendar now) {
+        Date date = now.getTime();
         // 3 letter name form of the day
         return new SimpleDateFormat("EE", Locale.ENGLISH).format(date.getTime());
 
