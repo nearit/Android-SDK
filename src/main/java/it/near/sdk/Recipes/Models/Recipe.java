@@ -178,6 +178,10 @@ public void setScheduling(HashMap<String, Object> scheduling) {
         return cooldown;
     }
 
+    public void setScheduling(HashMap<String, Object> scheduling) {
+        this.scheduling = scheduling;
+    }
+
     public void setCooldown(HashMap<String, Object> cooldown) {
         this.cooldown = cooldown;
     }
