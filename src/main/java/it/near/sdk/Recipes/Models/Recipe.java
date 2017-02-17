@@ -260,13 +260,13 @@ public class Recipe extends Resource {
                 Date fromDate = dateFormatter.parse(fromDateString);
                 Calendar fromCalendarDate = Calendar.getInstance();
                 fromCalendarDate.setTimeInMillis(fromDate.getTime());
-                valid &= fromCalendarDate.before(now);
+                valid &= fromCalendarDate.before(now) || fromCalendarDate.equals(now);
             }
             if (toDateString != null) {
                 Date toDate = dateFormatter.parse(toDateString);
                 Calendar toCalendarDate = Calendar.getInstance();
                 toCalendarDate.setTimeInMillis(toDate.getTime());
-                valid &= toCalendarDate.after(now);
+                valid &= toCalendarDate.after(now) || toCalendarDate.equals(now);
             }
         } catch (ParseException e) {
             e.printStackTrace();
