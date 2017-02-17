@@ -169,6 +169,10 @@ public class Recipe extends Resource {
         this.reaction_action = reaction_action;
     }
 
+    public void setScheduling(HashMap<String, Object> scheduling) {
+        this.scheduling = scheduling;
+    }
+
     public String getNotificationTitle() {
         if (getNotification().containsKey("title")){
             return getNotification().get("title").toString();
@@ -246,7 +250,7 @@ public class Recipe extends Resource {
      * @return if the date range is respected.
      */
     private boolean isDateValid(Calendar now){
-        Map<String, Object> date = (LinkedTreeMap<String, Object>) scheduling.get("date");
+        Map<String, Object> date = (Map<String, Object>) scheduling.get("date");
         if (date == null) return true;
         String fromDateString = (String) date.get("from");
         String toDateString = (String) date.get("to");
