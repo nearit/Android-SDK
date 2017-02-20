@@ -171,9 +171,6 @@ public class Recipe extends Resource {
         this.reaction_action = reaction_action;
     }
 
-public void setScheduling(HashMap<String, Object> scheduling) {
-        this.scheduling = scheduling;
-    } 
     public HashMap<String, Object> getCooldown() {
         return cooldown;
     }
@@ -292,11 +289,11 @@ public void setScheduling(HashMap<String, Object> scheduling) {
     }
 
     /**
-     * Check it the time range is valid.
+     * Check if the time range is valid.
      * @return if the time range is respected.
      */
     private boolean isTimetableValid(Calendar now) {
-        Map<String, Object> timetable = (LinkedTreeMap<String, Object>) scheduling.get("timetable");
+        Map<String, Object> timetable = (Map<String, Object>) scheduling.get("timetable");
         if (timetable == null) return true;
         String fromHour = (String) timetable.get("from");
         String toHour = (String) timetable.get("to");
@@ -307,13 +304,13 @@ public void setScheduling(HashMap<String, Object> scheduling) {
                 Date fromHourDate = timeFormatter.parse(fromHour);
                 Calendar fromHourCalendar = Calendar.getInstance();
                 fromHourCalendar.setTime(fromHourDate);
-                valid &= fromHourCalendar.before(now);
+                valid &= fromHourCalendar.before(now) || fromHourCalendar.equals(now);
             }
             if (toHour != null){
                 Date toHourDate = timeFormatter.parse(toHour);
                 Calendar toHourCalendar = Calendar.getInstance();
                 toHourCalendar.setTime(toHourDate);
-                valid &= toHourCalendar.after(now);
+                valid &= toHourCalendar.after(now) || toHourCalendar.equals(now);
             }
         } catch (ParseException e) {
             e.printStackTrace();
