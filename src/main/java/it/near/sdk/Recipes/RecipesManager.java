@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -209,8 +210,9 @@ public class RecipesManager {
 
         // From all the recipes, filter the ones that are scheduled for now
         List<Recipe> validRecipes = new ArrayList<>();
+        Calendar now = Calendar.getInstance();
         for (Recipe matchingRecipe : matchingRecipes) {
-            if (matchingRecipe.isScheduledNow()){
+            if (matchingRecipe.isScheduledNow(now)){
                 validRecipes.add(matchingRecipe);
             }
         }

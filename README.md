@@ -15,10 +15,10 @@ NearIT allows to manage apps by defining “recipes”. Those are simple rules m
 
 ## How it works
 
-The [**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features, in a snap.
+[**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features, in a snap.
 Once the settings are configured, **everyone** - even people without technical skills - can manage context-aware mobile contents.
 
-The **NearIT SDK** synchronize with servers and behave accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
+**NearIT SDK** synchronize with servers and behave accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
 
 ## Features
 * User Segmentation
@@ -37,7 +37,7 @@ To start using the SDK, include this in your app *build.gradle*
 ```java
 
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:2.0.5'
+    compile 'it.near.sdk.core:nearitsdk:2.0.7'
 }
 ```
 

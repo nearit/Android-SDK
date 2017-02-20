@@ -2,7 +2,7 @@
 
 Based on what recipe triggers you want to use, some setup is necessary.
 
-## Location based Triggers
+## Location Based Triggers
 
 When you want to start the radar for geofences and beacons call this method:
 
@@ -16,7 +16,7 @@ The SDK automatically includes the permission for location access in its manifes
 
 ## Push Triggers
 
-To enable push notification, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps.](firebase.md)
+To enable push recipes to reach the user, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps.](firebase.md)
 Enter the cloud messaging firebase server key into the appropriate NearIT CMS section. Don't follow FCM-specific integration guides, we already deal with everything inside the SDK code.
 
 ## Enable Background Notification

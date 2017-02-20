@@ -6,14 +6,14 @@ pages:
   - 'User Guide' :
     - 'Installation' : 'installation.md'
     - 'Enable Triggers' : 'enable-triggers.md'
-    - 'Handle recipe content' : 'handle-content.md'
-    - 'User profiling' : 'user-profilation.md'
-  - 'Advanced topics' :
-    - 'Custom background notification' : 'custom-bkg-notification.md'
+    - 'Handle Recipe Content' : 'handle-content.md'
+    - 'User Profiling' : 'user-profilation.md'
+  - 'Advanced Topics' :
+    - 'Custom Background Notification' : 'custom-bkg-notification.md'
     - 'Testing' : 'testing.md'
   - 'Samples' :
-    - 'Integration samples' : 'integration-samples.md'
-    - 'Best practice on permissions request' : 'permission-request-sample.md'
+    - 'Integration Samples' : 'integration-samples.md'
+    - 'Best Practice on Permissions Request' : 'permission-request-sample.md'
   - 'Other resources' :
-    - 'Pro-guard' : 'proguard.md'
-    - 'Firebase help' : 'firebase.md'
+    - 'Pro-Guard & Logging' : 'proguard-log.md'
+    - 'Firebase Help' : 'firebase.md'

@@ -7,7 +7,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:2.0.5'
+    compile 'it.near.sdk.core:nearitsdk:2.0.7'
 }
 ```
 
@@ -22,7 +22,7 @@ public void onCreate() {
 }
 ```
 
-You can find the API key on the [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
+You can find the API key on [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
 
 The constructor for `NearItManager` will try to sync the recipes with our servers. If you need to sync the recipes configuration more often than you call the constructor, call this method:
 

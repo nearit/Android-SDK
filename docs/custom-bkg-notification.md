@@ -1,8 +1,8 @@
-# Custom background notification
+# Custom Background Notification
 
 To receive background notifications, you can add our built-in receiver as shown in the [Enable Triggers](enable-triggers.md) section. The receiver shows a system notification, with the provided texts and a pre-set system icon. There's no time-limit or special condition to be met to show the notification so you will always get it. To handle complex use cases, you can write your own receivers by subclassing the built-in one.
 
-## Custom receiver and service
+## Custom Receiver and Service
 
 Let's look at the built-in receiver manifest declaration:
 ```xml
@@ -21,9 +21,9 @@ Let's look at the built-in receiver manifest declaration:
 </receiver>
 ```
 This receiver, along with a built-in service (not to be declared in the app manifest), creates the background functionality.
-By extending NearItBroadcastReceiver and NearItIntentService you can customize the app background behaviour.
+By extending NearItBroadcastReceiver and NearItIntentService you can customize the app background behavior.
 
-In the `onReceive` method of your custom receiver, start your custom service
+In the `onReceive` method of your custom receiver, start your custom service:
 ```java
 @Override
 public void onReceive(Context context, Intent intent) {
@@ -36,7 +36,7 @@ public void onReceive(Context context, Intent intent) {
 }
 ```
 
-In the `onHandleIntent` of the custom IntentService
+In the `onHandleIntent` of the custom IntentService:
 ```java
 @Override
 protected void onHandleIntent(Intent intent) {
@@ -52,7 +52,7 @@ protected void onHandleIntent(Intent intent) {
       e.printStackTrace();
   }
 
-  There is an utility method to automatically process known content types and calls the CoreContentsListener callback methods.
+  There is an utility method to automatically process known content types to calls the CoreContentsListener callback methods.
   parseCoreContents(Intent intent, CoreContentsListener listener);
 
   There is an utility method for creating notifications
@@ -85,5 +85,5 @@ Then replace the custom broadcast receiver and add the custom intent service to 
 </receiver>
 ```
 
-By combination of recievers and intent filters, you can customize only one kind of background notifications, or use 2 different receivers for the 2 cases.
-Remember that you can always programmatically check the action of an intent, inside `onReceive` in the receiver and inside `onHandleIntent` of the intent service with `intent.getAction()`.
+By combination of receivers and intent filters, you can customize only one kind of background notifications, or use 2 different receivers for the 2 cases.
+Remember that you can always programmatically check the action of an intent, inside `onReceive` in the receiver and inside `onHandleIntent` in the intent service with `intent.getAction()`.
