@@ -77,4 +77,4 @@ NearItUserProfile.setProfileId(context, profileId);
 ```
 You can then set the relevant user-data to this profile with the aforementioned methods.
 
-This way, you will have a reference between NearIT data and your others data sources. Please keep in mind that you will be responsible of generating unique user IDs.
+This way, you will have a reference between NearIT data and your others data sources. Please keep in mind that you will be responsible of storing our profile identifier in your system.

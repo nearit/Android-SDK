@@ -8,4 +8,4 @@ This code was extensively used on a variety of devices, covering different versi
 
 Another key goal of this sample is just to ask for the minimum necessary permissions.
 
-You can find the full sample [here](https://github.com/nearit/Android-samples/blob/master/Activities/PermissionsActivity.java) with sensible comments.
+You can find the full sample [here](https://gist.github.com/catt-stefano/3dc1eb8ad5af2febd477036f104aa78e) with sensible comments.
