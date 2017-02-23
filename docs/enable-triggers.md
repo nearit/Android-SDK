@@ -42,4 +42,4 @@ You can use your own receiver for custom notification handling. See this [sectio
 
 You can set your own icon for the location-based notifications with the method *setNotificationImage(int imgRes)* of *NearItManager*
 
-WARNING: If you are using some gms play services in your app and experience runtime malfunctioning, please be sure to use the 10.0.1 version of the gms dependency you are pulling in your app. Conflicting play services version may result in compile-time and run-time errors.
+WARNING: If you are using some gms play services in your app and experience runtime malfunctioning, please be sure to use the 10.2.0 version of the gms dependency you are pulling in your app. Conflicting play services version may result in compile-time and run-time errors.
