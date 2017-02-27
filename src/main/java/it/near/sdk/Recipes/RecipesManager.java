@@ -177,7 +177,6 @@ public class RecipesManager {
             e.printStackTrace();
             listener.onRecipesRefreshFail(-1);
         }
-
     }
 
     private void persistList(List<Recipe> recipes) {
@@ -238,8 +237,6 @@ public class RecipesManager {
                 gotRecipe(winnerRecipe);
             }
         }
-
-
     }
 
     /**
@@ -264,7 +261,6 @@ public class RecipesManager {
                 .appendQueryParameter("filter[core][profile_id]", GlobalConfig.getInstance(mContext).getProfileId())
                 .appendQueryParameter("include", "reaction_bundle")
                 .build();
-
         try {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
 
@@ -335,7 +331,6 @@ public class RecipesManager {
         } catch (NullPointerException e){
             e.printStackTrace();
         }
-
     }
 
     /**

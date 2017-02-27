@@ -57,10 +57,8 @@ public class NearJsonAPIUtils {
      */
     public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
         JSONObject dataObject = getResObj(type, id, map);
-
         JSONObject outerObj = new JSONObject();
         outerObj.put("data", dataObject);
-
         return outerObj.toString();
     }
 
@@ -109,13 +107,11 @@ public class NearJsonAPIUtils {
         }
 
         List<T> returnList = new ArrayList<T>();
-
         if (jsonApiObject.getResources() == null) return returnList;
 
         for (Resource r : jsonApiObject.getResources()){
             returnList.add((T) r);
         }
-
         return returnList;
     }
 

@@ -42,7 +42,6 @@ public class RecipeCooler {
         getMap().put(recipeId, timeStamp);
         saveMap(mRecipeLogMap);
         saveLatestEntry(System.currentTimeMillis());
-
     }
 
     private boolean canShowRecipe(Recipe recipe){
