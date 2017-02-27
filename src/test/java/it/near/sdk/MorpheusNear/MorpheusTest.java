@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes.MorpheusNear;
+package it.near.sdk.MorpheusNear;
 
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -6,6 +6,8 @@ import android.support.annotation.RequiresApi;
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
 import org.hamcrest.beans.HasProperty;
 import org.hamcrest.core.IsInstanceOf;
 import org.json.JSONException;
@@ -25,7 +27,6 @@ import java.util.List;
 
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Recipes.Utils;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
 import static junit.framework.Assert.*;
@@ -36,10 +37,11 @@ import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.AdditionalMatchers.not;
 
 /**
  * Created by cattaneostefano on 27/02/2017.
@@ -68,6 +70,7 @@ public class MorpheusTest {
                 "}");
         TestModel object = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestModel.class);
         assertNotNull(object);
+        assertThat(object, instanceOf(TestModel.class));
         assertEquals("1", object.getId());
         assertEquals("contenuto", object.getContent());
 
@@ -92,6 +95,7 @@ public class MorpheusTest {
                 "}");
         List<TestModel> objectList = NearJsonAPIUtils.parseList(morpheus, jsonObject, TestModel.class);
         assertNotNull(objectList);
+        assertThat(objectList, not(empty()));
         assertThat(objectList, hasSize(2));
         assertThat(objectList, everyItem( IsInstanceOf.<TestModel>instanceOf(TestModel.class)));
     }
