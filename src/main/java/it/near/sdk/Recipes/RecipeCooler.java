@@ -39,7 +39,7 @@ public class RecipeCooler {
 
     public void markRecipeAsShown(String recipeId){
         long timeStamp = System.currentTimeMillis();
-        getMap().put(recipeId, new Long(timeStamp));
+        getMap().put(recipeId, timeStamp);
         saveMap(mRecipeLogMap);
         saveLatestEntry(System.currentTimeMillis());
 
