@@ -95,7 +95,7 @@ public class Content extends ReactionBundle implements Parcelable {
     }
 
     // Creator
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+    public static final Parcelable.Creator<Content> CREATOR = new Parcelable.Creator<Content>() {
         public Content createFromParcel(Parcel in) {
             return new Content(in);
         }
