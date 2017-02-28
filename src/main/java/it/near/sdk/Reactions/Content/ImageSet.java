@@ -56,4 +56,25 @@ public class ImageSet implements Parcelable{
         dest.writeString(fullSize);
         dest.writeString(smallSize);
     }
+
+    // generated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ImageSet imageSet = (ImageSet) o;
+
+        if (fullSize != null ? !fullSize.equals(imageSet.fullSize) : imageSet.fullSize != null)
+            return false;
+        return smallSize != null ? smallSize.equals(imageSet.smallSize) : imageSet.smallSize == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = fullSize != null ? fullSize.hashCode() : 0;
+        result = 31 * result + (smallSize != null ? smallSize.hashCode() : 0);
+        return result;
+    }
 }
