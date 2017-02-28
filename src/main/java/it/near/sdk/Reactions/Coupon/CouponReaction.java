@@ -2,7 +2,6 @@ package it.near.sdk.Reactions.Coupon;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -27,7 +26,6 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * @author cattaneostefano.
@@ -129,12 +127,12 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("filter[claims.profile_id]", profile_id)
                 .appendQueryParameter("include", "claims,icon").build();
         String output = url.toString();
-        ULog.d(TAG, output);
+        Log.d(TAG, output);
         try {
             httpClient.nearGet(context, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, "Copuns downloaded: " + response.toString());
+                    Log.d(TAG, "Copuns downloaded: " + response.toString());
                     List<Coupon> coupons = NearJsonAPIUtils.parseList(morpheus, response, Coupon.class);
                     formatLinks(coupons);
                     listener.onCouponsDownloaded(coupons);

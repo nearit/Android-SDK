@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 
-import org.json.JSONException;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +15,6 @@ import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Superclass for NearIT core-content reactions. Adds jsonAPI parsing, simple caching.
@@ -81,7 +78,7 @@ public abstract class CoreReaction extends Reaction {
      */
     protected void persistList(String key, List list){
         String persistedString = gson.toJson(list);
-        ULog.d(key, "Persist: " + persistedString);
+        Log.d(key, "Persist: " + persistedString);
         editor.putString(key, persistedString);
         editor.apply();
     }

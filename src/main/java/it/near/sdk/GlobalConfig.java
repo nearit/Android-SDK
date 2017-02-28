@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Class containing global configuration. It saves all configuration strings on disk.
@@ -113,7 +112,7 @@ public class GlobalConfig {
     }
 
     public void setDeviceToken(String deviceToken) {
-        ULog.d("GlobalConfig" , "Set deviceToken to : " + deviceToken);
+        Log.d("GlobalConfig" , "Set deviceToken to : " + deviceToken);
         this.deviceToken = deviceToken;
         setLocalString(DEVICETOKEN, deviceToken);
     }

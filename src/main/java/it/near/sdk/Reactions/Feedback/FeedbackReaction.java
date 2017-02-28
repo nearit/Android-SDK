@@ -2,7 +2,6 @@ package it.near.sdk.Reactions.Feedback;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -27,7 +26,6 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Created by cattaneostefano on 11/10/2016.
@@ -60,14 +58,14 @@ public class FeedbackReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
                     feedbackList = NearJsonAPIUtils.parseList(morpheus, response, Feedback.class);
                     persistList(TAG, feedbackList);
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    ULog.d(TAG, "Error: " + statusCode);
+                    Log.d(TAG, "Error: " + statusCode);
                     try {
                         feedbackList = loadList();
                     } catch (JSONException e) {
@@ -121,7 +119,7 @@ public class FeedbackReaction extends CoreReaction {
     public void sendEvent(FeedbackEvent event) {
         try {
             String answerBody = event.toJsonAPI(mContext);
-            ULog.d(TAG, "Answer" + answerBody);
+            Log.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)
                     .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
@@ -131,12 +129,12 @@ public class FeedbackReaction extends CoreReaction {
                 httpClient.nearPost(mContext, url.toString(), answerBody, new JsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        ULog.d(TAG, "Feedback sent successfully");
+                        Log.d(TAG, "Feedback sent successfully");
                     }
 
                     @Override
                     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                        ULog.d(TAG, "Error in sending answer: " + statusCode);
+                        Log.d(TAG, "Error in sending answer: " + statusCode);
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
@@ -146,7 +144,7 @@ public class FeedbackReaction extends CoreReaction {
 
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "Error: incorrect format " + e.toString());
+            Log.d(TAG, "Error: incorrect format " + e.toString());
         }
 
     }

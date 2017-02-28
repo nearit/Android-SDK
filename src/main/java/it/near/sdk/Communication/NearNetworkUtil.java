@@ -8,7 +8,6 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Contains a static method to send trackings
@@ -35,12 +34,12 @@ public class NearNetworkUtil {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, "Tracking data sent.");
+                    Log.d(TAG, "Tracking data sent.");
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Tracking data not sent. Error: " + statusCode);
+                    Log.d(TAG, "Tracking data not sent. Error: " + statusCode);
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {

@@ -20,7 +20,6 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Class with static method to register an app installation to our Near APIs.
@@ -62,7 +61,7 @@ public class NearInstallation {
                 registerOrEditInstallation(context, installationId, installBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        ULog.d(TAG , "Installation data sent");
+                        Log.d(TAG , "Installation data sent");
                         // If the registration is correct, we save the installationId locally
                         try {
                             String installationId = response.getJSONObject("data").getString("id");
@@ -74,7 +73,7 @@ public class NearInstallation {
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        ULog.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
+                        Log.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
                     }
                 });
             } catch (UnsupportedEncodingException | AuthenticationException e) {
@@ -82,7 +81,7 @@ public class NearInstallation {
             }
 
         } catch (JSONException e) {
-            ULog.d(TAG, "Unable to send installation data");
+            Log.d(TAG, "Unable to send installation data");
             e.printStackTrace();
         }
     }
@@ -112,7 +111,7 @@ public class NearInstallation {
             body = NearJsonAPIUtils.toJsonAPI("plugin_resource", map);
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "Set resources: error in building body");
+            Log.d(TAG, "Set resources: error in building body");
             return;
         }
         Uri url = Uri.parse(Constants.API.INSTALLATIONS_PATH).buildUpon()
@@ -124,12 +123,12 @@ public class NearInstallation {
             httpClient.nearPut(context, url.toString(), body, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, "Success in setting plugin resource for: " + plugin_name);
+                    Log.d(TAG, "Success in setting plugin resource for: " + plugin_name);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
+                    Log.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
                 }
             });
         } catch (UnsupportedEncodingException | AuthenticationException e) {

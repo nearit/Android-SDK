@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 import it.near.sdk.Geopolis.Beacons.BeaconNode;
 import it.near.sdk.Geopolis.GeopolisManager;
-import it.near.sdk.Utils.ULog;
 
 /**
  * @author cattaneostefano
@@ -41,7 +40,7 @@ public class BeaconDynamicData {
     }
 
     private void notifiyEvent(BeaconNode beaconNode, int newProximity) {
-        ULog.wtf(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.getIdentifier());
+        Log.d(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.getIdentifier());
         Intent intent  = new Intent();
         String packageName = mContext.getPackageName();
         intent.setAction(packageName + "." + getActionFrom(newProximity));

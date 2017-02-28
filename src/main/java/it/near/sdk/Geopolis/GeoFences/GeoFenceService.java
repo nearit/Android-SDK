@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.Geopolis.GeopolisManager;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Service for monitoring geofences.
@@ -95,30 +94,30 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         locationManager.requestSingleUpdate(criteria, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                ULog.wtf(TAG, "onLocationChanged");
-                ULog.wtf(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
+                Log.d(TAG, "onLocationChanged");
+                Log.d(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
             }
 
             @Override
             public void onStatusChanged(String s, int i, Bundle bundle) {
-                ULog.wtf(TAG, "onStatusChanged");
+                Log.d(TAG, "onStatusChanged");
             }
 
             @Override
             public void onProviderEnabled(String s) {
-                ULog.wtf(TAG, "onProviderEnabled");
+                Log.d(TAG, "onProviderEnabled");
             }
 
             @Override
             public void onProviderDisabled(String s) {
-                ULog.wtf(TAG, "onProviderDisabled");
+                Log.d(TAG, "onProviderDisabled");
             }
         }, null);
     }
 
     @Override
     public void onDestroy() {
-        ULog.d(TAG, "onDestroy on geofence service");
+        Log.d(TAG, "onDestroy on geofence service");
         super.onDestroy();
         stopAllGeofences();
         resetIds(this);

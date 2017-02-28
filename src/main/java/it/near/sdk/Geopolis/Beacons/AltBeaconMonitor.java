@@ -34,7 +34,6 @@ import it.near.sdk.Geopolis.NodesManager;
 import it.near.sdk.Geopolis.Beacons.Ranging.BeaconDynamicRadar;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.OnLifecycleEventListener;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Monitor for AltBeacon regions. It sets the format of the bluetooth package and holds the background powersaver.
@@ -60,7 +59,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 
     public AltBeaconMonitor(Application application, NodesManager nodesManager) {
-        ULog.wtf(TAG, "Altbeacon started");
+        Log.d(TAG, "Altbeacon started");
         this.mApplication = application;
         this.nodesManager = nodesManager;
         this.rangingRadars = new HashMap<>();
@@ -161,7 +160,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         if (regions == null) {
             return;
         }
-        ULog.wtf(TAG, "add regions with " + regions.size());
+        Log.d(TAG, "add regions with " + regions.size());
         for (Region region : regions) {
             if (!this.regions.contains(region)) {
                 this.regions.add(region);
@@ -216,7 +215,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * Switch to ranging mode
      */
     private void startRanging() {
-        ULog.wtf(TAG, "startRanging");
+        Log.d(TAG, "startRanging");
         RangedBeacon.setSampleExpirationMilliseconds(5000);
         beaconManager.setBackgroundMode(false);
         beaconManager.addRangeNotifier(this);
@@ -232,7 +231,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     @Override
     public void onBeaconServiceConnect() {
-        ULog.wtf(TAG, "onBeaconServiceConnect");
+        Log.d(TAG, "onBeaconServiceConnect");
     }
 
     @Override
@@ -272,7 +271,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     @Override
     public void onForeground() {
-        ULog.wtf(TAG, "onForeground");
+        Log.d(TAG, "onForeground");
         // When going to the foreground, if we have regions to range, start ranging
 
         refreshRangingList();
@@ -281,7 +280,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private void refreshRangingList() {
         if (loadRegions() == null) return;
-        ULog.wtf(TAG, "refreshranging list on: " + loadRegions().size());
+        Log.d(TAG, "refreshranging list on: " + loadRegions().size());
         for (Region region : loadRegions()) {
             beaconManager.requestStateForRegion(region);
         }
@@ -289,7 +288,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     @Override
     public void onBackground() {
-        ULog.wtf(TAG, "onBackground");
+        Log.d(TAG, "onBackground");
         // Console.clear();
         // When going to the background stop ranging, in an idempotent way (we might haven't been ranging)
         stopRanging();
@@ -301,7 +300,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void didEnterRegion(Region region) {
         String msg = "enter region: " + region.toString();
-        ULog.wtf(TAG, msg);
+        Log.d(TAG, msg);
 
         logRangedRegions();
         // nearit trigger
@@ -309,7 +308,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
     private void notifiyEventOnBeaconRegion(Region region, String eventActionSuffix) {
-        ULog.wtf(TAG, "Region event: " + eventActionSuffix + " on region: " + region.toString());
+        Log.d(TAG, "Region event: " + eventActionSuffix + " on region: " + region.toString());
         Intent intent  = new Intent();
         String packageName = mApplication.getPackageName();
         intent.setAction(packageName + "." + eventActionSuffix);
@@ -320,7 +319,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void didExitRegion(Region region) {
         String msg = "exit region: " + region.toString();
-        ULog.wtf(TAG, msg);
+        Log.d(TAG, msg);
 
         logRangedRegions();
         notifiyEventOnBeaconRegion(region, GeopolisManager.BT_EXIT_ACTION_SUFFIX);
@@ -338,7 +337,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         // so we don't want to trigger and track a recipe here, but we still handle the region ranging in this callback.
         // basically, idempotent logic lives here
 
-        ULog.wtf(TAG, "determine state " + i + " for region: " + region.toString());
+        Log.d(TAG, "determine state " + i + " for region: " + region.toString());
 
         try {
             if (i == MonitorNotifier.INSIDE){
@@ -362,7 +361,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        ULog.wtf(TAG, "regions ranged: " + beaconManager.getRangedRegions().size());
+        Log.d(TAG, "regions ranged: " + beaconManager.getRangedRegions().size());
         logRangedRegions();
 
     }
@@ -394,7 +393,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
         String msg = "For region: " + region.getUniqueId() + " found " + collection.size() + " beacons. Distance: " + (collection.iterator().hasNext() ? collection.iterator().next().getDistance() : "none");
-        ULog.wtf(TAG, msg);
+        Log.d(TAG, msg);
 
         BeaconDynamicRadar radar = rangingRadars.get(region);
         if (radar == null){
@@ -407,6 +406,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private void logRangedRegions() {
         String msg1 = "regions ranged: " + beaconManager.getRangedRegions().size();
-        ULog.wtf(TAG, msg1);
+        Log.d(TAG, msg1);
     }
 }

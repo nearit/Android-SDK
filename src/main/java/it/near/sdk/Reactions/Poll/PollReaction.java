@@ -2,7 +2,6 @@ package it.near.sdk.Reactions.Poll;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -26,7 +25,6 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * @author cattaneostefano
@@ -119,14 +117,14 @@ public class PollReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
                     pollList = NearJsonAPIUtils.parseList(morpheus, response, Poll.class);
                     persistList(TAG, pollList);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error: " + statusCode);
+                    Log.d(TAG, "Error: " + statusCode);
                     try {
                         pollList = loadList();
                     } catch (JSONException e) {
@@ -171,7 +169,7 @@ public class PollReaction extends CoreReaction {
     public void sendEvent(PollEvent event) {
         try {
             String answerBody = event.toJsonAPI(mContext);
-            ULog.d(TAG, "Answer" + answerBody);
+            Log.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(POLL_NOTIFICATION)
                     .appendPath(POLL_NOTIFICATION_RESOURCE)
@@ -182,12 +180,12 @@ public class PollReaction extends CoreReaction {
                 httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        ULog.d(TAG, "Answer sent successfully");
+                        Log.d(TAG, "Answer sent successfully");
                     }
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        ULog.d(TAG, "Error in sending answer: " + statusCode);
+                        Log.d(TAG, "Error in sending answer: " + statusCode);
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
@@ -195,7 +193,7 @@ public class PollReaction extends CoreReaction {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "Error: incorrect format " + e.toString());
+            Log.d(TAG, "Error: incorrect format " + e.toString());
         }
     }
 }
