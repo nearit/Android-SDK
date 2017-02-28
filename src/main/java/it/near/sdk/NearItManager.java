@@ -88,7 +88,6 @@ public class NearItManager {
      */
     public NearItManager(final Application application, String apiKey) {
         this.application = application;
-        initLifecycleMonitor();
 
         GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
@@ -184,20 +183,6 @@ public class NearItManager {
      */
     public static boolean verifyBluetooth(Context context) throws RuntimeException{
         return BeaconManager.getInstanceForApplication(context.getApplicationContext()).checkAvailability();
-    }
-
-    private void initLifecycleMonitor() {
-        new AppLifecycleMonitor(application, new OnLifecycleEventListener() {
-            @Override
-            public void onForeground() {
-                ULog.d(TAG, "onForeground" );
-            }
-
-            @Override
-            public void onBackground() {
-                ULog.d(TAG, "onBackground");
-            }
-        });
     }
 
     /**
