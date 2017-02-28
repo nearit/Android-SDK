@@ -2,6 +2,7 @@ package it.near.sdk.Geopolis;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +14,8 @@ import it.near.sdk.Geopolis.GeoFences.GeoFenceNode;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
+import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
+
 /**
  * Manages the geopolis node structure.
  * Created by cattaneostefano on 10/10/2016.
@@ -22,18 +25,14 @@ public class NodesManager {
 
     private static final String PREFS_SUFFIX = "NodesManager";
     private static final String NODES_CONFIG = "nodes_config";
+    public static final String NODES_MANAGER_PREF_NAME = "NearNodesManager";
     private List<Node> nodes;
-    private Context mContext;
     private Morpheus morpheus;
-    private SharedPreferences sp;
+    private final SharedPreferences sp;
 
-    public NodesManager(Context mContext) {
-        this.mContext = mContext;
+    public NodesManager(@NonNull SharedPreferences sp) {
+        this.sp = checkNotNull(sp);
         setUpMorpheusParser();
-
-        String PACK_NAME = mContext.getApplicationContext().getPackageName();
-        String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
-        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
     }
 
     /**

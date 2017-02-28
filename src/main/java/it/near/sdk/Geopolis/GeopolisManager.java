@@ -87,7 +87,8 @@ public class GeopolisManager {
     public GeopolisManager(Application application, RecipesManager recipesManager) {
         this.mApplication = application;
         this.recipesManager = recipesManager;
-        this.nodesManager = new NodesManager(application);
+        SharedPreferences nodesManSP = application.getSharedPreferences(NodesManager.NODES_MANAGER_PREF_NAME, 0);
+        this.nodesManager = new NodesManager(nodesManSP);
         this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
         this.geofenceMonitor = new GeoFenceMonitor(application);
 
@@ -122,9 +123,6 @@ public class GeopolisManager {
         resetFilter.addAction(packageName + "." + GeoFenceSystemEventsReceiver.RESET_MONITOR_ACTION_SUFFIX);
         mApplication.registerReceiver(resetEventReceiver, resetFilter);
     }
-
-
-
 
     /**
      * Refresh the configuration of the component. The list of beacons to altBeaconMonitor will be downloaded from the APIs.
