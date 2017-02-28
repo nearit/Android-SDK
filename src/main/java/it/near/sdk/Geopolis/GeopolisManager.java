@@ -87,8 +87,10 @@ public class GeopolisManager {
     public GeopolisManager(Application application, RecipesManager recipesManager) {
         this.mApplication = application;
         this.recipesManager = recipesManager;
+
         SharedPreferences nodesManSP = application.getSharedPreferences(NodesManager.NODES_MANAGER_PREF_NAME, 0);
         this.nodesManager = new NodesManager(nodesManSP);
+
         this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
         this.geofenceMonitor = new GeoFenceMonitor(application);
 

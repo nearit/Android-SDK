@@ -39,7 +39,6 @@ import it.near.sdk.Recipes.RecipeRefreshListener;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.NearItIntentConstants;
-import it.near.sdk.Utils.NearSimpleLogger;
 import it.near.sdk.Utils.NearUtils;
 import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.ULog;
@@ -73,7 +72,6 @@ public class NearItManager {
     private CustomJSONReaction customJSONReaction;
     private FeedbackReaction feedbackReaction;
     private PushManager pushManager;
-    private NearSimpleLogger logger;
     private List<ProximityListener> proximityListenerList = new ArrayList<>();
 
     private AltBeaconMonitor monitor;
@@ -109,28 +107,10 @@ public class NearItManager {
             }
         });
 
-        registerLogReceiver();
-
         pushManager = new PushManager(application);
         GlobalState.getInstance(application).setPushManager(pushManager);
 
     }
-
-    /**
-     * Set logger for beacon distance information.
-     * @param logger logs beacon data.
-     */
-    public void setLogger(NearSimpleLogger logger) {
-        this.logger = logger;
-    }
-
-    /**
-     * Remove the beacon logger.
-     */
-    public void removeLogger() {
-        this.logger = null;
-    }
-
 
     private void plugInSetup() {
         recipesManager = new RecipesManager(application);
@@ -156,13 +136,6 @@ public class NearItManager {
         feedbackReaction = new FeedbackReaction(application, nearNotifier);
         recipesManager.addReaction(feedbackReaction);
 
-    }
-
-
-    private void registerLogReceiver() {
-        String filter = application.getPackageName() + "log";
-        IntentFilter intentFilter = new IntentFilter(filter);
-        application.registerReceiver(logReceiver, intentFilter);
     }
 
     /**
@@ -272,16 +245,6 @@ public class NearItManager {
         }
         return false;
     }
-
-    private BroadcastReceiver logReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String log = intent.getStringExtra("log");
-            if (logger != null){
-                logger.log(log);
-            }
-        }
-    };
 
     /**
      * Return a list of coupon claimed by the user and that are currently valid.
