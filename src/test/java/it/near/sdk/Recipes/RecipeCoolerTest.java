@@ -25,6 +25,7 @@ import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.AdditionalMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -65,9 +66,8 @@ public class RecipeCoolerTest {
                             mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then they all pass the filter
-        assertEquals(3, recipeList.size());
+        assertThat(recipeList, hasSize(3));
         assertThat(recipeList, hasItems(mCriticalRecipe, mNonCriticalRecipe));
-
     }
 
     @Test
@@ -92,7 +92,7 @@ public class RecipeCoolerTest {
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then it can't be displayed again
-        assertEquals(0, recipeList.size());
+        assertThat(recipeList, hasSize(0));
         assertThat(recipeList, org.hamcrest.core.IsNot.not(hasItem(mNonCriticalRecipe)));
     }
 
@@ -103,10 +103,10 @@ public class RecipeCoolerTest {
         List<Recipe> recipeList = newArrayList(mCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then a critical recipe can still be shown shortly afterwards
-        assertEquals(1, recipeList.size());
+        assertThat(recipeList, hasSize(1));
         recipeList.add(mCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
-        assertEquals(2, recipeList.size());
+        assertThat(recipeList, hasSize(2));
     }
 
     @Test
@@ -116,17 +116,17 @@ public class RecipeCoolerTest {
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then a non critical recipe won't be shown
-        assertEquals(0, recipeList.size());
+        assertThat(recipeList, hasSize(0));
         assertThat(recipeList, org.hamcrest.core.IsNot.not(hasItem(mNonCriticalRecipe)));
         recipeList.add(mCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // but a critical recipe will
-        assertEquals(1, recipeList.size());
+        assertThat(recipeList, hasSize(1));
         recipeList.add(mCriticalRecipe);
         recipeList.add(mNonCriticalRecipe);
         recipeList.add(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
-        assertEquals(2, recipeList.size());
+        assertThat(recipeList, hasSize(2));
         assertThat(recipeList, hasItem(mCriticalRecipe));
         assertThat(recipeList, org.hamcrest.core.IsNot.not(hasItem(mNonCriticalRecipe)));
     }
@@ -152,7 +152,7 @@ public class RecipeCoolerTest {
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then it gets treated as a critical recipe
-        assertEquals(1, recipeList.size());
+        assertThat(recipeList, hasSize(1));
         assertThat(recipeList, hasItem(mNonCriticalRecipe));
     }
 
@@ -164,7 +164,7 @@ public class RecipeCoolerTest {
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then it gets treaded as critical
-        assertEquals(1, recipeList.size());
+        assertThat(recipeList, hasSize(1));
         assertThat(recipeList, hasItem(mNonCriticalRecipe));
     }
 
@@ -176,7 +176,7 @@ public class RecipeCoolerTest {
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then its get treaded as critical
-        assertEquals(1, recipeList.size());
+        assertThat(recipeList, hasSize(1));
         assertThat(recipeList, hasItem(mNonCriticalRecipe));
     }
 
