@@ -94,7 +94,7 @@ public class NearUtils {
      * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
      */
     public static boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
-        String reaction_plugin = intent.getExtras().getString(NearItIntentConstants.REACTION_PLUGIN);
+        String reaction_plugin = intent.getStringExtra(NearItIntentConstants.REACTION_PLUGIN);
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
 
         if (!intent.hasExtra(NearItIntentConstants.CONTENT)) return false;
