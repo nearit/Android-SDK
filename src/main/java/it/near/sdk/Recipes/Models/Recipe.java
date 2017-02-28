@@ -55,17 +55,15 @@ public class Recipe extends Resource {
     ReactionBundle reaction_bundle;
     @Relationship("reaction_action")
     ReactionAction reaction_action;
-    /*@SerializedName("operation_plugin_id")
-    String operation_plugin_id;
-    @SerializedName("operation_bundle_id")
-    String operation_bundle_id;*/
-    /*@Relationship("operation_action")
-    OperationAction operation_action;*/
-    private static final String ONLINE = "online";
 
     private static final String TRACKINGS_PATH = "trackings";
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";
+
+    private static final String ONLINE = "online";
+    public static final String DATE_SCHEDULING = "date";
+    public static final String TIMETABLE_SCHEDULING = "timetable";
+    public static final String DAYS_SCHEDULING = "days";
 
     public String getName() {
         return name;
@@ -115,21 +113,6 @@ public class Recipe extends Resource {
         this.pulse_bundle = pulse_bundle;
     }
 
-    /*public String getOperation_plugin_id() {
-        return operation_plugin_id;
-    }
-
-    public void setOperation_plugin_id(String operation_plugin_id) {
-        this.operation_plugin_id = operation_plugin_id;
-    }
-
-    public String getOperation_bundle_id() {
-        return operation_bundle_id;
-    }
-
-    public void setOperation_bundle_id(String operation_bundle_id) {
-        this.operation_bundle_id = operation_bundle_id;
-    }*/
 
     public String getReaction_plugin_id() {
         return reaction_plugin_id;
@@ -155,13 +138,6 @@ public class Recipe extends Resource {
         this.pulse_action = pulse_action;
     }
 
-    /*public OperationAction getOperation_action() {
-        return operation_action;
-    }
-
-    public void setOperation_action(OperationAction operation_action) {
-        this.operation_action = operation_action;
-    }*/
 
     public ReactionAction getReaction_action() {
         return reaction_action;
@@ -260,7 +236,7 @@ public class Recipe extends Resource {
      * @return if the date range is respected.
      */
     private boolean isDateValid(Calendar now){
-        Map<String, Object> date = (Map<String, Object>) scheduling.get("date");
+        Map<String, Object> date = (Map<String, Object>) scheduling.get(DATE_SCHEDULING);
         if (date == null) return true;
         String fromDateString = (String) date.get("from");
         String toDateString = (String) date.get("to");
@@ -293,7 +269,7 @@ public class Recipe extends Resource {
      * @return if the time range is respected.
      */
     private boolean isTimetableValid(Calendar now) {
-        Map<String, Object> timetable = (Map<String, Object>) scheduling.get("timetable");
+        Map<String, Object> timetable = (Map<String, Object>) scheduling.get(TIMETABLE_SCHEDULING);
         if (timetable == null) return true;
         String fromHour = (String) timetable.get("from");
         String toHour = (String) timetable.get("to");
@@ -324,7 +300,7 @@ public class Recipe extends Resource {
      * @return if the days selection is respected.
      */
     private boolean isDaysValid(Calendar now) {
-        List<String> days = (List<String>) scheduling.get("days");
+        List<String> days = (List<String>) scheduling.get(DAYS_SCHEDULING);
         if (days == null) return true;
         String todaysDate = getTodaysDate(now);
 
