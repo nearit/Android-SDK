@@ -3,6 +3,8 @@ package it.near.sdk.Recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -45,9 +47,9 @@ public class RecipesManager {
     public static final String PREFS_SUFFIX = "NearRecipes";
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
-    private static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
-    private static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
-    private static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
+    static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
+    static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
+    static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
     public final String PREFS_NAME;
     private final SharedPreferences sp;
     private Context mContext;
@@ -393,5 +395,41 @@ public class RecipesManager {
         HashMap<String, Object> attributes = new HashMap<>();
         attributes.put("core" , coreObj);
         return NearJsonAPIUtils.toJsonAPI("evaluation", attributes);
+    }
+
+    public static String buildEvaluateBody(@NonNull GlobalConfig globalConfig,
+                                           @NonNull RecipeCooler recipeCooler,
+                                           @Nullable String pulse_plugin,
+                                           @Nullable String pulse_action,
+                                           @Nullable String pulse_bundle) throws JSONException {
+        if (globalConfig.getProfileId() == null ||
+                globalConfig.getInstallationId() == null ||
+                globalConfig.getAppId() == null){
+            throw new JSONException("missing data");
+        }
+        HashMap<String, Object> attributes = new HashMap<>();
+        attributes.put("core", buildCoreObject(globalConfig, recipeCooler));
+        if (pulse_plugin != null) attributes.put(PULSE_PLUGIN_ID_KEY, pulse_plugin);
+        if (pulse_action != null) attributes.put(PULSE_ACTION_ID_KEY, pulse_action);
+        if (pulse_bundle != null) attributes.put(PULSE_BUNDLE_ID_KEY, pulse_bundle);
+        return NearJsonAPIUtils.toJsonAPI("evaluation", attributes);
+    }
+
+    private static HashMap<String, Object> buildCoreObject(@NonNull GlobalConfig globalConfig,
+                                                           @NonNull RecipeCooler recipeCooler) {
+        HashMap<String, Object> coreObj = new HashMap<>();
+        coreObj.put("profile_id", globalConfig.getProfileId());
+        coreObj.put("installation_id", globalConfig.getInstallationId());
+        coreObj.put("app_id", globalConfig.getAppId());
+        HashMap<String, Object> cooldown = buildCooldownBlock(recipeCooler);
+        coreObj.put("cooldown", cooldown);
+        return coreObj;
+    }
+
+    private static HashMap<String, Object> buildCooldownBlock(@NonNull RecipeCooler recipeCooler) {
+        HashMap<String, Object> block = new HashMap<>();
+        block.put("last_notified_at", recipeCooler.getLatestLogEntry());
+        block.put("recipes_notified_at", recipeCooler.getRecipeLogMap());
+        return block;
     }
 }
