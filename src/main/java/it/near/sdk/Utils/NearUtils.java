@@ -30,23 +30,6 @@ import it.near.sdk.Recipes.Models.Recipe;
 public class NearUtils {
 
     /**
-     * Decode base 64 string
-     * @param encoded encoded string
-     * @return decoded string
-     */
-    public static String decodeString(String encoded) throws NullPointerException{
-        byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
-        String decodedString = "";
-        try {
-            decodedString = new String(dataDec, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return decodedString;
-    }
-
-
-    /**
      * Compute app Id from the Apptoken (apikey)
      * @param apiKey token
      * @return the App Id as defined in our servers
@@ -64,6 +47,22 @@ public class NearUtils {
             Log.e("NearITErrors", "Error while processing NearIT API token. Please check if you are using the correct key.");
         }
         return appId;
+    }
+
+    /**
+     * Decode base 64 string
+     * @param encoded encoded string
+     * @return decoded string
+     */
+    private static String decodeString(String encoded) throws NullPointerException{
+        byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
+        String decodedString = "";
+        try {
+            decodedString = new String(dataDec, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return decodedString;
     }
 
     /**
