@@ -2,22 +2,21 @@ package it.near.sdk.Recipes;
 
 import android.content.SharedPreferences;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import org.hamcrest.core.IsNot;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Matchers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Recipes.RecipeCooler;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static it.near.sdk.Recipes.RecipeCooler.*;
@@ -25,7 +24,11 @@ import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.mockito.AdditionalMatchers.*;
 import static org.mockito.Mockito.*;
 
@@ -68,6 +71,7 @@ public class RecipeCoolerTest {
         // then they all pass the filter
         assertThat(recipeList, hasSize(3));
         assertThat(recipeList, hasItems(mCriticalRecipe, mNonCriticalRecipe));
+        assertThat(mRecipeCooler.getRecipeLogMap().values(), is(empty()));
     }
 
     @Test
@@ -75,14 +79,13 @@ public class RecipeCoolerTest {
         // when we mark a recipe as shown
         mRecipeCooler.markRecipeAsShown(mNonCriticalRecipe.getId());
         // then its timestamp is put in history
-        verify(mMockEditor).putString(eq(LOG_MAP), and(contains(mNonCriticalRecipe.getId()),
-                                                        not(contains(mCriticalRecipe.getId()))));
+        assertThat(keySetOf(mRecipeCooler.getRecipeLogMap()), both(hasItem(mNonCriticalRecipe.getId()))
+                                                            .and(not(hasItem(mCriticalRecipe.getId()))));
         // when we mark another recipe as shown
         mRecipeCooler.markRecipeAsShown(mCriticalRecipe.getId());
         // then its timestamp is added to history
-        verify(mMockEditor, atLeastOnce())
-                .putString(eq(LOG_MAP), and(contains(mNonCriticalRecipe.getId()),
-                                            contains(mCriticalRecipe.getId())));
+        assertThat(keySetOf(mRecipeCooler.getRecipeLogMap()), both(hasItem(mNonCriticalRecipe.getId()))
+                                                                .and(hasItem(mCriticalRecipe.getId())));
     }
 
     @Test
@@ -141,6 +144,7 @@ public class RecipeCoolerTest {
         // then the latest log entry is updated
         assertTrue(beforeTimestamp <= actualTimestamp);
         assertTrue(actualTimestamp <= afterTimestamp);
+        assertThat(keySetOf(mRecipeCooler.getRecipeLogMap()), hasItem(mCriticalRecipe.getId()));
     }
 
     @Test
@@ -178,6 +182,10 @@ public class RecipeCoolerTest {
         // then its get treaded as critical
         assertThat(recipeList, hasSize(1));
         assertThat(recipeList, hasItem(mNonCriticalRecipe));
+    }
+
+    private List<String> keySetOf(Map<String, Long> map){
+        return Lists.newArrayList(map.keySet());
     }
 
     private Recipe buildRecipe(String id, HashMap<String, Object> cooldown) {

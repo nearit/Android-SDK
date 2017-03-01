@@ -1,6 +1,5 @@
 package it.near.sdk.Recipes;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
@@ -37,12 +36,52 @@ public class RecipeCooler {
         mSharedPreferences = checkNotNull(sharedPreferences);;
     }
 
+    /**
+     * Register the recipe as shown for future cooldown evaluation.
+     * @param recipeId the recipe identifier.
+     */
     public void markRecipeAsShown(String recipeId){
         long timeStamp = System.currentTimeMillis();
-        getMap().put(recipeId, timeStamp);
+        getRecipeLogMap().put(recipeId, timeStamp);
         saveMap(mRecipeLogMap);
         saveLatestEntry(System.currentTimeMillis());
     }
+
+    /**
+     * Filters a recipe list against the log of recipes that have been marked as shown and its cooldown period.
+     * @param recipes the recipe list to filter. This object will be modified.
+     */
+    public void filterRecipe(List<Recipe> recipes){
+        for (Iterator<Recipe> it = recipes.iterator(); it.hasNext();) {
+            Recipe recipe = it.next();
+            if (!canShowRecipe(recipe)){
+                it.remove();
+            }
+        }
+    }
+
+    /**
+     * Get the latest recipe shown event timestamp.
+     * @return the timestamp for the last recipe shown event.
+     */
+    public Long getLatestLogEntry(){
+        if (mLatestLogEntry == null) {
+            mLatestLogEntry = loadLatestEntry();
+        }
+        return mLatestLogEntry;
+    }
+
+    /**
+     * Get the map of recipe shown event timestamps.
+     * @return the map of timestamps.
+     */
+    public Map<String, Long> getRecipeLogMap() {
+        if (mRecipeLogMap == null){
+            mRecipeLogMap = loadMap();
+        }
+        return mRecipeLogMap;
+    }
+
 
     private boolean canShowRecipe(Recipe recipe){
         Map <String, Object> cooldown = recipe.getCooldown();
@@ -61,27 +100,11 @@ public class RecipeCooler {
     private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown){
         if (!cooldown.containsKey(SELF_COOLDOWN) ||
                 cooldown.get(SELF_COOLDOWN) == null ||
-                !getMap().containsKey(recipe.getId())) return true;
+                !getRecipeLogMap().containsKey(recipe.getId())) return true;
 
-        long recipeLatestEntry = getMap().get(recipe.getId());
+        long recipeLatestEntry = getRecipeLogMap().get(recipe.getId());
         long expiredSeconds = (System.currentTimeMillis() - recipeLatestEntry) / 1000;
         return expiredSeconds >= (Long)cooldown.get(SELF_COOLDOWN);
-    }
-
-    public void filterRecipe(List<Recipe> recipes){
-        for (Iterator<Recipe> it = recipes.iterator(); it.hasNext();) {
-            Recipe recipe = it.next();
-            if (!canShowRecipe(recipe)){
-                it.remove();
-            }
-        }
-    }
-
-    private Map<String, Long> getMap() {
-        if (mRecipeLogMap == null){
-            mRecipeLogMap = loadMap();
-        }
-        return mRecipeLogMap;
     }
 
     private void saveMap(Map<String, Long> inputMap){
@@ -112,13 +135,6 @@ public class RecipeCooler {
             // e.printStackTrace();
         }
         return outputMap;
-    }
-
-    public Long getLatestLogEntry(){
-        if (mLatestLogEntry == null) {
-            mLatestLogEntry = loadLatestEntry();
-        }
-        return mLatestLogEntry;
     }
 
     private Long loadLatestEntry() {
