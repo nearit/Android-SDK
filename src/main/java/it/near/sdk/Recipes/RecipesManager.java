@@ -25,6 +25,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Reactions.Reaction;
@@ -47,6 +48,7 @@ public class RecipesManager {
     public static final String PREFS_SUFFIX = "NearRecipes";
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
+    private static final String TRACKINGS_PATH = "trackings";
     static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
     static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
     static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
@@ -58,7 +60,7 @@ public class RecipesManager {
     private HashMap<String, Reaction> reactions = new HashMap<>();
     SharedPreferences.Editor editor;
     private NearAsyncHttpClient httpClient;
-    private RecipeCooler mRecipeCooler;
+    private static RecipeCooler mRecipeCooler;
 
     public RecipesManager(Context context) {
         this.mContext = context;
@@ -289,30 +291,18 @@ public class RecipesManager {
     private void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(EVALUATE).build();
-        HashMap<String, Object> map = new HashMap<>();
-        JSONObject evalCoreObject = new JSONObject();
+        String evaluateBody = null;
         try {
-            evalCoreObject.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-            evalCoreObject.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
-            evalCoreObject.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+            evaluateBody = buildEvaluateBody(GlobalConfig.getInstance(mContext),
+                    mRecipeCooler, pulse_plugin, pulse_action, pulse_bundle);
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "profileId not present");
-        }
-        map.put("core", evalCoreObject);
-        map.put(PULSE_PLUGIN_ID_KEY, pulse_plugin);
-        map.put(PULSE_ACTION_ID_KEY, pulse_action);
-        map.put(PULSE_BUNDLE_ID_KEY, pulse_bundle);
-        String requestBody = null;
-        try {
-            requestBody = NearJsonAPIUtils.toJsonAPI("evaluation", map);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            ULog.d(TAG, "Can't build request body");
+            ULog.d(TAG, "body build error");
+            return;
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
@@ -347,7 +337,8 @@ public class RecipesManager {
                 .appendPath(EVALUATE).build();
         String evaluateBody = null;
         try {
-            evaluateBody = buildEvaluateBody();
+            evaluateBody = buildEvaluateBody(GlobalConfig.getInstance(mContext),
+                                            mRecipeCooler, null, null, null);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "body build error");
@@ -382,19 +373,22 @@ public class RecipesManager {
         }
     }
 
-    public String buildEvaluateBody() throws JSONException {
-        if (GlobalConfig.getInstance(mContext).getProfileId() == null ||
-                GlobalConfig.getInstance(mContext).getInstallationId() == null ||
-                GlobalConfig.getInstance(mContext).getAppId() == null){
-            throw new JSONException("missing data");
+    /**
+     * Sends tracking on a recipe. Lets choose the notified status.
+     * @param context the app context.
+     * @param recipeId the recipe identifier.
+     * @param trackingEvent notified status to send. Can either be NO
+     * @throws JSONException
+     */
+    public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
+        if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)){
+            if (mRecipeCooler != null){
+                mRecipeCooler.markRecipeAsShown(recipeId);
+            }
         }
-        HashMap<String, Object> coreObj = new HashMap<>();
-        coreObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
-        coreObj.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-        coreObj.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
-        HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put("core" , coreObj);
-        return NearJsonAPIUtils.toJsonAPI("evaluation", attributes);
+        String trackingBody = Recipe.buildTrackingBody(context, recipeId, trackingEvent);
+        Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
+        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
     }
 
     public static String buildEvaluateBody(@NonNull GlobalConfig globalConfig,

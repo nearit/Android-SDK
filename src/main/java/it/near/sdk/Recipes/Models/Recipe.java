@@ -56,7 +56,6 @@ public class Recipe extends Resource {
     @Relationship("reaction_action")
     ReactionAction reaction_action;
 
-    private static final String TRACKINGS_PATH = "trackings";
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";
 
@@ -173,18 +172,7 @@ public class Recipe extends Resource {
         return null;
     }
 
-    /**
-     * Sends tracking on a recipe. Lets choose the notified status.
-     * @param context the app context.
-     * @param recipeId the recipe identifier.
-     * @param trackingEvent notified status to send. Can either be NO
-     * @throws JSONException
-     */
-    public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
-        String trackingBody = buildTrackingBody(context, recipeId, trackingEvent);
-        Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
-        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
-    }
+
 
     /**
      * Builds the tracking send request body.
@@ -194,7 +182,7 @@ public class Recipe extends Resource {
      * @return the http body string.
      * @throws JSONException
      */
-    private static String buildTrackingBody(Context context, String recipeId, String trackingEvent) throws JSONException {
+    public static String buildTrackingBody(Context context, String recipeId, String trackingEvent) throws JSONException {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         String appId = GlobalConfig.getInstance(context).getAppId();
         String installationId = GlobalConfig.getInstance(context).getInstallationId();

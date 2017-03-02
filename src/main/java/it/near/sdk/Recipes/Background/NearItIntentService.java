@@ -11,6 +11,7 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
 import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearItIntentConstants;
 import it.near.sdk.Utils.NearNotification;
 
@@ -56,7 +57,7 @@ public class NearItIntentService extends IntentService {
         }
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
-            Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
+            RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
             e.printStackTrace();
         }
