@@ -72,7 +72,6 @@ public class GeopolisManager {
 
     private final RecipesManager recipesManager;
     private final SharedPreferences sp;
-    private final SharedPreferences.Editor editor;
 
     private List<Region> regionList;
     private Application mApplication;
@@ -100,7 +99,6 @@ public class GeopolisManager {
         String PACK_NAME = mApplication.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
         sp = mApplication.getSharedPreferences(PREFS_NAME, 0);
-        editor = sp.edit();
 
         httpClient = new NearAsyncHttpClient();
         refreshConfig();
@@ -319,9 +317,7 @@ public class GeopolisManager {
     }
 
     public void setRadarState(boolean b){
-        String PACK_NAME = mApplication.getApplicationContext().getPackageName();
-        SharedPreferences.Editor edit = mApplication.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0).edit();
-        edit.putBoolean(RADAR_ON, b).apply();
+        sp.edit().putBoolean(RADAR_ON, b).apply();
 
     }
 
