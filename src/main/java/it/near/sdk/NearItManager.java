@@ -66,11 +66,7 @@ public class NearItManager {
     private CustomJSONReaction customJSONReaction;
     private FeedbackReaction feedbackReaction;
     private List<ProximityListener> proximityListenerList = new ArrayList<>();
-
-    private AltBeaconMonitor monitor;
-
     Application application;
-
 
     /**
      * Default constructor.
@@ -135,8 +131,6 @@ public class NearItManager {
         return recipesManager;
     }
 
-
-
     /**
      * Checks the device capacity to detect beacons
      *
@@ -183,7 +177,6 @@ public class NearItManager {
         pollNotification.refreshConfig();
     }
 
-
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
         public void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe) {
@@ -200,10 +193,8 @@ public class NearItManager {
             for (ProximityListener proximityListener : proximityListenerList) {
                 proximityListener.foregroundEvent(content, recipe);
             }
-
         }
     };
-
 
     private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
         ULog.d(TAG, "deliver Event: " + parcelable.toString());
