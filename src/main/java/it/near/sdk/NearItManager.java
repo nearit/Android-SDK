@@ -1,10 +1,8 @@
 package it.near.sdk;
 
 import android.app.Application;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Parcelable;
 import android.util.Log;
 
@@ -21,8 +19,6 @@ import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
 import it.near.sdk.Operation.NearItUserProfile;
 import it.near.sdk.Operation.ProfileCreationListener;
-import it.near.sdk.Push.OpenPushEvent;
-import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
 import it.near.sdk.Reactions.Coupon.CouponListener;
 import it.near.sdk.Reactions.Coupon.CouponReaction;
@@ -37,10 +33,8 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipeRefreshListener;
 import it.near.sdk.Recipes.RecipesManager;
-import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.NearItIntentConstants;
 import it.near.sdk.Utils.NearUtils;
-import it.near.sdk.Utils.OnLifecycleEventListener;
 import it.near.sdk.Utils.ULog;
 
 /**
@@ -71,7 +65,6 @@ public class NearItManager {
     private CouponReaction couponReaction;
     private CustomJSONReaction customJSONReaction;
     private FeedbackReaction feedbackReaction;
-    private PushManager pushManager;
     private List<ProximityListener> proximityListenerList = new ArrayList<>();
 
     private AltBeaconMonitor monitor;
@@ -106,10 +99,6 @@ public class NearItManager {
                 NearInstallation.registerInstallation(application);
             }
         });
-
-        pushManager = new PushManager(application);
-        GlobalState.getInstance(application).setPushManager(pushManager);
-
     }
 
     private void plugInSetup() {
@@ -235,9 +224,6 @@ public class NearItManager {
         switch (event.getPlugin()){
             case PollEvent.PLUGIN_NAME:
                 pollNotification.sendEvent((PollEvent)event);
-                return true;
-            case OpenPushEvent.PLUGIN_NAME:
-                pushManager.sendEvent((OpenPushEvent) event);
                 return true;
             case FeedbackEvent.PLUGIN_NAME:
                 feedbackReaction.sendEvent((FeedbackEvent) event);

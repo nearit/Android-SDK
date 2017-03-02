@@ -2,9 +2,6 @@ package it.near.sdk;
 
 import android.content.Context;
 
-import it.near.sdk.Geopolis.Beacons.Ranging.BeaconDynamicRadar;
-import it.near.sdk.Push.PushManager;
-import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.RecipesManager;
 
 /**
@@ -20,8 +17,6 @@ public class GlobalState {
     private Context mContext;
 
     private RecipesManager recipesManager;
-    private PushManager pushManager;
-
 
     public GlobalState(Context mContext) {
         this.mContext = mContext;
@@ -38,8 +33,7 @@ public class GlobalState {
     public Context getmContext() {
         return mContext;
     }
-
-
+    
     public RecipesManager getRecipesManager() {
         return recipesManager;
     }
@@ -48,11 +42,4 @@ public class GlobalState {
         this.recipesManager = recipesManager;
     }
 
-    public PushManager getPushManager() {
-        return pushManager;
-    }
-
-    public void setPushManager(PushManager pushManager) {
-        this.pushManager = pushManager;
-    }
 }
