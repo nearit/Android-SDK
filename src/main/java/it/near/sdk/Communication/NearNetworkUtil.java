@@ -1,6 +1,7 @@
 package it.near.sdk.Communication;
 
 import android.content.Context;
+import android.util.Log;
 
 import org.json.JSONObject;
 

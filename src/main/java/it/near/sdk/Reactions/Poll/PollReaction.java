@@ -2,6 +2,7 @@ package it.near.sdk.Reactions.Poll;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;

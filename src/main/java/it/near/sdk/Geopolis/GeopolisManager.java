@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;

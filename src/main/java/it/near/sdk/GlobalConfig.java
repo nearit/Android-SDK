@@ -2,6 +2,7 @@ package it.near.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 
