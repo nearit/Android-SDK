@@ -1,7 +1,5 @@
 package it.near.sdk.Recipes;
 
-import android.content.SharedPreferences;
-
 import com.google.common.collect.Maps;
 
 import org.json.JSONException;
@@ -12,18 +10,17 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Map;
+
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Recipes.Models.Recipe;
 
 import static it.near.sdk.Recipes.RecipesManager.PULSE_ACTION_ID_KEY;
 import static it.near.sdk.Recipes.RecipesManager.PULSE_BUNDLE_ID_KEY;
 import static it.near.sdk.Recipes.RecipesManager.PULSE_PLUGIN_ID_KEY;
-import static junit.framework.Assert.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.when;
@@ -37,7 +34,7 @@ public class RecipesManagerTest {
     @Mock
     GlobalConfig mockGlobalConfig;
     @Mock
-    RecipeCooler recipeCooler;
+    RecipeCooler mockRecipeCooler;
 
     @Before
     public void setUp() {
@@ -48,7 +45,7 @@ public class RecipesManagerTest {
 
     @Test
     public void buildCorrectEvaluationBody_noCooldownNoPulse() throws JSONException {
-        String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, recipeCooler, null, null, null);
+        String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, mockRecipeCooler, null, null, null);
         JSONObject actualObj = new JSONObject(actual);
         assertThat(actualObj = actualObj.getJSONObject("data"), is(notNullValue()));
         assertThat(actualObj = actualObj.getJSONObject("attributes"), is(notNullValue()));
@@ -66,7 +63,7 @@ public class RecipesManagerTest {
 
     @Test
     public void buildCorrectEvaluationBody_withPulse() throws JSONException {
-        String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, recipeCooler, "plugin", "action", "bundle");
+        String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, mockRecipeCooler, "plugin", "action", "bundle");
         JSONObject actualObj = new JSONObject(actual);
         assertThat(actualObj = actualObj.getJSONObject("data"), is(notNullValue()));
         assertThat(actualObj = actualObj.getJSONObject("attributes"), is(notNullValue()));
@@ -76,9 +73,21 @@ public class RecipesManagerTest {
     }
 
     @Test
-    public void buildCorrectEvaluationBody_withCooldown() {
-        // TODO
+    public void buildCorrectEvaluationBody_withCooldown() throws JSONException {
+        Map<String, Long> logMap = Maps.newHashMap();
+        logMap.put("recipe_id_1", 0L);
+        logMap.put("recipe_id_2", 1000L);
+        when(mockRecipeCooler.getRecipeLogMap()).thenReturn(logMap);
+        String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, mockRecipeCooler, "plugin", "action", "bundle");
+        JSONObject actualObj = new JSONObject(actual);
+        assertThat(actualObj = actualObj.getJSONObject("data"), is(notNullValue()));
+        assertThat(actualObj = actualObj.getJSONObject("attributes"), is(notNullValue()));
+        assertThat(actualObj = actualObj.getJSONObject("core"), is(notNullValue()));
+        assertThat(actualObj = actualObj.getJSONObject("cooldown"), is(notNullValue()));
+        assertThat(actualObj = actualObj.getJSONObject("recipes_notified_at"), is(notNullValue()));
+        assertThat(actualObj.length(), is(2));
+        assertThat(Long.valueOf((Integer)actualObj.get("recipe_id_1")), is(0L));
+        assertThat(Long.valueOf((Integer)actualObj.get("recipe_id_2")), is(1000L));
     }
-
 
 }
