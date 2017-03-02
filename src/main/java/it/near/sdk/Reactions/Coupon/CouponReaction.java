@@ -56,7 +56,7 @@ public class CouponReaction extends CoreReaction {
         HashMap<String, Class> map = new HashMap<>();
         map.put(CLAIMS_RES, Claim.class);
         map.put(COUPONS_RES, Coupon.class);
-        map.put("imaes", Image.class);
+        map.put("images", Image.class);
         return map;
     }
 

@@ -175,6 +175,8 @@ public class ContentReaction extends CoreReaction {
         HashMap<String, Class> map = new HashMap<>();
         map.put("contents", Content.class);
         map.put("images", Image.class);
+        map.put("audios", Audio.class);
+        map.put("uploads", Upload.class);
         return map;
     }
 
