@@ -49,15 +49,15 @@ NearIT analytics on recipes are built from trackings describing the status of us
 
 Background recipes track themselves as notified. To track the tap event, use this method:
 ```java
-Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
+RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 You should be able to catch the event inside the activity that is started after interacting with the notification.
 
 Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
 ```java
-Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
+RecipesManager.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
 // and
-Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
+RecipesManager.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
 ```
 
 ## Content Objects
