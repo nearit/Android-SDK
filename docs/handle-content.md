@@ -72,6 +72,8 @@ For each callback method of the *coreContentListener* you will receive a differe
     - `getContent()` returns the text content
     - `getVideo_link()` returns the video link string
     - `getImages_links()` returns a list of *ImageSet* object containing the source links for the images
+    - `getUpload()` returns an Upload object containing a link to a file uploaded on NearIT if any
+    - `getAudio()` returns an Audio object containing a link to an audio file uploaded on NearIT if any
     
 - `Feedback` with the following getters:
     - `getQuestion()` returns the feedback request string
