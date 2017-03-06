@@ -75,7 +75,6 @@ public class GeopolisManager {
 
     private List<Region> regionList;
     private Application mApplication;
-    private Morpheus morpheus;
     private AltBeaconMonitor altBeaconMonitor;
     private final GeoFenceMonitor geofenceMonitor;
     private NodesManager nodesManager;
