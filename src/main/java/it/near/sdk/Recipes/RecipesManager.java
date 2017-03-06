@@ -45,14 +45,13 @@ import it.near.sdk.Utils.ULog;
  */
 public class RecipesManager {
     private static final String TAG = "RecipesManager";
-    public static final String PREFS_SUFFIX = "NearRecipes";
+    public static final String PREFS_NAME = "NearRecipes";
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
     private static final String TRACKINGS_PATH = "trackings";
     static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
     static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
     static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
-    public final String PREFS_NAME;
     private final SharedPreferences sp;
     private Context mContext;
     private Morpheus morpheus;
@@ -61,13 +60,17 @@ public class RecipesManager {
     SharedPreferences.Editor editor;
     private NearAsyncHttpClient httpClient;
     private static RecipeCooler mRecipeCooler;
+    private GlobalConfig globalConfig;
 
-    public RecipesManager(Context context) {
+    public RecipesManager(Context context,
+                          GlobalConfig globalConfig,
+                          RecipeCooler recipeCooler,
+                          SharedPreferences sp) {
         this.mContext = context;
+        this.globalConfig = globalConfig;
+        mRecipeCooler = recipeCooler;
 
-        String PACK_NAME = mContext.getApplicationContext().getPackageName();
-        PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
-        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
+        this.sp = sp;
         editor = sp.edit();
         httpClient = new NearAsyncHttpClient();
         try {
@@ -77,7 +80,6 @@ public class RecipesManager {
         }
         setUpMorpheusParser();
         refreshConfig();
-        setUpRecipeCooler();
     }
 
     /**
@@ -94,11 +96,6 @@ public class RecipesManager {
         morpheus.getFactory().getDeserializer().registerResourceClass("reaction_actions", ReactionAction.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("pulse_bundles", PulseBundle.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
-    }
-
-    private void setUpRecipeCooler() {
-        SharedPreferences recipeCoolerSP = mContext.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME,0);
-        mRecipeCooler = new RecipeCooler(recipeCoolerSP);
     }
 
     public void addReaction(Reaction reaction){
@@ -139,7 +136,7 @@ public class RecipesManager {
                 .appendPath(PROCESS_PATH).build();
         String requestBody = null;
         try {
-            requestBody = buildEvaluateBody(GlobalConfig.getInstance(mContext), null, null, null, null);
+            requestBody = buildEvaluateBody(globalConfig, null, null, null, null);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Can't build request body");
@@ -251,7 +248,7 @@ public class RecipesManager {
     public void processRecipe(final String id) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
-                .appendQueryParameter("filter[core][profile_id]", GlobalConfig.getInstance(mContext).getProfileId())
+                .appendQueryParameter("filter[core][profile_id]", globalConfig.getProfileId())
                 .appendQueryParameter("include", "reaction_bundle")
                 .build();
         try {
@@ -282,7 +279,7 @@ public class RecipesManager {
                 .appendEncodedPath(EVALUATE).build();
         String evaluateBody = null;
         try {
-            evaluateBody = buildEvaluateBody(GlobalConfig.getInstance(mContext),
+            evaluateBody = buildEvaluateBody(globalConfig,
                     mRecipeCooler, pulse_plugin, pulse_action, pulse_bundle);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -326,7 +323,7 @@ public class RecipesManager {
                 .appendPath(EVALUATE).build();
         String evaluateBody = null;
         try {
-            evaluateBody = buildEvaluateBody(GlobalConfig.getInstance(mContext),
+            evaluateBody = buildEvaluateBody(globalConfig,
                                             mRecipeCooler, null, null, null);
         } catch (JSONException e) {
             e.printStackTrace();

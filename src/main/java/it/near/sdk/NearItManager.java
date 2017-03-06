@@ -3,6 +3,7 @@ package it.near.sdk;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.util.Log;
 
@@ -32,6 +33,7 @@ import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
 import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.Recipes.RecipeCooler;
 import it.near.sdk.Recipes.RecipeRefreshListener;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearItIntentConstants;
@@ -99,7 +101,11 @@ public class NearItManager {
     }
 
     private void plugInSetup() {
-        recipesManager = new RecipesManager(application);
+        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME,0);
+        RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP);
+        SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
+        recipesManager = new RecipesManager(application, GlobalConfig.getInstance(application), recipeCooler, recipeManagerSP);
+
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
         geopolis = new GeopolisManager(application, recipesManager);
