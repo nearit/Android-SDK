@@ -21,10 +21,12 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 import it.near.sdk.Utils.ULog;
@@ -118,9 +120,12 @@ public class FeedbackReaction extends CoreReaction {
         nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
     }
 
-    public void sendEvent(FeedbackEvent event) {
+    public void sendEvent(FeedbackEvent event, final NearITEventHandler handler){
+        if (event.getRating() < 1 || event.getRating() > 5){
+            handler.onFail(422, "Rating must be between 1 and 5");
+            return;
+        }
         try {
-            String answerBody = event.toJsonAPI(mContext);
             String answerBody = event.toJsonAPI(GlobalConfig.getInstance(mContext));
             ULog.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
@@ -129,27 +134,27 @@ public class FeedbackReaction extends CoreReaction {
                     .appendPath(event.getFeedbackId())
                     .appendPath(ANSWERS_RESOURCE).build();
             try {
-                httpClient.nearPost(mContext, url.toString(), answerBody, new JsonHttpResponseHandler(){
+                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, "Feedback sent successfully");
+                        handler.onSuccess();
                     }
 
                     @Override
-                    public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         ULog.d(TAG, "Error in sending answer: " + statusCode);
+                        handler.onFail(statusCode, responseString);
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
                 e.printStackTrace();
+                handler.onFail(422, "request was malformed");
             }
-
-
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "Error: incorrect format " + e.toString());
+            handler.onFail(422, "request was malformed");
         }
-
     }
 
     @Override

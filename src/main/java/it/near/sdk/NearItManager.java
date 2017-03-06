@@ -29,6 +29,7 @@ import it.near.sdk.Reactions.Feedback.FeedbackReaction;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
+import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.RecipeRefreshListener;
@@ -206,18 +207,32 @@ public class NearItManager {
         application.sendOrderedBroadcast(resultIntent, null);
     }
 
+    public boolean sendEvent(Event event){
+        return sendEvent(event, new NearITEventHandler() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFail(int statusCode, String error) {
+
+            }
+        });
+    }
+
     /**
      * Sends an action to the SDK, that might delegate it to other plugins, based on its type.
      * @param event the event to send.
      * @return true if the action was a recognized action, false otherwise.
      */
-    public boolean sendEvent(Event event){
+    public boolean sendEvent(Event event, NearITEventHandler handler){
         switch (event.getPlugin()){
             case PollEvent.PLUGIN_NAME:
-                pollNotification.sendEvent((PollEvent)event);
+                pollNotification.sendEvent((PollEvent)event, handler);
                 return true;
             case FeedbackEvent.PLUGIN_NAME:
-                feedbackReaction.sendEvent((FeedbackEvent) event);
+                feedbackReaction.sendEvent((FeedbackEvent) event, handler);
                 return true;
         }
         return false;

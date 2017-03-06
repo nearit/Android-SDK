@@ -23,6 +23,7 @@ import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
+import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearJsonAPIUtils;
@@ -168,7 +169,7 @@ public class PollReaction extends CoreReaction {
     }
 
 
-    public void sendEvent(PollEvent event) {
+    public void sendEvent(PollEvent event, final NearITEventHandler handler) {
         try {
             String answerBody = event.toJsonAPI(mContext);
             ULog.d(TAG, "Answer" + answerBody);
@@ -183,19 +184,23 @@ public class PollReaction extends CoreReaction {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         ULog.d(TAG, "Answer sent successfully");
+                        handler.onSuccess();
                     }
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         ULog.d(TAG, "Error in sending answer: " + statusCode);
+                        handler.onFail(statusCode, responseString);
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
                 e.printStackTrace();
+                handler.onFail(422, "Incorrect format");
             }
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Error: incorrect format " + e.toString());
+            handler.onFail(422, "Incorrect format");
         }
     }
 }
