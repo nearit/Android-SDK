@@ -23,12 +23,12 @@ public class NearJsonHttpResponseHandler extends JsonHttpResponseHandler {
 
     @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-        this.onFailureUnique(statusCode, headers, throwable, errorResponse != null ? errorResponse.toString() : null);
+        this.onFailureUnique(statusCode, headers, throwable, errorResponse != null ? errorResponse.toString() : "");
     }
 
     @Override
     public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONArray errorResponse) {
-        this.onFailureUnique(statusCode, headers, throwable, errorResponse != null ? errorResponse.toString() : null);
+        this.onFailureUnique(statusCode, headers, throwable, errorResponse != null ? errorResponse.toString() : "");
     }
 
     @Override
