@@ -121,6 +121,7 @@ public class FeedbackReaction extends CoreReaction {
     public void sendEvent(FeedbackEvent event) {
         try {
             String answerBody = event.toJsonAPI(mContext);
+            String answerBody = event.toJsonAPI(GlobalConfig.getInstance(mContext));
             ULog.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)
