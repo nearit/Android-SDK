@@ -78,10 +78,12 @@ For each callback method of the *coreContentListener* you will receive a differe
     - `getRecipeId()` returns the recipeId associated with the feedback (you'll need it for answer it)
 To give a feedback call this method:
 ```java
-// rating must be an integer between 0 and 5, and you can set a comment string.
+// rating must be an integer between 1 and 5, and you can set a comment string.
 nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
 // if you don't hold the feedback object use this constructor
 nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
+// the sendEvent method is available in 2 variants: with or without explicit callback handler. Example:
+nearItManager.sendEvent(new FeedbackEvent(...), responseHandler);
 ```
     
 - `Coupon` with the following getters:
