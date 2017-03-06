@@ -41,17 +41,6 @@ public class RecipeTest {
     Recipe mRecipe;
 
     @Before
-    public void prepareBeforeTests() {
-       /* Context context = mock(Context.class);
-        Context appContext = mock(Context.class);
-        Resources resources = mock(Resources.class);
-        when(resources.openRawResource(anyInt())).thenReturn(mock(InputStream.class));
-        when(appContext.getResources()).thenReturn(resources);
-        when(context.getApplicationContext()).thenReturn(appContext);
-        JodaTimeAndroid.init(context);*/
-    }
-
-    @Before
     public void setUp(){
         mRecipe = new Recipe();
     }
