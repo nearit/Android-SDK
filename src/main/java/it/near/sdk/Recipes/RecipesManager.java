@@ -137,7 +137,7 @@ public class RecipesManager {
     public void refreshConfig(final RecipeRefreshListener listener){
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
-        HashMap<String, Object> map = new HashMap<>();
+        /*HashMap<String, Object> map = new HashMap<>();
         JSONObject evalCoreObject = new JSONObject();
         try {
             evalCoreObject.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
@@ -147,10 +147,10 @@ public class RecipesManager {
             e.printStackTrace();
             ULog.d(TAG, "profileId not present");
         }
-        map.put("core", evalCoreObject);
+        map.put("core", evalCoreObject);*/
         String requestBody = null;
         try {
-            requestBody = NearJsonAPIUtils.toJsonAPI("evaluation", map);
+            requestBody = buildEvaluateBody(GlobalConfig.getInstance(mContext), null, null, null, null);
         } catch (JSONException e) {
             e.printStackTrace();
             ULog.d(TAG, "Can't build request body");
@@ -392,7 +392,7 @@ public class RecipesManager {
     }
 
     public static String buildEvaluateBody(@NonNull GlobalConfig globalConfig,
-                                           @NonNull RecipeCooler recipeCooler,
+                                           @Nullable RecipeCooler recipeCooler,
                                            @Nullable String pulse_plugin,
                                            @Nullable String pulse_action,
                                            @Nullable String pulse_bundle) throws JSONException {
@@ -410,13 +410,15 @@ public class RecipesManager {
     }
 
     private static HashMap<String, Object> buildCoreObject(@NonNull GlobalConfig globalConfig,
-                                                           @NonNull RecipeCooler recipeCooler) {
+                                                           @Nullable RecipeCooler recipeCooler) {
         HashMap<String, Object> coreObj = new HashMap<>();
         coreObj.put("profile_id", globalConfig.getProfileId());
         coreObj.put("installation_id", globalConfig.getInstallationId());
         coreObj.put("app_id", globalConfig.getAppId());
-        HashMap<String, Object> cooldown = buildCooldownBlock(recipeCooler);
-        coreObj.put("cooldown", cooldown);
+        if (recipeCooler != null) {
+            coreObj.put("cooldown", buildCooldownBlock(recipeCooler));
+        }
+
         return coreObj;
     }
 

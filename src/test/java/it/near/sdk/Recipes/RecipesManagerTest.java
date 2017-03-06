@@ -44,6 +44,22 @@ public class RecipesManagerTest {
     }
 
     @Test
+    public void buildCorrectEvaluationBody_noCoolerNoPulse() throws JSONException {
+        String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, null, null, null, null);
+        JSONObject actualObj = new JSONObject(actual);
+        assertThat(actualObj = actualObj.getJSONObject("data"), is(notNullValue()));
+        assertThat(actualObj = actualObj.getJSONObject("attributes"), is(notNullValue()));
+        assertThat(actualObj.has(PULSE_PLUGIN_ID_KEY), is(false));
+        assertThat(actualObj.has(PULSE_ACTION_ID_KEY), is(false));
+        assertThat(actualObj.has(PULSE_BUNDLE_ID_KEY), is(false));
+        assertThat(actualObj = actualObj.getJSONObject("core"), is(notNullValue()));
+        assertThat((String) actualObj.get("profile_id"), is("profile_id"));
+        assertThat((String) actualObj.get("installation_id"), is("installation_id"));
+        assertThat((String) actualObj.get("app_id"), is("app_id"));
+        assertThat(actualObj.has("cooldown"), is(false));
+    }
+
+    @Test
     public void buildCorrectEvaluationBody_noCooldownNoPulse() throws JSONException {
         String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, mockRecipeCooler, null, null, null);
         JSONObject actualObj = new JSONObject(actual);
