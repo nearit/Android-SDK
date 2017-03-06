@@ -1,37 +1,20 @@
 package it.near.sdk.MorpheusNear;
 
-import android.os.Build;
-import android.support.annotation.RequiresApi;
-
-import com.google.gson.Gson;
-import com.google.gson.stream.JsonReader;
-
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
-import org.hamcrest.beans.HasProperty;
 import org.hamcrest.core.IsInstanceOf;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.List;
 
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.MorpheusNear.Models.TestChildModel;
+import it.near.sdk.MorpheusNear.Models.TestModel;
+import it.near.sdk.MorpheusNear.Models.TestWithChildModel;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -55,6 +38,8 @@ public class MorpheusTest {
     public void setUP(){
         morpheus = new Morpheus();
         morpheus.getFactory().getDeserializer().registerResourceClass("test", TestModel.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("test_with_child", TestWithChildModel.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("test_child", TestChildModel.class);
     }
 
     @Test
@@ -100,6 +85,41 @@ public class MorpheusTest {
         assertThat(objectList, everyItem( IsInstanceOf.<TestModel>instanceOf(TestModel.class)));
     }
 
-
+    @Test
+    public void parsingRelationshipSimple() throws JSONException {
+        JSONObject jsonObject = new JSONObject("{\n" +
+                "  \"data\" : {\n" +
+                "    \"id\" : \"a7663e8c-1c7e-4c3f-95d5-df976f07f81a\",\n" +
+                "    \"type\" : \"test_with_child\",\n" +
+                "    \"attributes\" : {\n" +
+                "      \"content\" : \"i've got a child\"\n" +
+                "    },\n" +
+                "    \"relationships\" : {\n" +
+                "      \"child\" : {\n" +
+                "        \"data\" : {\n" +
+                "          \"id\" : \"e7cde6f7-c2fe-4e4d-9bdc-40dd9b4b4597\",\n" +
+                "          \"type\" : \"test_child\"\n" +
+                "        }\n" +
+                "      }\n" +
+                "    }\n" +
+                "  },\n" +
+                "  \"included\" : [\n" +
+                "    {\n" +
+                "      \"id\" : \"e7cde6f7-c2fe-4e4d-9bdc-40dd9b4b4597\",\n" +
+                "      \"type\" : \"test_child\",\n" +
+                "      \"attributes\" : {\n" +
+                "        \"favourite_child\" : true\n" +
+                "      }\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}");
+        TestWithChildModel objWithChild = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestWithChildModel.class);
+        assertThat(objWithChild, is(notNullValue()));
+        assertThat(objWithChild.getId(), is("a7663e8c-1c7e-4c3f-95d5-df976f07f81a"));
+        assertThat(objWithChild.getContent(), is("i've got a child"));
+        assertThat(objWithChild.getChild(), is(notNullValue()));
+        TestChildModel child = objWithChild.getChild();
+        assertThat(child.getIsFavoChild(), is(true));
+    }
 
 }
