@@ -22,7 +22,6 @@ public class ULog {
         }
     }
 
-
     public static void w(String TAG, String msg) {
         if (DEBUG) {
             Log.w(TAG, msg);
@@ -34,7 +33,6 @@ public class ULog {
             Log.w(TAG, msg, t);
         }
     }
-
 
     public static void e(String TAG, String msg) {
         if (DEBUG) {
@@ -48,7 +46,6 @@ public class ULog {
         }
     }
 
-
     public static void v(String TAG, String msg) {
         if (DEBUG) {
             Log.v(TAG, msg);
@@ -61,7 +58,6 @@ public class ULog {
         }
     }
 
-
     public static void d(String TAG, String msg) {
         if (DEBUG) {
             Log.d(TAG, msg);
@@ -73,7 +69,6 @@ public class ULog {
             Log.d(TAG, msg, t);
         }
     }
-
 
     public static void wtf(String TAG, String msg) {
         if (DEBUG) {

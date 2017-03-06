@@ -5,6 +5,6 @@ package it.near.sdk.Recipes;
  */
 
 public interface NearITEventHandler {
-    public void onSuccess();
-    public void onFail(int statusCode, String error);
+    void onSuccess();
+    void onFail(int statusCode, String error);
 }

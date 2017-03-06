@@ -18,7 +18,6 @@ import cz.msebera.android.httpclient.Header;
 
 public class NearJsonHttpResponseHandler extends JsonHttpResponseHandler {
 
-
     private static final String LOG_TAG = "NearResponseHandler";
 
     @Override
@@ -54,6 +53,5 @@ public class NearJsonHttpResponseHandler extends JsonHttpResponseHandler {
             result = jsonString;
         }
         return result;
-
     }
 }

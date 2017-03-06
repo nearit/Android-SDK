@@ -14,5 +14,4 @@ public class NearItIntentConstants {
     public static final String PULSE_PLUGIN = "pulse-plugin";
     public static final String PULSE_ACTION = "pulse-action";
     public static final String PULSE_BUNDLE = "pulse-bundle";
-
 }

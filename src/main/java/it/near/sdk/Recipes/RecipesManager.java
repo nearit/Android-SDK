@@ -69,9 +69,9 @@ public class RecipesManager {
         this.mContext = context;
         this.globalConfig = globalConfig;
         mRecipeCooler = recipeCooler;
-
         this.sp = sp;
         editor = sp.edit();
+
         httpClient = new NearAsyncHttpClient();
         try {
             recipes = loadChachedList();

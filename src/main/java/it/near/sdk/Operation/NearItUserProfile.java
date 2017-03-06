@@ -127,7 +127,6 @@ public class NearItUserProfile {
             e.printStackTrace();
             listener.onProfileCreationError("error: impossible to make a request" );
         }
-
     }
 
     private static String buildProfileCreationRequestBody(Context context) throws JSONException {

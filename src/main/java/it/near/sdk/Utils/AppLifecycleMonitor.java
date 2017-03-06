@@ -20,13 +20,10 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
     private static int stopped;
     private OnLifecycleEventListener listener;
 
-
-
     public AppLifecycleMonitor(Application app, OnLifecycleEventListener listener){
         this.listener = listener;
         app.registerActivityLifecycleCallbacks(this);
     }
-
 
     // And these two public static functions
     public static boolean isApplicationVisible() {
@@ -74,13 +71,11 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
         ULog.d(TAG, "application is visible: " + (started > stopped));
     }
 
-
     private void triggerEvents(){
         if (isApplicationInForeground())
             listener.onForeground();
         else
             listener.onBackground();
     }
-
 
 }

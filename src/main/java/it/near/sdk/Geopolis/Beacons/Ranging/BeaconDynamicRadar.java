@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.Geopolis.Beacons.BeaconNode;
-import it.near.sdk.Models.NearBeacon;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Manage and calculate beacon distances from the user device.

@@ -101,7 +101,6 @@ public class NearUtils {
         return parseContent(intent, intent.getParcelableExtra(NearItIntentConstants.CONTENT), recipeId, reaction_plugin, listener);
     }
 
-
     /**
      * Parse a parcelable content received from a proximity receiver. Since there's no intent, the intent field of the listener callback methods is always null.
      * @param content the @{@link Parcelable} content to parse. This contains the object set in the what component of the recipe.
@@ -153,6 +152,5 @@ public class NearUtils {
         }
         return coreContent;
     }
-
 
 }

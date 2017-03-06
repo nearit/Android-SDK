@@ -82,7 +82,6 @@ public class RecipeCooler {
         return mRecipeLogMap;
     }
 
-
     private boolean canShowRecipe(Recipe recipe){
         Map <String, Object> cooldown = recipe.getCooldown();
         return cooldown == null ||
