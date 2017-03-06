@@ -137,17 +137,6 @@ public class RecipesManager {
     public void refreshConfig(final RecipeRefreshListener listener){
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
-        /*HashMap<String, Object> map = new HashMap<>();
-        JSONObject evalCoreObject = new JSONObject();
-        try {
-            evalCoreObject.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-            evalCoreObject.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
-            evalCoreObject.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            ULog.d(TAG, "profileId not present");
-        }
-        map.put("core", evalCoreObject);*/
         String requestBody = null;
         try {
             requestBody = buildEvaluateBody(GlobalConfig.getInstance(mContext), null, null, null, null);
