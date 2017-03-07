@@ -282,7 +282,7 @@ public class RecipesManager {
                     mRecipeCooler, pulse_plugin, pulse_action, pulse_bundle);
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "body build error");
+            Log.d(TAG, "body build error");
             return;
         }
 
