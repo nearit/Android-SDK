@@ -49,7 +49,7 @@ protected void onHandleIntent(Intent intent) {
   try {
       RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
   } catch (JSONException e) {
-      e.printStackTrace();
+      
   }
 
   There is an utility method to automatically process known content types to calls the CoreContentsListener callback methods.

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
@@ -246,7 +247,6 @@ public class Recipe extends Resource {
                 valid &= toCalendarDate.after(now) || toCalendarDate.equals(now);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
             return false;
         }
         return valid;
@@ -277,7 +277,6 @@ public class Recipe extends Resource {
                 valid &= toHourCalendar.after(now) || toHourCalendar.equals(now);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
             return false;
         }
         return valid;

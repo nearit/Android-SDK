@@ -68,7 +68,7 @@ public class NearInstallation {
                             String installationId = response.getJSONObject("data").getString("id");
                             GlobalConfig.getInstance(context).setInstallationId(installationId);
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.d(TAG, "Data format error");
                         }
                     }
 
@@ -78,12 +78,11 @@ public class NearInstallation {
                     }
                 });
             } catch (UnsupportedEncodingException | AuthenticationException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Data error");
             }
 
         } catch (JSONException e) {
             Log.d(TAG, "Unable to send installation data");
-            e.printStackTrace();
         }
     }
 
@@ -96,47 +95,6 @@ public class NearInstallation {
             httpClient.nearPut(context, Constants.API.INSTALLATIONS_PATH + subPath, installBody, jsonHttpResponseHandler);
         }
     }
-
-    /**
-     * Create or replace a plugin resource for the installation
-     * @param context the application context.
-     * @param plugin_name name of the plugin to add the resource to.
-     * @param resource string value of the resource.
-     */
-    public static void setPluginResource(Context context, String installation_id, final String plugin_name, String resource){
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("plugin_name", plugin_name);
-        map.put("resource_id", resource);
-        String body;
-        try {
-            body = NearJsonAPIUtils.toJsonAPI("plugin_resource", map);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(TAG, "Set resources: error in building body");
-            return;
-        }
-        Uri url = Uri.parse(Constants.API.INSTALLATIONS_PATH).buildUpon()
-                .appendPath(installation_id)
-                .appendPath(PLUGIN_RESOURCES)
-                .build();
-        // TODO not tested
-        try {
-            httpClient.nearPut(context, url.toString(), body, new NearJsonHttpResponseHandler(){
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, "Success in setting plugin resource for: " + plugin_name);
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    Log.d(TAG, "Error in setting plugin resouce for: " + plugin_name);
-                }
-            });
-        } catch (UnsupportedEncodingException | AuthenticationException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     /**
      * Return a JSONapi formatted installation object with the proper attributes.

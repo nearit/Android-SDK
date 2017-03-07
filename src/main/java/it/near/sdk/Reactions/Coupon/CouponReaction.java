@@ -109,7 +109,7 @@ public class CouponReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
 
     }
@@ -144,7 +144,6 @@ public class CouponReaction extends CoreReaction {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
             listener.onCouponDownloadError("Download error");
         }
     }

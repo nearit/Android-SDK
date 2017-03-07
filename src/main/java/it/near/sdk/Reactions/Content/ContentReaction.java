@@ -63,7 +63,7 @@ public class ContentReaction extends CoreReaction {
             try {
                 contentList = loadList();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Data format error");
             }
         }
         for ( Content cn : contentList){
@@ -107,13 +107,13 @@ public class ContentReaction extends CoreReaction {
                     try {
                         contentList = loadList();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "Data format error");
                     }
                 }
 
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
 
     }
@@ -135,7 +135,7 @@ public class ContentReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 

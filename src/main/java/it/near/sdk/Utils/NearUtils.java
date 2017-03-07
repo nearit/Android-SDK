@@ -43,7 +43,6 @@ public class NearUtils {
             JSONObject account = jwt.getJSONObject("data").getJSONObject("account");
             appId = account.getString("id");
         } catch (Exception e) {
-            e.printStackTrace();
             Log.e("NearITErrors", "Error while processing NearIT API token. Please check if you are using the correct key.");
         }
         return appId;
@@ -60,7 +59,6 @@ public class NearUtils {
         try {
             decodedString = new String(dataDec, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
         return decodedString;
     }

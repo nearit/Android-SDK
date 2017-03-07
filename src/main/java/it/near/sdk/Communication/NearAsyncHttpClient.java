@@ -2,6 +2,7 @@ package it.near.sdk.Communication;
 
 import android.content.Context;
 import android.os.Looper;
+import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BuildConfig;
@@ -71,7 +72,7 @@ public class NearAsyncHttpClient {
         try {
             mockedResponse = new JSONObject(mockedString);
         } catch (JSONException e) {
-            e.printStackTrace();
+
         }
         responseHandlerInterface.onSuccess(200, null, mockedResponse);
         return null;

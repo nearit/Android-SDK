@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import org.json.JSONException;
 
@@ -22,6 +23,8 @@ public class NearItIntentService extends IntentService {
 
     public static final int REGION_NOTIFICATION_ID = 1;
     public static final int PUSH_NOTIFICATION_ID = 2;
+
+    private static final String TAG = "NearITIntentService";
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -59,7 +62,7 @@ public class NearItIntentService extends IntentService {
         try {
             RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Data format error");
         }
         NearNotification.send(this, imgResFromIntent(intent), notif_title, notifText, targetIntent, notificationCodeFromIntent(intent));
 

@@ -3,6 +3,7 @@ package it.near.sdk.Geopolis;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +27,7 @@ public class NodesManager {
     private static final String PREFS_SUFFIX = "NodesManager";
     private static final String NODES_CONFIG = "nodes_config";
     public static final String NODES_MANAGER_PREF_NAME = "NearNodesManager";
+    private static final String TAG = "NodesManager";
     private List<Node> nodes;
     private Morpheus morpheus;
     private final SharedPreferences sp;
@@ -83,7 +85,6 @@ public class NodesManager {
             try {
                 nodes = loadNodes();
             } catch (JSONException e) {
-                e.printStackTrace();
                 return null;
             }
             if (nodes == null) return null;
@@ -106,7 +107,7 @@ public class NodesManager {
             try {
                 nodes = loadNodes();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Data format error");
             }
         }
         return nodes;

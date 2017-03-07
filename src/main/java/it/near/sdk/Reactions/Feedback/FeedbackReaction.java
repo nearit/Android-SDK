@@ -72,12 +72,12 @@ public class FeedbackReaction extends CoreReaction {
                     try {
                         feedbackList = loadList();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "Data format error");
                     }
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 
@@ -99,7 +99,7 @@ public class FeedbackReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 
@@ -147,11 +147,9 @@ public class FeedbackReaction extends CoreReaction {
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
-                e.printStackTrace();
                 handler.onFail(422, "request was malformed");
             }
         } catch (JSONException e) {
-            e.printStackTrace();
             handler.onFail(422, "request was malformed");
         }
     }
@@ -162,7 +160,7 @@ public class FeedbackReaction extends CoreReaction {
             try {
                 feedbackList = loadList();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Data format error");
             }
         }
         for ( Feedback fb : feedbackList){

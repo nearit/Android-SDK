@@ -74,7 +74,7 @@ public class PollReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 
@@ -84,7 +84,7 @@ public class PollReaction extends CoreReaction {
             try {
                 pollList = loadList();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Data format error");
             }
         }
         for (Poll pn : pollList){
@@ -130,12 +130,12 @@ public class PollReaction extends CoreReaction {
                     try {
                         pollList = loadList();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "Data format error");
                     }
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 
@@ -193,11 +193,9 @@ public class PollReaction extends CoreReaction {
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
-                e.printStackTrace();
                 handler.onFail(422, "Incorrect format");
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException e) {;
             Log.d(TAG, "Error: incorrect format " + e.toString());
             handler.onFail(422, "Incorrect format");
         }

@@ -153,7 +153,7 @@ public class GeopolisManager {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
 
     }

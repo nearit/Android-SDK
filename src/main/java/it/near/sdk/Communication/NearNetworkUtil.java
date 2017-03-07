@@ -44,7 +44,7 @@ public class NearNetworkUtil {
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Data error");
         }
     }
 
