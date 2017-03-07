@@ -28,7 +28,16 @@ def getLatestVersionName = {
             commandLine 'git', 'describe', '--tags', '--abbrev=0'
             standardOutput = stdout
         }
-        return stdout.toString().trim()
+        def versionFromTag = stdout.toString().trim()
+        stdout.reset()
+        exec {
+            commandLine 'git', 'describe', '--contains', '--all', 'HEAD'
+            standardOutput = stdout
+        }
+        def branchName = stdout.toString()
+        def versionFromReleaseBranch = branchName.substring(branchName.indexOf('/') + 1).trim()
+        return versionFromTag == versionFromReleaseBranch ? versionFromTag : versionFromReleaseBranch
+        // return branchName
     }
     catch (e) {
         printl("Can't get version from git: " + e);
@@ -53,11 +62,12 @@ android {
         versionName version
         buildConfigField("int", "API_VERSION", "2")
         multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
         release {
-            minifyEnabled false
-            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            consumerProguardFiles 'proguard-rules.pro'
         }
     }
 }
@@ -155,6 +165,7 @@ task uploadDocs {
 }
 
 task injectVersionsInMarkdowns(type: Copy){
+    duplicatesStrategy 'exclude'
     from('docs/src') {
         include '*'
         filter{ it.replaceAll('@@versionNumber@@', "${getLatestVersionName()}")}
@@ -177,9 +188,15 @@ dependencies {
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:2.7.6"
     testCompile "com.google.guava:guava:21.0"
-    testCompile 'org.hamcrest:hamcrest-core:1.3'
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
     testCompile 'org.json:json:20160212'
     testCompile 'joda-time:joda-time:2.9.3'
+
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    // using the latest java7-compatible guava version
+    androidTestCompile "com.google.guava:guava:20.0"
 
     javadocDeps 'com.android.support:support-annotations:24.0.0'
     javadocDeps 'org.altbeacon:android-beacon-library:2.9.2'

@@ -72,11 +72,9 @@ public class GeopolisManager {
 
     private final RecipesManager recipesManager;
     private final SharedPreferences sp;
-    private final SharedPreferences.Editor editor;
 
     private List<Region> regionList;
     private Application mApplication;
-    private Morpheus morpheus;
     private AltBeaconMonitor altBeaconMonitor;
     private final GeoFenceMonitor geofenceMonitor;
     private NodesManager nodesManager;
@@ -87,7 +85,10 @@ public class GeopolisManager {
     public GeopolisManager(Application application, RecipesManager recipesManager) {
         this.mApplication = application;
         this.recipesManager = recipesManager;
-        this.nodesManager = new NodesManager(application);
+
+        SharedPreferences nodesManSP = application.getSharedPreferences(NodesManager.NODES_MANAGER_PREF_NAME, 0);
+        this.nodesManager = new NodesManager(nodesManSP);
+
         this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
         this.geofenceMonitor = new GeoFenceMonitor(application);
 
@@ -97,7 +98,6 @@ public class GeopolisManager {
         String PACK_NAME = mApplication.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
         sp = mApplication.getSharedPreferences(PREFS_NAME, 0);
-        editor = sp.edit();
 
         httpClient = new NearAsyncHttpClient();
         refreshConfig();
@@ -122,9 +122,6 @@ public class GeopolisManager {
         resetFilter.addAction(packageName + "." + GeoFenceSystemEventsReceiver.RESET_MONITOR_ACTION_SUFFIX);
         mApplication.registerReceiver(resetEventReceiver, resetFilter);
     }
-
-
-
 
     /**
      * Refresh the configuration of the component. The list of beacons to altBeaconMonitor will be downloaded from the APIs.
@@ -156,7 +153,7 @@ public class GeopolisManager {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
 
     }
@@ -319,9 +316,7 @@ public class GeopolisManager {
     }
 
     public void setRadarState(boolean b){
-        String PACK_NAME = mApplication.getApplicationContext().getPackageName();
-        SharedPreferences.Editor edit = mApplication.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0).edit();
-        edit.putBoolean(RADAR_ON, b).apply();
+        sp.edit().putBoolean(RADAR_ON, b).apply();
 
     }
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
@@ -41,6 +42,8 @@ public class Recipe extends Resource {
     HashMap<String, Object> labels;
     @SerializedName("scheduling")
     HashMap<String, Object> scheduling;
+    @SerializedName("cooldown")
+    HashMap<String, Object> cooldown;
     @SerializedName("pulse_plugin_id")
     String pulse_plugin_id;
     @Relationship("pulse_bundle")
@@ -53,17 +56,14 @@ public class Recipe extends Resource {
     ReactionBundle reaction_bundle;
     @Relationship("reaction_action")
     ReactionAction reaction_action;
-    /*@SerializedName("operation_plugin_id")
-    String operation_plugin_id;
-    @SerializedName("operation_bundle_id")
-    String operation_bundle_id;*/
-    /*@Relationship("operation_action")
-    OperationAction operation_action;*/
-    private static final String ONLINE = "online";
 
-    private static final String TRACKINGS_PATH = "trackings";
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";
+
+    private static final String ONLINE = "online";
+    public static final String DATE_SCHEDULING = "date";
+    public static final String TIMETABLE_SCHEDULING = "timetable";
+    public static final String DAYS_SCHEDULING = "days";
 
     public String getName() {
         return name;
@@ -113,21 +113,6 @@ public class Recipe extends Resource {
         this.pulse_bundle = pulse_bundle;
     }
 
-    /*public String getOperation_plugin_id() {
-        return operation_plugin_id;
-    }
-
-    public void setOperation_plugin_id(String operation_plugin_id) {
-        this.operation_plugin_id = operation_plugin_id;
-    }
-
-    public String getOperation_bundle_id() {
-        return operation_bundle_id;
-    }
-
-    public void setOperation_bundle_id(String operation_bundle_id) {
-        this.operation_bundle_id = operation_bundle_id;
-    }*/
 
     public String getReaction_plugin_id() {
         return reaction_plugin_id;
@@ -153,13 +138,6 @@ public class Recipe extends Resource {
         this.pulse_action = pulse_action;
     }
 
-    /*public OperationAction getOperation_action() {
-        return operation_action;
-    }
-
-    public void setOperation_action(OperationAction operation_action) {
-        this.operation_action = operation_action;
-    }*/
 
     public ReactionAction getReaction_action() {
         return reaction_action;
@@ -169,8 +147,16 @@ public class Recipe extends Resource {
         this.reaction_action = reaction_action;
     }
 
+    public HashMap<String, Object> getCooldown() {
+        return cooldown;
+    }
+
     public void setScheduling(HashMap<String, Object> scheduling) {
         this.scheduling = scheduling;
+    }
+
+    public void setCooldown(HashMap<String, Object> cooldown) {
+        this.cooldown = cooldown;
     }
 
     public String getNotificationTitle() {
@@ -187,31 +173,20 @@ public class Recipe extends Resource {
         return null;
     }
 
-    /**
-     * Sends tracking on a recipe. Lets choose the notified status.
-     * @param context the app context.
-     * @param recipeId the recipe identifier.
-     * @param trackingEvent notified status to send. Can either be NO
-     * @throws JSONException
-     */
-    public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
-        String trackingBody = buildTrackingBody(context, recipeId, trackingEvent);
-        Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
-        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
-    }
+
 
     /**
      * Builds the tracking send request body.
-     * @param context the app context.
+     * @param globalConfig the app global config.
      * @param recipeId the recipe identifier.
      * @param trackingEvent the tracking event string.
      * @return the http body string.
      * @throws JSONException
      */
-    private static String buildTrackingBody(Context context, String recipeId, String trackingEvent) throws JSONException {
-        String profileId = GlobalConfig.getInstance(context).getProfileId();
-        String appId = GlobalConfig.getInstance(context).getAppId();
-        String installationId = GlobalConfig.getInstance(context).getInstallationId();
+    public static String buildTrackingBody(GlobalConfig globalConfig, String recipeId, String trackingEvent) throws JSONException {
+        String profileId = globalConfig.getProfileId();
+        String appId = globalConfig.getAppId();
+        String installationId = globalConfig.getInstallationId();
         if (recipeId == null ||
                 profileId == null ||
                 installationId == null ){
@@ -250,7 +225,7 @@ public class Recipe extends Resource {
      * @return if the date range is respected.
      */
     private boolean isDateValid(Calendar now){
-        Map<String, Object> date = (Map<String, Object>) scheduling.get("date");
+        Map<String, Object> date = (Map<String, Object>) scheduling.get(DATE_SCHEDULING);
         if (date == null) return true;
         String fromDateString = (String) date.get("from");
         String toDateString = (String) date.get("to");
@@ -272,18 +247,17 @@ public class Recipe extends Resource {
                 valid &= toCalendarDate.after(now) || toCalendarDate.equals(now);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
             return false;
         }
         return valid;
     }
 
     /**
-     * Check it the time range is valid.
+     * Check if the time range is valid.
      * @return if the time range is respected.
      */
     private boolean isTimetableValid(Calendar now) {
-        Map<String, Object> timetable = (LinkedTreeMap<String, Object>) scheduling.get("timetable");
+        Map<String, Object> timetable = (Map<String, Object>) scheduling.get(TIMETABLE_SCHEDULING);
         if (timetable == null) return true;
         String fromHour = (String) timetable.get("from");
         String toHour = (String) timetable.get("to");
@@ -294,16 +268,15 @@ public class Recipe extends Resource {
                 Date fromHourDate = timeFormatter.parse(fromHour);
                 Calendar fromHourCalendar = Calendar.getInstance();
                 fromHourCalendar.setTime(fromHourDate);
-                valid &= fromHourCalendar.before(now);
+                valid &= fromHourCalendar.before(now) || fromHourCalendar.equals(now);
             }
             if (toHour != null){
                 Date toHourDate = timeFormatter.parse(toHour);
                 Calendar toHourCalendar = Calendar.getInstance();
                 toHourCalendar.setTime(toHourDate);
-                valid &= toHourCalendar.after(now);
+                valid &= toHourCalendar.after(now) || toHourCalendar.equals(now);
             }
         } catch (ParseException e) {
-            e.printStackTrace();
             return false;
         }
         return valid;
@@ -314,7 +287,7 @@ public class Recipe extends Resource {
      * @return if the days selection is respected.
      */
     private boolean isDaysValid(Calendar now) {
-        List<String> days = (List<String>) scheduling.get("days");
+        List<String> days = (List<String>) scheduling.get(DAYS_SCHEDULING);
         if (days == null) return true;
         String todaysDate = getTodaysDate(now);
 

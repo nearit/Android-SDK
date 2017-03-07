@@ -30,23 +30,6 @@ import it.near.sdk.Recipes.Models.Recipe;
 public class NearUtils {
 
     /**
-     * Decode base 64 string
-     * @param encoded encoded string
-     * @return decoded string
-     */
-    public static String decodeString(String encoded) throws NullPointerException{
-        byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
-        String decodedString = "";
-        try {
-            decodedString = new String(dataDec, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return decodedString;
-    }
-
-
-    /**
      * Compute app Id from the Apptoken (apikey)
      * @param apiKey token
      * @return the App Id as defined in our servers
@@ -60,10 +43,24 @@ public class NearUtils {
             JSONObject account = jwt.getJSONObject("data").getJSONObject("account");
             appId = account.getString("id");
         } catch (Exception e) {
-            e.printStackTrace();
             Log.e("NearITErrors", "Error while processing NearIT API token. Please check if you are using the correct key.");
         }
         return appId;
+    }
+
+    /**
+     * Decode base 64 string
+     * @param encoded encoded string
+     * @return decoded string
+     */
+    private static String decodeString(String encoded) throws NullPointerException{
+        byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
+        String decodedString = "";
+        try {
+            decodedString = new String(dataDec, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+        }
+        return decodedString;
     }
 
     /**
@@ -94,14 +91,13 @@ public class NearUtils {
      * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
      */
     public static boolean parseCoreContents(Intent intent, CoreContentsListener listener) {
-        String reaction_plugin = intent.getExtras().getString(NearItIntentConstants.REACTION_PLUGIN);
+        String reaction_plugin = intent.getStringExtra(NearItIntentConstants.REACTION_PLUGIN);
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
 
         if (!intent.hasExtra(NearItIntentConstants.CONTENT)) return false;
 
         return parseContent(intent, intent.getParcelableExtra(NearItIntentConstants.CONTENT), recipeId, reaction_plugin, listener);
     }
-
 
     /**
      * Parse a parcelable content received from a proximity receiver. Since there's no intent, the intent field of the listener callback methods is always null.
@@ -154,6 +150,5 @@ public class NearUtils {
         }
         return coreContent;
     }
-
 
 }

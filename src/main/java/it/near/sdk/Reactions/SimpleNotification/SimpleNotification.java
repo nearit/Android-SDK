@@ -2,6 +2,7 @@ package it.near.sdk.Reactions.SimpleNotification;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 /**
  * Created by cattaneostefano on 07/10/2016.
@@ -12,7 +13,7 @@ public class SimpleNotification implements Parcelable {
     String notificationMessage;
     String notificationTitle;
 
-    public SimpleNotification(String notificationMessage, String notificationTitle) {
+    public SimpleNotification(String notificationMessage, @Nullable String notificationTitle) {
         this.notificationMessage = notificationMessage;
         this.notificationTitle = notificationTitle;
     }

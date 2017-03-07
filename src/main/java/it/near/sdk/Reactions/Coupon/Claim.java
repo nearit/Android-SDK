@@ -87,4 +87,27 @@ public class Claim extends Resource implements Parcelable {
         claimed_at = in.readString();
         redeemed_at = in.readString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Claim claim = (Claim) o;
+
+        if (serial_number != null ? !serial_number.equals(claim.serial_number) : claim.serial_number != null)
+            return false;
+        if (claimed_at != null ? !claimed_at.equals(claim.claimed_at) : claim.claimed_at != null)
+            return false;
+        return redeemed_at != null ? redeemed_at.equals(claim.redeemed_at) : claim.redeemed_at == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = serial_number != null ? serial_number.hashCode() : 0;
+        result = 31 * result + (claimed_at != null ? claimed_at.hashCode() : 0);
+        result = 31 * result + (redeemed_at != null ? redeemed_at.hashCode() : 0);
+        return result;
+    }
 }

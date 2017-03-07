@@ -26,6 +26,10 @@ public class Content extends ReactionBundle implements Parcelable {
     List<String> images_id;
     @Relationship("images")
     List<Image> images;
+    @Relationship("audio")
+    Audio audio;
+    @Relationship("upload")
+    Upload upload;
 
     List<ImageSet> images_links;
 
@@ -80,6 +84,22 @@ public class Content extends ReactionBundle implements Parcelable {
         this.images = images;
     }
 
+    public Audio getAudio() {
+        return audio;
+    }
+
+    public void setAudio(Audio audio) {
+        this.audio = audio;
+    }
+
+    public Upload getUpload() {
+        return upload;
+    }
+
+    public void setUpload(Upload upload) {
+        this.upload = upload;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -92,10 +112,12 @@ public class Content extends ReactionBundle implements Parcelable {
         dest.writeString(updated_at);
         dest.writeString(getId());
         dest.writeTypedList(getImages_links());
+        dest.writeParcelable(getAudio(), flags);
+        dest.writeParcelable(getUpload(), flags);
     }
 
     // Creator
-    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+    public static final Parcelable.Creator<Content> CREATOR = new Parcelable.Creator<Content>() {
         public Content createFromParcel(Parcel in) {
             return new Content(in);
         }
@@ -109,13 +131,12 @@ public class Content extends ReactionBundle implements Parcelable {
         setContent(in.readString());
         setVideo_link(in.readString());
         setUpdated_at(in.readString());
-        /*List<String> list = null;
-        in.readList(list, List.class.getClassLoader());
-        setImages_id(list);*/
         setId(in.readString());
         List<ImageSet> list = new ArrayList<ImageSet>();
         in.readTypedList(list, ImageSet.CREATOR);
         setImages_links(list);
+        setAudio((Audio) in.readParcelable(Audio.class.getClassLoader()));
+        setUpload((Upload) in.readParcelable(Upload.class.getClassLoader()));
     }
 
     public boolean isSimpleNotification() {

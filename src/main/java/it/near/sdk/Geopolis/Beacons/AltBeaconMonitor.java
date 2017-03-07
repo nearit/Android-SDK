@@ -184,8 +184,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private List<Region> loadRegions(){
         String regions = sp.getString("regions", null);
         Type type = new TypeToken<List<Region>>(){}.getType();
-        List<Region> regionsList = new Gson().fromJson(regions, type);
-        return regionsList;
+        return new Gson().fromJson(regions, type);
     }
 
     public void addRegion(Region region){
@@ -207,7 +206,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         try {
             stopRangingRegion(region);
         } catch (RemoteException e) {
-            e.printStackTrace();
         }
         if (regionBootstrap!=null) regionBootstrap.removeRegion(region);
     }
@@ -255,7 +253,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
             try {
                 stopRangingRegion(region);
             } catch (RemoteException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -265,7 +262,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
             try {
                 beaconManager.stopMonitoringBeaconsInRegion(region);
             } catch (RemoteException e) {
-                e.printStackTrace();
             }
         }
     }
@@ -360,7 +356,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
                 }
             }
         } catch (RemoteException e) {
-            e.printStackTrace();
         }
         Log.d(TAG, "regions ranged: " + beaconManager.getRangedRegions().size());
         logRangedRegions();

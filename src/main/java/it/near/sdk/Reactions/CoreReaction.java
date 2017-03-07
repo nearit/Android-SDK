@@ -100,7 +100,6 @@ public abstract class CoreReaction extends Reaction {
                 Log.d(TAG, "Content not found");
             }
         });
-
     }
 
     protected abstract void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener);

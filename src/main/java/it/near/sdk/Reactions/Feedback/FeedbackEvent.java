@@ -80,8 +80,8 @@ public class FeedbackEvent extends Event {
         return PLUGIN_NAME;
     }
 
-    public String toJsonAPI(Context context) throws JSONException {
-        String profileId = GlobalConfig.getInstance(context).getProfileId();
+    public String toJsonAPI(GlobalConfig config) throws JSONException {
+        String profileId = config.getProfileId();
         HashMap<String, Object> attributeMap = new HashMap<>();
         if (profileId == null ||
                 rating == -1 ||

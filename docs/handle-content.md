@@ -49,15 +49,15 @@ NearIT analytics on recipes are built from trackings describing the status of us
 
 Background recipes track themselves as notified. To track the tap event, use this method:
 ```java
-Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
+RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.ENGAGED_STATUS);
 ```
 You should be able to catch the event inside the activity that is started after interacting with the notification.
 
 Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
 ```java
-Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
+RecipesManager.sendTracking(getApplicationContext(), recipe.getId(), Recipe.NOTIFIED_STATUS);
 // and
-Recipe.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
+RecipesManager.sendTracking(getApplicationContext(), recipe.getId(), Recipe.ENGAGED_STATUS);
 ```
 
 ## Content Objects
@@ -72,16 +72,20 @@ For each callback method of the *coreContentListener* you will receive a differe
     - `getContent()` returns the text content
     - `getVideo_link()` returns the video link string
     - `getImages_links()` returns a list of *ImageSet* object containing the source links for the images
+    - `getUpload()` returns an Upload object containing a link to a file uploaded on NearIT if any
+    - `getAudio()` returns an Audio object containing a link to an audio file uploaded on NearIT if any
     
 - `Feedback` with the following getters:
     - `getQuestion()` returns the feedback request string
     - `getRecipeId()` returns the recipeId associated with the feedback (you'll need it for answer it)
 To give a feedback call this method:
 ```java
-// rating must be an integer between 0 and 5, and you can set a comment string.
+// rating must be an integer between 1 and 5, and you can set a comment string.
 nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
 // if you don't hold the feedback object use this constructor
 nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
+// the sendEvent method is available in 2 variants: with or without explicit callback handler. Example:
+nearItManager.sendEvent(new FeedbackEvent(...), responseHandler);
 ```
     
 - `Coupon` with the following getters:

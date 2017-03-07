@@ -3,6 +3,8 @@ package it.near.sdk.Recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -23,6 +25,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.Communication.Constants;
 import it.near.sdk.Communication.NearAsyncHttpClient;
 import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.Communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Reactions.Reaction;
@@ -41,13 +44,13 @@ import it.near.sdk.Utils.NearJsonAPIUtils;
  */
 public class RecipesManager {
     private static final String TAG = "RecipesManager";
-    public static final String PREFS_SUFFIX = "NearRecipes";
+    public static final String PREFS_NAME = "NearRecipes";
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
-    private static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
-    private static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
-    private static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
-    public final String PREFS_NAME;
+    private static final String TRACKINGS_PATH = "trackings";
+    static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
+    static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
+    static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
     private final SharedPreferences sp;
     private Context mContext;
     private Morpheus morpheus;
@@ -55,19 +58,24 @@ public class RecipesManager {
     private HashMap<String, Reaction> reactions = new HashMap<>();
     SharedPreferences.Editor editor;
     private NearAsyncHttpClient httpClient;
+    private static RecipeCooler mRecipeCooler;
+    private GlobalConfig globalConfig;
 
-    public RecipesManager(Context context) {
+    public RecipesManager(Context context,
+                          GlobalConfig globalConfig,
+                          RecipeCooler recipeCooler,
+                          SharedPreferences sp) {
         this.mContext = context;
-
-        String PACK_NAME = mContext.getApplicationContext().getPackageName();
-        PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
-        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
+        this.globalConfig = globalConfig;
+        mRecipeCooler = recipeCooler;
+        this.sp = sp;
         editor = sp.edit();
+
         httpClient = new NearAsyncHttpClient();
         try {
             recipes = loadChachedList();
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Recipes format error");
         }
         setUpMorpheusParser();
         refreshConfig();
@@ -108,12 +116,10 @@ public class RecipesManager {
         refreshConfig(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
-                Log.d(TAG, "empty listener called: success");
             }
 
             @Override
-            public void onRecipesRefreshFail(int statusCode) {
-                Log.d(TAG, "empty listener called: fail with code " + statusCode);
+            public void onRecipesRefreshFail() {
             }
         });
     }
@@ -125,23 +131,12 @@ public class RecipesManager {
     public void refreshConfig(final RecipeRefreshListener listener){
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
-        HashMap<String, Object> map = new HashMap<>();
-        JSONObject evalCoreObject = new JSONObject();
-        try {
-            evalCoreObject.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-            evalCoreObject.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
-            evalCoreObject.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(TAG, "profileId not present");
-        }
-        map.put("core", evalCoreObject);
         String requestBody = null;
         try {
-            requestBody = NearJsonAPIUtils.toJsonAPI("evaluation", map);
+            requestBody = buildEvaluateBody(globalConfig, null, null, null, null);
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.d(TAG, "Can't build request body");
+            return;
         }
 
         try {
@@ -160,22 +155,19 @@ public class RecipesManager {
                     try {
                         recipes = loadChachedList();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "Recipe format error");
                     }
-                    listener.onRecipesRefreshFail(statusCode);
+                    listener.onRecipesRefreshFail();
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-            listener.onRecipesRefreshFail(-1);
+            listener.onRecipesRefreshFail();
         }
-
     }
 
     private void persistList(List<Recipe> recipes) {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
-        Log.d(TAG , "Persist: " + listStringified);
         editor.putString(TAG , listStringified);
         editor.apply();
     }
@@ -216,6 +208,8 @@ public class RecipesManager {
             }
         }
 
+        mRecipeCooler.filterRecipe(validRecipes);
+
         if (validRecipes.isEmpty()){
             // if no recipe is found the the online fallback
             onlinePulseEvaluation(pulse_plugin, pulse_action, pulse_bundle);
@@ -228,8 +222,6 @@ public class RecipesManager {
                 gotRecipe(winnerRecipe);
             }
         }
-
-
     }
 
     /**
@@ -239,7 +231,6 @@ public class RecipesManager {
      */
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
-        Log.d(TAG , stringRecipe!=null? stringRecipe : "nameless recipe");
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
@@ -251,10 +242,9 @@ public class RecipesManager {
     public void processRecipe(final String id) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(id)
-                .appendQueryParameter("filter[core][profile_id]", GlobalConfig.getInstance(mContext).getProfileId())
+                .appendQueryParameter("filter[core][profile_id]", globalConfig.getProfileId())
                 .appendQueryParameter("include", "reaction_bundle")
                 .build();
-
         try {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
 
@@ -262,7 +252,6 @@ public class RecipesManager {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, response.toString());
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    Log.d(TAG, recipe.toString());
                     String reactionPluginName = recipe.getReaction_plugin_id();
                     Reaction reaction = reactions.get(reactionPluginName);
                     reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle());
@@ -274,37 +263,23 @@ public class RecipesManager {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
         }
     }
 
     private void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(EVALUATE).build();
-        HashMap<String, Object> map = new HashMap<>();
-        JSONObject evalCoreObject = new JSONObject();
+        String evaluateBody = null;
         try {
-            evalCoreObject.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-            evalCoreObject.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
-            evalCoreObject.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
+            evaluateBody = buildEvaluateBody(globalConfig,
+                    mRecipeCooler, pulse_plugin, pulse_action, pulse_bundle);
         } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(TAG, "profileId not present");
-        }
-        map.put("core", evalCoreObject);
-        map.put(PULSE_PLUGIN_ID_KEY, pulse_plugin);
-        map.put(PULSE_ACTION_ID_KEY, pulse_action);
-        map.put(PULSE_BUNDLE_ID_KEY, pulse_bundle);
-        String requestBody = null;
-        try {
-            requestBody = NearJsonAPIUtils.toJsonAPI("evaluation", map);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            Log.d(TAG, "Can't build request body");
+            Log.d(TAG, "body build error");
+            return;
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
@@ -319,13 +294,12 @@ public class RecipesManager {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Authentication error");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Unsuported encoding");
         } catch (NullPointerException e){
-            e.printStackTrace();
+            Log.d(TAG, "Shouldn't be here");
         }
-
     }
 
     /**
@@ -340,9 +314,9 @@ public class RecipesManager {
                 .appendPath(EVALUATE).build();
         String evaluateBody = null;
         try {
-            evaluateBody = buildEvaluateBody();
+            evaluateBody = buildEvaluateBody(globalConfig,
+                                            mRecipeCooler, null, null, null);
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.d(TAG, "body build error");
             return;
         }
@@ -370,23 +344,63 @@ public class RecipesManager {
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
             Log.d(TAG, "Error");
         }
     }
 
-    public String buildEvaluateBody() throws JSONException {
-        if (GlobalConfig.getInstance(mContext).getProfileId() == null ||
-                GlobalConfig.getInstance(mContext).getInstallationId() == null ||
-                GlobalConfig.getInstance(mContext).getAppId() == null){
+    /**
+     * Sends tracking on a recipe. Lets choose the notified status.
+     * @param context the app context.
+     * @param recipeId the recipe identifier.
+     * @param trackingEvent notified status to send. Can either be NO
+     * @throws JSONException
+     */
+    public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
+        if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)){
+            if (mRecipeCooler != null){
+                mRecipeCooler.markRecipeAsShown(recipeId);
+            }
+        }
+        String trackingBody = Recipe.buildTrackingBody(GlobalConfig.getInstance(context), recipeId, trackingEvent);
+        Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
+        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
+    }
+
+    public static String buildEvaluateBody(@NonNull GlobalConfig globalConfig,
+                                           @Nullable RecipeCooler recipeCooler,
+                                           @Nullable String pulse_plugin,
+                                           @Nullable String pulse_action,
+                                           @Nullable String pulse_bundle) throws JSONException {
+        if (globalConfig.getProfileId() == null ||
+                globalConfig.getInstallationId() == null ||
+                globalConfig.getAppId() == null){
             throw new JSONException("missing data");
         }
-        HashMap<String, Object> coreObj = new HashMap<>();
-        coreObj.put("profile_id", GlobalConfig.getInstance(mContext).getProfileId());
-        coreObj.put("installation_id", GlobalConfig.getInstance(mContext).getInstallationId());
-        coreObj.put("app_id", GlobalConfig.getInstance(mContext).getAppId());
         HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put("core" , coreObj);
+        attributes.put("core", buildCoreObject(globalConfig, recipeCooler));
+        if (pulse_plugin != null) attributes.put(PULSE_PLUGIN_ID_KEY, pulse_plugin);
+        if (pulse_action != null) attributes.put(PULSE_ACTION_ID_KEY, pulse_action);
+        if (pulse_bundle != null) attributes.put(PULSE_BUNDLE_ID_KEY, pulse_bundle);
         return NearJsonAPIUtils.toJsonAPI("evaluation", attributes);
+    }
+
+    private static HashMap<String, Object> buildCoreObject(@NonNull GlobalConfig globalConfig,
+                                                           @Nullable RecipeCooler recipeCooler) {
+        HashMap<String, Object> coreObj = new HashMap<>();
+        coreObj.put("profile_id", globalConfig.getProfileId());
+        coreObj.put("installation_id", globalConfig.getInstallationId());
+        coreObj.put("app_id", globalConfig.getAppId());
+        if (recipeCooler != null) {
+            coreObj.put("cooldown", buildCooldownBlock(recipeCooler));
+        }
+
+        return coreObj;
+    }
+
+    private static HashMap<String, Object> buildCooldownBlock(@NonNull RecipeCooler recipeCooler) {
+        HashMap<String, Object> block = new HashMap<>();
+        block.put("last_notified_at", recipeCooler.getLatestLogEntry());
+        block.put("recipes_notified_at", recipeCooler.getRecipeLogMap());
+        return block;
     }
 }

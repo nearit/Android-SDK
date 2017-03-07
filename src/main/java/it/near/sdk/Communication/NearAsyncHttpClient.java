@@ -2,6 +2,7 @@ package it.near.sdk.Communication;
 
 import android.content.Context;
 import android.os.Looper;
+import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.BuildConfig;
@@ -29,7 +30,6 @@ public class NearAsyncHttpClient {
 
     public static AsyncHttpClient syncHttpClient = new SyncHttpClient();
     public static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
-
 
     public static RequestHandle nearGet(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
         return getClient().get(context,
@@ -72,7 +72,7 @@ public class NearAsyncHttpClient {
         try {
             mockedResponse = new JSONObject(mockedString);
         } catch (JSONException e) {
-            e.printStackTrace();
+
         }
         responseHandlerInterface.onSuccess(200, null, mockedResponse);
         return null;
@@ -81,22 +81,6 @@ public class NearAsyncHttpClient {
     public RequestHandle nearMock(Context context, String url, String requestBody, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId){
         return nearMock(context, url, responseHandlerInterface, mockResId);
     }
-
-    /**
- * Return headers for HTTP calls
- * @return a map of headers
- */
-
-   /* @Override
-    public Map<String, String> getHeaders() throws AuthFailureError {
-        Map headers = new HashMap();
-        headers.put(Constants.Headers.accessToken, "bearer " + GlobalConfig.getInstance(mContext).getApiKey());
-        headers.put(Constants.Headers.contentType, Constants.Headers.jsonApiHeader);
-        headers.put(Constants.Headers.accept, Constants.Headers.jsonApiHeader);
-        return headers;
-    }*/
-
-
 
     private static Header[] getHeaders(Context context) throws AuthenticationException {
         return new Header[]{

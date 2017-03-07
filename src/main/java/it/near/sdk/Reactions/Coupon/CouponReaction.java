@@ -54,7 +54,7 @@ public class CouponReaction extends CoreReaction {
         HashMap<String, Class> map = new HashMap<>();
         map.put(CLAIMS_RES, Claim.class);
         map.put(COUPONS_RES, Coupon.class);
-        map.put("imaes", Image.class);
+        map.put("images", Image.class);
         return map;
     }
 
@@ -109,7 +109,7 @@ public class CouponReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
 
     }
@@ -144,7 +144,6 @@ public class CouponReaction extends CoreReaction {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
             listener.onCouponDownloadError("Download error");
         }
     }

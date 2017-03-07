@@ -63,7 +63,7 @@ public class ContentReaction extends CoreReaction {
             try {
                 contentList = loadList();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Data format error");
             }
         }
         for ( Content cn : contentList){
@@ -90,7 +90,7 @@ public class ContentReaction extends CoreReaction {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(CONTENT_NOTIFICATION_PATH)
                     .appendPath(CONTENT_NOTIFICATION_RESOURCE)
-                    .appendQueryParameter("include", "images").build();
+                    .appendQueryParameter("include", "images,audio,upload").build();
         try {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
@@ -107,13 +107,13 @@ public class ContentReaction extends CoreReaction {
                     try {
                         contentList = loadList();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "Data format error");
                     }
                 }
 
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
 
     }
@@ -135,7 +135,7 @@ public class ContentReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 
@@ -174,6 +174,8 @@ public class ContentReaction extends CoreReaction {
         HashMap<String, Class> map = new HashMap<>();
         map.put("contents", Content.class);
         map.put("images", Image.class);
+        map.put("audios", Audio.class);
+        map.put("uploads", Upload.class);
         return map;
     }
 

@@ -62,13 +62,6 @@ public class NearItUserProfile {
         NearInstallation.registerInstallation(context);
     }
 
-    private static void setProfilePluginProperty(Context context, String profileId) {
-        String installationId = GlobalConfig.getInstance(context).getInstallationId();
-        if (installationId != null){
-            NearInstallation.setPluginResource(context, installationId, "congrego", profileId);
-        }
-    }
-
     /**
      * Create a new profile and saves the profile identifier internally. After a profile is created, it's possible to add properties to it.
      * @param context the application context.
@@ -87,7 +80,6 @@ public class NearItUserProfile {
         try {
             requestBody = buildProfileCreationRequestBody(context);
         } catch (JSONException e) {
-            e.printStackTrace();
             listener.onProfileCreationError("Can't compute request body");
             return;
         }
@@ -111,7 +103,6 @@ public class NearItUserProfile {
                         GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                         listener.onProfileCreated(true, profileId);
                     } catch (JSONException e) {
-                        e.printStackTrace();
                         listener.onProfileCreationError("unknown server format");
                     }
                 }
@@ -124,10 +115,8 @@ public class NearItUserProfile {
 
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
             listener.onProfileCreationError("error: impossible to make a request" );
         }
-
     }
 
     private static String buildProfileCreationRequestBody(Context context) throws JSONException {
@@ -169,7 +158,6 @@ public class NearItUserProfile {
         try {
             reqBody = NearJsonAPIUtils.toJsonAPI("data_points", map);
         } catch (JSONException e) {
-            e.printStackTrace();
             listener.onDataNotSetError("Request creation error");
         }
 
@@ -194,7 +182,6 @@ public class NearItUserProfile {
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
             listener.onDataNotSetError("error: impossible to send requests");
         }
     }
@@ -234,7 +221,6 @@ public class NearItUserProfile {
         try {
             reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
         } catch (JSONException e) {
-            e.printStackTrace();
             listener.onDataNotSetError("Request creatin error");
         }
 
@@ -260,7 +246,6 @@ public class NearItUserProfile {
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
             listener.onDataNotSetError("error: impossible to send request");
         }
     }

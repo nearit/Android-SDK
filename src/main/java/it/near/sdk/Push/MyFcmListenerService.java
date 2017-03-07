@@ -9,6 +9,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
 
 import it.near.sdk.GlobalState;
+import it.near.sdk.Recipes.RecipesManager;
 
 /**
  * Service that receives push notification.
@@ -33,7 +34,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         String recipe_id = (String) data.get("recipe_id");
         String push_id = (String) data.get("push_id");
 
-        getPushManager().processPush(push_id, recipe_id);
+        getRecipesManager().processRecipe(recipe_id);
 
         // [START_EXCLUDE]
         /**
@@ -51,9 +52,10 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         // [END_EXCLUDE]
     }
 
-    private PushManager getPushManager() { return GlobalState.getInstance(getApplicationContext()).getPushManager(); }
+    private RecipesManager getRecipesManager() {
+        return GlobalState.getInstance(getApplicationContext()).getRecipesManager();
+    }
     // [END receive_message]
-
 
 }
 

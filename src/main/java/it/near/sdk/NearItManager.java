@@ -1,10 +1,9 @@
 package it.near.sdk;
 
 import android.app.Application;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.util.Log;
 
@@ -21,8 +20,6 @@ import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
 import it.near.sdk.Operation.NearItUserProfile;
 import it.near.sdk.Operation.ProfileCreationListener;
-import it.near.sdk.Push.OpenPushEvent;
-import it.near.sdk.Push.PushManager;
 import it.near.sdk.Reactions.Content.ContentReaction;
 import it.near.sdk.Reactions.Coupon.CouponListener;
 import it.near.sdk.Reactions.Coupon.CouponReaction;
@@ -33,15 +30,15 @@ import it.near.sdk.Reactions.Feedback.FeedbackReaction;
 import it.near.sdk.Reactions.Poll.PollEvent;
 import it.near.sdk.Reactions.Poll.PollReaction;
 import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
+import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.Recipes.RecipeCooler;
 import it.near.sdk.Recipes.RecipeRefreshListener;
 import it.near.sdk.Recipes.RecipesManager;
-import it.near.sdk.Utils.AppLifecycleMonitor;
 import it.near.sdk.Utils.NearItIntentConstants;
-import it.near.sdk.Utils.NearSimpleLogger;
 import it.near.sdk.Utils.NearUtils;
-import it.near.sdk.Utils.OnLifecycleEventListener;
+
 
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
@@ -71,14 +68,8 @@ public class NearItManager {
     private CouponReaction couponReaction;
     private CustomJSONReaction customJSONReaction;
     private FeedbackReaction feedbackReaction;
-    private PushManager pushManager;
-    private NearSimpleLogger logger;
     private List<ProximityListener> proximityListenerList = new ArrayList<>();
-
-    private AltBeaconMonitor monitor;
-
     Application application;
-
 
     /**
      * Default constructor.
@@ -87,7 +78,6 @@ public class NearItManager {
      */
     public NearItManager(final Application application, String apiKey) {
         this.application = application;
-        initLifecycleMonitor();
 
         GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
@@ -108,32 +98,14 @@ public class NearItManager {
                 NearInstallation.registerInstallation(application);
             }
         });
-
-        registerLogReceiver();
-
-        pushManager = new PushManager(application);
-        GlobalState.getInstance(application).setPushManager(pushManager);
-
     }
-
-    /**
-     * Set logger for beacon distance information.
-     * @param logger logs beacon data.
-     */
-    public void setLogger(NearSimpleLogger logger) {
-        this.logger = logger;
-    }
-
-    /**
-     * Remove the beacon logger.
-     */
-    public void removeLogger() {
-        this.logger = null;
-    }
-
 
     private void plugInSetup() {
-        recipesManager = new RecipesManager(application);
+        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME,0);
+        RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP);
+        SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
+        recipesManager = new RecipesManager(application, GlobalConfig.getInstance(application), recipeCooler, recipeManagerSP);
+
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
         geopolis = new GeopolisManager(application, recipesManager);
@@ -158,13 +130,6 @@ public class NearItManager {
 
     }
 
-
-    private void registerLogReceiver() {
-        String filter = application.getPackageName() + "log";
-        IntentFilter intentFilter = new IntentFilter(filter);
-        application.registerReceiver(logReceiver, intentFilter);
-    }
-
     /**
      * Return the recipes manager
      * @return the recipes manager
@@ -172,8 +137,6 @@ public class NearItManager {
     public RecipesManager getRecipesManager() {
         return recipesManager;
     }
-
-
 
     /**
      * Checks the device capacity to detect beacons
@@ -183,20 +146,6 @@ public class NearItManager {
      */
     public static boolean verifyBluetooth(Context context) throws RuntimeException{
         return BeaconManager.getInstanceForApplication(context.getApplicationContext()).checkAvailability();
-    }
-
-    private void initLifecycleMonitor() {
-        new AppLifecycleMonitor(application, new OnLifecycleEventListener() {
-            @Override
-            public void onForeground() {
-                Log.d(TAG, "onForeground" );
-            }
-
-            @Override
-            public void onBackground() {
-                Log.d(TAG, "onBackground");
-            }
-        });
     }
 
     /**
@@ -215,12 +164,10 @@ public class NearItManager {
         refreshConfigs(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
-                Log.d(TAG, "empty listener called: success");
             }
 
             @Override
-            public void onRecipesRefreshFail(int statusCode) {
-                Log.d(TAG, "empty listener called: fail with code " + statusCode);
+            public void onRecipesRefreshFail() {
             }
         });
     }
@@ -234,7 +181,6 @@ public class NearItManager {
         contentNotification.refreshConfig();
         pollNotification.refreshConfig();
     }
-
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
@@ -252,10 +198,8 @@ public class NearItManager {
             for (ProximityListener proximityListener : proximityListenerList) {
                 proximityListener.foregroundEvent(content, recipe);
             }
-
         }
     };
-
 
     private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
         Log.d(TAG, "deliver Event: " + parcelable.toString());
@@ -267,35 +211,36 @@ public class NearItManager {
         application.sendOrderedBroadcast(resultIntent, null);
     }
 
+    public boolean sendEvent(Event event){
+        return sendEvent(event, new NearITEventHandler() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFail(int statusCode, String error) {
+
+            }
+        });
+    }
+
     /**
      * Sends an action to the SDK, that might delegate it to other plugins, based on its type.
      * @param event the event to send.
      * @return true if the action was a recognized action, false otherwise.
      */
-    public boolean sendEvent(Event event){
+    public boolean sendEvent(Event event, NearITEventHandler handler){
         switch (event.getPlugin()){
             case PollEvent.PLUGIN_NAME:
-                pollNotification.sendEvent((PollEvent)event);
-                return true;
-            case OpenPushEvent.PLUGIN_NAME:
-                pushManager.sendEvent((OpenPushEvent) event);
+                pollNotification.sendEvent((PollEvent)event, handler);
                 return true;
             case FeedbackEvent.PLUGIN_NAME:
-                feedbackReaction.sendEvent((FeedbackEvent) event);
+                feedbackReaction.sendEvent((FeedbackEvent) event, handler);
                 return true;
         }
         return false;
     }
-
-    private BroadcastReceiver logReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String log = intent.getStringExtra("log");
-            if (logger != null){
-                logger.log(log);
-            }
-        }
-    };
 
     /**
      * Return a list of coupon claimed by the user and that are currently valid.
@@ -305,7 +250,6 @@ public class NearItManager {
         try {
             couponReaction.getCoupons(application, listener);
         } catch (UnsupportedEncodingException | MalformedURLException e) {
-            e.printStackTrace();
             listener.onCouponDownloadError("Error");
         }
     }

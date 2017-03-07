@@ -44,7 +44,7 @@ public class NearNetworkUtil {
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Data error");
         }
     }
 
@@ -55,7 +55,7 @@ public class NearNetworkUtil {
      * @param body the HHTP request body.
      * @param handler the response handler.
      */
-    public static void sendTrack (Context context, String url, String body, NearJsonHttpResponseHandler handler) throws UnsupportedEncodingException, AuthenticationException {
+    public static void sendTrack(Context context, String url, String body, NearJsonHttpResponseHandler handler) throws UnsupportedEncodingException, AuthenticationException {
         NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
         httpClient.nearPost(context, url, body, handler);
     }

@@ -23,6 +23,7 @@ import it.near.sdk.Communication.NearJsonHttpResponseHandler;
 import it.near.sdk.Reactions.ContentFetchListener;
 import it.near.sdk.Reactions.CoreReaction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
+import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearJsonAPIUtils;
@@ -73,7 +74,7 @@ public class PollReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 
@@ -83,7 +84,7 @@ public class PollReaction extends CoreReaction {
             try {
                 pollList = loadList();
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.d(TAG, "Data format error");
             }
         }
         for (Poll pn : pollList){
@@ -129,12 +130,12 @@ public class PollReaction extends CoreReaction {
                     try {
                         pollList = loadList();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "Data format error");
                     }
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Auth error");
         }
     }
 
@@ -167,7 +168,7 @@ public class PollReaction extends CoreReaction {
     }
 
 
-    public void sendEvent(PollEvent event) {
+    public void sendEvent(PollEvent event, final NearITEventHandler handler) {
         try {
             String answerBody = event.toJsonAPI(mContext);
             Log.d(TAG, "Answer" + answerBody);
@@ -182,19 +183,21 @@ public class PollReaction extends CoreReaction {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d(TAG, "Answer sent successfully");
+                        handler.onSuccess();
                     }
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         Log.d(TAG, "Error in sending answer: " + statusCode);
+                        handler.onFail(statusCode, responseString);
                     }
                 });
             } catch (AuthenticationException | UnsupportedEncodingException e) {
-                e.printStackTrace();
+                handler.onFail(422, "Incorrect format");
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } catch (JSONException e) {;
             Log.d(TAG, "Error: incorrect format " + e.toString());
+            handler.onFail(422, "Incorrect format");
         }
     }
 }

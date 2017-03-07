@@ -1,5 +1,7 @@
 package it.near.sdk.Utils;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +21,8 @@ import it.near.sdk.MorpheusNear.Resource;
  */
 
 public class NearJsonAPIUtils {
+    private static final String TAG = "NearJsonAPIUtils";
+
     /**
      * Turns an hashmap of values to a jsonapi resource string.
      * @param type the type of the jsonapi resource.
@@ -57,10 +61,8 @@ public class NearJsonAPIUtils {
      */
     public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
         JSONObject dataObject = getResObj(type, id, map);
-
         JSONObject outerObj = new JSONObject();
         outerObj.put("data", dataObject);
-
         return outerObj.toString();
     }
 
@@ -105,17 +107,15 @@ public class NearJsonAPIUtils {
         try {
             jsonApiObject = morpheus.parse(json);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(TAG, "Parsing error");
         }
 
         List<T> returnList = new ArrayList<T>();
-
         if (jsonApiObject.getResources() == null) return returnList;
 
         for (Resource r : jsonApiObject.getResources()){
             returnList.add((T) r);
         }
-
         return returnList;
     }
 
@@ -132,7 +132,7 @@ public class NearJsonAPIUtils {
         try {
             jsonApiObject = morpheus.parse(json);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.d(TAG, "Parsing error");
         }
         return (T) jsonApiObject.getResource();
     }

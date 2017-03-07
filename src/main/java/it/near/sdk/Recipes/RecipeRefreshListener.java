@@ -6,5 +6,5 @@ package it.near.sdk.Recipes;
 
 public interface RecipeRefreshListener {
     public abstract void onRecipesRefresh();
-    public abstract void onRecipesRefreshFail(int statusCode);
+    public abstract void onRecipesRefreshFail();
 }
