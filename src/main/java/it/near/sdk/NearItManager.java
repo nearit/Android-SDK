@@ -164,12 +164,10 @@ public class NearItManager {
         refreshConfigs(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
-                Log.d(TAG, "empty listener called: success");
             }
 
             @Override
-            public void onRecipesRefreshFail(int statusCode) {
-                Log.d(TAG, "empty listener called: fail with code " + statusCode);
+            public void onRecipesRefreshFail() {
             }
         });
     }
@@ -252,7 +250,6 @@ public class NearItManager {
         try {
             couponReaction.getCoupons(application, listener);
         } catch (UnsupportedEncodingException | MalformedURLException e) {
-            e.printStackTrace();
             listener.onCouponDownloadError("Error");
         }
     }

@@ -176,16 +176,16 @@ public class Recipe extends Resource {
 
     /**
      * Builds the tracking send request body.
-     * @param context the app context.
+     * @param globalConfig the app global config.
      * @param recipeId the recipe identifier.
      * @param trackingEvent the tracking event string.
      * @return the http body string.
      * @throws JSONException
      */
-    public static String buildTrackingBody(Context context, String recipeId, String trackingEvent) throws JSONException {
-        String profileId = GlobalConfig.getInstance(context).getProfileId();
-        String appId = GlobalConfig.getInstance(context).getAppId();
-        String installationId = GlobalConfig.getInstance(context).getInstallationId();
+    public static String buildTrackingBody(GlobalConfig globalConfig, String recipeId, String trackingEvent) throws JSONException {
+        String profileId = globalConfig.getProfileId();
+        String appId = globalConfig.getAppId();
+        String installationId = globalConfig.getInstallationId();
         if (recipeId == null ||
                 profileId == null ||
                 installationId == null ){

@@ -75,7 +75,7 @@ public class RecipesManager {
         try {
             recipes = loadChachedList();
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Recipes format error");
         }
         setUpMorpheusParser();
         refreshConfig();
@@ -116,12 +116,10 @@ public class RecipesManager {
         refreshConfig(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
-                Log.d(TAG, "empty listener called: success");
             }
 
             @Override
-            public void onRecipesRefreshFail(int statusCode) {
-                Log.d(TAG, "empty listener called: fail with code " + statusCode);
+            public void onRecipesRefreshFail() {
             }
         });
     }
@@ -137,8 +135,8 @@ public class RecipesManager {
         try {
             requestBody = buildEvaluateBody(globalConfig, null, null, null, null);
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.d(TAG, "Can't build request body");
+            return;
         }
 
         try {
@@ -157,21 +155,19 @@ public class RecipesManager {
                     try {
                         recipes = loadChachedList();
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Log.d(TAG, "Recipe format error");
                     }
-                    listener.onRecipesRefreshFail(statusCode);
+                    listener.onRecipesRefreshFail();
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
-            listener.onRecipesRefreshFail(-1);
+            listener.onRecipesRefreshFail();
         }
     }
 
     private void persistList(List<Recipe> recipes) {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
-        Log.d(TAG , "Persist: " + listStringified);
         editor.putString(TAG , listStringified);
         editor.apply();
     }
@@ -235,7 +231,6 @@ public class RecipesManager {
      */
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
-        Log.d(TAG , stringRecipe!=null? stringRecipe : "nameless recipe");
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
@@ -257,7 +252,6 @@ public class RecipesManager {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, response.toString());
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    Log.d(TAG, recipe.toString());
                     String reactionPluginName = recipe.getReaction_plugin_id();
                     Reaction reaction = reactions.get(reactionPluginName);
                     reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle());
@@ -269,7 +263,6 @@ public class RecipesManager {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
         }
     }
 
@@ -281,7 +274,6 @@ public class RecipesManager {
             evaluateBody = buildEvaluateBody(globalConfig,
                     mRecipeCooler, pulse_plugin, pulse_action, pulse_bundle);
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.d(TAG, "body build error");
             return;
         }
@@ -302,11 +294,11 @@ public class RecipesManager {
                 }
             });
         } catch (AuthenticationException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Authentication error");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Log.d(TAG, "Unsuported encoding");
         } catch (NullPointerException e){
-            e.printStackTrace();
+            Log.d(TAG, "Shouldn't be here");
         }
     }
 
@@ -325,7 +317,6 @@ public class RecipesManager {
             evaluateBody = buildEvaluateBody(globalConfig,
                                             mRecipeCooler, null, null, null);
         } catch (JSONException e) {
-            e.printStackTrace();
             Log.d(TAG, "body build error");
             return;
         }
@@ -353,7 +344,6 @@ public class RecipesManager {
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            e.printStackTrace();
             Log.d(TAG, "Error");
         }
     }
@@ -371,7 +361,7 @@ public class RecipesManager {
                 mRecipeCooler.markRecipeAsShown(recipeId);
             }
         }
-        String trackingBody = Recipe.buildTrackingBody(context, recipeId, trackingEvent);
+        String trackingBody = Recipe.buildTrackingBody(GlobalConfig.getInstance(context), recipeId, trackingEvent);
         Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
         NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
     }
