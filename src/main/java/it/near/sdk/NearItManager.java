@@ -38,7 +38,7 @@ import it.near.sdk.Recipes.RecipeRefreshListener;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Utils.NearItIntentConstants;
 import it.near.sdk.Utils.NearUtils;
-import it.near.sdk.Utils.ULog;
+
 
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
@@ -87,12 +87,12 @@ public class NearItManager {
         NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
-                ULog.d(TAG, created ? "Profile created successfully." : "Profile is present");
+                Log.d(TAG, created ? "Profile created successfully." : "Profile is present");
             }
 
             @Override
             public void onProfileCreationError(String error) {
-                ULog.wtf(TAG, "Error creating profile. Profile not present");
+                Log.d(TAG, "Error creating profile. Profile not present");
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
                 NearInstallation.registerInstallation(application);
@@ -204,7 +204,7 @@ public class NearItManager {
     };
 
     private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
-        ULog.d(TAG, "deliver Event: " + parcelable.toString());
+        Log.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
         Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
         if (action.equals(PUSH_MESSAGE_ACTION)){

@@ -36,7 +36,6 @@ import it.near.sdk.Recipes.Models.ReactionAction;
 import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Menage recipes download, caching and direct calling.
@@ -139,14 +138,14 @@ public class RecipesManager {
             requestBody = buildEvaluateBody(globalConfig, null, null, null, null);
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "Can't build request body");
+            Log.d(TAG, "Can't build request body");
         }
 
         try {
             httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, "Got recipes: " + response.toString());
+                    Log.d(TAG, "Got recipes: " + response.toString());
                     recipes = NearJsonAPIUtils.parseList(morpheus, response, Recipe.class);
                     persistList(recipes);
                     listener.onRecipesRefresh();
@@ -154,7 +153,7 @@ public class RecipesManager {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error in downloading recipes: " + statusCode);
+                    Log.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
                         recipes = loadChachedList();
                     } catch (JSONException e) {
@@ -172,7 +171,7 @@ public class RecipesManager {
     private void persistList(List<Recipe> recipes) {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
-        ULog.d(TAG , "Persist: " + listStringified);
+        Log.d(TAG , "Persist: " + listStringified);
         editor.putString(TAG , listStringified);
         editor.apply();
     }
@@ -236,7 +235,7 @@ public class RecipesManager {
      */
     public void gotRecipe(Recipe recipe){
         String stringRecipe = recipe.getName();
-        ULog.d(TAG , stringRecipe!=null? stringRecipe : "nameless recipe");
+        Log.d(TAG , stringRecipe!=null? stringRecipe : "nameless recipe");
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
@@ -256,9 +255,9 @@ public class RecipesManager {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    ULog.d(TAG, recipe.toString());
+                    Log.d(TAG, recipe.toString());
                     String reactionPluginName = recipe.getReaction_plugin_id();
                     Reaction reaction = reactions.get(reactionPluginName);
                     reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle());
@@ -266,7 +265,7 @@ public class RecipesManager {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "single recipe failed");
+                    Log.d(TAG, "single recipe failed");
                 }
             });
         } catch (AuthenticationException e) {
@@ -299,7 +298,7 @@ public class RecipesManager {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error in handling on failure: " + statusCode);
+                    Log.d(TAG, "Error in handling on failure: " + statusCode);
                 }
             });
         } catch (AuthenticationException e) {
@@ -316,7 +315,7 @@ public class RecipesManager {
      * @param recipeId recipe identifier.
      */
     public void evaluateRecipe(String recipeId){
-        ULog.d(TAG, "Evaluating recipe: " + recipeId);
+        Log.d(TAG, "Evaluating recipe: " + recipeId);
         if (recipeId == null) return;
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(recipeId)
@@ -327,7 +326,7 @@ public class RecipesManager {
                                             mRecipeCooler, null, null, null);
         } catch (JSONException e) {
             e.printStackTrace();
-            ULog.d(TAG, "body build error");
+            Log.d(TAG, "body build error");
             return;
         }
 
@@ -340,7 +339,7 @@ public class RecipesManager {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
                     // TODO refactor plugin
                     if (recipe != null){
@@ -350,12 +349,12 @@ public class RecipesManager {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error in handling on failure: " + statusCode);
+                    Log.d(TAG, "Error in handling on failure: " + statusCode);
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             e.printStackTrace();
-            ULog.d(TAG, "Error");
+            Log.d(TAG, "Error");
         }
     }
 

@@ -3,7 +3,7 @@ package it.near.sdk.Utils;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-
+import android.util.Log;
 
 /**
  *
@@ -52,7 +52,7 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
     @Override
     public void onActivityPaused(Activity activity) {
         ++paused;
-        ULog.d(TAG, "application is in foreground: " + (resumed > paused));
+        Log.d(TAG, "application is in foreground: " + (resumed > paused));
         triggerEvents();
     }
 
@@ -68,7 +68,7 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
     @Override
     public void onActivityStopped(Activity activity) {
         ++stopped;
-        ULog.d(TAG, "application is visible: " + (started > stopped));
+        Log.d(TAG, "application is visible: " + (started > stopped));
     }
 
     private void triggerEvents(){

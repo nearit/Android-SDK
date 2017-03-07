@@ -23,8 +23,8 @@ In the setting section of your Firebase project, you can find the cloud messagin
 
 Do not follow FCM-specific instructions: our library automatically handles this part of the process. We ask FCM servers for a device token and sync it with NearIT user. Moreover, we have already included the proper services in our manifest.
 
-If you experience build or runtime problems with google play services components, make sure to include the 10.2.0 version of any gms dependency in your app.
+If you experience build or runtime problems with google play services components, make sure to include the @@playServicesNumber@@ version of any gms dependency in your app.
 Example:
 ```
-compile 'com.google.android.gms:play-services-analytics:10.2.0'
+compile 'com.google.android.gms:play-services-analytics:@@playServicesNumber@@'
 ```

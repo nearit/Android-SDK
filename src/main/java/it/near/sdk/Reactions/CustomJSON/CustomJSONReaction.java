@@ -2,7 +2,7 @@ package it.near.sdk.Reactions.CustomJSON;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -26,7 +26,6 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * @author cattaneostefano.
@@ -79,16 +78,16 @@ public class CustomJSONReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
                     jsonList = NearJsonAPIUtils.parseList(morpheus, response, CustomJSON.class);
                     persistList(TAG, jsonList);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error: " + statusCode);
+                    Log.d(TAG, "Error: " + statusCode);
                     if (statusCode == 0){
-                        ULog.d(TAG, throwable.toString());
+                        Log.d(TAG, throwable.toString());
                     }
                     try {
                         jsonList = loadList();

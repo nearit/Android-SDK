@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;
@@ -34,7 +35,6 @@ import it.near.sdk.MorpheusNear.Morpheus;
 import it.near.sdk.Recipes.RecipesManager;
 import it.near.sdk.Trackings.Events;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Manages a beacon forest, the plugin for monitoring regions structured in a tree.
@@ -139,7 +139,7 @@ public class GeopolisManager {
             httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
 
                     List<Node> nodes = nodesManager.parseAndSetNodes(response);
                     startRadarOnNodes(nodes);
@@ -147,7 +147,7 @@ public class GeopolisManager {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error " + statusCode);
+                    Log.d(TAG, "Error " + statusCode);
                     // load the config
                     startRadarOnNodes(nodesManager.getNodes());
                 }
@@ -186,7 +186,7 @@ public class GeopolisManager {
      * @param pulseBundle the region identifier of the pulse
      */
     private void firePulse(String pulseAction, String pulseBundle) {
-        ULog.d(TAG, "firePulse!");
+        Log.d(TAG, "firePulse!");
         recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
     }
 
@@ -195,7 +195,7 @@ public class GeopolisManager {
         public static final String TAG = "RegionEventReceiver";
         @Override
         public void onReceive(Context context, Intent intent) {
-            ULog.wtf(this.TAG, "receiverEvent");
+            Log.d(this.TAG, "receiverEvent");
             if (!intent.hasExtra(NODE_ID)) return;
             // trim the package name
             String packageName = mApplication.getPackageName();
@@ -255,7 +255,7 @@ public class GeopolisManager {
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            ULog.wtf(TAG, "reset intent received");
+            Log.d(TAG, "reset intent received");
             if (intent.getBooleanExtra(GeoFenceSystemEventsReceiver.LOCATION_STATUS, false)){
                 startRadarOnNodes(nodesManager.getNodes());
             } else {
@@ -276,7 +276,7 @@ public class GeopolisManager {
                     .appendPath(TRACKING_RES).build();
             NearNetworkUtil.sendTrack(mApplication, url.toString(), buildTrackBody(identifier, event));
         } catch (JSONException e) {
-            ULog.d(TAG, "Unable to send track: " +  e.toString());
+            Log.d(TAG, "Unable to send track: " +  e.toString());
         }
     }
 

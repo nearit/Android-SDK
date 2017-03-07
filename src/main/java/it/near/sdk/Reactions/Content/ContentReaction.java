@@ -2,7 +2,7 @@ package it.near.sdk.Reactions.Content;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -24,7 +24,6 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * @author cattaneostefano
@@ -96,7 +95,7 @@ public class ContentReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
                     contentList = NearJsonAPIUtils.parseList(morpheus, response, Content.class);
                     formatLinks(contentList);
                     persistList(TAG, contentList);
@@ -104,7 +103,7 @@ public class ContentReaction extends CoreReaction {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    ULog.d(TAG, "Error: " + statusCode);
+                    Log.d(TAG, "Error: " + statusCode);
                     try {
                         contentList = loadList();
                     } catch (JSONException e) {

@@ -21,6 +21,23 @@ def getVersionName = {
     }
 }
 
+def getLatestVersionName = {
+    def stdout = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'describe', '--tags', '--abbrev=0'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        printl("Can't get version from git: " + e);
+        return "adhoc"
+    }
+}
+
+def playServicesVersion = '10.2.0'
+
 allprojects{
     version = "${getVersionName()}"
 }
@@ -136,6 +153,15 @@ task uploadDocs {
             }
         }
     }
+}
+
+task injectVersionsInMarkdowns(type: Copy){
+    from('docs/src') {
+        include '*'
+        filter{ it.replaceAll('@@versionNumber@@', "${getLatestVersionName()}")}
+        filter{ it.replaceAll('@@playServicesNumber@@', playServicesVersion)}
+    }
+    into 'docs'
 }
 
 dependencies {

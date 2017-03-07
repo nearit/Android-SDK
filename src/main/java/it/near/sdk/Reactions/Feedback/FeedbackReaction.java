@@ -2,7 +2,7 @@ package it.near.sdk.Reactions.Feedback;
 
 import android.content.Context;
 import android.net.Uri;
-import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -29,7 +29,6 @@ import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearJsonAPIUtils;
-import it.near.sdk.Utils.ULog;
 
 /**
  * Created by cattaneostefano on 11/10/2016.
@@ -62,14 +61,14 @@ public class FeedbackReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    ULog.d(TAG, response.toString());
+                    Log.d(TAG, response.toString());
                     feedbackList = NearJsonAPIUtils.parseList(morpheus, response, Feedback.class);
                     persistList(TAG, feedbackList);
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    ULog.d(TAG, "Error: " + statusCode);
+                    Log.d(TAG, "Error: " + statusCode);
                     try {
                         feedbackList = loadList();
                     } catch (JSONException e) {
@@ -127,7 +126,7 @@ public class FeedbackReaction extends CoreReaction {
         }
         try {
             String answerBody = event.toJsonAPI(GlobalConfig.getInstance(mContext));
-            ULog.d(TAG, "Answer" + answerBody);
+            Log.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)
                     .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
@@ -137,13 +136,13 @@ public class FeedbackReaction extends CoreReaction {
                 httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler(){
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        ULog.d(TAG, "Feedback sent successfully");
+                        Log.d(TAG, "Feedback sent successfully");
                         handler.onSuccess();
                     }
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        ULog.d(TAG, "Error in sending answer: " + statusCode);
+                        Log.d(TAG, "Error in sending answer: " + statusCode);
                         handler.onFail(statusCode, responseString);
                     }
                 });
