@@ -28,7 +28,16 @@ def getLatestVersionName = {
             commandLine 'git', 'describe', '--tags', '--abbrev=0'
             standardOutput = stdout
         }
-        return stdout.toString().trim()
+        def versionFromTag = stdout.toString().trim()
+        stdout.reset()
+        exec {
+            commandLine 'git', 'describe', '--contains', '--all', 'HEAD'
+            standardOutput = stdout
+        }
+        def branchName = stdout.toString()
+        def versionFromReleaseBranch = branchName.substring(branchName.indexOf('/') + 1).trim()
+        return versionFromTag == versionFromReleaseBranch ? versionFromTag : versionFromReleaseBranch
+        // return branchName
     }
     catch (e) {
         printl("Can't get version from git: " + e);
@@ -156,6 +165,7 @@ task uploadDocs {
 }
 
 task injectVersionsInMarkdowns(type: Copy){
+    duplicatesStrategy 'exclude'
     from('docs/src') {
         include '*'
         filter{ it.replaceAll('@@versionNumber@@', "${getLatestVersionName()}")}
