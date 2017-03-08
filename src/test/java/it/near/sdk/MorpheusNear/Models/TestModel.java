@@ -10,7 +10,7 @@ import it.near.sdk.MorpheusNear.Resource;
 
 public class TestModel extends Resource {
     @SerializedName("content")
-    String content;
+    public String content;
 
     public TestModel() {
     }

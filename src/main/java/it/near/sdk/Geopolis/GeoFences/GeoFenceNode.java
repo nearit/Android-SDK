@@ -20,13 +20,13 @@ import it.near.sdk.Geopolis.Node;
 public class GeoFenceNode extends Node implements Parcelable{
     private static final int LOITERING_DELAY = 30000;
     @SerializedName("latitude")
-    Number latitude;
+    public Number latitude;
 
     @SerializedName("longitude")
-    Number longitude;
+    public Number longitude;
 
     @SerializedName("radius")
-    Number radius;
+    public Number radius;
 
     public GeoFenceNode() {
         super();

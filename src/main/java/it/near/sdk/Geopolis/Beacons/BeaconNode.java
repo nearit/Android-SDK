@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
-import org.apache.commons.lang3.ObjectUtils;
 
 import java.util.IllegalFormatException;
 import java.util.UUID;
@@ -18,13 +17,13 @@ import it.near.sdk.Geopolis.Node;
 
 public class BeaconNode extends Node {
     @SerializedName("proximity_uuid")
-    String proximityUUID;
+    public String proximityUUID;
 
     @SerializedName("major")
-    Integer major;
+    public Integer major;
 
     @SerializedName("minor")
-    Integer minor;
+    public Integer minor;
 
     public BeaconNode() {
     }

@@ -11,9 +11,9 @@ import it.near.sdk.MorpheusNear.Resource;
 
 public class TestWithChildModel extends Resource {
     @SerializedName("content")
-    String content;
+    public String content;
     @Relationship("child")
-    TestChildModel child;
+    public TestChildModel child;
 
     public TestWithChildModel() {
     }

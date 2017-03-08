@@ -13,13 +13,13 @@ import it.near.sdk.MorpheusNear.Resource;
  */
 public class Claim extends Resource implements Parcelable {
     @SerializedName("serial_number")
-    String serial_number;
+    public String serial_number;
     @SerializedName("claimed_at")
-    String claimed_at;
+    public String claimed_at;
     @SerializedName("redeemed_at")
-    String redeemed_at;
+    public String redeemed_at;
     @Relationship("coupon")
-    Coupon coupon;
+    public Coupon coupon;
 
     public Claim() {
     }

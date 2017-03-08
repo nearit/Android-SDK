@@ -35,27 +35,27 @@ import it.near.sdk.Utils.NearJsonAPIUtils;
 public class Recipe extends Resource {
 
     @SerializedName("name")
-    String name;
+    public String name;
     @SerializedName("notification")
-    HashMap<String, Object> notification;
+    public HashMap<String, Object> notification;
     @SerializedName("labels")
-    HashMap<String, Object> labels;
+    public HashMap<String, Object> labels;
     @SerializedName("scheduling")
-    HashMap<String, Object> scheduling;
+    public HashMap<String, Object> scheduling;
     @SerializedName("cooldown")
-    HashMap<String, Object> cooldown;
+    public HashMap<String, Object> cooldown;
     @SerializedName("pulse_plugin_id")
-    String pulse_plugin_id;
+    public String pulse_plugin_id;
     @Relationship("pulse_bundle")
-    PulseBundle pulse_bundle;
+    public PulseBundle pulse_bundle;
     @Relationship("pulse_action")
-    PulseAction pulse_action;
+    public PulseAction pulse_action;
     @SerializedName("reaction_plugin_id")
-    String reaction_plugin_id;
+    public String reaction_plugin_id;
     @Relationship("reaction_bundle")
-    ReactionBundle reaction_bundle;
+    public ReactionBundle reaction_bundle;
     @Relationship("reaction_action")
-    ReactionAction reaction_action;
+    public ReactionAction reaction_action;
 
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";

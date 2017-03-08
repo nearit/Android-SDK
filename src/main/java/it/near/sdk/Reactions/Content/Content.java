@@ -17,19 +17,19 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
  */
 public class Content extends ReactionBundle implements Parcelable {
     @SerializedName("content")
-    String content;
+    public String content;
     @SerializedName("video_link")
-    String video_link;
+    public String video_link;
     @SerializedName("updated_at")
-    String updated_at;
+    public String updated_at;
     @SerializedName("images_ids")
-    List<String> images_id;
+    public List<String> images_id;
     @Relationship("images")
-    List<Image> images;
+    public List<Image> images;
     @Relationship("audio")
-    Audio audio;
+    public Audio audio;
     @Relationship("upload")
-    Upload upload;
+    public Upload upload;
 
     List<ImageSet> images_links;
 

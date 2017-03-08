@@ -15,7 +15,7 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
 public class Feedback extends ReactionBundle implements Parcelable{
 
     @SerializedName("question")
-    String question;
+    public String question;
 
     String recipeId;
 

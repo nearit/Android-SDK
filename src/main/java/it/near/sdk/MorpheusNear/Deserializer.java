@@ -1,7 +1,5 @@
 package it.near.sdk.MorpheusNear;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
@@ -61,15 +59,27 @@ public class Deserializer {
   public Resource setField(Resource resourceObject, String fieldName, Object data) {
     Field field = null;
     try {
-      field = FieldUtils.getField(resourceObject.getClass(), fieldName, true);
+      field = findUnderlying(resourceObject.getClass(), fieldName);
       field.set(resourceObject, data);
     } catch (IllegalAccessException e) {
       Logger.debug("Could not access " + field.getName() + " field");
     } catch (IllegalArgumentException e) {
       // Logger.debug("The field " + field.getName() + " may be null");
+    } catch (NoSuchFieldException e) {
+      // e.printStackTrace();
     }
 
     return resourceObject;
+  }
+
+  public static Field findUnderlying(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+    Class<?> current = clazz;
+    do {
+      try {
+        return current.getDeclaredField(fieldName);
+      } catch(Exception e) {}
+    } while((current = current.getSuperclass()) != null);
+    throw new NoSuchFieldException();
   }
 
   /**

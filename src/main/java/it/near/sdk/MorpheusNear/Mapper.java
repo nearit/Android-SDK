@@ -2,7 +2,6 @@ package it.near.sdk.MorpheusNear;
 
 import com.google.gson.annotations.SerializedName;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,6 +9,7 @@ import org.json.JSONObject;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -117,7 +117,7 @@ public class Mapper {
       return object;
     }
 
-    for (Field field : FieldUtils.getAllFieldsList(object.getClass())) {
+    for (Field field : getAllFields(object.getClass())) {
       // get the right attribute name
       String jsonFieldName = field.getName();
       boolean isRelation = false;
@@ -330,8 +330,7 @@ public class Mapper {
    */
   private HashMap<String, String> getRelationshipNames(Class clazz) {
     HashMap<String, String> relationNames = new HashMap<>();
-    List<Field> fields = FieldUtils.getAllFieldsList(clazz);
-    for (Field field : fields) {
+    for (Field field : getAllFields(clazz)) {
       String fieldName = field.getName();
       for (Annotation annotation : field.getDeclaredAnnotations()) {
         if (annotation.annotationType() == SerializedName.class) {
@@ -346,6 +345,19 @@ public class Mapper {
     }
 
     return relationNames;
+  }
+
+  private List<Field> getAllFields(Class clazz) {
+    return getAllFieldsRec(clazz, new ArrayList<Field>());
+  }
+
+  private List<Field> getAllFieldsRec(Class clazz, List<Field> list) {
+    Class superClazz = clazz.getSuperclass();
+    if(superClazz != null){
+      getAllFieldsRec(superClazz, list);
+    }
+    list.addAll(Arrays.asList(clazz.getDeclaredFields()));
+    return list;
   }
 
   // getter

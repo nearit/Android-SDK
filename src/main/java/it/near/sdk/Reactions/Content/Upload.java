@@ -15,7 +15,7 @@ import it.near.sdk.MorpheusNear.Resource;
 
 public class Upload extends Resource implements Parcelable {
     @SerializedName("upload")
-    HashMap<String, Object> upload;
+    public HashMap<String, Object> upload;
 
     public Upload() {
     }
