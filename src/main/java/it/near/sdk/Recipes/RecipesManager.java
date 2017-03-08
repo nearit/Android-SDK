@@ -372,7 +372,6 @@ public class RecipesManager {
                                            @Nullable String pulse_action,
                                            @Nullable String pulse_bundle) throws JSONException {
         if (globalConfig.getProfileId() == null ||
-                globalConfig.getInstallationId() == null ||
                 globalConfig.getAppId() == null){
             throw new JSONException("missing data");
         }

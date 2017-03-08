@@ -31,7 +31,7 @@ public class GlobalConfig {
     private final String NOTIFICATIONIMAGE = "notification_image";
     private int notificationImage = 0;
     // ---------- suffix for sharedpreferences ----------
-    private String prefsNameSuffix = "NearConfig";
+    private String PREFS_NAME = "NearConfig";
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
@@ -41,8 +41,6 @@ public class GlobalConfig {
     }
 
     private void setUpSharedPreferences() {
-        String PACK_NAME = mContext.getApplicationContext().getPackageName();
-        String PREFS_NAME = PACK_NAME + prefsNameSuffix;
         sp = mContext.getSharedPreferences(PREFS_NAME, 0);
         editor = sp.edit();
     }
