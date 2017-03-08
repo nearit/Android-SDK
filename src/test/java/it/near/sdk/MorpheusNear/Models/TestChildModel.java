@@ -10,7 +10,7 @@ import it.near.sdk.MorpheusNear.Resource;
 
 public class TestChildModel extends Resource {
     @SerializedName("favourite_child")
-    boolean isFavoChild;
+    public boolean isFavoChild;
 
     public TestChildModel() {
     }

@@ -20,19 +20,19 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
  */
 public class Coupon extends ReactionBundle implements Parcelable{
     @SerializedName("name")
-    String name;
+    public String name;
     @SerializedName("description")
-    String description;
+    public String description;
     @SerializedName("value")
-    String value;
+    public String value;
     @SerializedName("expires_at")
-    String expires_at;
+    public String expires_at;
     @SerializedName("icon_id")
-    String icon_id;
+    public String icon_id;
     @Relationship("claims")
-    List<Claim> claims;
+    public List<Claim> claims;
     @Relationship("icon")
-    Image icon;
+    public Image icon;
 
     ImageSet iconSet;
 

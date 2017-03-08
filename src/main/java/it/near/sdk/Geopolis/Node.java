@@ -13,13 +13,13 @@ import it.near.sdk.MorpheusNear.Resource;
 
 public class Node extends Resource {
     @SerializedName("identifier")
-    protected String identifier;
+    public String identifier;
 
     @Relationship("parent")
-    protected Node parent;
+    public Node parent;
 
     @Relationship("children")
-    protected List<Node> children;
+    public List<Node> children;
 
     public Node() {
     }

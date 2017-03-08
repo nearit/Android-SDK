@@ -88,6 +88,7 @@ public class NearItManager {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
                 Log.d(TAG, created ? "Profile created successfully." : "Profile is present");
+                refreshConfigs();
             }
 
             @Override

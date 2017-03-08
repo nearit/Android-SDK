@@ -16,7 +16,7 @@ import it.near.sdk.MorpheusNear.Resource;
 
 public class Audio extends Resource implements Parcelable {
     @SerializedName("audio")
-    HashMap<String, Object> audio;
+    public HashMap<String, Object> audio;
 
     public Audio() {
     }

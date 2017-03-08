@@ -13,13 +13,13 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
  */
 public class Poll extends ReactionBundle implements Parcelable{
     @SerializedName("question")
-    String question;
+    public String question;
     @SerializedName("choice_1")
-    String choice_1;
+    public String choice_1;
     @SerializedName("choice_2")
-    String choice_2;
+    public String choice_2;
     @SerializedName("updated_at")
-    String updated_at;
+    public String updated_at;
 
     String recipeId;
 

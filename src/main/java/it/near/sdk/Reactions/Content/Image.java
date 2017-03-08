@@ -12,7 +12,7 @@ import it.near.sdk.MorpheusNear.Resource;
  */
 public class Image extends Resource {
     @SerializedName("image")
-    HashMap<String, Object> image;
+    public HashMap<String, Object> image;
 
     public Image() {
     }

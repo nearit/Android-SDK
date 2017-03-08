@@ -17,7 +17,7 @@ import it.near.sdk.Recipes.Models.ReactionBundle;
 public class CustomJSON extends ReactionBundle implements Parcelable{
 
     @SerializedName("content")
-    HashMap<String, Object> content;
+    public HashMap<String, Object> content;
 
     public CustomJSON() {
     }
