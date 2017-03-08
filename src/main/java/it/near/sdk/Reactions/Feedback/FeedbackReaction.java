@@ -44,9 +44,7 @@ public class FeedbackReaction extends CoreReaction {
     private static final String ANSWERS_RESOURCE = "answers";
 
     private List<Feedback> feedbackList;
-
-
-
+    
     public FeedbackReaction(Context mContext, NearNotifier nearNotifier) {
         super(mContext, nearNotifier);
     }
