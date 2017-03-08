@@ -49,15 +49,19 @@ public class MorpheusTest {
                 "    \"type\": \"test\",\n" +
                 "    \"id\": \"1\",\n" +
                 "    \"attributes\": {\n" +
-                "      \"content\" : \"contenuto\"\n" +
+                "      \"content\" : \"contenuto\",\n" +
+                "       \"double_value\" : 6.0,\n" +
+                "       \"int_value\" : 6\n" +
                 "    }\n" +
                 "  }\n" +
                 "}");
         TestModel object = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestModel.class);
         assertNotNull(object);
         assertThat(object, instanceOf(TestModel.class));
-        assertEquals("1", object.getId());
-        assertEquals("contenuto", object.getContent());
+        assertEquals(object.getId(), "1");
+        assertEquals(object.getContent(), "contenuto");
+        assertThat(object.getDouble_value(), is(6.0));
+        assertThat(object.getInt_value(), is(6));
 
     }
 
