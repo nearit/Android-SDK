@@ -12,7 +12,7 @@ import java.util.Map;
 
 import it.near.sdk.Recipes.Models.Recipe;
 
-import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
+import static it.near.sdk.Utils.NearUtils.checkNotNull;
 
 /**
  * Created by cattaneostefano on 13/02/2017.

@@ -5,7 +5,7 @@ import android.support.annotation.NonNull;
 
 import it.near.sdk.Communication.NearAsyncHttpClient;
 
-import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
+import static it.near.sdk.Utils.NearUtils.checkNotNull;
 
 /**
  * Created by cattaneostefano on 27/02/2017.
