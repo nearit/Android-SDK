@@ -22,6 +22,7 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
 
     public AppLifecycleMonitor(Application app, OnLifecycleEventListener listener){
         this.listener = listener;
+
         app.registerActivityLifecycleCallbacks(this);
     }
 
