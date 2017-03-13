@@ -84,7 +84,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
 
-    private void startRadar() {
+    public void startRadar() {
         beaconManager.setBackgroundBetweenScanPeriod(BACKGROUND_BETWEEN_SCAN_PERIODS);
         beaconManager.setBackgroundScanPeriod(BACKGROUND_SCAN_PERIOD);
         beaconManager.setForegroundScanPeriod(FOREGROUND_SCAN_PERIOD);
@@ -364,6 +364,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
 
     private void startRangingRegion(Region region) throws RemoteException {
+        if (beaconManager.getRangedRegions().contains(region)) return;
         rangingRadars.put(region, new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region)));
         beaconManager.startRangingBeaconsInRegion(region);
     }

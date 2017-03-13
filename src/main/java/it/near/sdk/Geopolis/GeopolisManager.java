@@ -91,6 +91,9 @@ public class GeopolisManager {
         this.nodesManager = new NodesManager(nodesManSP);
 
         this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
+        if (isRadarStarted(application)) {
+            altBeaconMonitor.startRadar();
+        }
         this.geofenceMonitor = new GeoFenceMonitor(application);
 
         registerProximityReceiver();
