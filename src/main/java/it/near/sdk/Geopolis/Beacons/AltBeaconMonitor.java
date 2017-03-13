@@ -349,7 +349,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
             } else {
                 // region exit
                 stopRangingRegion(region);
-                beaconManager.stopRangingBeaconsInRegion(region);
                 if (beaconManager.getRangedRegions().size() == 0){
                     // if the list of ranged regions is empty, we stop ranging
                     stopRanging();
@@ -364,6 +363,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
 
     private void startRangingRegion(Region region) throws RemoteException {
+        // we force the foreground mode, to avoid the phone not ranging after a swipe inside an area
+        beaconManager.setBackgroundMode(false);
+        // we exit when the region is already ranged, to avoid duplicating regions
         if (beaconManager.getRangedRegions().contains(region)) return;
         rangingRadars.put(region, new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region)));
         beaconManager.startRangingBeaconsInRegion(region);
