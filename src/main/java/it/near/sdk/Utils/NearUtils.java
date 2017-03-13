@@ -8,6 +8,8 @@ import android.util.Log;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Collections;
+import java.util.List;
 
 import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.Content.ContentReaction;
@@ -149,6 +151,10 @@ public class NearUtils {
                 break;
         }
         return coreContent;
+    }
+
+    public static <T> Iterable<T> safe(Iterable<T> iterable ) {
+        return iterable == null ? Collections.<T>emptyList() : iterable;
     }
 
 }

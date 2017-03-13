@@ -25,6 +25,8 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
+import static it.near.sdk.Utils.NearUtils.safe;
+
 /**
  * @author cattaneostefano
  */
@@ -66,7 +68,7 @@ public class ContentReaction extends CoreReaction {
                 Log.d(TAG, "Data format error");
             }
         }
-        for ( Content cn : contentList){
+        for ( Content cn : safe(contentList)){
             if (cn.getId().equals(reaction_bundle)){
                 listener.onContentFetched(cn, true);
                 return;
