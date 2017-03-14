@@ -20,6 +20,7 @@ import it.near.sdk.Communication.NearInstallation;
 import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
 import it.near.sdk.Operation.NearItUserProfile;
 import it.near.sdk.Operation.ProfileCreationListener;
+import it.near.sdk.Reactions.Content.Content;
 import it.near.sdk.Reactions.Content.ContentReaction;
 import it.near.sdk.Reactions.Coupon.CouponListener;
 import it.near.sdk.Reactions.Coupon.CouponReaction;
@@ -73,11 +74,11 @@ public class NearItManager {
 
     /**
      * Default constructor.
-     * @param application the application object
+     * @param context the context
      * @param apiKey the apiKey string
      */
-    public NearItManager(final Application application, String apiKey) {
-        this.application = application;
+    public NearItManager(Context context, String apiKey) {
+        this.application = (Application) context.getApplicationContext();
 
         GlobalConfig.getInstance(application).setApiKey(apiKey);
         GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));

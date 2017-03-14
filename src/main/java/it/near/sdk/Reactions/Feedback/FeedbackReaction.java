@@ -30,6 +30,8 @@ import it.near.sdk.Recipes.NearITEventHandler;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
+import static it.near.sdk.Utils.NearUtils.safe;
+
 /**
  * Created by cattaneostefano on 11/10/2016.
  */
@@ -161,7 +163,7 @@ public class FeedbackReaction extends CoreReaction {
                 Log.d(TAG, "Data format error");
             }
         }
-        for ( Feedback fb : feedbackList){
+        for ( Feedback fb : safe(feedbackList)){
             if (fb.getId().equals(reaction_bundle)){
                 fb.setRecipeId(recipe.getId());
                 listener.onContentFetched(fb, true);

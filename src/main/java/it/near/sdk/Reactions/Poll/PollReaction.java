@@ -28,6 +28,8 @@ import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
+import static it.near.sdk.Utils.NearUtils.safe;
+
 /**
  * @author cattaneostefano
  */
@@ -87,7 +89,7 @@ public class PollReaction extends CoreReaction {
                 Log.d(TAG, "Data format error");
             }
         }
-        for (Poll pn : pollList){
+        for (Poll pn : safe(pollList)){
             if (pn.getId().equals(reaction_bundle)){
                 pn.setRecipeId(recipe.getId());
                 listener.onContentFetched(pn, true);

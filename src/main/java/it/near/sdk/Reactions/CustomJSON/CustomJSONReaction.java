@@ -27,6 +27,8 @@ import it.near.sdk.Recipes.Models.Recipe;
 import it.near.sdk.Recipes.NearNotifier;
 import it.near.sdk.Utils.NearJsonAPIUtils;
 
+import static it.near.sdk.Utils.NearUtils.safe;
+
 /**
  * @author cattaneostefano.
  */
@@ -130,7 +132,7 @@ public class CustomJSONReaction extends CoreReaction {
                 Log.d(TAG, "Data format error");
             }
         }
-        for (CustomJSON json : jsonList){
+        for (CustomJSON json : safe(jsonList)){
             if (json.getId().equals(reaction_bundle)){
                 listener.onContentFetched(json, true);
                 return;
