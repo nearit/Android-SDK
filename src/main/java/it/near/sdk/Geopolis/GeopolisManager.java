@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.altbeacon.beacon.Region;
@@ -90,6 +91,9 @@ public class GeopolisManager {
         this.nodesManager = new NodesManager(nodesManSP);
 
         this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
+        if (isRadarStarted(application)) {
+            altBeaconMonitor.startRadar();
+        }
         this.geofenceMonitor = new GeoFenceMonitor(application);
 
         registerProximityReceiver();
@@ -201,10 +205,9 @@ public class GeopolisManager {
             String packageName = mApplication.getPackageName();
             String action = intent.getAction().replace(packageName + ".", "");
             Node node = nodesManager.nodeFromId(intent.getStringExtra(NODE_ID));
-
+            if (node == null) return;
             switch (action){
                 case GF_ENTRY_ACTION_SUFFIX:
-                    if (node == null) return;
                     trackAndFirePulse(node, Events.ENTER_PLACE);
                     if (node.getChildren() != null){
                         geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnEnter(nodesManager.getNodes(), node));
@@ -212,18 +215,15 @@ public class GeopolisManager {
                     }
                     break;
                 case GF_EXIT_ACTION_SUFFIX:
-                    if (node == null) return;
                     trackAndFirePulse(node, Events.LEAVE_PLACE);
                     geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnExit(nodesManager.getNodes(), node));
                     altBeaconMonitor.removeRegions(node.getChildren());
 
                     break;
                 case BT_ENTRY_ACTION_SUFFIX:
-                    if (node == null) return;
                     trackAndFirePulse(node, Events.ENTER_REGION);
                     break;
                 case BT_EXIT_ACTION_SUFFIX:
-                    if (node == null) return;
                     trackAndFirePulse(node, Events.LEAVE_REGION);
                     break;
                 case GF_RANGE_FAR_SUFFIX:
@@ -305,9 +305,9 @@ public class GeopolisManager {
 
 
     /**
-     * Returns wether the app started the location radar.
-     * @param context
-     * @return
+     * Returns whether the app started the location radar.
+     * @param context the context object
+     * @return whether the app started the location radar
      */
     public static boolean isRadarStarted(Context context){
         String PACK_NAME = context.getApplicationContext().getPackageName();
@@ -315,7 +315,7 @@ public class GeopolisManager {
         return sp.getBoolean(RADAR_ON, false);
     }
 
-    public void setRadarState(boolean b){
+    private void setRadarState(boolean b){
         sp.edit().putBoolean(RADAR_ON, b).apply();
 
     }
