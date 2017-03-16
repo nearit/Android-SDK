@@ -1,0 +1,26 @@
+{
+  "data": {
+    "id": "a7663e8c-1c7e-4c3f-95d5-df976f07f81a",
+    "type": "test_with_child",
+    "attributes": {
+      "content": "i've got a child"
+    },
+    "relationships": {
+      "child": {
+        "data": {
+          "id": "e7cde6f7-c2fe-4e4d-9bdc-40dd9b4b4597",
+          "type": "test_child"
+        }
+      }
+    }
+  },
+  "included": [
+    {
+      "id": "e7cde6f7-c2fe-4e4d-9bdc-40dd9b4b4597",
+      "type": "test_child",
+      "attributes": {
+        "favourite_child": true
+      }
+    }
+  ]
+}
