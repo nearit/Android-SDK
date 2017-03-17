@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.everyItem;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasProperty;
@@ -47,13 +48,33 @@ public class MorpheusTest {
     }
 
     @Test
-    public void parsingElement() throws Exception {
+    public void parseElement() throws Exception {
         JSONObject jsonObject = readJsonFile("single_resource.json");
         TestModel object = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestModel.class);
         assertNotNull(object);
         assertThat(object, instanceOf(TestModel.class));
-        assertEquals("1", object.getId());
-        assertEquals("contenuto", object.getContent());
+        assertThat(object.getId(), is("1"));
+        assertThat(object.getContent(), is("contenuto"));
+    }
+
+    @Test
+    public void parseElementWithExtraAttribute() throws Exception {
+        JSONObject jsonObject = readJsonFile("extra_attribute_resource.json");
+        TestModel object = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestModel.class);
+        assertNotNull(object);
+        assertThat(object, instanceOf(TestModel.class));
+        assertThat(object.getId(), is("1"));
+        assertThat(object.getContent(), is("contenuto"));
+    }
+
+    @Test
+    public void parseElementWithMissingAttribute() throws Exception {
+        JSONObject jsonObject = readJsonFile("missing_attributes_resource.json");
+        TestModel object = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestModel.class);
+        assertNotNull(object);
+        assertThat(object, instanceOf(TestModel.class));
+        assertThat(object.getId(), is("1"));
+        assertThat(object.getContent(), is(nullValue()));
     }
 
     @Test
@@ -92,6 +113,10 @@ public class MorpheusTest {
         assertThat(children.get(1).getId(), is("d232d2c1-1c47-4888-bb38-5c7e0893dea5"));
         assertThat(children.get(1).getIsFavoChild(), is(false));
     }
+
+    // TODO inheritance in models
+    // TODO transitive relationships
+    // TODO circular relationships
 
     private JSONObject readJsonFile(String fileName) throws Exception {
         InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(fileName);

@@ -1,0 +1,10 @@
+{
+  "data": {
+    "type": "test",
+    "id": "1",
+    "attributes": {
+      "content" : "contenuto",
+      "extra_attribute" : "I'm not in the model"
+    }
+  }
+}
