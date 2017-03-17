@@ -1,0 +1,39 @@
+{
+  "data" : {
+    "id"    : "a7663e8c-1c7e-4c3f-95d5-df976f07f81a",
+    "type"  : "test_with_children",
+    "attributes" : {
+      "content" : "i've got children"
+    },
+    "relationships" : {
+      "children" : {
+        "data" : [
+          {
+            "id" : "e7cde6f7-c2fe-4e4d-9bdc-40dd9b4b4597",
+            "type" : "test_child"
+          },
+          {
+            "id" : "d232d2c1-1c47-4888-bb38-5c7e0893dea5",
+            "type" : "test_child"
+          }
+        ]
+      }
+    },
+    "included" : [
+      {
+        "id" : "e7cde6f7-c2fe-4e4d-9bdc-40dd9b4b4597",
+        "type" : "test_child",
+        "attributes" : {
+          "favourite_child" : false
+        }
+      },
+      {
+        "id" : "d232d2c1-1c47-4888-bb38-5c7e0893dea5",
+        "type" : "test_child",
+        "attributes" : {
+          "favourite_child" : false
+        }
+      }
+    ]
+  }
+}
