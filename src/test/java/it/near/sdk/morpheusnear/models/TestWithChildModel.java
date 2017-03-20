@@ -1,9 +1,9 @@
-package it.near.sdk.MorpheusNear.Models;
+package it.near.sdk.morpheusnear.models;
 
 import com.google.gson.annotations.SerializedName;
 
-import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.morpheusnear.Resource;
 
 /**
  * Created by cattaneostefano on 06/03/2017.

@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.CustomJSON;
+package it.near.sdk.reactions.customjson;
 
 
 import android.os.Parcel;
@@ -8,8 +8,8 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 
-import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Recipes.Models.ReactionBundle;
+import it.near.sdk.morpheusnear.Resource;
+import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
  * @author cattaneostefano.

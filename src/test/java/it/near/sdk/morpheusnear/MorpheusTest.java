@@ -1,4 +1,4 @@
-package it.near.sdk.MorpheusNear;
+package it.near.sdk.morpheusnear;
 
 import org.hamcrest.core.IsInstanceOf;
 import org.json.JSONException;
@@ -8,10 +8,10 @@ import org.junit.Test;
 
 import java.util.List;
 
-import it.near.sdk.MorpheusNear.Models.TestChildModel;
-import it.near.sdk.MorpheusNear.Models.TestModel;
-import it.near.sdk.MorpheusNear.Models.TestWithChildModel;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.morpheusnear.models.TestChildModel;
+import it.near.sdk.morpheusnear.models.TestModel;
+import it.near.sdk.morpheusnear.models.TestWithChildModel;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.allOf;

@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.Feedback;
+package it.near.sdk.reactions.feedback;
 
 import android.content.Context;
 
@@ -7,8 +7,8 @@ import org.json.JSONException;
 import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Reactions.Event;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.reactions.Event;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 
 /**

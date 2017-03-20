@@ -1,6 +1,6 @@
-package it.near.sdk.Push;
+package it.near.sdk.push;
 
-import it.near.sdk.Reactions.Event;
+import it.near.sdk.reactions.Event;
 
 /**
  * Action for communicate push tap.

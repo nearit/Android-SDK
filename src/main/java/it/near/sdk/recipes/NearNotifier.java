@@ -1,8 +1,8 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.recipes;
 
 import android.os.Parcelable;
 
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.recipes.models.Recipe;
 
 /**
  * @author cattaneostefano

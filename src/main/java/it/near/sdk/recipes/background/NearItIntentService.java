@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes.Background;
+package it.near.sdk.recipes.background;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -11,10 +11,10 @@ import org.json.JSONException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
-import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Recipes.RecipesManager;
-import it.near.sdk.Utils.NearItIntentConstants;
-import it.near.sdk.Utils.NearNotification;
+import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.utils.NearItIntentConstants;
+import it.near.sdk.utils.NearNotification;
 
 /**
  * @author cattaneostefano.

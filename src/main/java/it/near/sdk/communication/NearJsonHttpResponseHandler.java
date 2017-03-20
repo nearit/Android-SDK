@@ -1,4 +1,4 @@
-package it.near.sdk.Communication;
+package it.near.sdk.communication;
 
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;

@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.GeoFences;
+package it.near.sdk.geopolis.geofences;
 
 import android.app.IntentService;
 import android.content.Context;
@@ -14,7 +14,7 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.Geopolis.GeopolisManager;
+import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.R;
 
 /**

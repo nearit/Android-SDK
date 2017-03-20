@@ -1,12 +1,12 @@
-package it.near.sdk.Reactions.Coupon;
+package it.near.sdk.reactions.coupon;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.morpheusnear.Resource;
 
 /**
  * @author cattaneostefano.

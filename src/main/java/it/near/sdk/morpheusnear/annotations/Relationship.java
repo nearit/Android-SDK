@@ -1,4 +1,4 @@
-package it.near.sdk.MorpheusNear.Annotations;
+package it.near.sdk.morpheusnear.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

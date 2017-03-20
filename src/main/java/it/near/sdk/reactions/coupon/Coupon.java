@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.Coupon;
+package it.near.sdk.reactions.coupon;
 
 
 import android.os.Parcel;
@@ -9,11 +9,11 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Reactions.Content.Image;
-import it.near.sdk.Reactions.Content.ImageSet;
-import it.near.sdk.Recipes.Models.ReactionBundle;
+import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.morpheusnear.Resource;
+import it.near.sdk.reactions.content.Image;
+import it.near.sdk.reactions.content.ImageSet;
+import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
  * @author cattaneostefano.

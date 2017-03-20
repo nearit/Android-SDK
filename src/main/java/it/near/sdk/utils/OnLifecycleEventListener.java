@@ -1,4 +1,4 @@
-package it.near.sdk.Utils;
+package it.near.sdk.utils;
 
 /**
  * @author claudiosuardi

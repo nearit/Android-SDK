@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.Poll;
+package it.near.sdk.reactions.poll;
 
 import android.content.Context;
 
@@ -6,8 +6,8 @@ import org.json.JSONException;
 import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Reactions.Event;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.reactions.Event;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Action for submitting a poll answer.

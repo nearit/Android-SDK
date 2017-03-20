@@ -1,8 +1,8 @@
-package it.near.sdk.Geopolis.Beacons.Ranging;
+package it.near.sdk.geopolis.beacons.ranging;
 
 import android.os.Parcelable;
 
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.recipes.models.Recipe;
 
 /**
  * @author cattaneostefano

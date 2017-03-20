@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.recipes;
 
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
@@ -10,7 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.recipes.models.Recipe;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 

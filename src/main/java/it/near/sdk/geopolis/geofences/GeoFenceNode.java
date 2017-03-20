@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.GeoFences;
+package it.near.sdk.geopolis.geofences;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -11,7 +11,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.Geopolis.Node;
+import it.near.sdk.geopolis.Node;
 
 /**
  * Created by cattaneostefano on 21/09/16.

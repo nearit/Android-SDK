@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.recipes;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,20 +22,20 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.NearAsyncHttpClient;
-import it.near.sdk.Communication.NearJsonHttpResponseHandler;
-import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.communication.NearJsonHttpResponseHandler;
+import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.Reactions.Reaction;
-import it.near.sdk.Recipes.Models.OperationAction;
-import it.near.sdk.Recipes.Models.PulseAction;
-import it.near.sdk.Recipes.Models.PulseBundle;
-import it.near.sdk.Recipes.Models.ReactionAction;
-import it.near.sdk.Recipes.Models.ReactionBundle;
-import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.reactions.Reaction;
+import it.near.sdk.recipes.models.OperationAction;
+import it.near.sdk.recipes.models.PulseAction;
+import it.near.sdk.recipes.models.PulseBundle;
+import it.near.sdk.recipes.models.ReactionAction;
+import it.near.sdk.recipes.models.ReactionBundle;
+import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Menage recipes download, caching and direct calling.

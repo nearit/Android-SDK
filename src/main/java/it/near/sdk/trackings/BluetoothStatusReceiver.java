@@ -1,4 +1,4 @@
-package it.near.sdk.Trackings;
+package it.near.sdk.trackings;
 
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import it.near.sdk.Communication.NearInstallation;
+import it.near.sdk.communication.NearInstallation;
 
 /**
  * @author cattaneostefano.

@@ -1,4 +1,4 @@
-package it.near.sdk.Utils;
+package it.near.sdk.utils;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;

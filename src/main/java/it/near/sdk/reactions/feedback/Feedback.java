@@ -1,12 +1,12 @@
-package it.near.sdk.Reactions.Feedback;
+package it.near.sdk.reactions.feedback;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Recipes.Models.ReactionBundle;
+import it.near.sdk.morpheusnear.Resource;
+import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
  * Created by cattaneostefano on 11/10/2016.

@@ -1,4 +1,4 @@
-package it.near.sdk.Communication;
+package it.near.sdk.communication;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -20,7 +20,7 @@ import java.util.HashMap;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Class with static method to register an app installation to our Near APIs.

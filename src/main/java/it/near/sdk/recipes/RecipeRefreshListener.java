@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.recipes;
 
 /**
  * Created by cattaneostefano on 31/08/16.

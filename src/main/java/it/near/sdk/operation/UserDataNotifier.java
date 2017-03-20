@@ -1,4 +1,4 @@
-package it.near.sdk.Operation;
+package it.near.sdk.operation;
 
 /**
  * @author cattaneostefano.

@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.Beacons.Ranging;
+package it.near.sdk.geopolis.beacons.ranging;
 
 import android.content.Context;
 
@@ -7,7 +7,7 @@ import org.altbeacon.beacon.Beacon;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.Geopolis.Beacons.BeaconNode;
+import it.near.sdk.geopolis.beacons.BeaconNode;
 
 /**
  * Manage and calculate beacon distances from the user device.

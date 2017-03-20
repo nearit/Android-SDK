@@ -1,36 +1,27 @@
-package it.near.sdk.Recipes.Model;
+package it.near.sdk.recipes.model;
 
-import android.content.Context;
-import android.content.res.Resources;
 import android.support.annotation.Nullable;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CancellationException;
 
 import static junit.framework.Assert.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.recipes.models.Recipe;
 
 /**
  * Created by cattaneostefano on 17/02/2017.

@@ -1,11 +1,11 @@
-package it.near.sdk.Push.FCMRegistration;
+package it.near.sdk.push.fcmregistration;
 
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-import it.near.sdk.Communication.NearInstallation;
+import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.GlobalConfig;
 
 /**

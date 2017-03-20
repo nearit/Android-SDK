@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes.Models;
+package it.near.sdk.recipes.models;
 
 
 import android.content.Context;
@@ -22,12 +22,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import it.near.sdk.Communication.NearNetworkUtil;
+import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Utils.NearItIntentConstants;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.morpheusnear.Resource;
+import it.near.sdk.utils.NearItIntentConstants;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * @author cattaneostefano

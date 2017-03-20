@@ -1,4 +1,4 @@
-package it.near.sdk.MorpheusNear;
+package it.near.sdk.morpheusnear;
 
 /**
  * Links object.

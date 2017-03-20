@@ -1,4 +1,4 @@
-package it.near.sdk.Push;
+package it.near.sdk.push;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -9,7 +9,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
 
 import it.near.sdk.GlobalState;
-import it.near.sdk.Recipes.RecipesManager;
+import it.near.sdk.recipes.RecipesManager;
 
 /**
  * Service that receives push notification.

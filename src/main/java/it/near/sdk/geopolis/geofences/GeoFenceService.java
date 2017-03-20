@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.GeoFences;
+package it.near.sdk.geopolis.geofences;
 
 import android.Manifest;
 import android.app.PendingIntent;
@@ -31,7 +31,7 @@ import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.Geopolis.GeopolisManager;
+import it.near.sdk.geopolis.GeopolisManager;
 
 /**
  * Service for monitoring geofences.

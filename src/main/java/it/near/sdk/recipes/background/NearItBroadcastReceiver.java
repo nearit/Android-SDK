@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes.Background;
+package it.near.sdk.recipes.background;
 
 import android.content.ComponentName;
 import android.content.Context;

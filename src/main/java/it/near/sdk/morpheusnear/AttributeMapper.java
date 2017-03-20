@@ -1,4 +1,4 @@
-package it.near.sdk.MorpheusNear;
+package it.near.sdk.morpheusnear;
 
 import com.google.gson.Gson;
 

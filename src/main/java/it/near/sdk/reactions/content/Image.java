@@ -1,11 +1,11 @@
-package it.near.sdk.Reactions.Content;
+package it.near.sdk.reactions.content;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.HashMap;
 
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.Resource;
 
 /**
  * @author cattaneostefano

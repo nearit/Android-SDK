@@ -1,4 +1,4 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.recipes;
 
 import com.google.common.collect.Maps;
 
@@ -14,9 +14,9 @@ import java.util.Map;
 
 import it.near.sdk.GlobalConfig;
 
-import static it.near.sdk.Recipes.RecipesManager.PULSE_ACTION_ID_KEY;
-import static it.near.sdk.Recipes.RecipesManager.PULSE_BUNDLE_ID_KEY;
-import static it.near.sdk.Recipes.RecipesManager.PULSE_PLUGIN_ID_KEY;
+import static it.near.sdk.recipes.RecipesManager.PULSE_ACTION_ID_KEY;
+import static it.near.sdk.recipes.RecipesManager.PULSE_BUNDLE_ID_KEY;
+import static it.near.sdk.recipes.RecipesManager.PULSE_PLUGIN_ID_KEY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

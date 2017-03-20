@@ -1,4 +1,4 @@
-package it.near.sdk.Communication;
+package it.near.sdk.communication;
 
 import android.content.Context;
 import android.os.Looper;

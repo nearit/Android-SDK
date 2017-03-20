@@ -1,4 +1,4 @@
-package it.near.sdk.Utils;
+package it.near.sdk.utils;
 
 import android.content.Intent;
 import android.os.Parcelable;
@@ -11,19 +11,19 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
 
-import it.near.sdk.Reactions.Content.Content;
-import it.near.sdk.Reactions.Content.ContentReaction;
-import it.near.sdk.Reactions.Coupon.Coupon;
-import it.near.sdk.Reactions.Coupon.CouponReaction;
-import it.near.sdk.Reactions.CustomJSON.CustomJSON;
-import it.near.sdk.Reactions.CustomJSON.CustomJSONReaction;
-import it.near.sdk.Reactions.Feedback.Feedback;
-import it.near.sdk.Reactions.Feedback.FeedbackReaction;
-import it.near.sdk.Reactions.Poll.Poll;
-import it.near.sdk.Reactions.Poll.PollReaction;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotificationReaction;
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.reactions.content.Content;
+import it.near.sdk.reactions.content.ContentReaction;
+import it.near.sdk.reactions.coupon.Coupon;
+import it.near.sdk.reactions.coupon.CouponReaction;
+import it.near.sdk.reactions.customjson.CustomJSON;
+import it.near.sdk.reactions.customjson.CustomJSONReaction;
+import it.near.sdk.reactions.feedback.Feedback;
+import it.near.sdk.reactions.feedback.FeedbackReaction;
+import it.near.sdk.reactions.poll.Poll;
+import it.near.sdk.reactions.poll.PollReaction;
+import it.near.sdk.reactions.simplenotification.SimpleNotification;
+import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.recipes.models.Recipe;
 
 /**
  * Near utilities

@@ -1,4 +1,4 @@
-package it.near.sdk.Utils;
+package it.near.sdk.utils;
 
 import android.util.Log;
 
@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.MorpheusNear.JsonApiObject;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.JsonApiObject;
+import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.morpheusnear.Resource;
 
 /**
  * Serializing utils mothods for building json api coded strings.

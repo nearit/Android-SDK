@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions;
+package it.near.sdk.reactions;
 
 /**
  * Base class for events

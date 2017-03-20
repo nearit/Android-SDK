@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.Beacons;
+package it.near.sdk.geopolis.beacons;
 
 import android.app.Application;
 import android.content.Context;
@@ -29,12 +29,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.Geopolis.GeopolisManager;
-import it.near.sdk.Geopolis.Node;
-import it.near.sdk.Geopolis.NodesManager;
-import it.near.sdk.Geopolis.Beacons.Ranging.BeaconDynamicRadar;
-import it.near.sdk.Utils.AppLifecycleMonitor;
-import it.near.sdk.Utils.OnLifecycleEventListener;
+import it.near.sdk.geopolis.GeopolisManager;
+import it.near.sdk.geopolis.Node;
+import it.near.sdk.geopolis.NodesManager;
+import it.near.sdk.geopolis.beacons.ranging.BeaconDynamicRadar;
+import it.near.sdk.utils.AppLifecycleMonitor;
+import it.near.sdk.utils.OnLifecycleEventListener;
 
 /**
  * Monitor for AltBeacon regions. It sets the format of the bluetooth package and holds the background powersaver.

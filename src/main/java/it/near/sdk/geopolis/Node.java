@@ -1,11 +1,11 @@
-package it.near.sdk.Geopolis;
+package it.near.sdk.geopolis;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.morpheusnear.Resource;
 
 /**
  * Created by cattaneostefano on 21/09/16.

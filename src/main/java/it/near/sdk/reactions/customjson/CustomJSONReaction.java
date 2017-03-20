@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.CustomJSON;
+package it.near.sdk.reactions.customjson;
 
 import android.content.Context;
 import android.net.Uri;
@@ -17,17 +17,17 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.Reactions.ContentFetchListener;
-import it.near.sdk.Reactions.CoreReaction;
-import it.near.sdk.Recipes.Models.ReactionBundle;
-import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Recipes.NearNotifier;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.reactions.ContentFetchListener;
+import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.recipes.models.ReactionBundle;
+import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
-import static it.near.sdk.Utils.NearUtils.safe;
+import static it.near.sdk.utils.NearUtils.safe;
 
 /**
  * @author cattaneostefano.

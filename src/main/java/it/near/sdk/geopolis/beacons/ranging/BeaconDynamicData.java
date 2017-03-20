@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.Beacons.Ranging;
+package it.near.sdk.geopolis.beacons.ranging;
 
 import android.content.Context;
 import android.content.Intent;
@@ -7,8 +7,8 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import it.near.sdk.Geopolis.Beacons.BeaconNode;
-import it.near.sdk.Geopolis.GeopolisManager;
+import it.near.sdk.geopolis.beacons.BeaconNode;
+import it.near.sdk.geopolis.GeopolisManager;
 
 /**
  * @author cattaneostefano

@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis;
+package it.near.sdk.geopolis;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
@@ -23,19 +23,19 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.Communication.NearJsonHttpResponseHandler;
-import it.near.sdk.Geopolis.Beacons.AltBeaconMonitor;
-import it.near.sdk.Geopolis.GeoFences.GeoFenceMonitor;
-import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.NearAsyncHttpClient;
-import it.near.sdk.Communication.NearNetworkUtil;
-import it.near.sdk.Geopolis.GeoFences.GeoFenceSystemEventsReceiver;
-import it.near.sdk.Geopolis.Beacons.Ranging.ProximityListener;
+import it.near.sdk.communication.NearJsonHttpResponseHandler;
+import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
+import it.near.sdk.geopolis.geofences.GeoFenceMonitor;
+import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.communication.NearNetworkUtil;
+import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
+import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.Recipes.RecipesManager;
-import it.near.sdk.Trackings.Events;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.trackings.Events;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Manages a beacon forest, the plugin for monitoring regions structured in a tree.

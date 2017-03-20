@@ -1,14 +1,14 @@
-package it.near.sdk.Utils;
+package it.near.sdk.utils;
 
 import android.content.Intent;
 import android.support.annotation.Nullable;
 
-import it.near.sdk.Reactions.Content.Content;
-import it.near.sdk.Reactions.Coupon.Coupon;
-import it.near.sdk.Reactions.CustomJSON.CustomJSON;
-import it.near.sdk.Reactions.Feedback.Feedback;
-import it.near.sdk.Reactions.Poll.Poll;
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
+import it.near.sdk.reactions.content.Content;
+import it.near.sdk.reactions.coupon.Coupon;
+import it.near.sdk.reactions.customjson.CustomJSON;
+import it.near.sdk.reactions.feedback.Feedback;
+import it.near.sdk.reactions.poll.Poll;
+import it.near.sdk.reactions.simplenotification.SimpleNotification;
 
 /**
  * Interface for being notified of core content types.

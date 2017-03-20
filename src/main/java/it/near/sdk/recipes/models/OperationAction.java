@@ -1,6 +1,6 @@
-package it.near.sdk.Recipes.Models;
+package it.near.sdk.recipes.models;
 
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.Resource;
 
 /**
  * @author cattaneostefano

@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis;
+package it.near.sdk.geopolis;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,10 +10,10 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-import it.near.sdk.Geopolis.Beacons.BeaconNode;
-import it.near.sdk.Geopolis.GeoFences.GeoFenceNode;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.geopolis.beacons.BeaconNode;
+import it.near.sdk.geopolis.geofences.GeoFenceNode;
+import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 

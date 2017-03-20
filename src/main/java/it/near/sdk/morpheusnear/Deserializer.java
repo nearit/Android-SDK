@@ -1,9 +1,9 @@
-package it.near.sdk.MorpheusNear;
+package it.near.sdk.morpheusnear;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
+import it.near.sdk.morpheusnear.exceptions.NotExtendingResourceException;
 
 /**
  * Deserializer uses reflection to create objects and set fields.

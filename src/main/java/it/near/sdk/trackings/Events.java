@@ -1,4 +1,4 @@
-package it.near.sdk.Trackings;
+package it.near.sdk.trackings;
 
 /**
  * Created by cattaneostefano on 05/10/2016.

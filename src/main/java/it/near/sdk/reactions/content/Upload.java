@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.Content;
+package it.near.sdk.reactions.content;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.Resource;
 
 /**
  * Created by cattaneostefano on 02/03/2017.

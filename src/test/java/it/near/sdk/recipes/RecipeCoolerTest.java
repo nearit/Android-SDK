@@ -1,11 +1,10 @@
-package it.near.sdk.Recipes;
+package it.near.sdk.recipes;
 
 import android.content.SharedPreferences;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import org.hamcrest.core.IsNot;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,10 +15,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.recipes.models.Recipe;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static it.near.sdk.Recipes.RecipeCooler.*;
+import static it.near.sdk.recipes.RecipeCooler.*;
 import static junit.framework.Assert.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
@@ -29,7 +28,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
-import static org.mockito.AdditionalMatchers.*;
 import static org.mockito.Mockito.*;
 
 /**

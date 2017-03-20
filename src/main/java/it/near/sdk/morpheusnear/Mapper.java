@@ -1,4 +1,4 @@
-package it.near.sdk.MorpheusNear;
+package it.near.sdk.morpheusnear;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -13,8 +13,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Exceptions.NotExtendingResourceException;
+import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.morpheusnear.exceptions.NotExtendingResourceException;
 
 
 /**

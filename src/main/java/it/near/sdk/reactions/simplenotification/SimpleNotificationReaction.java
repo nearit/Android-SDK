@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.SimpleNotification;
+package it.near.sdk.reactions.simplenotification;
 
 import android.content.Context;
 import android.os.Parcelable;
@@ -6,12 +6,12 @@ import android.os.Parcelable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import it.near.sdk.Reactions.ContentFetchListener;
-import it.near.sdk.Reactions.CoreReaction;
-import it.near.sdk.Reactions.Reaction;
-import it.near.sdk.Recipes.Models.ReactionBundle;
-import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Recipes.NearNotifier;
+import it.near.sdk.reactions.ContentFetchListener;
+import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.Reaction;
+import it.near.sdk.recipes.models.ReactionBundle;
+import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.NearNotifier;
 
 /**
  * Created by cattaneostefano on 07/10/2016.

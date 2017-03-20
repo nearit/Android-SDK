@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions;
+package it.near.sdk.reactions;
 
 import android.os.Parcelable;
 

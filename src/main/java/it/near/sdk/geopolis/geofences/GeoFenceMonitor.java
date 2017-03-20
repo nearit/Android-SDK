@@ -1,4 +1,4 @@
-package it.near.sdk.Geopolis.GeoFences;
+package it.near.sdk.geopolis.geofences;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,8 +13,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.Geopolis.GeopolisManager;
-import it.near.sdk.Geopolis.Node;
+import it.near.sdk.geopolis.GeopolisManager;
+import it.near.sdk.geopolis.Node;
 
 /**
  * Created by cattaneostefano on 28/09/2016.

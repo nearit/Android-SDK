@@ -1,4 +1,4 @@
-package it.near.sdk.Utils;
+package it.near.sdk.utils;
 
 import android.app.Notification;
 import android.app.NotificationManager;

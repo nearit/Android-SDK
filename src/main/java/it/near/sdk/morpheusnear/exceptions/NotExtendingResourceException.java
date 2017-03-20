@@ -1,4 +1,4 @@
-package it.near.sdk.MorpheusNear.Exceptions;
+package it.near.sdk.morpheusnear.exceptions;
 
 /**
  * Created by raphaelseher on 09/03/16.

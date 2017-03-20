@@ -1,4 +1,4 @@
-package it.near.sdk.Communication;
+package it.near.sdk.communication;
 
 /**
  * Contains constants for HTTP calls

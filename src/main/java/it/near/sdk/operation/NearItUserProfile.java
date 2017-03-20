@@ -1,4 +1,4 @@
-package it.near.sdk.Operation;
+package it.near.sdk.operation;
 
 import android.content.Context;
 import android.net.Uri;
@@ -14,13 +14,13 @@ import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.Communication.Constants;
-import it.near.sdk.Communication.NearAsyncHttpClient;
-import it.near.sdk.Communication.NearInstallation;
-import it.near.sdk.Communication.NearJsonHttpResponseHandler;
+import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.communication.NearInstallation;
+import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
-import it.near.sdk.Utils.NearJsonAPIUtils;
+import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Class containing methods to create a new profile and to add values to the profile for user segmentation.

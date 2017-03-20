@@ -2,7 +2,7 @@ package it.near.sdk;
 
 import android.content.Context;
 
-import it.near.sdk.Recipes.RecipesManager;
+import it.near.sdk.recipes.RecipesManager;
 
 /**
  * Class with global instances. Used internally.

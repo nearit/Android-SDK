@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions;
+package it.near.sdk.reactions;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.near.sdk.Communication.NearAsyncHttpClient;
-import it.near.sdk.MorpheusNear.Morpheus;
-import it.near.sdk.Recipes.Models.Recipe;
-import it.near.sdk.Recipes.NearNotifier;
+import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.NearNotifier;
 
 /**
  * Superclass for NearIT core-content reactions. Adds jsonAPI parsing, simple caching.

@@ -1,9 +1,9 @@
-package it.near.sdk.Geopolis.Trackings;
+package it.near.sdk.geopolis.trackings;
 
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
-import it.near.sdk.Communication.NearAsyncHttpClient;
+import it.near.sdk.communication.NearAsyncHttpClient;
 
 import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
 

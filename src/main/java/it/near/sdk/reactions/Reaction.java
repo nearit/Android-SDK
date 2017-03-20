@@ -1,12 +1,12 @@
-package it.near.sdk.Reactions;
+package it.near.sdk.reactions;
 
 import android.content.Context;
 
 import java.util.List;
 
-import it.near.sdk.Recipes.Models.ReactionBundle;
-import it.near.sdk.Recipes.NearNotifier;
-import it.near.sdk.Recipes.Models.Recipe;
+import it.near.sdk.recipes.models.ReactionBundle;
+import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.models.Recipe;
 
 /**
  * Superclass for plugins of type "reaction". Subclass to add the support of new "What" types and handle requests to fire contents,

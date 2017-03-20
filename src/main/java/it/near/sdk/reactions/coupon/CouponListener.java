@@ -1,4 +1,4 @@
-package it.near.sdk.Reactions.Coupon;
+package it.near.sdk.reactions.coupon;
 
 import java.util.List;
 

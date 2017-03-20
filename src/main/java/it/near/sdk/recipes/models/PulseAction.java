@@ -1,7 +1,7 @@
-package it.near.sdk.Recipes.Models;
+package it.near.sdk.recipes.models;
 
-import it.near.sdk.MorpheusNear.Resource;
-import it.near.sdk.Trackings.Events;
+import it.near.sdk.morpheusnear.Resource;
+import it.near.sdk.trackings.Events;
 
 /**
  * @author cattaneostefano
