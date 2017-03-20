@@ -1,4 +1,4 @@
-package it.near.sdk.Reaction.Feedback;
+package it.near.sdk.reaction.feedback;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;

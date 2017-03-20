@@ -1,4 +1,4 @@
-package it.near.sdk.Reaction.Content;
+package it.near.sdk.reaction.content;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;

@@ -1,4 +1,4 @@
-package it.near.sdk.Reaction.Coupon;
+package it.near.sdk.reaction.coupon;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
@@ -8,7 +8,6 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import it.near.sdk.reactions.content.Content;
 import it.near.sdk.reactions.content.ImageSet;
 import it.near.sdk.reactions.coupon.Claim;
 import it.near.sdk.reactions.coupon.Coupon;

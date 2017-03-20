@@ -1,9 +1,7 @@
-package it.near.sdk.Reaction.SimpleNotification;
+package it.near.sdk.reaction.simplenotification;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
-
-import com.loopj.android.http.PreemptiveAuthorizationHttpRequestInterceptor;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

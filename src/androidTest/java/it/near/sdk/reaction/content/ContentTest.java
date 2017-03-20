@@ -1,4 +1,4 @@
-package it.near.sdk.Reaction.Content;
+package it.near.sdk.reaction.content;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
@@ -10,11 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import it.near.sdk.reactions.content.Audio;
 import it.near.sdk.reactions.content.Content;
-import it.near.sdk.reactions.content.Image;
 import it.near.sdk.reactions.content.ImageSet;
 import it.near.sdk.reactions.content.Upload;
 

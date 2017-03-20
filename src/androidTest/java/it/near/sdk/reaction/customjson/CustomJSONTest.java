@@ -1,15 +1,13 @@
-package it.near.sdk.Reaction.CustomJSON;
+package it.near.sdk.reaction.customjson;
 
 import android.os.Parcel;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 import it.near.sdk.reactions.customjson.CustomJSON;
