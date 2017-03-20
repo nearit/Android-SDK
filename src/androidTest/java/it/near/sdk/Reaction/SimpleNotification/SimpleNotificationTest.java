@@ -8,7 +8,7 @@ import com.loopj.android.http.PreemptiveAuthorizationHttpRequestInterceptor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import it.near.sdk.Reactions.SimpleNotification.SimpleNotification;
+import it.near.sdk.reactions.simplenotification.SimpleNotification;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;

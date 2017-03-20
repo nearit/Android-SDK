@@ -8,10 +8,10 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import it.near.sdk.Reactions.Content.Content;
-import it.near.sdk.Reactions.Content.ImageSet;
-import it.near.sdk.Reactions.Coupon.Claim;
-import it.near.sdk.Reactions.Coupon.Coupon;
+import it.near.sdk.reactions.content.Content;
+import it.near.sdk.reactions.content.ImageSet;
+import it.near.sdk.reactions.coupon.Claim;
+import it.near.sdk.reactions.coupon.Coupon;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;

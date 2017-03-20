@@ -12,11 +12,11 @@ import org.junit.runner.RunWith;
 import java.util.HashMap;
 import java.util.Map;
 
-import it.near.sdk.Reactions.Content.Audio;
-import it.near.sdk.Reactions.Content.Content;
-import it.near.sdk.Reactions.Content.Image;
-import it.near.sdk.Reactions.Content.ImageSet;
-import it.near.sdk.Reactions.Content.Upload;
+import it.near.sdk.reactions.content.Audio;
+import it.near.sdk.reactions.content.Content;
+import it.near.sdk.reactions.content.Image;
+import it.near.sdk.reactions.content.ImageSet;
+import it.near.sdk.reactions.content.Upload;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;

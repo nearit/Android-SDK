@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
-import it.near.sdk.Reactions.Content.Audio;
+import it.near.sdk.reactions.content.Audio;
 
 import static junit.framework.Assert.*;
 
