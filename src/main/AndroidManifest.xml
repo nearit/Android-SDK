@@ -20,7 +20,7 @@
         <!-- push messages -->
         <!-- service that receives push from GCM and does internal SDK work -->
         <service
-            android:name="it.near.sdk.Push.MyFcmListenerService"
+            android:name="it.near.sdk.push.MyFcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -28,15 +28,15 @@
         </service>
 
         <!-- internal service to send local notifications -->
-        <service android:name=".Recipes.Background.NearItIntentService"
+        <service android:name=".recipes.background.NearItIntentService"
             android:exported="false"/>
 
         <service
-            android:name=".Geopolis.GeoFences.GeoFenceService"
+            android:name=".geopolis.geofences.GeoFenceService"
             android:exported="false" />
-        <service android:name=".Geopolis.GeoFences.NearGeofenceTransitionsIntentService"
+        <service android:name=".geopolis.geofences.NearGeofenceTransitionsIntentService"
             android:exported="false" />
-        <receiver android:name=".Geopolis.GeoFences.GeoFenceSystemEventsReceiver">
+        <receiver android:name=".geopolis.geofences.GeoFenceSystemEventsReceiver">
             <intent-filter>
                 <action android:name="android.location.PROVIDERS_CHANGED"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
@@ -44,7 +44,7 @@
         </receiver>
 
 
-        <receiver android:name=".Trackings.BluetoothStatusReceiver"
+        <receiver android:name=".trackings.BluetoothStatusReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.bluetooth.adapter.action.STATE_CHANGED"/>
@@ -52,7 +52,7 @@
         </receiver>
 
         <service
-            android:name=".Push.FCMRegistration.MyInstanceIDListenerService"
+            android:name=".push.fcmregistration.MyInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>

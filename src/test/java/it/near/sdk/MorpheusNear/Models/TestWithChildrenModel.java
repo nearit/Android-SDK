@@ -1,4 +1,4 @@
-package it.near.sdk.MorpheusNear.Models;
+package it.near.sdk.morpheusnear.models;
 
 import com.google.gson.annotations.SerializedName;
 
