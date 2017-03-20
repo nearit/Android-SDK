@@ -9,6 +9,7 @@ import it.near.sdk.morpheusnear.Resource;
  */
 
 public class TestModel extends Resource {
+    
     @SerializedName("content")
     public String content;
     @SerializedName("double_value")
