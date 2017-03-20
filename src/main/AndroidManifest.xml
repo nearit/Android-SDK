@@ -20,7 +20,7 @@
         <!-- push messages -->
         <!-- service that receives push from GCM and does internal SDK work -->
         <service
-            android:name="it.near.sdk.push.fcmregistration.MyInstanceIDListenerService"
+            android:name="it.near.sdk.push.MyFcmListenerService"
             android:exported="false" >
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
