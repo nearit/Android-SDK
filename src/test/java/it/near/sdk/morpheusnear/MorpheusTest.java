@@ -35,7 +35,7 @@ public class MorpheusTest {
     Morpheus morpheus;
 
     @Before
-    public void setUP(){
+    public void setUP() {
         morpheus = new Morpheus();
         morpheus.getFactory().getDeserializer().registerResourceClass("test", TestModel.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("test_with_child", TestWithChildModel.class);
@@ -82,7 +82,7 @@ public class MorpheusTest {
         assertNotNull(objectList);
         assertThat(objectList, not(empty()));
         assertThat(objectList, hasSize(2));
-        assertThat(objectList, everyItem( IsInstanceOf.<TestModel>instanceOf(TestModel.class)));
+        assertThat(objectList, everyItem(IsInstanceOf.<TestModel>instanceOf(TestModel.class)));
     }
 
     @Test
