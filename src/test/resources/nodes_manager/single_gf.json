@@ -1,0 +1,23 @@
+{
+  "data": [
+    {
+      "id": "d7881a25-fc82-49ec-836d-d47276e38a55",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "9819ce53-4517-4962-9617-de530e499e4f",
+        "latitude": 45.623162,
+        "longitude": 9.701223,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    }
+  ]
+}

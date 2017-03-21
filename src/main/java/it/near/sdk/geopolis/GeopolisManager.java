@@ -200,7 +200,7 @@ public class GeopolisManager {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(this.TAG, "receiverEvent");
+            Log.d(TAG, "receiverEvent");
             if (!intent.hasExtra(NODE_ID)) return;
             // trim the package name
             String packageName = mApplication.getPackageName();
