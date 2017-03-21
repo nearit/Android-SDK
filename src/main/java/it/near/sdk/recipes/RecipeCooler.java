@@ -12,7 +12,7 @@ import java.util.Map;
 
 import it.near.sdk.recipes.models.Recipe;
 
-import static it.near.sdk.Utils.NearUtils.checkNotNull;
+import static it.near.sdk.utils.NearUtils.checkNotNull;
 
 /**
  * Created by cattaneostefano on 13/02/2017.
@@ -152,4 +152,5 @@ public class RecipeCooler {
             editor.commit();
         }
     }
+
 }

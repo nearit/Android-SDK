@@ -106,7 +106,10 @@ public class NearItManager {
         SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME,0);
         RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP);
         SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
-        recipesManager = new RecipesManager(application, GlobalConfig.getInstance(application), recipeCooler, recipeManagerSP);
+        recipesManager = new RecipesManager(application,
+                GlobalConfig.getInstance(application),
+                recipeCooler,
+                recipeManagerSP);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 

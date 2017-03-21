@@ -4,8 +4,9 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-import it.near.sdk.MorpheusNear.Annotations.Relationship;
-import it.near.sdk.MorpheusNear.Resource;
+import it.near.sdk.morpheusnear.Resource;
+import it.near.sdk.morpheusnear.annotations.Relationship;
+
 
 public class TestWithChildrenModel extends Resource {
 
