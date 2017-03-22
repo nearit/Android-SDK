@@ -52,14 +52,14 @@ public class NodesManagerTest {
         assertThat(nodesManager.getRoots(), hasSize(1));
         assertThat(nodesManager.getNode("d7881a25-fc82-49ec-836d-d47276e38a55"), is(notNullValue()));
         assertThat(nodesManager.getNode("dummy_id"), is(nullValue()));
-        assertThat(nodesManager.getMonitoredNodesOnEnter("d7881a25-fc82-49ec-836d-d47276e38a55"), hasSize(0));
+        assertThat(nodesManager.getMonitoredNodesOnEnter("d7881a25-fc82-49ec-836d-d47276e38a55"), hasSize(1));
         assertThat(nodesManager.getMonitoredNodesOnExit("d7881a25-fc82-49ec-836d-d47276e38a55"), hasSize(1));
         assertThat(nodesManager.getRangedNodesOnEnter("d7881a25-fc82-49ec-836d-d47276e38a55"), hasSize(0));
     }
 
     @Test
     public void shouldHandleMultiGFConfig() throws Exception {
-        JSONObject input = readJsonFile("gr_array.json");
+        JSONObject input = readJsonFile("gf_array.json");
         List<Node> initalNodes = nodesManager.setNodes(input);
         assertThat(initalNodes, hasSize(4));
         assertThat(nodesManager.getRoots(), hasSize(4));
