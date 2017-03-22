@@ -21,13 +21,11 @@ public class NodesManagerTest {
 
     private static final String TEST_RES_FOLDER = "nodes_manager";
 
-    private Morpheus morpheus;
-
     private NodesManager2 nodesManager;
 
     @Before
     public void setUp() {
-        morpheus = new Morpheus();
+        Morpheus morpheus = new Morpheus();
         morpheus.getFactory().getDeserializer().registerResourceClass("nodes", Node.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("beacon_nodes", BeaconNode.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("geofence_nodes", GeoFenceNode.class);
