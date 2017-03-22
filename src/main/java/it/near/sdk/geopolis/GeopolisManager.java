@@ -137,7 +137,7 @@ public class GeopolisManager {
                 .appendPath("geopolis")
                 .appendPath("nodes")
                 .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
-                .appendQueryParameter("include", "children.*.children")
+                .appendQueryParameter("include", "**.children")
                 .build();
         try {
             httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler(){
