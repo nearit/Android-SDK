@@ -8,7 +8,7 @@ Let's look at the built-in receiver manifest declaration:
 ```xml
 <!-- built in background receiver -->
 <receiver
-    android:name="it.near.sdk.Recipes.Background.NearItBroadcastReceiver"
+    android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
     android:exported="false">
     <intent-filter>
         <action android:name="it.near.sdk.permission.GEO_MESSAGE" />

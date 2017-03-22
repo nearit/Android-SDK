@@ -25,7 +25,7 @@ To enable background system notifications for both location and push triggers, a
 ```xml
 <!-- built in background receiver -->
 <receiver
-    android:name="it.near.sdk.Recipes.Background.NearItBroadcastReceiver"
+    android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
     android:exported="false">
     <intent-filter>
         <action android:name="it.near.sdk.permission.GEO_MESSAGE" />

@@ -135,8 +135,8 @@ public class GeopolisManager {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
                 .appendPath("nodes")
-                .appendQueryParameter("filter[app_id]", GlobalConfig.getInstance(mApplication).getAppId())
-                .appendQueryParameter("include", "children.*.children")
+                .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
+                .appendQueryParameter("include", "**.children")
                 .build();
         try {
             httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler() {
