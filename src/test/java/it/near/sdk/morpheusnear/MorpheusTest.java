@@ -1,12 +1,10 @@
 package it.near.sdk.morpheusnear;
 
 import org.hamcrest.core.IsInstanceOf;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.InputStream;
 import java.util.List;
 
 import it.near.sdk.morpheusnear.models.TestChildModel;
@@ -36,6 +34,7 @@ import static org.hamcrest.core.Is.is;
 
 public class MorpheusTest {
 
+    private static final String TEST_RES_FOLDER = "morpheus";
     private Morpheus morpheus;
 
     @Before
@@ -118,10 +117,8 @@ public class MorpheusTest {
     // TODO transitive relationships
     // TODO circular relationships
 
-    private JSONObject readJsonFile(String fileName) throws Exception {
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(fileName);
-        String toParse = TestUtils.readTextStream(inputStream);
-        return new JSONObject(toParse);
+    private JSONObject readJsonFile(String filename) throws Exception {
+        return TestUtils.readJsonFile(getClass(), TEST_RES_FOLDER + "/" + filename);
     }
 
 }
