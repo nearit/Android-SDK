@@ -47,14 +47,13 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
     public void onActivityResumed(Activity activity) {
         ++resumed;
 
-        triggerEvents();
+
     }
 
     @Override
     public void onActivityPaused(Activity activity) {
         ++paused;
         Log.d(TAG, "application is in foreground: " + (resumed > paused));
-        triggerEvents();
     }
 
     @Override
@@ -64,16 +63,18 @@ public class AppLifecycleMonitor implements Application.ActivityLifecycleCallbac
     @Override
     public void onActivityStarted(Activity activity) {
         ++started;
+        triggerEvents();
     }
 
     @Override
     public void onActivityStopped(Activity activity) {
         ++stopped;
         Log.d(TAG, "application is visible: " + (started > stopped));
+        triggerEvents();
     }
 
     private void triggerEvents(){
-        if (isApplicationInForeground())
+        if (isApplicationVisible())
             listener.onForeground();
         else
             listener.onBackground();
