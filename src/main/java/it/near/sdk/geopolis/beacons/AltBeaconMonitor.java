@@ -34,6 +34,7 @@ import it.near.sdk.geopolis.Node;
 import it.near.sdk.geopolis.NodesManager;
 import it.near.sdk.geopolis.beacons.ranging.BeaconDynamicRadar;
 import it.near.sdk.utils.AppLifecycleMonitor;
+import it.near.sdk.utils.AppVisibilityDetector;
 import it.near.sdk.utils.OnLifecycleEventListener;
 
 /**
@@ -41,7 +42,7 @@ import it.near.sdk.utils.OnLifecycleEventListener;
  *
  * @author cattaneostefano.
  */
-public class AltBeaconMonitor extends OnLifecycleEventListener implements BeaconConsumer, BootstrapNotifier, RangeNotifier {
+public class AltBeaconMonitor extends OnLifecycleEventListener implements BeaconConsumer, BootstrapNotifier, RangeNotifier, AppVisibilityDetector.AppVisibilityCallback {
 
     private static final String TAG = "AltBeaconMonitor";
     private static final float DEFAULT_THRESHOLD = 0.5f;
@@ -149,7 +150,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * @param application
      */
     private void initAppLifecycleMonitor(Application application) {
-        new AppLifecycleMonitor(application, this);
+        AppVisibilityDetector.init(application, this);
     }
 
     public void addRegions(List<Node> nodes){
@@ -266,7 +267,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         }
     }
 
-    @Override
     public void onForeground() {
         Log.d(TAG, "onForeground");
         // When going to the foreground, if we have regions to range, start ranging
@@ -283,7 +283,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         }
     }
 
-    @Override
     public void onBackground() {
         Log.d(TAG, "onBackground");
         // Console.clear();
@@ -406,5 +405,15 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private void logRangedRegions() {
         String msg1 = "regions ranged: " + beaconManager.getRangedRegions().size();
         Log.d(TAG, msg1);
+    }
+
+    @Override
+    public void onAppGotoForeground() {
+        onForeground();
+    }
+
+    @Override
+    public void onAppGotoBackground() {
+        onBackground();
     }
 }
