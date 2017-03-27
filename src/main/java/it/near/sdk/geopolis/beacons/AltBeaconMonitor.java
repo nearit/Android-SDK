@@ -33,7 +33,6 @@ import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.Node;
 import it.near.sdk.geopolis.NodesManager;
 import it.near.sdk.geopolis.beacons.ranging.BeaconDynamicRadar;
-import it.near.sdk.utils.AppLifecycleMonitor;
 import it.near.sdk.utils.AppVisibilityDetector;
 import it.near.sdk.utils.OnLifecycleEventListener;
 

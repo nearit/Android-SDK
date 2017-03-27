@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
-import java.util.List;
 
 import it.near.sdk.reactions.content.Content;
 import it.near.sdk.reactions.content.ContentReaction;
@@ -27,17 +26,19 @@ import it.near.sdk.recipes.models.Recipe;
 
 /**
  * Near utilities
+ *
  * @author cattaneostefano
  */
 public class NearUtils {
 
     /**
      * Compute app Id from the Apptoken (apikey)
+     *
      * @param apiKey token
      * @return the App Id as defined in our servers
      */
     public static String fetchAppIdFrom(String apiKey) {
-        String secondSegment = substringBetween(apiKey, ".",".");
+        String secondSegment = substringBetween(apiKey, ".", ".");
         String appId = "";
         try {
             String decodedAK = decodeString(secondSegment);
@@ -52,26 +53,20 @@ public class NearUtils {
 
     /**
      * Decode base 64 string
+     *
      * @param encoded encoded string
      * @return decoded string
      */
-    private static String decodeString(String encoded) throws NullPointerException{
+    private static String decodeString(String encoded) throws NullPointerException {
         byte[] dataDec = Base64.decode(encoded, Base64.DEFAULT);
         String decodedString = "";
         try {
             decodedString = new String(dataDec, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException ignored) {
         }
         return decodedString;
     }
 
-    /**
-     * String utility method
-     * @param str initial string
-     * @param open
-     * @param close
-     * @return
-     */
     private static String substringBetween(String str, String open, String close) {
         if (str == null || open == null || close == null) {
             return null;
@@ -88,7 +83,8 @@ public class NearUtils {
 
     /**
      * Utility method for automatically casting content. It notifies the listener if the intent contains a recognized core content.
-     * @param intent The intent to analyze.
+     *
+     * @param intent   The intent to analyze.
      * @param listener Contains a callback method for each content type.
      * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
      */
@@ -96,15 +92,17 @@ public class NearUtils {
         String reaction_plugin = intent.getStringExtra(NearItIntentConstants.REACTION_PLUGIN);
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
 
-        if (!intent.hasExtra(NearItIntentConstants.CONTENT)) return false;
+        return intent.hasExtra(NearItIntentConstants.CONTENT) &&
+                parseContent(intent, intent.getParcelableExtra(NearItIntentConstants.CONTENT),
+                        recipeId, reaction_plugin, listener);
 
-        return parseContent(intent, intent.getParcelableExtra(NearItIntentConstants.CONTENT), recipeId, reaction_plugin, listener);
     }
 
     /**
      * Parse a parcelable content received from a proximity receiver. Since there's no intent, the intent field of the listener callback methods is always null.
-     * @param content the @{@link Parcelable} content to parse. This contains the object set in the what component of the recipe.
-     * @param recipe the recipe object.
+     *
+     * @param content  the @{@link Parcelable} content to parse. This contains the object set in the what component of the recipe.
+     * @param recipe   the recipe object.
      * @param listener the listener for the casted content types.
      * @return true if the content was recognized as core and passed to a callback method, false if it wasn't.
      */
@@ -119,32 +117,32 @@ public class NearUtils {
         boolean coreContent = false;
         if (reaction_plugin == null) return false;
         switch (reaction_plugin) {
-            case ContentReaction.PLUGIN_NAME :
+            case ContentReaction.PLUGIN_NAME:
                 Content c_notif = (Content) content;
                 listener.gotContentNotification(intent, c_notif, recipeId);
                 coreContent = true;
                 break;
-            case SimpleNotificationReaction.PLUGIN_NAME :
+            case SimpleNotificationReaction.PLUGIN_NAME:
                 SimpleNotification s_notif = (SimpleNotification) content;
                 listener.gotSimpleNotification(intent, s_notif, recipeId);
                 coreContent = true;
                 break;
-            case PollReaction.PLUGIN_NAME :
+            case PollReaction.PLUGIN_NAME:
                 Poll p_notif = (Poll) content;
                 listener.gotPollNotification(intent, p_notif, recipeId);
                 coreContent = true;
                 break;
-            case CouponReaction.PLUGIN_NAME :
+            case CouponReaction.PLUGIN_NAME:
                 Coupon coup_notif = (Coupon) content;
                 listener.gotCouponNotification(intent, coup_notif, recipeId);
                 coreContent = true;
                 break;
-            case CustomJSONReaction.PLUGIN_NAME :
+            case CustomJSONReaction.PLUGIN_NAME:
                 CustomJSON custom_notif = (CustomJSON) content;
                 listener.gotCustomJSONNotification(intent, custom_notif, recipeId);
                 coreContent = true;
                 break;
-            case FeedbackReaction.PLUGIN_NAME :
+            case FeedbackReaction.PLUGIN_NAME:
                 Feedback f_notif = (Feedback) content;
                 listener.gotFeedbackNotification(intent, f_notif, recipeId);
                 coreContent = true;
@@ -170,7 +168,7 @@ public class NearUtils {
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
-     * @param reference an object reference
+     * @param reference    an object reference
      * @param errorMessage the exception message to use if the check fails
      * @return the non-null reference that was validated
      * @throws NullPointerException if {@code reference} is null
@@ -182,7 +180,7 @@ public class NearUtils {
         return reference;
     }
 
-    public static <T> Iterable<T> safe(Iterable<T> iterable ) {
+    public static <T> Iterable<T> safe(Iterable<T> iterable) {
         return iterable == null ? Collections.<T>emptyList() : iterable;
     }
 

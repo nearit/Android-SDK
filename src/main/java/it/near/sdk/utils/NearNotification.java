@@ -18,7 +18,7 @@ import it.near.sdk.R;
 public class NearNotification {
 
     public static void send(Context _context, int _imgRes, String _title, String _message, Intent _resultIntent, int _code) {
-        if (_imgRes == 0){
+        if (_imgRes == 0) {
             _imgRes = R.drawable.ic_place_white_24dp;
         }
         // imposto notifica di sistema
@@ -38,7 +38,7 @@ public class NearNotification {
 
         // avvio notifica
         Notification notification = mBuilder.build();
-        notification.flags|=Notification.FLAG_AUTO_CANCEL;
+        notification.flags |= Notification.FLAG_AUTO_CANCEL;
         mNotificationManager.notify(_code, notification);
     }
 }
