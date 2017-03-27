@@ -38,7 +38,7 @@ public final class AppVisibilityDetector {
     private static boolean DEBUG = false;
     private static final String TAG = "AppVisibilityDetector";
     private static AppVisibilityCallback sAppVisibilityCallback;
-    private static boolean sIsForeground = false;
+    public static boolean sIsForeground = false;
     private static Handler sHandler;
     private static final int MSG_GOTO_FOREGROUND = 1;
     private static final int MSG_GOTO_BACKGROUND = 2;

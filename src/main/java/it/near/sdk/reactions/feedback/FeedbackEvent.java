@@ -1,7 +1,5 @@
 package it.near.sdk.reactions.feedback;
 
-import android.content.Context;
-
 import org.json.JSONException;
 
 import java.util.HashMap;
@@ -9,7 +7,6 @@ import java.util.HashMap;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.utils.NearJsonAPIUtils;
-
 
 /**
  * Created by cattaneostefano on 11/10/2016.
@@ -23,10 +20,10 @@ public class FeedbackEvent extends Event {
     private static final String PROFILE_ID = "profile_id";
     private static final String RES_TYPE = "answers";
 
-    String feedbackId;
-    int rating = -1;
-    String comment;
-    String recipeId;
+    private String feedbackId;
+    private int rating = -1;
+    private String comment;
+    private String recipeId;
 
     public FeedbackEvent(String feedbackId, int rating, String comment, String recipeId) {
         this.feedbackId = feedbackId;
@@ -35,7 +32,7 @@ public class FeedbackEvent extends Event {
         this.recipeId = recipeId;
     }
 
-    public FeedbackEvent(Feedback feedback, int rating, String comment){
+    public FeedbackEvent(Feedback feedback, int rating, String comment) {
         this.feedbackId = feedback.getId();
         this.rating = rating;
         this.comment = comment;

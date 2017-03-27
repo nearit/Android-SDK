@@ -341,7 +341,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
                 if (region.getId2() != null && region.getId3() == null){
                     startRangingRegion(region);
                 }
-                if (AppLifecycleMonitor.isApplicationInForeground()){
+                if (AppVisibilityDetector.sIsForeground){
                     // switch to ranging mode only if we are in foreground
                     startRanging();
                 }
