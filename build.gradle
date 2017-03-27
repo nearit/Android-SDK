@@ -127,6 +127,7 @@ bintray {
         websiteUrl = 'https://github.com/catt-stefano/near-sdk-core'
     }
     configurations = ['archives']
+    publish = true
 }
 
 // Upload docs on ftp
