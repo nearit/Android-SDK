@@ -17,9 +17,14 @@ import it.near.sdk.reactions.simplenotification.SimpleNotification;
  */
 public interface CoreContentsListener {
     void gotPollNotification(@Nullable Intent intent, Poll notification, String recipeId);
+
     void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId);
+
     void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId);
+
     void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId);
+
     void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId);
+
     void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId);
 }

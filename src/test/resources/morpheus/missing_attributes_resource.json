@@ -1,0 +1,9 @@
+{
+  "data": {
+    "type": "test",
+    "id": "1",
+    "attributes": {
+      "extra_attribute" : "I'm not in the model"
+    }
+  }
+}

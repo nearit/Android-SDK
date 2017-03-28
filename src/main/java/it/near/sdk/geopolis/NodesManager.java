@@ -15,7 +15,8 @@ import it.near.sdk.geopolis.geofences.GeoFenceNode;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
-import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
+import static it.near.sdk.utils.NearUtils.checkNotNull;
+
 
 /**
  * Manages the geopolis node structure.

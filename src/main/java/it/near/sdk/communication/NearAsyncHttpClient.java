@@ -2,10 +2,8 @@ package it.near.sdk.communication;
 
 import android.content.Context;
 import android.os.Looper;
-import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.BuildConfig;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.SyncHttpClient;
@@ -28,8 +26,8 @@ import it.near.sdk.R;
  */
 public class NearAsyncHttpClient {
 
-    public static AsyncHttpClient syncHttpClient = new SyncHttpClient();
-    public static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+    private static AsyncHttpClient syncHttpClient = new SyncHttpClient();
+    private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
     public static RequestHandle nearGet(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
         return getClient().get(context,
@@ -40,7 +38,7 @@ public class NearAsyncHttpClient {
     }
 
     private static AsyncHttpClient getClient() {
-        if (Looper.myLooper() == null){
+        if (Looper.myLooper() == null) {
             return syncHttpClient;
         }
         return asyncHttpClient;
@@ -66,7 +64,7 @@ public class NearAsyncHttpClient {
                 responseHandler);
     }
 
-    public RequestHandle nearMock(Context context, String url, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId){
+    public RequestHandle nearMock(Context context, String url, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId) {
         String mockedString = context.getApplicationContext().getResources().getString(mockResId);
         JSONObject mockedResponse = null;
         try {
@@ -78,7 +76,7 @@ public class NearAsyncHttpClient {
         return null;
     }
 
-    public RequestHandle nearMock(Context context, String url, String requestBody, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId){
+    public RequestHandle nearMock(Context context, String url, String requestBody, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId) {
         return nearMock(context, url, responseHandlerInterface, mockResId);
     }
 
@@ -91,7 +89,7 @@ public class NearAsyncHttpClient {
         };
     }
 
-    private static String buildUrl(Context context, String relativeUrl){
+    private static String buildUrl(Context context, String relativeUrl) {
         String baseUrl = context.getResources().getString(R.string.API_BASE_URL) + relativeUrl;
 
         return baseUrl.replace("%5B", "[").replace("%5D", "]");

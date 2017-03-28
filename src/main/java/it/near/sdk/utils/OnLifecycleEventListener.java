@@ -5,5 +5,6 @@ package it.near.sdk.utils;
  */
 public abstract class OnLifecycleEventListener {
     public abstract void onForeground();
+
     public abstract void onBackground();
 }

@@ -1,0 +1,989 @@
+{
+  "data": [
+    {
+      "id": "8cc12a87-7da6-4699-aa94-467e1e8e4ae2",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": null,
+        "latitude": 51.458301,
+        "longitude": -0.064581,
+        "radius": 7403.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": [
+            {
+              "id": "442fe503-a1df-4fef-a05c-c4f2d4be8b08",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "361ecb8c-c3b3-4640-ac17-ccd67efa32fe",
+              "type": "geofence_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "4435d9fb-c0fe-48a7-811b-87769e38b84d",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": null,
+        "latitude": 45.534659,
+        "longitude": 10.0245,
+        "radius": 46596.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": [
+            {
+              "id": "109337db-3a47-40eb-82da-b246a962058b",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "6e076bcb-f583-4643-a192-122f98138530",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "b99c1196-154d-45fd-9adb-6541d0e85981",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "c7351d7b-11d4-49b4-a22c-08dff670f720",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "5bc8ec1a-ef35-49d4-8289-fe61b2880b14",
+              "type": "geofence_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "528ac400-6272-4992-afba-672c037a12a0",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "bfe44cdf-bc36-4f14-a57e-02853e6d4cf2",
+        "latitude": 53.549666,
+        "longitude": 9.991336,
+        "radius": 1600.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "b137ae87-1ef4-478c-b68b-3abd276df5b4",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "cbcb6878-b2c9-421d-a274-9e584386f419",
+        "latitude": 41.349366,
+        "longitude": 2.143536,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "141559cd-5949-40de-8af6-fa049f3b5c4a",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "3442f6f7-b25a-4f2b-a60c-7e3f25662c92",
+        "latitude": 41.153842,
+        "longitude": 27.828369,
+        "radius": 409600.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "d142ce27-f22a-4462-b23e-715331d01e1b",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": null,
+        "latitude": 40.951224,
+        "longitude": 10.761452,
+        "radius": 230415.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": [
+            {
+              "id": "44f6aede-1119-4ae7-9dd1-25fe00564c7a",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "4939914b-8e96-4052-adbc-ebd00065f24d",
+              "type": "geofence_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "32e0ce29-dcb8-4dce-bc07-01dd2e3a0ec1",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": null,
+        "latitude": 48.819656,
+        "longitude": 2.341295,
+        "radius": 6372.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": [
+            {
+              "id": "da9c038b-e931-49f8-a887-537efd5e12c9",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "979e82ad-4edb-4c87-a8a4-34f665279475",
+              "type": "geofence_nodes"
+            },
+            {
+              "id": "d4977401-60a5-4b9a-a5be-0536ce981c6a",
+              "type": "geofence_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "8cc22a41-b46e-492d-a1f8-fd1bbae8471d",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "98b6e236-4c5e-451c-8637-d7bd01f51133",
+        "latitude": 43.441095,
+        "longitude": 20.522439,
+        "radius": 800.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "b8a00fba-a2c6-41fc-8f9a-9f950385f1a2",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "d8726440-0759-44a0-9b8c-bab0840c578b",
+        "latitude": 43.729677,
+        "longitude": 7.413368,
+        "radius": 12800.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "e45dce6e-48f5-496e-8e3b-8c4250b2dce1",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "2289e539-85d1-4a0e-838a-2ef7059ea4cd",
+        "latitude": 53.397353,
+        "longitude": -2.98383,
+        "radius": 1600.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    }
+  ],
+  "included": [
+    {
+      "id": "442fe503-a1df-4fef-a05c-c4f2d4be8b08",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "2e291846-7405-45ef-92e8-2d6480f29659",
+        "latitude": 51.505617,
+        "longitude": -0.131174,
+        "radius": 400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "8cc12a87-7da6-4699-aa94-467e1e8e4ae2",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "361ecb8c-c3b3-4640-ac17-ccd67efa32fe",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "68803fa8-5754-49d3-941e-5615bacdc899",
+        "latitude": 51.410985,
+        "longitude": 0.002012,
+        "radius": 3200.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "8cc12a87-7da6-4699-aa94-467e1e8e4ae2",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "109337db-3a47-40eb-82da-b246a962058b",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "635ef349-50ec-477a-b55d-267cebc3cc88",
+        "latitude": 45.649688,
+        "longitude": 10.513744,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4435d9fb-c0fe-48a7-811b-87769e38b84d",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "6e076bcb-f583-4643-a192-122f98138530",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "9819ce53-4517-4962-9617-de530e499e4f",
+        "latitude": 45.623162,
+        "longitude": 9.701223,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4435d9fb-c0fe-48a7-811b-87769e38b84d",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": null,
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": null,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "6e076bcb-f583-4643-a192-122f98138530",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "d59e32e2-2857-4e0d-a121-6cdf866a66af",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "78a5f010-a55d-444b-8b4b-83993a8585f8",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "adf42db3-0517-4558-b896-5e19c2082468",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "654cff2e-a85f-4d1a-a099-5ea51e00ae2f",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "9d33d3fb-3dff-4bbe-9884-3d42cfa1a6f1",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "c1e64d36-db77-4e59-a13d-5f1314ef28b4",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "28160b69-52a8-4f96-8fe2-aaa36c9bd794",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "d59e32e2-2857-4e0d-a121-6cdf866a66af",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "87fe1ab5-5e8e-4b63-b7e2-3ca32524d207",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 56118,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "437d85bb-1fd3-481b-bcd4-45f618ac7e7f",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "437d85bb-1fd3-481b-bcd4-45f618ac7e7f",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "c0ebbbd8-7c49-4d18-9e18-88e201819a83",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 56118,
+        "minor": 47844
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "d59e32e2-2857-4e0d-a121-6cdf866a66af",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "78a5f010-a55d-444b-8b4b-83993a8585f8",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "7d8d494d-1f09-4c1c-8413-9bed35e5c928",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 47605,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "fa60b4b8-fff5-49f6-9096-1b91d9571301",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "e9941762-ef0f-4454-9781-2dd5b0ee1e1c",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "fa60b4b8-fff5-49f6-9096-1b91d9571301",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "e69e873a-432f-4576-a0e4-b4c09743a498",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 47605,
+        "minor": 57877
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "78a5f010-a55d-444b-8b4b-83993a8585f8",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "e9941762-ef0f-4454-9781-2dd5b0ee1e1c",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "a70566e0-b899-4a0e-9246-a62f83ae6e65",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 47605,
+        "minor": 59635
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "78a5f010-a55d-444b-8b4b-83993a8585f8",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "adf42db3-0517-4558-b896-5e19c2082468",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "7c15eab4-c1df-46d4-8407-ca282f945df0",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 27669,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "ef955964-8578-4644-94dd-3706599423c2",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "ef955964-8578-4644-94dd-3706599423c2",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "ea07b278-0094-41cb-b50d-e1b854f4d172",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 27669,
+        "minor": 23938
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "adf42db3-0517-4558-b896-5e19c2082468",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "654cff2e-a85f-4d1a-a099-5ea51e00ae2f",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "1d709a66-29ae-4867-a17c-71b5f6069ab6",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 29823,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "8f6f0693-43e3-41ff-8976-3407f43d315f",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "8f6f0693-43e3-41ff-8976-3407f43d315f",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "b01abf86-291c-4c4b-8b23-86c5714e651c",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 29823,
+        "minor": 12915
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "654cff2e-a85f-4d1a-a099-5ea51e00ae2f",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "9d33d3fb-3dff-4bbe-9884-3d42cfa1a6f1",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "6d147c2d-93fc-403a-9e3f-45edc3552f3c",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 31918,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "62faadde-a4ba-4580-b16e-7af8aae06e53",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "4605750f-05c1-4120-b919-fd1ceef78f83",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "62faadde-a4ba-4580-b16e-7af8aae06e53",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "824b0a22-cc22-4819-b899-338e737e6118",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 31918,
+        "minor": 49428
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "9d33d3fb-3dff-4bbe-9884-3d42cfa1a6f1",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "4605750f-05c1-4120-b919-fd1ceef78f83",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "7c724af8-8e9e-4def-83ca-4321f1ec5c80",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 31918,
+        "minor": 5521
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "9d33d3fb-3dff-4bbe-9884-3d42cfa1a6f1",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "c1e64d36-db77-4e59-a13d-5f1314ef28b4",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "766da837-cc54-4164-8b11-0caf76d63349",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 560,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "420cd12d-3b6b-46ad-bde3-eaabeddc4fe8",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "420cd12d-3b6b-46ad-bde3-eaabeddc4fe8",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "f4a1b706-2d38-4062-8fd8-9e59ce244edc",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 560,
+        "minor": 53549
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "c1e64d36-db77-4e59-a13d-5f1314ef28b4",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "28160b69-52a8-4f96-8fe2-aaa36c9bd794",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "301d6835-3f28-40d1-9c7b-ccc489dfb966",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 30606,
+        "minor": null
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "e2c3174c-bfb9-4a16-aa28-b05fe310e8ad",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": [
+            {
+              "id": "1a8613a4-134b-4504-b0c8-62d47422afdf",
+              "type": "beacon_nodes"
+            },
+            {
+              "id": "ca7bb03e-beef-4554-bd9e-035f06374d4b",
+              "type": "beacon_nodes"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "1a8613a4-134b-4504-b0c8-62d47422afdf",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "2e371e62-681f-4c62-9a3c-436d6d2fbe9a",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 30606,
+        "minor": 39426
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "28160b69-52a8-4f96-8fe2-aaa36c9bd794",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "ca7bb03e-beef-4554-bd9e-035f06374d4b",
+      "type": "beacon_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "47e81b75-995d-4198-a9d2-ef43b3100635",
+        "proximity_uuid": "ec8e77d1-3e23-44ab-8817-e3e878d83f91",
+        "major": 30606,
+        "minor": 39359
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "28160b69-52a8-4f96-8fe2-aaa36c9bd794",
+            "type": "beacon_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "b99c1196-154d-45fd-9adb-6541d0e85981",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "7168f364-1d4c-4b5b-a683-c596670ebc2d",
+        "latitude": 45.422913,
+        "longitude": 9.740582,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4435d9fb-c0fe-48a7-811b-87769e38b84d",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "c7351d7b-11d4-49b4-a22c-08dff670f720",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "ab8a486a-17cb-4345-bee6-c7a33e275877",
+        "latitude": 45.397365,
+        "longitude": 10.23428,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4435d9fb-c0fe-48a7-811b-87769e38b84d",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "5bc8ec1a-ef35-49d4-8289-fe61b2880b14",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "3ce2006b-9adf-430b-a63f-a9c3e07c8f35",
+        "latitude": 45.580166,
+        "longitude": 9.932671,
+        "radius": 12800.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "4435d9fb-c0fe-48a7-811b-87769e38b84d",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "44f6aede-1119-4ae7-9dd1-25fe00564c7a",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "b0933ea7-8e80-4b23-9962-42ef95662480",
+        "latitude": 41.887455,
+        "longitude": 12.508621,
+        "radius": 51200.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "d142ce27-f22a-4462-b23e-715331d01e1b",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "4939914b-8e96-4052-adbc-ebd00065f24d",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "92ba88a9-401d-4f69-936e-fedc50cd0ed0",
+        "latitude": 40.014994,
+        "longitude": 9.014282,
+        "radius": 204800.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "d142ce27-f22a-4462-b23e-715331d01e1b",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "da9c038b-e931-49f8-a887-537efd5e12c9",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "cf095801-5670-4f1b-94da-f3a85cfd9159",
+        "latitude": 48.844059,
+        "longitude": 2.407701,
+        "radius": 800.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "32e0ce29-dcb8-4dce-bc07-01dd2e3a0ec1",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "979e82ad-4edb-4c87-a8a4-34f665279475",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "597f4890-b92a-4265-b007-1441d4017e34",
+        "latitude": 48.789676,
+        "longitude": 2.289571,
+        "radius": 1600.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "32e0ce29-dcb8-4dce-bc07-01dd2e3a0ec1",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "d4977401-60a5-4b9a-a5be-0536ce981c6a",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "42746e54-5f0f-4ca5-a033-fa518eef5346",
+        "latitude": 48.825232,
+        "longitude": 2.326612,
+        "radius": 3200.0
+      },
+      "relationships": {
+        "parent": {
+          "data": {
+            "id": "32e0ce29-dcb8-4dce-bc07-01dd2e3a0ec1",
+            "type": "geofence_nodes"
+          }
+        },
+        "children": {
+          "data": []
+        }
+      }
+    }
+  ]
+}

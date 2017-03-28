@@ -22,9 +22,8 @@ public class GlobalState {
         this.mContext = mContext;
     }
 
-    public static GlobalState getInstance(Context context){
-        if(mInstance == null)
-        {
+    public static GlobalState getInstance(Context context) {
+        if (mInstance == null) {
             mInstance = new GlobalState(context);
         }
         return mInstance;
@@ -33,7 +32,7 @@ public class GlobalState {
     public Context getmContext() {
         return mContext;
     }
-    
+
     public RecipesManager getRecipesManager() {
         return recipesManager;
     }

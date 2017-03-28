@@ -1,0 +1,18 @@
+{
+  "data": [
+    {
+      "type": "test",
+      "id": 1,
+      "attributes": {
+        "content": "contenuto"
+      }
+    },
+    {
+      "type": "test",
+      "id": 2,
+      "attributes": {
+        "content": "contenuto2"
+      }
+    }
+  ]
+}

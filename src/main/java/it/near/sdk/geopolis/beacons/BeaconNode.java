@@ -1,19 +1,13 @@
 package it.near.sdk.geopolis.beacons;
 
-import com.google.android.gms.tasks.RuntimeExecutionException;
 import com.google.gson.annotations.SerializedName;
 
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.Region;
 
-import java.util.IllegalFormatException;
 import java.util.UUID;
 
 import it.near.sdk.geopolis.Node;
-
-/**
- * Created by cattaneostefano on 21/09/16.
- */
 
 public class BeaconNode extends Node {
     @SerializedName("proximity_uuid")

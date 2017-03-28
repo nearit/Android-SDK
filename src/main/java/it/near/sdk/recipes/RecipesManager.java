@@ -56,7 +56,7 @@ public class RecipesManager {
     private Morpheus morpheus;
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
-    SharedPreferences.Editor editor;
+    private SharedPreferences.Editor editor;
     private NearAsyncHttpClient httpClient;
     private static RecipeCooler mRecipeCooler;
     private GlobalConfig globalConfig;
@@ -97,22 +97,23 @@ public class RecipesManager {
         morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
     }
 
-    public void addReaction(Reaction reaction){
+    public void addReaction(Reaction reaction) {
         reactions.put(reaction.getPluginName(), reaction);
     }
 
     /**
      * return the list of recipes
+     *
      * @return the list of recipes
      */
     public List<Recipe> getRecipes() {
-        return recipes!= null ? recipes : new ArrayList<Recipe>();
+        return recipes != null ? recipes : new ArrayList<Recipe>();
     }
 
     /**
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
-    public void refreshConfig(){
+    public void refreshConfig() {
         refreshConfig(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
@@ -128,7 +129,7 @@ public class RecipesManager {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      * Plus a listener will be notified of the refresh process.
      */
-    public void refreshConfig(final RecipeRefreshListener listener){
+    public void refreshConfig(final RecipeRefreshListener listener) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
         String requestBody = null;
@@ -140,7 +141,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "Got recipes: " + response.toString());
@@ -168,13 +169,14 @@ public class RecipesManager {
     private void persistList(List<Recipe> recipes) {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
-        editor.putString(TAG , listStringified);
+        editor.putString(TAG, listStringified);
         editor.apply();
     }
 
     private List<Recipe> loadChachedList() throws JSONException {
         Gson gson = new Gson();
-        Type collectionType = new TypeToken<List<Recipe>>(){}.getType();
+        Type collectionType = new TypeToken<List<Recipe>>() {
+        }.getType();
         return gson.<ArrayList<Recipe>>fromJson(sp.getString(TAG, ""), collectionType);
     }
 
@@ -186,37 +188,37 @@ public class RecipesManager {
      * @param pulse_action the action of the pulse.
      * @param pulse_bundle the bundle of the pulse.
      */
-    public void gotPulse(String pulse_plugin, String pulse_action, String pulse_bundle){
+    public void gotPulse(String pulse_plugin, String pulse_action, String pulse_bundle) {
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return;
         // Find the recipes that matches the pulse
-        for (Recipe recipe : recipes){
+        for (Recipe recipe : recipes) {
             // TODO check for null pulse bundle
-             if ( recipe.getPulse_plugin_id().equals(pulse_plugin) &&
-                  recipe.getPulse_action().getId().equals(pulse_action) &&
-                  recipe.getPulse_bundle().getId().equals(pulse_bundle) ) {
-                 matchingRecipes.add(recipe);
-             }
+            if (recipe.getPulse_plugin_id().equals(pulse_plugin) &&
+                    recipe.getPulse_action().getId().equals(pulse_action) &&
+                    recipe.getPulse_bundle().getId().equals(pulse_bundle)) {
+                matchingRecipes.add(recipe);
+            }
         }
 
         // From all the recipes, filter the ones that are scheduled for now
         List<Recipe> validRecipes = new ArrayList<>();
         Calendar now = Calendar.getInstance();
         for (Recipe matchingRecipe : matchingRecipes) {
-            if (matchingRecipe.isScheduledNow(now)){
+            if (matchingRecipe.isScheduledNow(now)) {
                 validRecipes.add(matchingRecipe);
             }
         }
 
         mRecipeCooler.filterRecipe(validRecipes);
 
-        if (validRecipes.isEmpty()){
+        if (validRecipes.isEmpty()) {
             // if no recipe is found the the online fallback
             onlinePulseEvaluation(pulse_plugin, pulse_action, pulse_bundle);
         } else {
             // take the first recipe and run with it
             Recipe winnerRecipe = validRecipes.get(0);
-            if (winnerRecipe.isEvaluatedOnline()){
+            if (winnerRecipe.isEvaluatedOnline()) {
                 evaluateRecipe(winnerRecipe.getId());
             } else {
                 gotRecipe(winnerRecipe);
@@ -229,7 +231,7 @@ public class RecipesManager {
      *
      * @param recipe the recipe to trigger.
      */
-    public void gotRecipe(Recipe recipe){
+    public void gotRecipe(Recipe recipe) {
         String stringRecipe = recipe.getName();
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
@@ -237,6 +239,7 @@ public class RecipesManager {
 
     /**
      * Process a recipe from its id. Typically called for processing a push recipe.
+     *
      * @param id push id.
      */
     public void processRecipe(final String id) {
@@ -246,7 +249,7 @@ public class RecipesManager {
                 .appendQueryParameter("include", "reaction_bundle")
                 .build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -279,11 +282,11 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    if (recipe != null){
+                    if (recipe != null) {
                         gotRecipe(recipe);
                     }
                 }
@@ -297,16 +300,17 @@ public class RecipesManager {
             Log.d(TAG, "Authentication error");
         } catch (UnsupportedEncodingException e) {
             Log.d(TAG, "Unsuported encoding");
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Log.d(TAG, "Shouldn't be here");
         }
     }
 
     /**
      * Online evaluation of a recipe.
+     *
      * @param recipeId recipe identifier.
      */
-    public void evaluateRecipe(String recipeId){
+    public void evaluateRecipe(String recipeId) {
         Log.d(TAG, "Evaluating recipe: " + recipeId);
         if (recipeId == null) return;
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
@@ -315,14 +319,14 @@ public class RecipesManager {
         String evaluateBody = null;
         try {
             evaluateBody = buildEvaluateBody(globalConfig,
-                                            mRecipeCooler, null, null, null);
+                    mRecipeCooler, null, null, null);
         } catch (JSONException e) {
             Log.d(TAG, "body build error");
             return;
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
@@ -333,7 +337,7 @@ public class RecipesManager {
                     Log.d(TAG, response.toString());
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
                     // TODO refactor plugin
-                    if (recipe != null){
+                    if (recipe != null) {
                         gotRecipe(recipe);
                     }
                 }
@@ -350,14 +354,15 @@ public class RecipesManager {
 
     /**
      * Sends tracking on a recipe. Lets choose the notified status.
-     * @param context the app context.
-     * @param recipeId the recipe identifier.
+     *
+     * @param context       the app context.
+     * @param recipeId      the recipe identifier.
      * @param trackingEvent notified status to send. Can either be NO
      * @throws JSONException
      */
     public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
-        if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)){
-            if (mRecipeCooler != null){
+        if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
+            if (mRecipeCooler != null) {
                 mRecipeCooler.markRecipeAsShown(recipeId);
             }
         }
@@ -372,7 +377,7 @@ public class RecipesManager {
                                            @Nullable String pulse_action,
                                            @Nullable String pulse_bundle) throws JSONException {
         if (globalConfig.getProfileId() == null ||
-                globalConfig.getAppId() == null){
+                globalConfig.getAppId() == null) {
             throw new JSONException("missing data");
         }
         HashMap<String, Object> attributes = new HashMap<>();

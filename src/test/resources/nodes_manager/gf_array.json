@@ -1,0 +1,80 @@
+{
+  "data": [
+    {
+      "id": "6eaf57fc-7848-45bb-9281-03f363414f41",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "3ce2006b-9adf-430b-a63f-a9c3e07c8f35",
+        "latitude": 45.580166,
+        "longitude": 9.932671,
+        "radius": 12800.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "770fc5ef-fcb3-44e1-945d-a5c9ce16f1e3",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "9819ce53-4517-4962-9617-de530e499e4f",
+        "latitude": 45.623162,
+        "longitude": 9.701223,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "d913a0ce-8da2-4d2a-8d19-6cb66292b2ec",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "7168f364-1d4c-4b5b-a683-c596670ebc2d",
+        "latitude": 45.422913,
+        "longitude": 9.740582,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    },
+    {
+      "id": "f4a62f53-5130-479d-ba6b-151255307dab",
+      "type": "geofence_nodes",
+      "attributes": {
+        "app_id": "855e58fc-02cc-46af-bcc6-5765194244e8",
+        "identifier": "ab8a486a-17cb-4345-bee6-c7a33e275877",
+        "latitude": 45.397365,
+        "longitude": 10.23428,
+        "radius": 6400.0
+      },
+      "relationships": {
+        "parent": {
+          "data": null
+        },
+        "children": {
+          "data": []
+        }
+      }
+    }
+  ]
+}

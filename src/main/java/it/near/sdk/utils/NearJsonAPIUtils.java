@@ -25,23 +25,25 @@ public class NearJsonAPIUtils {
 
     /**
      * Turns an hashmap of values to a jsonapi resource string.
+     *
      * @param type the type of the jsonapi resource.
-     * @param map the attribute map.
+     * @param map  the attribute map.
      * @return codified string.
-     * @throws JSONException
+     * @throws JSONException if map can be transformed into JSONObject
      */
-    public static String toJsonAPI(String type, HashMap<String, Object> map) throws JSONException{
+    public static String toJsonAPI(String type, HashMap<String, Object> map) throws JSONException {
         return toJsonAPI(type, null, map);
     }
 
     /**
      * Turns a list of hashmaps into a json api array of resources of the same type.
+     *
      * @param type the type of the jsonapi resource.
      * @param maps the maps of attributes.
      * @return codified string.
-     * @throws JSONException
+     * @throws JSONException if map can be transformed into JSONObject
      */
-    public static String toJsonAPI(String type, List<HashMap<String, Object>> maps) throws JSONException{
+    public static String toJsonAPI(String type, List<HashMap<String, Object>> maps) throws JSONException {
         JSONArray array = new JSONArray();
         for (HashMap<String, Object> map : maps) {
             array.put(getResObj(type, null, map));
@@ -53,11 +55,12 @@ public class NearJsonAPIUtils {
 
     /**
      * Turns an hasmap of values to a jsonapi resource string. Also sets the id.
-     * @param type the type of the jsonapi resource.
-     * @param id id of the resource.
-     * @param map values map.
+     *
+     * @param type jsonapi resource type.
+     * @param id   id of the resource.
+     * @param map  values map.
      * @return codified string.
-     * @throws JSONException
+     * @throws JSONException if map can be transformed into JSONObject
      */
     public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
         JSONObject dataObject = getResObj(type, id, map);
@@ -68,25 +71,26 @@ public class NearJsonAPIUtils {
 
     /**
      * Build the data object of the jsonapi resource.
-     * @param type
-     * @param id
-     * @param map
-     * @return
-     * @throws JSONException
+     *
+     * @param type jsonapi resource type.
+     * @param id   id of the resource.
+     * @param map  values map
+     * @return JSONObject representation of map object.
+     * @throws JSONException if map can be transformed into JSONObject
      */
     private static JSONObject getResObj(String type, String id, HashMap<String, Object> map) throws JSONException {
         JSONObject attributesObj = new JSONObject();
 
-        for (Map.Entry<String, Object> entry : map.entrySet() ){
-            if (entry.getValue() instanceof HashMap){
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getValue() instanceof HashMap) {
                 attributesObj.put(entry.getKey(), new JSONObject((Map) entry.getValue()));
             } else {
-                attributesObj.put(entry.getKey(), entry.getValue()!=null ? entry.getValue() : JSONObject.NULL);
+                attributesObj.put(entry.getKey(), entry.getValue() != null ? entry.getValue() : JSONObject.NULL);
             }
         }
 
         JSONObject dataObject = new JSONObject();
-        if (id != null){
+        if (id != null) {
             dataObject.put("id", id);
         }
         dataObject.put("type", type);
@@ -96,10 +100,11 @@ public class NearJsonAPIUtils {
 
     /**
      * Parse a list.
+     *
      * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
-     * @param json json to parse.
-     * @param clazz class of the list object.
-     * @param <T> generic type.
+     * @param json     json to parse.
+     * @param clazz    class of the list object.
+     * @param <T>      generic type.
      * @return list of objects.
      */
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
@@ -111,9 +116,10 @@ public class NearJsonAPIUtils {
         }
 
         List<T> returnList = new ArrayList<T>();
-        if (jsonApiObject.getResources() == null) return returnList;
+        if (jsonApiObject == null ||
+                jsonApiObject.getResources() == null) return returnList;
 
-        for (Resource r : jsonApiObject.getResources()){
+        for (Resource r : jsonApiObject.getResources()) {
             returnList.add((T) r);
         }
         return returnList;
@@ -121,13 +127,14 @@ public class NearJsonAPIUtils {
 
     /**
      * Parse an object.
+     *
      * @param morpheus the morpheus object. Its serializer must have been set to decode the Class of the objects of the list.
-     * @param json json to parse.
-     * @param clazz class of the object.
-     * @param <T> generic type.
+     * @param json     json to parse.
+     * @param clazz    class of the object.
+     * @param <T>      generic type.
      * @return casted object.
      */
-    public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz){
+    public static <T> T parseElement(Morpheus morpheus, JSONObject json, Class<T> clazz) {
         JsonApiObject jsonApiObject = null;
         try {
             jsonApiObject = morpheus.parse(json);

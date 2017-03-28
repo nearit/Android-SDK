@@ -45,7 +45,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  * - The background period between scans is 8 seconds.
  * - The background length of a scan 1 second.
  * - The period to wait before finalizing a region exit.
- *
+ * <p>
  * In our current plugin representation:
  * - this is a "pulse" plugin
  * - the plugin name is: beacon-forest
@@ -130,9 +130,8 @@ public class GeopolisManager {
     /**
      * Refresh the configuration of the component. The list of beacons to altBeaconMonitor will be downloaded from the APIs.
      * If there's an error in refreshing the configuration, a cached version will be used instead.
-     *
      */
-    public void refreshConfig(){
+    public void refreshConfig() {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
                 .appendPath("nodes")
@@ -140,7 +139,7 @@ public class GeopolisManager {
                 .appendQueryParameter("include", "**.children")
                 .build();
         try {
-            httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler(){
+            httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, response.toString());
@@ -168,7 +167,7 @@ public class GeopolisManager {
         // altBeaconMonitor.setUpMonitor(nodes);
     }
 
-    public void startRadar(){
+    public void startRadar() {
         if (isRadarStarted(mApplication)) return;
         setRadarState(true);
         List<Node> nodes = nodesManager.getNodes();
@@ -177,7 +176,7 @@ public class GeopolisManager {
         geofenceMonitor.startGFRadar();
     }
 
-    public void stopRadar(){
+    public void stopRadar() {
         setRadarState(false);
         altBeaconMonitor.stopRadar();
         geofenceMonitor.stopGFRadar();
@@ -186,6 +185,7 @@ public class GeopolisManager {
 
     /**
      * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
+     *
      * @param pulseAction the action of the pulse to notify
      * @param pulseBundle the region identifier of the pulse
      */
@@ -197,19 +197,20 @@ public class GeopolisManager {
 
     BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
         public static final String TAG = "RegionEventReceiver";
+
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(this.TAG, "receiverEvent");
+            Log.d(TAG, "receiverEvent");
             if (!intent.hasExtra(NODE_ID)) return;
             // trim the package name
             String packageName = mApplication.getPackageName();
             String action = intent.getAction().replace(packageName + ".", "");
             Node node = nodesManager.nodeFromId(intent.getStringExtra(NODE_ID));
             if (node == null) return;
-            switch (action){
+            switch (action) {
                 case GF_ENTRY_ACTION_SUFFIX:
                     trackAndFirePulse(node, Events.ENTER_PLACE);
-                    if (node.getChildren() != null){
+                    if (node.getChildren() != null) {
                         geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnEnter(nodesManager.getNodes(), node));
                         altBeaconMonitor.addRegions(node.getChildren());
                     }
@@ -241,11 +242,12 @@ public class GeopolisManager {
 
     /**
      * Tracks the geographical interaction and fires the proper pulse. It does nothing if the identifier is null.
+     *
      * @param node
      * @param event
      */
     private void trackAndFirePulse(Node node, String event) {
-        if (node != null || node.getIdentifier() != null){
+        if (node != null || node.getIdentifier() != null) {
             trackEvent(node.getIdentifier(), event);
             firePulse(event, node.getIdentifier());
         }
@@ -256,7 +258,7 @@ public class GeopolisManager {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(TAG, "reset intent received");
-            if (intent.getBooleanExtra(GeoFenceSystemEventsReceiver.LOCATION_STATUS, false)){
+            if (intent.getBooleanExtra(GeoFenceSystemEventsReceiver.LOCATION_STATUS, false)) {
                 startRadarOnNodes(nodesManager.getNodes());
             } else {
                 altBeaconMonitor.stopRadar();
@@ -276,21 +278,22 @@ public class GeopolisManager {
                     .appendPath(TRACKING_RES).build();
             NearNetworkUtil.sendTrack(mApplication, url.toString(), buildTrackBody(identifier, event));
         } catch (JSONException e) {
-            Log.d(TAG, "Unable to send track: " +  e.toString());
+            Log.d(TAG, "Unable to send track: " + e.toString());
         }
     }
 
 
     /**
      * Compute the HTTP request body from the region identifier in jsonAPI format.
+     *
      * @param identifier the node identifier
-     * @param event the event
+     * @param event      the event
      * @return the correctly formed body
      * @throws JSONException
      */
     private String buildTrackBody(String identifier, String event) throws JSONException {
         HashMap<String, Object> map = new HashMap<>();
-        map.put("identifier" , identifier);
+        map.put("identifier", identifier);
         map.put("event", event);
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Date now = new Date(System.currentTimeMillis());
@@ -303,19 +306,19 @@ public class GeopolisManager {
     }
 
 
-
     /**
      * Returns whether the app started the location radar.
+     *
      * @param context the context object
      * @return whether the app started the location radar
      */
-    public static boolean isRadarStarted(Context context){
+    public static boolean isRadarStarted(Context context) {
         String PACK_NAME = context.getApplicationContext().getPackageName();
         SharedPreferences sp = context.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0);
         return sp.getBoolean(RADAR_ON, false);
     }
 
-    private void setRadarState(boolean b){
+    private void setRadarState(boolean b) {
         sp.edit().putBoolean(RADAR_ON, b).apply();
 
     }
