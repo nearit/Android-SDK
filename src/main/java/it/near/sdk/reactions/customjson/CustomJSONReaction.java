@@ -77,7 +77,7 @@ public class CustomJSONReaction extends CoreReaction {
                 .appendPath(JSON_CONTENT_RES)
                 .appendQueryParameter("filter[app_id]", appId).build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, response.toString());
@@ -88,7 +88,7 @@ public class CustomJSONReaction extends CoreReaction {
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     Log.d(TAG, "Error: " + statusCode);
-                    if (statusCode == 0){
+                    if (statusCode == 0) {
                         Log.d(TAG, throwable.toString());
                     }
                     try {
@@ -106,7 +106,8 @@ public class CustomJSONReaction extends CoreReaction {
 
     private ArrayList<CustomJSON> loadList() throws JSONException {
         String cachedString = loadCachedString(TAG);
-        return gson.fromJson(cachedString, new TypeToken<Collection<CustomJSON>>(){}.getType());
+        return gson.fromJson(cachedString, new TypeToken<Collection<CustomJSON>>() {
+        }.getType());
     }
 
     @Override
@@ -116,7 +117,7 @@ public class CustomJSONReaction extends CoreReaction {
 
     @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action){
+        switch (reaction_action) {
             case SHOW_JSON_ACTION:
                 showContent(reaction_bundle.getId(), recipe);
                 break;
@@ -132,13 +133,13 @@ public class CustomJSONReaction extends CoreReaction {
                 Log.d(TAG, "Data format error");
             }
         }
-        for (CustomJSON json : safe(jsonList)){
-            if (json.getId().equals(reaction_bundle)){
+        for (CustomJSON json : safe(jsonList)) {
+            if (json.getId().equals(reaction_bundle)) {
                 listener.onContentFetched(json, true);
                 return;
             }
         }
-        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler(){
+        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
@@ -159,7 +160,7 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
 
-    public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
+    public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)
                 .appendPath(JSON_CONTENT_RES)

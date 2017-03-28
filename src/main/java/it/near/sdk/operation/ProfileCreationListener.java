@@ -5,5 +5,6 @@ package it.near.sdk.operation;
  */
 public interface ProfileCreationListener {
     void onProfileCreated(boolean created, String profileId);
+
     void onProfileCreationError(String error);
 }

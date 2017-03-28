@@ -129,7 +129,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         return null;
     }
 
-
     /**
      * Create and start the google api client for the geofences.
      * Set this service as the listener for the connection callback methods.
@@ -145,37 +144,42 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     /**
      * Load geofence request ids from disk.
+     *
      * @return
      */
     private List<String> loadIds() {
         Gson gson = new Gson();
-        sp = getSharedPreferences(getSharedPrefName(this),0);
+        sp = getSharedPreferences(getSharedPrefName(this), 0);
         String jsonText = sp.getString(LIST_IDS, null);
-        return gson.fromJson(jsonText, new TypeToken<List<String>>(){}.getType());
+        return gson.fromJson(jsonText, new TypeToken<List<String>>() {
+        }.getType());
     }
 
     /**
      * Overwrite geofence request ids.
+     *
      * @param ids
      */
-    private void saveIds(List<String> ids){
+    private void saveIds(List<String> ids) {
         Gson gson = new Gson();
-        SharedPreferences.Editor edit = getSharedPreferences(getSharedPrefName(this),0).edit();
+        SharedPreferences.Editor edit = getSharedPreferences(getSharedPrefName(this), 0).edit();
         edit.putString(LIST_IDS, gson.toJson(ids)).apply();
     }
 
     /**
      * Reset the listened geofence request ids.
+     *
      * @param context
      */
-    public static void resetIds(Context context){
-        SharedPreferences.Editor edit = context.getSharedPreferences(getSharedPrefName(context),0).edit();
+    public static void resetIds(Context context) {
+        SharedPreferences.Editor edit = context.getSharedPreferences(getSharedPrefName(context), 0).edit();
         edit.putString(LIST_IDS, null).apply();
     }
 
     /**
      * Set the geofence to monitor. Filters the geofence to only add the new ones and to
      * remove the geofences it has no longer to monitor. Persists the new ids.
+     *
      * @param geoFenceNodes
      */
     private void setGeoFences(List<GeoFenceNode> geoFenceNodes) {
@@ -184,7 +188,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
         // subtracting the new ids to the old ones, find the geofence to stop monitoring
         List<String> idsToremove = loadIds();
-        if (idsToremove != null){
+        if (idsToremove != null) {
             idsToremove.removeAll(newIds);
             stopGeofencing(idsToremove);
         }
@@ -199,7 +203,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         // create copy of the new ids
         List<String> idsToAdd = new ArrayList<>(newIds);
         // subtract the old ids to the new
-        if (oldIds!=null){
+        if (oldIds != null) {
             idsToAdd.removeAll(oldIds);
         }
 
@@ -207,7 +211,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         List<Geofence> geoFenceNodesToAdd = new ArrayList<>();
         for (String id : idsToAdd) {
             GeoFenceNode geoFenceNode = getGeofenceFromId(geoFenceNodes, id);
-            if (geoFenceNode != null){
+            if (geoFenceNode != null) {
                 geoFenceNodesToAdd.add(geoFenceNode.toGeofence());
             }
         }
@@ -217,20 +221,21 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     /**
      * Stop all geofences
      */
-    public void stopAllGeofences(){
+    public void stopAllGeofences() {
         stopGeofencing(loadIds());
         saveIds(new ArrayList<String>());
     }
 
     /**
      * Find a geofence from a geofence list, given its id
+     *
      * @param geoFenceNodes
      * @param id
      * @return
      */
     private GeoFenceNode getGeofenceFromId(List<GeoFenceNode> geoFenceNodes, String id) {
         for (GeoFenceNode geoFenceNode : geoFenceNodes) {
-            if (geoFenceNode.getId().equals(id)){
+            if (geoFenceNode.getId().equals(id)) {
                 return geoFenceNode;
             }
         }
@@ -247,9 +252,10 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     /**
      * Stop geofencing on request ids.
+     *
      * @param idsToremove
      */
-    public void stopGeofencing(List<String> idsToremove){
+    public void stopGeofencing(List<String> idsToremove) {
         if (idsToremove == null || idsToremove.size() == 0) return;
         if (!mGoogleApiClient.isConnected()) return;
 
@@ -260,11 +266,12 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     /**
      * Start geofencing from a geofence request. If the google api client is not yet connected,
      * store the geofecing as pending to be started once the client is connected.
+     *
      * @param request
      */
     private void startGeoFencing(GeofencingRequest request) {
         if (request == null) return;
-        if (!mGoogleApiClient.isConnected()){
+        if (!mGoogleApiClient.isConnected()) {
             mPendingGeofences = request.getGeofences();
             return;
         }
@@ -289,13 +296,13 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     }
 
 
-
     /**
      * Builds the geofence request from a list of geofences
+     *
      * @return
      */
     private GeofencingRequest getGeofencingRequest(List<Geofence> geofences) {
-        if (geofences == null || geofences.size() == 0){
+        if (geofences == null || geofences.size() == 0) {
             return null;
         }
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
@@ -306,6 +313,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     /**
      * Build the geofence pending intent.
+     *
      * @return
      */
     private PendingIntent getGeofencePendingIntent() {
@@ -322,13 +330,12 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     }
 
 
-
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.d(TAG, "onConnected");
         // If we have pending geofences (that need to be started)
         // we start the geofence now that the client is connected.
-        if (mPendingGeofences != null){
+        if (mPendingGeofences != null) {
             startGeoFencing(getGeofencingRequest(mPendingGeofences));
         }
     }
@@ -345,12 +352,11 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onResult(@NonNull Status status) {
-        Log.d(TAG, "onResult: " + status.getStatusMessage() );
+        Log.d(TAG, "onResult: " + status.getStatusMessage());
     }
 
     public static String getSharedPrefName(Context context) {
         String PACK_NAME = context.getApplicationContext().getPackageName();
         return PACK_NAME + PREF_SUFFIX;
     }
-
 }

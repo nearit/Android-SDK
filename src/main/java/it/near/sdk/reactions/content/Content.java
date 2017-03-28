@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.morpheusnear.annotations.Relationship;
-import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
@@ -31,7 +30,7 @@ public class Content extends ReactionBundle implements Parcelable {
     @Relationship("upload")
     public Upload upload;
 
-    List<ImageSet> images_links;
+    private List<ImageSet> images_links;
 
     public Content() {
     }

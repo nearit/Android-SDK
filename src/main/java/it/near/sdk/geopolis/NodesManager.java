@@ -1,6 +1,5 @@
 package it.near.sdk.geopolis;
 
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -16,7 +15,6 @@ import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.checkNotNull;
-
 
 /**
  * Manages the geopolis node structure.
@@ -54,6 +52,7 @@ public class NodesManager {
 
     /**
      * Persist the geopolis conifguration in memory, parse it and hold a reference to it.
+     *
      * @param jsonObject the json object returned from the apis
      * @return the list of the first level nodes, with their corresponding children
      */
@@ -65,6 +64,7 @@ public class NodesManager {
 
     /**
      * Find a node from the jsonapi resource id. (IMPORTANT: not from the nearit Identifier!)
+     *
      * @param id the jsonapi resource id
      * @return the corresponding node, null if not present.
      */
@@ -77,12 +77,13 @@ public class NodesManager {
 
     /**
      * Find a node from a list of nodes and its jsonapi resource id. Uses recursion to walk down the tree.
+     *
      * @param nodes the node list to search for.
-     * @param id the jsonapi resource id
+     * @param id    the jsonapi resource id
      * @return the corresponding node, null if not present
      */
     private Node findNode(List<Node> nodes, String id) {
-        if (nodes == null){
+        if (nodes == null) {
             try {
                 nodes = loadNodes();
             } catch (JSONException e) {
@@ -101,6 +102,7 @@ public class NodesManager {
     /**
      * Returns the top level node list. If the local reference is null, tries to parse the most recent
      * geopolis configuration.
+     *
      * @return the top level node list
      */
     public List<Node> getNodes() {
@@ -116,6 +118,7 @@ public class NodesManager {
 
     /**
      * Set a list of nodes.
+     *
      * @param nodes the nodes to set.
      */
     public void setNodes(List<Node> nodes) {
@@ -124,6 +127,7 @@ public class NodesManager {
 
     /**
      * Load the nodes from disk.
+     *
      * @return the list of top level nodes.
      * @throws JSONException
      */
@@ -134,11 +138,11 @@ public class NodesManager {
         return NearJsonAPIUtils.parseList(morpheus, configJson, Node.class);
     }
 
-    private void saveConfig(String json){
+    private void saveConfig(String json) {
         sp.edit().putString(NODES_CONFIG, json).apply();
     }
 
-    private String getSavedConfig(){
+    private String getSavedConfig() {
         return sp.getString(NODES_CONFIG, null);
     }
 }

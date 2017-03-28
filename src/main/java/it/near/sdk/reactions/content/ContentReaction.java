@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,17 +34,16 @@ import static it.near.sdk.utils.NearUtils.safe;
 public class ContentReaction extends CoreReaction {
     // ---------- content notification plugin ----------
     public static final String PLUGIN_NAME = "content-notification";
-    private static final String CONTENT_NOTIFICATION_PATH =      "content-notification";
-    private static final String CONTENT_NOTIFICATION_RESOURCE =  "contents";
+    private static final String CONTENT_NOTIFICATION_PATH = "content-notification";
+    private static final String CONTENT_NOTIFICATION_RESOURCE = "contents";
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentReaction";
-    public static final String PREFS_SUFFIX = "NearContentNot";
+    private static final String PREFS_SUFFIX = "NearContentNot";
     private List<Content> contentList;
 
     public ContentReaction(Context context, NearNotifier nearNotifier) {
         super(context, nearNotifier);
     }
-
 
     @Override
     protected String getResTypeName() {
@@ -52,7 +52,7 @@ public class ContentReaction extends CoreReaction {
 
     @Override
     public void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action){
+        switch (reaction_action) {
             case SHOW_CONTENT_ACTION_NAME:
                 showContent(reaction_bundle.getId(), recipe);
                 break;
@@ -61,15 +61,15 @@ public class ContentReaction extends CoreReaction {
 
     @Override
     protected void getContent(String reaction_bundle, Recipe recipe, final ContentFetchListener listener) {
-        if (contentList == null){
+        if (contentList == null) {
             try {
                 contentList = loadList();
             } catch (JSONException e) {
                 Log.d(TAG, "Data format error");
             }
         }
-        for ( Content cn : safe(contentList)){
-            if (cn.getId().equals(reaction_bundle)){
+        for (Content cn : safe(contentList)) {
+            if (cn.getId().equals(reaction_bundle)) {
                 listener.onContentFetched(cn, true);
                 return;
             }
@@ -90,11 +90,11 @@ public class ContentReaction extends CoreReaction {
 
     public void refreshConfig() {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                    .appendPath(CONTENT_NOTIFICATION_PATH)
-                    .appendPath(CONTENT_NOTIFICATION_RESOURCE)
-                    .appendQueryParameter("include", "images,audio,upload").build();
+                .appendPath(CONTENT_NOTIFICATION_PATH)
+                .appendPath(CONTENT_NOTIFICATION_RESOURCE)
+                .appendQueryParameter("include", "images,audio,upload").build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, response.toString());
@@ -128,7 +128,7 @@ public class ContentReaction extends CoreReaction {
     }
 
 
-    public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
+    private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
@@ -143,16 +143,17 @@ public class ContentReaction extends CoreReaction {
 
     private ArrayList<Content> loadList() throws JSONException {
         String cachedString = loadCachedString(TAG);
-        return gson.fromJson(cachedString , new TypeToken<Collection<Content>>(){}.getType());
+        return gson.fromJson(cachedString, new TypeToken<Collection<Content>>() {
+        }.getType());
     }
 
-    private void formatLinks(List<Content> notifications){
+    private void formatLinks(List<Content> notifications) {
         for (Content notification : notifications) {
             formatLinks(notification);
         }
     }
 
-    private void formatLinks(Content notification){
+    private void formatLinks(Content notification) {
         List<Image> images = notification.getImages();
         List<ImageSet> imageSets = new ArrayList<>();
         for (Image image : images) {
@@ -183,7 +184,7 @@ public class ContentReaction extends CoreReaction {
 
     @Override
     public void buildActions() {
-        supportedActions = new ArrayList<String>();
+        supportedActions = new ArrayList<>();
         supportedActions.add(SHOW_CONTENT_ACTION_NAME);
     }
 

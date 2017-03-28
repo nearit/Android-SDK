@@ -83,7 +83,7 @@ public class CouponReaction extends CoreReaction {
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
         Coupon coupon = (Coupon) reaction_bundle;
         formatLinks(coupon);
-        if (recipe.isForegroundRecipe()){
+        if (recipe.isForegroundRecipe()) {
             nearNotifier.deliverForegroundReaction(coupon, recipe);
         } else {
             nearNotifier.deliverBackgroundReaction(coupon, recipe);
@@ -98,7 +98,7 @@ public class CouponReaction extends CoreReaction {
     }
 
 
-    public void requestSingleResource(String bundleId, AsyncHttpResponseHandler responseHandler){
+    public void requestSingleResource(String bundleId, AsyncHttpResponseHandler responseHandler) {
         String profileId = GlobalConfig.getInstance(mContext).getProfileId();
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)
@@ -117,7 +117,7 @@ public class CouponReaction extends CoreReaction {
     public void getCoupons(Context context, final CouponListener listener) throws UnsupportedEncodingException, MalformedURLException {
         String profile_id = null;
         profile_id = GlobalConfig.getInstance(context).getProfileId();
-        if (profile_id == null){
+        if (profile_id == null) {
             listener.onCouponDownloadError("Missing profileId");
             return;
         }
@@ -129,7 +129,7 @@ public class CouponReaction extends CoreReaction {
         String output = url.toString();
         Log.d(TAG, output);
         try {
-            httpClient.nearGet(context, url.toString(), new NearJsonHttpResponseHandler(){
+            httpClient.nearGet(context, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "Copuns downloaded: " + response.toString());
@@ -154,16 +154,15 @@ public class CouponReaction extends CoreReaction {
     }
 
 
-    private void formatLinks(List<Coupon> notifications){
+    private void formatLinks(List<Coupon> notifications) {
         for (Coupon notification : notifications) {
             formatLinks(notification);
         }
     }
 
-    private void formatLinks(Coupon notification){
+    private void formatLinks(Coupon notification) {
         Image icon = notification.getIcon();
         if (icon == null) return;
         notification.setIconSet(icon.toImageSet());
     }
-
 }

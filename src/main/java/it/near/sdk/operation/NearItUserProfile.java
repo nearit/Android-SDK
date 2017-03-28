@@ -24,6 +24,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Class containing methods to create a new profile and to add values to the profile for user segmentation.
+ *
  * @author cattaneostefano.
  */
 public class NearItUserProfile {
@@ -36,40 +37,44 @@ public class NearItUserProfile {
 
     /**
      * Set the profileId of the user using this app installation. This string usually comes from the authentication service for the app.
-     * @param context the application context.
+     *
+     * @param context   the application context.
      * @param profileId the profileId string.
      */
-    public static void setProfileId(Context context, String profileId){
+    public static void setProfileId(Context context, String profileId) {
         GlobalConfig.getInstance(context).setProfileId(profileId);
         NearInstallation.registerInstallation(context);
     }
 
     /**
      * Get the cached profileId. Might be null.
+     *
      * @param context the application context.
      * @return the cached profileId.
      */
-    public static String getProfileId(Context context){
+    public static String getProfileId(Context context) {
         return GlobalConfig.getInstance(context).getProfileId();
     }
 
     /**
      * Reset the profileId. After this is called, the get will return null.
+     *
      * @param context the application context.
      */
-    public static void resetProfileId(Context context){
+    public static void resetProfileId(Context context) {
         GlobalConfig.getInstance(context).setProfileId(null);
         NearInstallation.registerInstallation(context);
     }
 
     /**
      * Create a new profile and saves the profile identifier internally. After a profile is created, it's possible to add properties to it.
-     * @param context the application context.
+     *
+     * @param context  the application context.
      * @param listener interface for success or failure on profile creation.
      */
-    public static void createNewProfile(final Context context, final ProfileCreationListener listener){
+    public static void createNewProfile(final Context context, final ProfileCreationListener listener) {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
-        if (profileId != null){
+        if (profileId != null) {
             // profile already created
             NearInstallation.registerInstallation(context);
             listener.onProfileCreated(false, profileId);
@@ -89,7 +94,7 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE).build();
 
         try {
-            httpClient.nearPost(context, url.toString(), requestBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "got profile: " + response.toString());
@@ -115,7 +120,7 @@ public class NearItUserProfile {
 
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            listener.onProfileCreationError("error: impossible to make a request" );
+            listener.onProfileCreationError("error: impossible to make a request");
         }
     }
 
@@ -128,12 +133,13 @@ public class NearItUserProfile {
 
     /**
      * Create or update user data, a key/value couple used in profile segmentation.
-     * @param context the application context.
-     * @param key the name of the data field.
-     * @param value the value of the data field for the current user.
+     *
+     * @param context  the application context.
+     * @param key      the name of the data field.
+     * @param value    the value of the data field for the current user.
      * @param listener interface for success or failure on property creation.
      */
-    public static void setUserData(final Context context, String key, String value, final UserDataNotifier listener){
+    public static void setUserData(final Context context, String key, String value, final UserDataNotifier listener) {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
@@ -154,7 +160,7 @@ public class NearItUserProfile {
         HashMap<String, Object> map = new HashMap<>();
         map.put("key", key);
         map.put("value", value);
-        String reqBody= null;
+        String reqBody = null;
         try {
             reqBody = NearJsonAPIUtils.toJsonAPI("data_points", map);
         } catch (JSONException e) {
@@ -166,9 +172,9 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE)
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
-  //TODO not tested
+        //TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "datapoint created: " + response.toString());
@@ -188,11 +194,12 @@ public class NearItUserProfile {
 
     /**
      * Create or update multiple user data, key/value couples used in profile segmentation.
-     * @param context the application context.
+     *
+     * @param context   the application context.
      * @param valuesMap map fo key values profile data.
-     * @param listener interface for success or failure on properties creation.
+     * @param listener  interface for success or failure on properties creation.
      */
-    public static void setBatchUserData(final Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener){
+    public static void setBatchUserData(final Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener) {
         String profileId = GlobalConfig.getInstance(context).getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
@@ -211,7 +218,7 @@ public class NearItUserProfile {
         }
 
         ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
-        for (Map.Entry<String, String> entry : valuesMap.entrySet()){
+        for (Map.Entry<String, String> entry : valuesMap.entrySet()) {
             HashMap<String, Object> map = new HashMap<>();
             map.put("key", entry.getKey());
             map.put("value", entry.getValue());
@@ -230,9 +237,9 @@ public class NearItUserProfile {
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
 
-                // TODO not tested
+        // TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, "datapoint created: " + response.toString());
@@ -249,5 +256,4 @@ public class NearItUserProfile {
             listener.onDataNotSetError("error: impossible to send request");
         }
     }
-
 }

@@ -1,6 +1,5 @@
 package it.near.sdk.reactions.customjson;
 
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -8,13 +7,12 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
 
-import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
  * @author cattaneostefano.
  */
-public class CustomJSON extends ReactionBundle implements Parcelable{
+public class CustomJSON extends ReactionBundle implements Parcelable {
 
     @SerializedName("content")
     public HashMap<String, Object> content;

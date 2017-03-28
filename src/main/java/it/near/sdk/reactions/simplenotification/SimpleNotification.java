@@ -10,8 +10,8 @@ import android.support.annotation.Nullable;
 
 public class SimpleNotification implements Parcelable {
 
-    String notificationMessage;
-    String notificationTitle;
+    private String notificationMessage;
+    private String notificationTitle;
 
     public SimpleNotification(String notificationMessage, @Nullable String notificationTitle) {
         this.notificationMessage = notificationMessage;

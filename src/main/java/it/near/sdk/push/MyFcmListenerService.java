@@ -1,6 +1,5 @@
 package it.near.sdk.push;
 
-import android.os.Bundle;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -22,7 +21,6 @@ public class MyFcmListenerService extends FirebaseMessagingService {
 
     /**
      * Called when message is received.
-     *
      */
     // [START receive_message]
     @Override
@@ -37,16 +35,16 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         getRecipesManager().processRecipe(recipe_id);
 
         // [START_EXCLUDE]
-        /**
-         * Production applications would usually process the message here.
-         * Eg: - Syncing with server.
-         *     - Store message in local database.
-         *     - Update UI.
+        /*
+          Production applications would usually process the message here.
+          Eg: - Syncing with server.
+              - Store message in local database.
+              - Update UI.
          */
 
-        /**
-         * In some cases it may be useful to show a notification indicating to the user
-         * that a message was received.
+        /*
+          In some cases it may be useful to show a notification indicating to the user
+          that a message was received.
          */
         // sendNotification(message);
         // [END_EXCLUDE]

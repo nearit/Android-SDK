@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.altbeacon.beacon.Region;
@@ -32,7 +31,6 @@ import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.trackings.Events;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -135,7 +133,7 @@ public class GeopolisManager {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
                 .appendPath("nodes")
-                .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
+                .appendQueryParameter("filter[app_id]", GlobalConfig.getInstance(mApplication).getAppId())
                 .appendQueryParameter("include", "**.children")
                 .build();
         try {
@@ -158,7 +156,6 @@ public class GeopolisManager {
         } catch (AuthenticationException e) {
             Log.d(TAG, "Auth error");
         }
-
     }
 
     public void startRadarOnNodes(List<Node> nodes) {
@@ -181,7 +178,6 @@ public class GeopolisManager {
         altBeaconMonitor.stopRadar();
         geofenceMonitor.stopGFRadar();
     }
-
 
     /**
      * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
@@ -253,7 +249,6 @@ public class GeopolisManager {
         }
     }
 
-
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -264,7 +259,6 @@ public class GeopolisManager {
                 altBeaconMonitor.stopRadar();
                 geofenceMonitor.stopGFRadar();
             }
-
         }
     };
 
@@ -281,7 +275,6 @@ public class GeopolisManager {
             Log.d(TAG, "Unable to send track: " + e.toString());
         }
     }
-
 
     /**
      * Compute the HTTP request body from the region identifier in jsonAPI format.
@@ -305,7 +298,6 @@ public class GeopolisManager {
         return NearJsonAPIUtils.toJsonAPI("trackings", map);
     }
 
-
     /**
      * Returns whether the app started the location radar.
      *
@@ -322,5 +314,4 @@ public class GeopolisManager {
         sp.edit().putBoolean(RADAR_ON, b).apply();
 
     }
-
 }

@@ -1,14 +1,12 @@
 package it.near.sdk.reactions.simplenotification;
 
 import android.content.Context;
-import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
-import it.near.sdk.reactions.Reaction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;
@@ -21,6 +19,7 @@ public class SimpleNotificationReaction extends CoreReaction {
     public static final String PLUGIN_NAME = "simple-notification";
     private static final String SHOW_SIMPLE_NOTIFICATION_ACTION_NAME = "simple_notification";
     private static final String PREFS_SUFFIX = "NearSimpleNot";
+    private static final String RES_NAME = "contents";
 
     public SimpleNotificationReaction(Context mContext, NearNotifier nearNotifier) {
         super(mContext, nearNotifier);
@@ -44,7 +43,7 @@ public class SimpleNotificationReaction extends CoreReaction {
 
     @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action){
+        switch (reaction_action) {
             case SHOW_SIMPLE_NOTIFICATION_ACTION_NAME:
                 showContent(null, recipe);
                 break;
@@ -72,12 +71,11 @@ public class SimpleNotificationReaction extends CoreReaction {
 
     @Override
     protected HashMap<String, Class> getModelHashMap() {
-        HashMap<String, Class> map = new HashMap<>();
-        return map;
+        return new HashMap<>();
     }
 
     @Override
     protected String getResTypeName() {
-        return "contents";
+        return RES_NAME;
     }
 }

@@ -21,10 +21,10 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.d(TAG, "received intent: " + intent.getAction());
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")){
+        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             sendResetIntent(context, true);
         }
-        if (intent.getAction().equals("android.location.PROVIDERS_CHANGED")){
+        if (intent.getAction().equals("android.location.PROVIDERS_CHANGED")) {
             boolean anyLocationProv = false;
             LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 
@@ -37,6 +37,7 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
 
     /**
      * Send the reset intent to start or stop the radar.
+     *
      * @param context
      * @param startRadar indicates if the radar should start.
      */
@@ -47,7 +48,4 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
         resetIntent.putExtra(LOCATION_STATUS, startRadar);
         context.sendBroadcast(resetIntent);
     }
-
-
-
 }
