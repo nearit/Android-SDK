@@ -47,12 +47,12 @@ public class BeaconNode extends Node {
     }
 
     public static Region toAltRegion(BeaconNode beaconNode) throws NullPointerException {
-        if (beaconNode.getIdentifier() == null || beaconNode.getMinor() != null) throw new NullPointerException();
-        Region region = new Region(beaconNode.getId(),
-                                Identifier.fromUuid(UUID.fromString(beaconNode.getProximityUUID())),
-                                beaconNode.getMajor() != null ? Identifier.fromInt(beaconNode.getMajor()) : null,
-                                beaconNode.getMinor() != null ? Identifier.fromInt(beaconNode.getMinor()) : null);
-        return region;
+        if (beaconNode.getIdentifier() == null || beaconNode.getMinor() != null)
+            throw new NullPointerException();
+        return new Region(beaconNode.getId(),
+                Identifier.fromUuid(UUID.fromString(beaconNode.getProximityUUID())),
+                beaconNode.getMajor() != null ? Identifier.fromInt(beaconNode.getMajor()) : null,
+                beaconNode.getMinor() != null ? Identifier.fromInt(beaconNode.getMinor()) : null);
     }
 
     public static boolean isBeacon(Node node) {

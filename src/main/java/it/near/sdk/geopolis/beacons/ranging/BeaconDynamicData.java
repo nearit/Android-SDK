@@ -15,7 +15,7 @@ import it.near.sdk.geopolis.GeopolisManager;
  */
 public class BeaconDynamicData {
 
-    public static final int INDETERMINED = 0;
+    public static final int UNDETERMINED = 0;
     public static final int IMMEDIATE = 1;
     public static final int NEAR = 2;
     public static final int FAR = 3;
@@ -34,7 +34,7 @@ public class BeaconDynamicData {
     }
 
     public void setCurrentProximity(int newProximity) {
-        if (currentProximity == INDETERMINED || newProximity != currentProximity){
+        if (currentProximity == UNDETERMINED || newProximity != currentProximity) {
             notifiyEvent(getBeaconNode(), newProximity);
         }
         currentProximity = newProximity;
@@ -42,12 +42,11 @@ public class BeaconDynamicData {
 
     private void notifiyEvent(BeaconNode beaconNode, int newProximity) {
         Log.d(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.getIdentifier());
-        Intent intent  = new Intent();
+        Intent intent = new Intent();
         String packageName = mContext.getPackageName();
         intent.setAction(packageName + "." + getActionFrom(newProximity));
         intent.putExtra(GeopolisManager.NODE_ID, beaconNode.getId());
         mContext.sendBroadcast(intent);
-
     }
 
 
@@ -74,15 +73,14 @@ public class BeaconDynamicData {
     }
 
     public void initializeCycleData() {
-
-        proximityValues.add(INDETERMINED);
+        proximityValues.add(UNDETERMINED);
         if (proximityValues.size() > 4)
             proximityValues.remove(0);
     }
 
-    public void resetData(){
+    public void resetData() {
         proximityValues.clear();
-        currentProximity = INDETERMINED;
+        currentProximity = UNDETERMINED;
     }
 
 
@@ -90,9 +88,9 @@ public class BeaconDynamicData {
 
         int proximity = distanceToProximity(_distance);
 
-        if (_distance>0) {
-            if (proximityValues.size() > 0){
-                proximityValues.remove(proximityValues.size()-1);
+        if (_distance > 0) {
+            if (proximityValues.size() > 0) {
+                proximityValues.remove(proximityValues.size() - 1);
             }
             proximityValues.add(proximity);
         }
@@ -105,7 +103,7 @@ public class BeaconDynamicData {
     private void computeProximity() {
         /*int numberOfValid = 0;
         for (Integer proximityValue : proximityValues) {
-            if (proximityValue != INDETERMINED)
+            if (proximityValue != UNDETERMINED)
                 numberOfValid++;
         }
 
@@ -127,8 +125,8 @@ public class BeaconDynamicData {
         scoreboard.put(FAR, 0);
         scoreboard.put(NEAR, 0);
         scoreboard.put(IMMEDIATE, 0);
-        for(int dist : proximityValues) {
-            if (dist != INDETERMINED){
+        for (int dist : proximityValues) {
+            if (dist != UNDETERMINED) {
                 scoreboard.put(dist, scoreboard.get(dist) + 1);
             }
         }
@@ -138,7 +136,7 @@ public class BeaconDynamicData {
     public boolean hasMinumumData() {
         int numberOfValid = 0;
         for (Integer proximityValue : proximityValues) {
-            if (proximityValue != INDETERMINED)
+            if (proximityValue != UNDETERMINED)
                 numberOfValid++;
         }
 
@@ -146,26 +144,24 @@ public class BeaconDynamicData {
     }
 
 
-
     public static int distanceToProximity(double distance) {
-        if (distance<=0)
+        if (distance <= 0)
             // negative distance, FAR
-            return INDETERMINED;
+            return UNDETERMINED;
 
-        else if (distance<=0.16)
+        else if (distance <= 0.16)
             // IMMEDIATE
             return IMMEDIATE;
 
-        else if (distance<=1.5)
+        else if (distance <= 1.5)
             // NEAR
             return NEAR;
 
-        else if (distance>1.5)
+        else if (distance > 1.5)
             // FAR
             return FAR;
 
-        return INDETERMINED;
-
+        return UNDETERMINED;
     }
 
     private String getActionFrom(int newProximity) {
@@ -179,6 +175,4 @@ public class BeaconDynamicData {
         }
         return null;
     }
-
-
 }

@@ -6,13 +6,12 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import cz.msebera.android.httpclient.Header;
 
 /**
  * Near response handler to merge all failure methods into one.
- *
+ * <p>
  * Created by cattaneostefano on 17/10/2016.
  */
 
@@ -48,9 +47,6 @@ public class NearJsonHttpResponseHandler extends JsonHttpResponseHandler {
         if (jsonString != null) {
             jsonString = jsonString.trim();
             result = new JSONObject(jsonString);
-        }
-        if (result == null) {
-            result = jsonString;
         }
         return result;
     }

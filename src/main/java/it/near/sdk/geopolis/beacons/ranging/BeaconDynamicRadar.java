@@ -22,11 +22,11 @@ public class BeaconDynamicRadar {
     private final double minDifference = 0.5;
     private Context context;
 
-    public BeaconDynamicRadar(Context context, List<BeaconNode> beacons){
+    public BeaconDynamicRadar(Context context, List<BeaconNode> beacons) {
         this.context = context;
         beaconsDistances = new ArrayList<>();
 
-        if (beacons!= null) {
+        if (beacons != null) {
             initBeaconDynamicData(beacons);
         }
     }
@@ -35,9 +35,9 @@ public class BeaconDynamicRadar {
      * For every beacon create beacon dynamic data
      * @param beacons
      */
-    public void initBeaconDynamicData(List<BeaconNode> beacons){
+    public void initBeaconDynamicData(List<BeaconNode> beacons) {
         // for every beacon, create a BeaconDynamicData
-        for (BeaconNode beacon : beacons){
+        for (BeaconNode beacon : beacons) {
             BeaconDynamicData dynData = new BeaconDynamicData(context);
             dynData.setBeaconNode(beacon);
             beaconsDistances.add(dynData);
@@ -46,16 +46,17 @@ public class BeaconDynamicRadar {
 
     /**
      * Handle a list of beacons being detected. Note that this is called about every second.
+     *
      * @param beacons
      */
     public void beaconsDiscovered(List<Beacon> beacons) {
         initializeCycleDistance();
 
-        for (Beacon beacon : beacons){
+        for (Beacon beacon : beacons) {
             // for every beacon we save the new distance
             BeaconDynamicData dynBeacon = findDynamicBeacon(beacon);
 
-            if (dynBeacon!=null){
+            if (dynBeacon != null) {
                 dynBeacon.saveDistance(beacon.getDistance());
             }
         }

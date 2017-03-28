@@ -4,7 +4,6 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -39,7 +38,6 @@ public class NearInstallation {
     private static final String BLUETOOTH = "bluetooth";
     private static final String LOCATION = "location";
     private static final String TAG = "NearInstallation";
-    public static final String PLUGIN_RESOURCES = "plugin_resources";
     private static final String PROFILE_ID = "profile_id";
 
     private static NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
@@ -51,7 +49,7 @@ public class NearInstallation {
      *
      * @param context the app context
      */
-    public static void registerInstallation(final Context context){
+    public static void registerInstallation(final Context context) {
         // get the local installation id
         String installationId = GlobalConfig.getInstance(context).getInstallationId();
         try {
@@ -59,10 +57,10 @@ public class NearInstallation {
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
             try {
-                registerOrEditInstallation(context, installationId, installBody, new NearJsonHttpResponseHandler(){
+                registerOrEditInstallation(context, installationId, installBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.d(TAG , "Installation data sent");
+                        Log.d(TAG, "Installation data sent");
                         // If the registration is correct, we save the installationId locally
                         try {
                             String installationId = response.getJSONObject("data").getString("id");
@@ -88,8 +86,8 @@ public class NearInstallation {
 
 
     private static void registerOrEditInstallation(Context context, String installationId, String installBody, AsyncHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
-        if (installationId == null){
-            httpClient.nearPost(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler );
+        if (installationId == null) {
+            httpClient.nearPost(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler);
         } else {
             String subPath = "/" + installationId;
             httpClient.nearPut(context, Constants.API.INSTALLATIONS_PATH + subPath, installBody, jsonHttpResponseHandler);

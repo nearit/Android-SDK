@@ -10,5 +10,4 @@ import it.near.sdk.recipes.models.Recipe;
 public interface ProximityListener {
 
     void foregroundEvent(Parcelable content, Recipe recipe);
-
 }
