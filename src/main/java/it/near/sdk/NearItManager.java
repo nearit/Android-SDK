@@ -15,12 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.geopolis.GeopolisManager;
-import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
-import it.near.sdk.reactions.content.Content;
 import it.near.sdk.reactions.content.ContentReaction;
 import it.near.sdk.reactions.coupon.CouponListener;
 import it.near.sdk.reactions.coupon.CouponReaction;
@@ -39,7 +37,6 @@ import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
-
 
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
@@ -61,6 +58,7 @@ public class NearItManager {
     private static final String TAG = "NearItManager";
     public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
     public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
+    private final GlobalConfig globalConfig;
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
@@ -70,7 +68,7 @@ public class NearItManager {
     private CustomJSONReaction customJSONReaction;
     private FeedbackReaction feedbackReaction;
     private List<ProximityListener> proximityListenerList = new ArrayList<>();
-    Application application;
+    private Application application;
 
     /**
      * Default constructor.
@@ -80,10 +78,12 @@ public class NearItManager {
     public NearItManager(Context context, String apiKey) {
         this.application = (Application) context.getApplicationContext();
 
-        GlobalConfig.getInstance(application).setApiKey(apiKey);
-        GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
+        this.globalConfig = GlobalConfig.getInstance(application);
 
-        plugInSetup();
+        globalConfig.setApiKey(apiKey);
+        globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
+
+        plugInSetup(application, globalConfig);
 
         NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
             @Override
@@ -102,18 +102,19 @@ public class NearItManager {
         });
     }
 
-    private void plugInSetup() {
+    private void plugInSetup(Application application, GlobalConfig globalConfig) {
+
         SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME,0);
         RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP);
         SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
         recipesManager = new RecipesManager(application,
-                GlobalConfig.getInstance(application),
+                globalConfig,
                 recipeCooler,
                 recipeManagerSP);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
-        geopolis = new GeopolisManager(application, recipesManager);
+        geopolis = new GeopolisManager(application, recipesManager, globalConfig);
 
         contentNotification = new ContentReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification);
@@ -124,13 +125,13 @@ public class NearItManager {
         pollNotification = new PollReaction(application, nearNotifier);
         recipesManager.addReaction(pollNotification);
 
-        couponReaction = new CouponReaction(application, nearNotifier);
+        couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
 
         customJSONReaction = new CustomJSONReaction(application, nearNotifier);
         recipesManager.addReaction(customJSONReaction);
 
-        feedbackReaction = new FeedbackReaction(application, nearNotifier);
+        feedbackReaction = new FeedbackReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedbackReaction);
 
     }
@@ -159,7 +160,7 @@ public class NearItManager {
      * @see <a href="http://developer.android.com/design/patterns/notifications.html">jsonAPI 1.0 specifications</a>
      */
     public void setNotificationImage(int imgRes){
-        GlobalConfig.getInstance(application).setNotificationImage(imgRes);
+        globalConfig.setNotificationImage(imgRes);
     }
 
     /**

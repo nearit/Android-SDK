@@ -45,10 +45,13 @@ public class FeedbackReaction extends CoreReaction {
     private static final String TAG = "FeedbackReaction";
     private static final String ANSWERS_RESOURCE = "answers";
 
+    private final GlobalConfig globalConfig;
+
     private List<Feedback> feedbackList;
 
-    public FeedbackReaction(Context mContext, NearNotifier nearNotifier) {
+    public FeedbackReaction(Context mContext, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         super(mContext, nearNotifier);
+        this.globalConfig = globalConfig;
     }
 
     @Override
@@ -126,7 +129,7 @@ public class FeedbackReaction extends CoreReaction {
             return;
         }
         try {
-            String answerBody = event.toJsonAPI(GlobalConfig.getInstance(mContext));
+            String answerBody = event.toJsonAPI(globalConfig);
             Log.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)

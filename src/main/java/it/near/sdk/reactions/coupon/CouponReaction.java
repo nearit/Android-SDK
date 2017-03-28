@@ -40,8 +40,11 @@ public class CouponReaction extends CoreReaction {
     private static final String PLUGIN_ROOT_PATH = "coupon-blaster";
     private static final String TAG = "CouponReactiom";
 
-    public CouponReaction(Context mContext, NearNotifier nearNotifier) {
+    private final GlobalConfig globalConfig;
+
+    public CouponReaction(Context mContext, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         super(mContext, nearNotifier);
+        this.globalConfig = globalConfig;
     }
 
     @Override
@@ -99,7 +102,7 @@ public class CouponReaction extends CoreReaction {
 
 
     public void requestSingleResource(String bundleId, AsyncHttpResponseHandler responseHandler) {
-        String profileId = GlobalConfig.getInstance(mContext).getProfileId();
+        String profileId = globalConfig.getProfileId();
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)
                 .appendPath(COUPONS_RES)
@@ -116,7 +119,7 @@ public class CouponReaction extends CoreReaction {
 
     public void getCoupons(Context context, final CouponListener listener) throws UnsupportedEncodingException, MalformedURLException {
         String profile_id = null;
-        profile_id = GlobalConfig.getInstance(context).getProfileId();
+        profile_id = globalConfig.getProfileId();
         if (profile_id == null) {
             listener.onCouponDownloadError("Missing profileId");
             return;
