@@ -190,7 +190,11 @@ public class ContentReaction extends CoreReaction {
         List<Image> images = notification.getImages();
         List<ImageSet> imageSets = new ArrayList<>();
         for (Image image : images) {
-            imageSets.add(image.toImageSet());
+            try {
+                imageSets.add(image.toImageSet());
+            } catch (Exception ignored) {
+
+            }
         }
         notification.setImages_links(imageSets);
     }
