@@ -69,7 +69,7 @@ public class NearAsyncHttpClient {
         JSONObject mockedResponse = null;
         try {
             mockedResponse = new JSONObject(mockedString);
-        } catch (JSONException e) {
+        } catch (JSONException ignored) {
 
         }
         responseHandlerInterface.onSuccess(200, null, mockedResponse);

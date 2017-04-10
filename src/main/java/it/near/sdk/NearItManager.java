@@ -11,16 +11,14 @@ import org.altbeacon.beacon.BeaconManager;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.near.sdk.geopolis.GeopolisManager;
-import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
-import it.near.sdk.reactions.content.Content;
 import it.near.sdk.reactions.content.ContentReaction;
 import it.near.sdk.reactions.coupon.CouponListener;
 import it.near.sdk.reactions.coupon.CouponReaction;
@@ -40,12 +38,11 @@ import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
 
-
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
  * This class starts all the plugins manually and initialize global values like the apiKey.
  * To be able to use beacon technology, make sure to ask for the proper permission in the manifest or runtime, depending on your targeted API.
- *
+ * <p>
  * <pre>
  * {@code
  * // inside the custom Application onCreate method
@@ -54,36 +51,39 @@ import it.near.sdk.utils.NearUtils;
  * }
  * </pre>
  *
- * @author cattaneostefano
  */
 public class NearItManager {
 
     private static final String TAG = "NearItManager";
     public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
     public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
+    private final GlobalConfig globalConfig;
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
     private SimpleNotificationReaction simpleNotification;
-    private PollReaction pollNotification;
+    private PollReaction polls;
     private CouponReaction couponReaction;
-    private CustomJSONReaction customJSONReaction;
-    private FeedbackReaction feedbackReaction;
-    private List<ProximityListener> proximityListenerList = new ArrayList<>();
-    Application application;
+    private CustomJSONReaction customJSON;
+    private FeedbackReaction feedback;
+    private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
+    private Application application;
 
     /**
      * Default constructor.
+     *
      * @param context the context
-     * @param apiKey the apiKey string
+     * @param apiKey  the apiKey string
      */
     public NearItManager(Context context, String apiKey) {
         this.application = (Application) context.getApplicationContext();
 
-        GlobalConfig.getInstance(application).setApiKey(apiKey);
-        GlobalConfig.getInstance(application).setAppId(NearUtils.fetchAppIdFrom(apiKey));
+        this.globalConfig = GlobalConfig.getInstance(application);
 
-        plugInSetup();
+        globalConfig.setApiKey(apiKey);
+        globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
+
+        plugInSetup(application, globalConfig);
 
         NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
             @Override
@@ -102,18 +102,19 @@ public class NearItManager {
         });
     }
 
-    private void plugInSetup() {
-        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME,0);
+    private void plugInSetup(Application application, GlobalConfig globalConfig) {
+
+        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME, 0);
         RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP);
         SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
         recipesManager = new RecipesManager(application,
-                GlobalConfig.getInstance(application),
+                globalConfig,
                 recipeCooler,
                 recipeManagerSP);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
-        geopolis = new GeopolisManager(application, recipesManager);
+        geopolis = new GeopolisManager(application, recipesManager, globalConfig);
 
         contentNotification = new ContentReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification);
@@ -121,22 +122,23 @@ public class NearItManager {
         simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
         recipesManager.addReaction(simpleNotification);
 
-        pollNotification = new PollReaction(application, nearNotifier);
-        recipesManager.addReaction(pollNotification);
+        polls = new PollReaction(application, nearNotifier);
+        recipesManager.addReaction(polls);
 
-        couponReaction = new CouponReaction(application, nearNotifier);
+        couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
 
-        customJSONReaction = new CustomJSONReaction(application, nearNotifier);
-        recipesManager.addReaction(customJSONReaction);
+        customJSON = new CustomJSONReaction(application, nearNotifier);
+        recipesManager.addReaction(customJSON);
 
-        feedbackReaction = new FeedbackReaction(application, nearNotifier);
-        recipesManager.addReaction(feedbackReaction);
+        feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
+        recipesManager.addReaction(feedback);
 
     }
 
     /**
      * Return the recipes manager
+     *
      * @return the recipes manager
      */
     public RecipesManager getRecipesManager() {
@@ -149,18 +151,28 @@ public class NearItManager {
      * @return true if the device has bluetooth enabled, false otherwise
      * @throws RuntimeException when the device doesn't have the essential BLE compatibility
      */
-    public static boolean verifyBluetooth(Context context) throws RuntimeException{
+    public static boolean verifyBluetooth(Context context) throws RuntimeException {
         return BeaconManager.getInstanceForApplication(context.getApplicationContext()).checkAvailability();
     }
 
     /**
-     * Set a notification image. Refer to the Android guidelines to determine the best image for a notification
-     * @param imgRes the resource int of the image
-     * @see <a href="http://developer.android.com/design/patterns/notifications.html">jsonAPI 1.0 specifications</a>
+     * Set an icon for proximity notification.
+     *
+     * @param imgRes the resource int of the image.
      */
-    public void setNotificationImage(int imgRes){
-        GlobalConfig.getInstance(application).setNotificationImage(imgRes);
+    public void setProximityNotificationIcon(int imgRes) {
+        globalConfig.setProximityNotificationIcon(imgRes);
     }
+
+    /**
+     * Set an icon for push notification.
+     *
+     * @param imgRes the resource int of the image.
+     */
+    public void setPushNotificationIcon(int imgRes) {
+        globalConfig.setPushNotificationIcon(imgRes);
+    }
+
 
     /**
      * Force the refresh of all SDK configurations.
@@ -180,11 +192,14 @@ public class NearItManager {
     /**
      * Force the refresh of all SDK configurations. The listener will be notified with the recipes refresh outcome.
      */
-    public void refreshConfigs(RecipeRefreshListener listener){
+    public void refreshConfigs(RecipeRefreshListener listener) {
         recipesManager.refreshConfig(listener);
         geopolis.refreshConfig();
         contentNotification.refreshConfig();
-        pollNotification.refreshConfig();
+        simpleNotification.refreshConfig();
+        customJSON.refreshConfig();
+        polls.refreshConfig();
+        feedback.refreshConfig();
     }
 
     private NearNotifier nearNotifier = new NearNotifier() {
@@ -206,17 +221,17 @@ public class NearItManager {
         }
     };
 
-    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId){
+    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId) {
         Log.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
         Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
-        if (action.equals(PUSH_MESSAGE_ACTION)){
+        if (action.equals(PUSH_MESSAGE_ACTION)) {
             resultIntent.putExtra(NearItIntentConstants.PUSH_ID, pushId);
         }
         application.sendOrderedBroadcast(resultIntent, null);
     }
 
-    public boolean sendEvent(Event event){
+    public boolean sendEvent(Event event) {
         return sendEvent(event, new NearITEventHandler() {
             @Override
             public void onSuccess() {
@@ -232,16 +247,17 @@ public class NearItManager {
 
     /**
      * Sends an action to the SDK, that might delegate it to other plugins, based on its type.
+     *
      * @param event the event to send.
      * @return true if the action was a recognized action, false otherwise.
      */
-    public boolean sendEvent(Event event, NearITEventHandler handler){
-        switch (event.getPlugin()){
+    public boolean sendEvent(Event event, NearITEventHandler handler) {
+        switch (event.getPlugin()) {
             case PollEvent.PLUGIN_NAME:
-                pollNotification.sendEvent((PollEvent)event, handler);
+                polls.sendEvent((PollEvent) event, handler);
                 return true;
             case FeedbackEvent.PLUGIN_NAME:
-                feedbackReaction.sendEvent((FeedbackEvent) event, handler);
+                feedback.sendEvent((FeedbackEvent) event, handler);
                 return true;
         }
         return false;
@@ -249,6 +265,7 @@ public class NearItManager {
 
     /**
      * Return a list of coupon claimed by the user and that are currently valid.
+     *
      * @param listener a listener for success or failure. If there are no coupons available the success method will be called with a null paramaeter.
      */
     public void getCoupons(CouponListener listener) {
@@ -271,22 +288,16 @@ public class NearItManager {
         geopolis.stopRadar();
     }
 
-    public void addProximityListener(ProximityListener proximityListener){
-        synchronized (proximityListenerList) {
-            proximityListenerList.add(proximityListener);
-        }
+    public void addProximityListener(ProximityListener proximityListener) {
+        proximityListenerList.add(proximityListener);
     }
 
     public void removeProximityListener(ProximityListener proximityListener) {
-        synchronized (proximityListenerList){
-            proximityListenerList.remove(proximityListener);
-        }
+        proximityListenerList.remove(proximityListener);
     }
 
-    public void removeAllProximityListener(){
-        synchronized (proximityListenerList) {
-            proximityListenerList.clear();
-        }
+    public void removeAllProximityListener() {
+        proximityListenerList.clear();
     }
 
 }

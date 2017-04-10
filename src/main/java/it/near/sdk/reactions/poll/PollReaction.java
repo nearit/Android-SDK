@@ -36,7 +36,7 @@ import static it.near.sdk.utils.NearUtils.safe;
 public class PollReaction extends CoreReaction {
     // ---------- poll notification plugin ----------
     public static final String PLUGIN_NAME = "poll-notification";
-    private static final String POLL_NOTIFICATION =          "poll-notification";
+    private static final String POLL_NOTIFICATION = "poll-notification";
     private static final String POLL_NOTIFICATION_RESOURCE = "polls";
     private static final String SHOW_POLL_ACTION_NAME = "show_poll";
     private static final String TAG = "PollReaction";
@@ -54,7 +54,7 @@ public class PollReaction extends CoreReaction {
 
     @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch(reaction_action){
+        switch (reaction_action) {
             case SHOW_POLL_ACTION_NAME:
                 showContent(reaction_bundle.getId(), recipe);
                 break;
@@ -68,7 +68,7 @@ public class PollReaction extends CoreReaction {
         nearNotifier.deliverBackgroundPushReaction(poll, recipe, push_id);
     }
 
-    public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
+    private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(POLL_NOTIFICATION)
                 .appendPath(POLL_NOTIFICATION_RESOURCE)
@@ -89,8 +89,8 @@ public class PollReaction extends CoreReaction {
                 Log.d(TAG, "Data format error");
             }
         }
-        for (Poll pn : safe(pollList)){
-            if (pn.getId().equals(reaction_bundle)){
+        for (Poll pn : safe(pollList)) {
+            if (pn.getId().equals(reaction_bundle)) {
                 pn.setRecipeId(recipe.getId());
                 listener.onContentFetched(pn, true);
                 return;
@@ -114,11 +114,11 @@ public class PollReaction extends CoreReaction {
     @Override
     public void refreshConfig() {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                    .appendPath(POLL_NOTIFICATION)
-                    .appendPath(POLL_NOTIFICATION_RESOURCE).build();
+                .appendPath(POLL_NOTIFICATION)
+                .appendPath(POLL_NOTIFICATION_RESOURCE).build();
         // TODO not tested
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler(){
+            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, response.toString());
@@ -143,7 +143,8 @@ public class PollReaction extends CoreReaction {
 
     private ArrayList<Poll> loadList() throws JSONException {
         String cachedString = loadCachedString(TAG);
-        return gson.fromJson(cachedString , new TypeToken<Collection<Poll>>(){}.getType());
+        return gson.fromJson(cachedString, new TypeToken<Collection<Poll>>() {
+        }.getType());
     }
 
     @Override
@@ -181,7 +182,7 @@ public class PollReaction extends CoreReaction {
                     .appendPath("answers").build();
             // TODO not tested
             try {
-                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler(){
+                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d(TAG, "Answer sent successfully");
@@ -197,7 +198,8 @@ public class PollReaction extends CoreReaction {
             } catch (AuthenticationException | UnsupportedEncodingException e) {
                 handler.onFail(422, "Incorrect format");
             }
-        } catch (JSONException e) {;
+        } catch (JSONException e) {
+            ;
             Log.d(TAG, "Error: incorrect format " + e.toString());
             handler.onFail(422, "Incorrect format");
         }

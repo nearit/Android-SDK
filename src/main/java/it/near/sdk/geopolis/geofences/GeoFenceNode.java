@@ -17,7 +17,7 @@ import it.near.sdk.geopolis.Node;
  * Created by cattaneostefano on 21/09/16.
  */
 
-public class GeoFenceNode extends Node implements Parcelable{
+public class GeoFenceNode extends Node implements Parcelable {
     private static final int LOITERING_DELAY = 30000;
     @SerializedName("latitude")
     public Number latitude;
@@ -120,14 +120,16 @@ public class GeoFenceNode extends Node implements Parcelable{
 
     /**
      * Exclusion strategy for gson serializing, since there are circular references in the structure
+     *
      * @return
      */
-    public static ExclusionStrategy getExclusionStrategy(){
+    public static ExclusionStrategy getExclusionStrategy() {
         ExclusionStrategy es = new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(FieldAttributes f) {
                 return f.getName().equals("parent") || f.getName().equals("children");
             }
+
             @Override
             public boolean shouldSkipClass(Class<?> clazz) {
                 return false;

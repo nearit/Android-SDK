@@ -91,7 +91,8 @@ public class NodesManager2 {
     public List<Node> getRangedNodesOnEnter(String nodeId) {
         if (nodes == null) return emptyList;
         Node node = findNodeIn(nodes, nodeId);
-        if (node == null || BeaconNode.isBeacon(node) || node.getChildren() == null) return emptyList;
+        if (node == null || BeaconNode.isBeacon(node) || node.getChildren() == null)
+            return emptyList;
         List<Node> beaconsToReturn = new ArrayList<>();
         for (Node child : safe(node.getChildren())) {
             if (BeaconNode.isBeacon(child))

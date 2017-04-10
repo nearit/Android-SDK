@@ -41,14 +41,17 @@ public class FeedbackReaction extends CoreReaction {
     public static final String PLUGIN_NAME = "feedbacks";
     public static final String PREFS_SUFFIX = "NearFeedbackNot";
     private static final String ASK_FEEDBACK_ACTION_NAME = "ask_feedback";
-    private static final String FEEDBACKS_NOTIFICATION_RESOURCE =  "feedbacks";
+    private static final String FEEDBACKS_NOTIFICATION_RESOURCE = "feedbacks";
     private static final String TAG = "FeedbackReaction";
     private static final String ANSWERS_RESOURCE = "answers";
 
+    private final GlobalConfig globalConfig;
+
     private List<Feedback> feedbackList;
-    
-    public FeedbackReaction(Context mContext, NearNotifier nearNotifier) {
+
+    public FeedbackReaction(Context mContext, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         super(mContext, nearNotifier);
+        this.globalConfig = globalConfig;
     }
 
     @Override
@@ -83,7 +86,8 @@ public class FeedbackReaction extends CoreReaction {
 
     private ArrayList<Feedback> loadList() throws JSONException {
         String cachedString = loadCachedString(TAG);
-        return gson.fromJson(cachedString , new TypeToken<Collection<Feedback>>(){}.getType());
+        return gson.fromJson(cachedString, new TypeToken<Collection<Feedback>>() {
+        }.getType());
     }
 
     @Override
@@ -91,7 +95,7 @@ public class FeedbackReaction extends CoreReaction {
         return PLUGIN_NAME;
     }
 
-    public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler){
+    private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_NAME)
                 .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
@@ -105,7 +109,7 @@ public class FeedbackReaction extends CoreReaction {
 
     @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action){
+        switch (reaction_action) {
             case ASK_FEEDBACK_ACTION_NAME:
                 showContent(reaction_bundle.getId(), recipe);
                 break;
@@ -119,13 +123,13 @@ public class FeedbackReaction extends CoreReaction {
         nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
     }
 
-    public void sendEvent(FeedbackEvent event, final NearITEventHandler handler){
-        if (event.getRating() < 1 || event.getRating() > 5){
+    public void sendEvent(FeedbackEvent event, final NearITEventHandler handler) {
+        if (event.getRating() < 1 || event.getRating() > 5) {
             handler.onFail(422, "Rating must be between 1 and 5");
             return;
         }
         try {
-            String answerBody = event.toJsonAPI(GlobalConfig.getInstance(mContext));
+            String answerBody = event.toJsonAPI(globalConfig);
             Log.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)
@@ -133,7 +137,7 @@ public class FeedbackReaction extends CoreReaction {
                     .appendPath(event.getFeedbackId())
                     .appendPath(ANSWERS_RESOURCE).build();
             try {
-                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler(){
+                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Log.d(TAG, "Feedback sent successfully");
@@ -163,14 +167,14 @@ public class FeedbackReaction extends CoreReaction {
                 Log.d(TAG, "Data format error");
             }
         }
-        for ( Feedback fb : safe(feedbackList)){
-            if (fb.getId().equals(reaction_bundle)){
+        for (Feedback fb : safe(feedbackList)) {
+            if (fb.getId().equals(reaction_bundle)) {
                 fb.setRecipeId(recipe.getId());
                 listener.onContentFetched(fb, true);
                 return;
             }
         }
-        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler(){
+        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Feedback fb = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);

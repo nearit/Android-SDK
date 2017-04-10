@@ -6,7 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import it.near.sdk.morpheusnear.Resource;
 

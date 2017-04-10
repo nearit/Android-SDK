@@ -16,14 +16,10 @@ import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearNotification;
 
-/**
- * @author cattaneostefano.
- */
 public class NearItIntentService extends IntentService {
 
     public static final int REGION_NOTIFICATION_ID = 1;
     public static final int PUSH_NOTIFICATION_ID = 2;
-
     private static final String TAG = "NearITIntentService";
 
     /**
@@ -35,20 +31,20 @@ public class NearItIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        // we send the notification about the content intent
+        // Send the notification about the content intent
         if (intent != null) {
             sendSimpleNotification(intent);
+            // Release the wake lock provided by the WakefulBroadcastReceiver.
+            NearItBroadcastReceiver.completeWakefulIntent(intent);
         }
-
-        // Release the wake lock provided by the WakefulBroadcastReceiver.
-        NearItBroadcastReceiver.completeWakefulIntent(intent);
     }
 
     /**
      * Send a simple notification, and also tracks the recipe as notified.
+     *
      * @param intent the intent from the receiver.
      */
-    protected void sendSimpleNotification(@NonNull Intent intent){
+    protected void sendSimpleNotification(@NonNull Intent intent) {
         Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
         targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
@@ -68,17 +64,34 @@ public class NearItIntentService extends IntentService {
 
     }
 
-    private int imgResFromIntent (@NonNull Intent intent) {
-        if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)){
-            return R.drawable.ic_send_white_24dp;
-        } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)){
-            return GlobalConfig.getInstance(this).getNotificationImage();
+    private int imgResFromIntent(@NonNull Intent intent) {
+        if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)) {
+            return fetchPushNotification();
+        } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)) {
+            return fetchProximityNotification();
+        } else return fetchProximityNotification();
+    }
+
+    private int fetchProximityNotification() {
+        int imgRes = GlobalConfig.getInstance(this).getProximityNotificationIcon();
+        if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
+            return imgRes;
+        } else {
+            return R.drawable.ic_place_white_24dp;
         }
-        return GlobalConfig.getInstance(this).getNotificationImage();
+    }
+
+    private int fetchPushNotification() {
+        int imgRes = GlobalConfig.getInstance(this).getPushNotificationIcon();
+        if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
+            return imgRes;
+        } else {
+            return R.drawable.ic_send_white_24dp;
+        }
     }
 
     private int notificationCodeFromIntent(@NonNull Intent intent) {
-        switch (intent.getAction()){
+        switch (intent.getAction()) {
             case NearItManager.PUSH_MESSAGE_ACTION:
                 return PUSH_NOTIFICATION_ID;
             case NearItManager.GEO_MESSAGE_ACTION:

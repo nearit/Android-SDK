@@ -8,5 +8,6 @@ import android.os.Parcelable;
 
 public interface ContentFetchListener {
     void onContentFetched(Parcelable content, boolean cached);
+
     void onContentFetchError(String error);
 }

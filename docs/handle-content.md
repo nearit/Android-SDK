@@ -40,6 +40,10 @@ To extract the content from an intent use the utility method:
 ```java
 NearUtils.parseCoreContents(intent, coreContentListener);
 ```
+If you want to just check if the intent carries NearIT content, without having to eventually handle the actual content, use this method
+```java
+boolean hasNearContent = NearUtils.carriesNearItContent(intent);
+```
 
 If you want to customize the behavior of background notification see [this page](docs/custom-bkg-notification.md)
 

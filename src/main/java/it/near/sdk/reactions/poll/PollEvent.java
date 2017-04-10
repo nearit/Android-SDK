@@ -3,6 +3,7 @@ package it.near.sdk.reactions.poll;
 import android.content.Context;
 
 import org.json.JSONException;
+
 import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
@@ -14,20 +15,21 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  *
  * @author cattaneostefano
  */
-public class PollEvent extends Event{
+public class PollEvent extends Event {
     public static final String PLUGIN_NAME = "PollEvent";
     private static final String RES_TYPE = "answers";
     private static final String ANSWER = "answer";
     private static final String PROFILE_ID = "profile_id";
     private static final String RECIPE_ID = "recipe_id";
     private static final String POLL_ID = "poll_id";
-    String pollId;
-    int answer = 0;
-    String recipeId;
+    private String pollId;
+    private int answer = 0;
+    private String recipeId;
 
     /**
      * Default constructor.
-     * @param poll poll to answer.
+     *
+     * @param poll   poll to answer.
      * @param answer answer number, can be either 1 or 2.
      */
     public PollEvent(Poll poll, int answer) {
@@ -38,11 +40,12 @@ public class PollEvent extends Event{
 
     /**
      * Constructor that doesn't need the original poll object.
-     * @param pollId the poll id.
-     * @param answer answer number, can be either 1 or 2.
+     *
+     * @param pollId   the poll id.
+     * @param answer   answer number, can be either 1 or 2.
      * @param recipeId the recipe id.
      */
-    public PollEvent(String pollId, int answer, String recipeId){
+    public PollEvent(String pollId, int answer, String recipeId) {
         this.pollId = pollId;
         this.answer = answer;
         this.recipeId = recipeId;

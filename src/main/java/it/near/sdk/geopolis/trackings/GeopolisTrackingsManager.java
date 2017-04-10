@@ -7,7 +7,6 @@ import it.near.sdk.communication.NearAsyncHttpClient;
 
 import static it.near.sdk.utils.NearUtils.checkNotNull;
 
-
 /**
  * Created by cattaneostefano on 27/02/2017.
  */
@@ -22,5 +21,4 @@ public class GeopolisTrackingsManager {
         this.nearAsyncHttpClient = checkNotNull(nearAsyncHttpClient);
         this.sp = checkNotNull(sp);
     }
-
 }

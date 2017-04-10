@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import org.altbeacon.beacon.Region;
@@ -32,7 +31,6 @@ import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.trackings.Events;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -71,21 +69,22 @@ public class GeopolisManager {
     public static final String GF_RANGE_IMMEDIATE_SUFFIX = "RANGE_IMMEDIATE";
     public static final String NODE_ID = "identifier";
 
+    private final Application application;
     private final RecipesManager recipesManager;
+    private final GeoFenceMonitor geofenceMonitor;
+    private final GlobalConfig globalConfig;
     private final SharedPreferences sp;
 
     private List<Region> regionList;
-    private Application mApplication;
     private AltBeaconMonitor altBeaconMonitor;
-    private final GeoFenceMonitor geofenceMonitor;
     private NodesManager nodesManager;
 
     private NearAsyncHttpClient httpClient;
-    private List<ProximityListener> proximityListeners = new ArrayList<>();
 
-    public GeopolisManager(Application application, RecipesManager recipesManager) {
-        this.mApplication = application;
+    public GeopolisManager(Application application, RecipesManager recipesManager, GlobalConfig globalConfig) {
+        this.application = application;
         this.recipesManager = recipesManager;
+        this.globalConfig = globalConfig;
 
         SharedPreferences nodesManSP = application.getSharedPreferences(NodesManager.NODES_MANAGER_PREF_NAME, 0);
         this.nodesManager = new NodesManager(nodesManSP);
@@ -99,9 +98,9 @@ public class GeopolisManager {
         registerProximityReceiver();
         registerResetReceiver();
 
-        String PACK_NAME = mApplication.getApplicationContext().getPackageName();
+        String PACK_NAME = this.application.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
-        sp = mApplication.getSharedPreferences(PREFS_NAME, 0);
+        sp = this.application.getSharedPreferences(PREFS_NAME, 0);
 
         httpClient = new NearAsyncHttpClient();
         refreshConfig();
@@ -109,7 +108,7 @@ public class GeopolisManager {
 
     private void registerProximityReceiver() {
         IntentFilter regionFilter = new IntentFilter();
-        String packageName = mApplication.getPackageName();
+        String packageName = application.getPackageName();
         regionFilter.addAction(packageName + "." + GF_ENTRY_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_EXIT_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + BT_ENTRY_ACTION_SUFFIX);
@@ -117,14 +116,14 @@ public class GeopolisManager {
         regionFilter.addAction(packageName + "." + GF_RANGE_FAR_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_RANGE_NEAR_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_RANGE_IMMEDIATE_SUFFIX);
-        mApplication.registerReceiver(regionEventsReceiver, regionFilter);
+        application.registerReceiver(regionEventsReceiver, regionFilter);
     }
 
     private void registerResetReceiver() {
         IntentFilter resetFilter = new IntentFilter();
-        String packageName = mApplication.getPackageName();
+        String packageName = application.getPackageName();
         resetFilter.addAction(packageName + "." + GeoFenceSystemEventsReceiver.RESET_MONITOR_ACTION_SUFFIX);
-        mApplication.registerReceiver(resetEventReceiver, resetFilter);
+        application.registerReceiver(resetEventReceiver, resetFilter);
     }
 
     /**
@@ -135,11 +134,11 @@ public class GeopolisManager {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath("geopolis")
                 .appendPath("nodes")
-                .appendQueryParameter("filter[app_id]",GlobalConfig.getInstance(mApplication).getAppId())
+                .appendQueryParameter("filter[app_id]", globalConfig.getAppId())
                 .appendQueryParameter("include", "**.children")
                 .build();
         try {
-            httpClient.nearGet(mApplication, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.nearGet(application, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d(TAG, response.toString());
@@ -158,7 +157,6 @@ public class GeopolisManager {
         } catch (AuthenticationException e) {
             Log.d(TAG, "Auth error");
         }
-
     }
 
     public void startRadarOnNodes(List<Node> nodes) {
@@ -168,7 +166,7 @@ public class GeopolisManager {
     }
 
     public void startRadar() {
-        if (isRadarStarted(mApplication)) return;
+        if (isRadarStarted(application)) return;
         setRadarState(true);
         List<Node> nodes = nodesManager.getNodes();
         // altBeaconMonitor.setUpMonitor(nodes);
@@ -181,7 +179,6 @@ public class GeopolisManager {
         altBeaconMonitor.stopRadar();
         geofenceMonitor.stopGFRadar();
     }
-
 
     /**
      * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
@@ -203,7 +200,7 @@ public class GeopolisManager {
             Log.d(TAG, "receiverEvent");
             if (!intent.hasExtra(NODE_ID)) return;
             // trim the package name
-            String packageName = mApplication.getPackageName();
+            String packageName = application.getPackageName();
             String action = intent.getAction().replace(packageName + ".", "");
             Node node = nodesManager.nodeFromId(intent.getStringExtra(NODE_ID));
             if (node == null) return;
@@ -253,7 +250,6 @@ public class GeopolisManager {
         }
     }
 
-
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -264,7 +260,6 @@ public class GeopolisManager {
                 altBeaconMonitor.stopRadar();
                 geofenceMonitor.stopGFRadar();
             }
-
         }
     };
 
@@ -276,12 +271,11 @@ public class GeopolisManager {
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)
                     .appendPath(TRACKING_RES).build();
-            NearNetworkUtil.sendTrack(mApplication, url.toString(), buildTrackBody(identifier, event));
+            NearNetworkUtil.sendTrack(application, url.toString(), buildTrackBody(identifier, event));
         } catch (JSONException e) {
             Log.d(TAG, "Unable to send track: " + e.toString());
         }
     }
-
 
     /**
      * Compute the HTTP request body from the region identifier in jsonAPI format.
@@ -299,12 +293,11 @@ public class GeopolisManager {
         Date now = new Date(System.currentTimeMillis());
         String formatted = sdf.format(now);
         map.put("tracked_at", formatted);
-        map.put("profile_id", GlobalConfig.getInstance(mApplication).getProfileId());
-        map.put("installation_id", GlobalConfig.getInstance(mApplication).getInstallationId());
-        map.put("app_id", GlobalConfig.getInstance(mApplication).getAppId());
+        map.put("profile_id", globalConfig.getProfileId());
+        map.put("installation_id", globalConfig.getInstallationId());
+        map.put("app_id", globalConfig.getAppId());
         return NearJsonAPIUtils.toJsonAPI("trackings", map);
     }
-
 
     /**
      * Returns whether the app started the location radar.
@@ -322,5 +315,4 @@ public class GeopolisManager {
         sp.edit().putBoolean(RADAR_ON, b).apply();
 
     }
-
 }

@@ -5,13 +5,12 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
  * @author cattaneostefano
  */
-public class Poll extends ReactionBundle implements Parcelable{
+public class Poll extends ReactionBundle implements Parcelable {
     @SerializedName("question")
     public String question;
     @SerializedName("choice_1")
@@ -21,7 +20,7 @@ public class Poll extends ReactionBundle implements Parcelable{
     @SerializedName("updated_at")
     public String updated_at;
 
-    String recipeId;
+    private String recipeId;
 
     public Poll() {
     }
@@ -93,7 +92,7 @@ public class Poll extends ReactionBundle implements Parcelable{
         }
     };
 
-    public Poll(Parcel in){
+    public Poll(Parcel in) {
         setQuestion(in.readString());
         setChoice_1(in.readString());
         setChoice_2(in.readString());

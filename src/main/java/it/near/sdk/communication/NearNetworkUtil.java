@@ -12,6 +12,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 
 /**
  * Contains a static method to send trackings
+ *
  * @author cattaneostefano
  */
 public class NearNetworkUtil {
@@ -19,15 +20,16 @@ public class NearNetworkUtil {
 
     /**
      * Send tracking information to the back-end.
+     *
      * @param context the app context.
-     * @param url the tracking url.
-     * @param body the HTTP request body.
+     * @param url     the tracking url.
+     * @param body    the HTTP request body.
      */
-    public static void sendTrack(Context context, String url, String body){
+    public static void sendTrack(Context context, String url, String body) {
         // TODO not tested
         NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
         try {
-            httpClient.nearPost(context, url, body, new NearJsonHttpResponseHandler(){
+            httpClient.nearPost(context, url, body, new NearJsonHttpResponseHandler() {
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
@@ -50,9 +52,10 @@ public class NearNetworkUtil {
 
     /**
      * Send tracking information to the back-end. Since every component sends tracking data to different endpoints, the url is a parameter.
+     *
      * @param context the application context.
-     * @param url the tracking url.
-     * @param body the HHTP request body.
+     * @param url     the tracking url.
+     * @param body    the HHTP request body.
      * @param handler the response handler.
      */
     public static void sendTrack(Context context, String url, String body, NearJsonHttpResponseHandler handler) throws UnsupportedEncodingException, AuthenticationException {

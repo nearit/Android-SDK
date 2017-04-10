@@ -1,6 +1,5 @@
 package it.near.sdk.reactions.coupon;
 
-
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.morpheusnear.annotations.Relationship;
-import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.reactions.content.Image;
 import it.near.sdk.reactions.content.ImageSet;
 import it.near.sdk.recipes.models.ReactionBundle;
@@ -18,7 +16,7 @@ import it.near.sdk.recipes.models.ReactionBundle;
 /**
  * @author cattaneostefano.
  */
-public class Coupon extends ReactionBundle implements Parcelable{
+public class Coupon extends ReactionBundle implements Parcelable {
     @SerializedName("name")
     public String name;
     @SerializedName("description")
@@ -34,7 +32,7 @@ public class Coupon extends ReactionBundle implements Parcelable{
     @Relationship("icon")
     public Image icon;
 
-    ImageSet iconSet;
+    private ImageSet iconSet;
 
     public Coupon() {
     }
@@ -95,15 +93,15 @@ public class Coupon extends ReactionBundle implements Parcelable{
         this.claims = claims;
     }
 
-    public String getSerial(){
+    public String getSerial() {
         return getClaims().get(0).getSerial_number();
     }
 
-    public String getClaimedAt(){
+    public String getClaimedAt() {
         return getClaims().get(0).getClaimed_at();
     }
 
-    public String getRedeemedAt(){
+    public String getRedeemedAt() {
         return getClaims().get(0).getRedeemed_at();
     }
 

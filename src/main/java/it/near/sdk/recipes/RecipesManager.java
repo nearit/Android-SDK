@@ -43,6 +43,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  * @author cattaneostefano
  */
 public class RecipesManager {
+
     private static final String TAG = "RecipesManager";
     public static final String PREFS_NAME = "NearRecipes";
     private static final String PROCESS_PATH = "process";
@@ -51,6 +52,15 @@ public class RecipesManager {
     static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
     static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
     static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
+    private static final String KEY_CORE = "core";
+    private static final String KEY_EVALUATION = "evaluation";
+    private static final String KEY_PROFILE_ID = "profile_id";
+    private static final String KEY_INSTALLATION_ID = "installation_id";
+    private static final String KEY_APP_ID = "app_id";
+    private static final String KEY_COOLDOWN = "cooldown";
+    private static final String KEY_LAST_NOTIFIED_AT = "last_notified_at";
+    private static final String KEY_RECIPES_NOTIFIED_AT = "recipes_notified_at";
+
     private final SharedPreferences sp;
     private Context mContext;
     private Morpheus morpheus;
@@ -59,7 +69,7 @@ public class RecipesManager {
     private SharedPreferences.Editor editor;
     private NearAsyncHttpClient httpClient;
     private static RecipeCooler mRecipeCooler;
-    private GlobalConfig globalConfig;
+    private final GlobalConfig globalConfig;
 
     public RecipesManager(Context context,
                           GlobalConfig globalConfig,
@@ -366,7 +376,11 @@ public class RecipesManager {
                 mRecipeCooler.markRecipeAsShown(recipeId);
             }
         }
-        String trackingBody = Recipe.buildTrackingBody(GlobalConfig.getInstance(context), recipeId, trackingEvent);
+        String trackingBody = Recipe.buildTrackingBody(
+                GlobalConfig.getInstance(context),
+                recipeId,
+                trackingEvent
+        );
         Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
         NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
     }
@@ -381,21 +395,21 @@ public class RecipesManager {
             throw new JSONException("missing data");
         }
         HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put("core", buildCoreObject(globalConfig, recipeCooler));
+        attributes.put(KEY_CORE, buildCoreObject(globalConfig, recipeCooler));
         if (pulse_plugin != null) attributes.put(PULSE_PLUGIN_ID_KEY, pulse_plugin);
         if (pulse_action != null) attributes.put(PULSE_ACTION_ID_KEY, pulse_action);
         if (pulse_bundle != null) attributes.put(PULSE_BUNDLE_ID_KEY, pulse_bundle);
-        return NearJsonAPIUtils.toJsonAPI("evaluation", attributes);
+        return NearJsonAPIUtils.toJsonAPI(KEY_EVALUATION, attributes);
     }
 
     private static HashMap<String, Object> buildCoreObject(@NonNull GlobalConfig globalConfig,
                                                            @Nullable RecipeCooler recipeCooler) {
         HashMap<String, Object> coreObj = new HashMap<>();
-        coreObj.put("profile_id", globalConfig.getProfileId());
-        coreObj.put("installation_id", globalConfig.getInstallationId());
-        coreObj.put("app_id", globalConfig.getAppId());
+        coreObj.put(KEY_PROFILE_ID, globalConfig.getProfileId());
+        coreObj.put(KEY_INSTALLATION_ID, globalConfig.getInstallationId());
+        coreObj.put(KEY_APP_ID, globalConfig.getAppId());
         if (recipeCooler != null) {
-            coreObj.put("cooldown", buildCooldownBlock(recipeCooler));
+            coreObj.put(KEY_COOLDOWN, buildCooldownBlock(recipeCooler));
         }
 
         return coreObj;
@@ -403,8 +417,8 @@ public class RecipesManager {
 
     private static HashMap<String, Object> buildCooldownBlock(@NonNull RecipeCooler recipeCooler) {
         HashMap<String, Object> block = new HashMap<>();
-        block.put("last_notified_at", recipeCooler.getLatestLogEntry());
-        block.put("recipes_notified_at", recipeCooler.getRecipeLogMap());
+        block.put(KEY_LAST_NOTIFIED_AT, recipeCooler.getLatestLogEntry());
+        block.put(KEY_RECIPES_NOTIFIED_AT, recipeCooler.getRecipeLogMap());
         return block;
     }
 }

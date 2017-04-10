@@ -43,21 +43,21 @@ protected void onHandleIntent(Intent intent) {
   /*
   Do whatever you want with the intent, like setting a cooldown or filter events
 
+  to notify it to the user with a system notification, call 
+  super.sendSimpleNotification(intent);
+  this method also sends the proper tracking information to our servers.
+  If you want to completely customize the user experience, you should implement your logic here.
+  You may use this method:
+  NearUtils.parseCoreContents(intent, coreContentListener); // to get casted content in the listener callback methods
+
   IMPORTANT
-  Since you are overriding the default notification mechanism, remember to track the recipe as notified with:
+  If you are overriding the default notification mechanism, remember to track the recipe as notified with:
   String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
   try {
       RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
   } catch (JSONException e) {
       
   }
-
-  There is an utility method to automatically process known content types to calls the CoreContentsListener callback methods.
-  parseCoreContents(Intent intent, CoreContentsListener listener);
-
-  There is an utility method for creating notifications
-  NearNotification.send(context, GlobalConfig.getInstance(this).getNotificationImage(), notificationTitle, notificationText, targetIntent, NOTIFICATION_ID);
-  or you can create your own, that's probably why you are here anyway
   */
 
   // always end this method with
@@ -68,7 +68,7 @@ protected void onHandleIntent(Intent intent) {
 Then replace the custom broadcast receiver and add the custom intent service to the manifest
 ```xml
 <service android:name=".MyCustomIntentService"
-            android:exported="false"/>
+            android:exported="false" />
 
 <receiver
     android:name=".MyCustomBroadcastReciever"

@@ -35,12 +35,13 @@ public class GeoFenceMonitor {
 
     /**
      * Set a list of geofence and start the geofence radar
+     *
      * @param nodes
      */
-    public void setUpMonitor(List<GeoFenceNode> nodes){
+    public void setUpMonitor(List<GeoFenceNode> nodes) {
         currentGeofences = nodes;
         persistCurrentGeofences(mContext, currentGeofences);
-        if (GeopolisManager.isRadarStarted(mContext) && currentGeofences.size()>0){
+        if (GeopolisManager.isRadarStarted(mContext) && currentGeofences.size() > 0) {
             startGFRadar();
         }
     }
@@ -52,12 +53,13 @@ public class GeoFenceMonitor {
         mContext.startService(serviceIntent);
     }
 
-    public void stopGFRadar(){
+    public void stopGFRadar() {
         mContext.stopService(new Intent(mContext, GeoFenceService.class));
     }
 
     /**
      * From a list of node, filters the top level geofences in the list
+     *
      * @param nodes
      * @return
      */
@@ -65,7 +67,7 @@ public class GeoFenceMonitor {
         List<GeoFenceNode> geoFenceNodeList = new ArrayList<>();
         if (nodes == null) return geoFenceNodeList;
         for (Node node : nodes) {
-            if (node instanceof GeoFenceNode){
+            if (node instanceof GeoFenceNode) {
                 geoFenceNodeList.add((GeoFenceNode) node);
             }
         }
@@ -80,24 +82,24 @@ public class GeoFenceMonitor {
         edit.putString(CURRENT_GEOFENCES, json).apply();
     }
 
-    public static List<GeoFenceNode> getCurrentGeofences(Context context){
+    public static List<GeoFenceNode> getCurrentGeofences(Context context) {
         String PACK_NAME = context.getApplicationContext().getPackageName();
         SharedPreferences sp = context.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0);
         Gson gson = new Gson();
         String json = sp.getString(CURRENT_GEOFENCES, null);
-        Type type = new TypeToken<ArrayList<GeoFenceNode>>() {}.getType();
-        ArrayList<GeoFenceNode> nodes = gson.fromJson(json, type);
-        return nodes;
+        Type type = new TypeToken<ArrayList<GeoFenceNode>>() {
+        }.getType();
+        return gson.<ArrayList<GeoFenceNode>>fromJson(json, type);
     }
 
     public static List<GeoFenceNode> geofencesOnEnter(List<Node> nodes, Node node) {
-        if (nodes == null || node == null){
+        if (nodes == null || node == null) {
             return new ArrayList<>();
         }
         List<GeoFenceNode> toListen = new ArrayList<>();
         // add children
         toListen.addAll(filterGeofence(node.getChildren()));
-        if (node.getParent() != null){
+        if (node.getParent() != null) {
             toListen.addAll(filterGeofence(node.getParent().getChildren()));
         } else {
             toListen.addAll(filterGeofence(nodes));
@@ -105,17 +107,17 @@ public class GeoFenceMonitor {
         return toListen;
     }
 
-    public static List<GeoFenceNode> geofencesOnExit(List<Node> nodes, Node node){
-        if (nodes == null || node == null){
+    public static List<GeoFenceNode> geofencesOnExit(List<Node> nodes, Node node) {
+        if (nodes == null || node == null) {
             return new ArrayList<>();
         }
         List<Node> toListen = new ArrayList<>();
-        if (filterGeofence(nodes).contains(node)){
+        if (filterGeofence(nodes).contains(node)) {
             // node is top level so we add all top level nodes
             toListen.addAll(nodes);
         } else {
             // node has a parent
-            if (node.getParent().getParent()!=null){
+            if (node.getParent().getParent() != null) {
                 // node has a grand parent
                 // so we add all the grand parent children, aka parent sibilings
                 toListen.addAll(node.getParent().getParent().getChildren());
@@ -128,5 +130,4 @@ public class GeoFenceMonitor {
         }
         return filterGeofence(toListen);
     }
-
 }

@@ -5,5 +5,6 @@ package it.near.sdk.operation;
  */
 public interface UserDataNotifier {
     void onDataCreated();
+
     void onDataNotSetError(String error);
 }

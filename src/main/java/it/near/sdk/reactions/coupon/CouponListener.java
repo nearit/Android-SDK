@@ -7,5 +7,6 @@ import java.util.List;
  */
 public interface CouponListener {
     void onCouponsDownloaded(List<Coupon> claims);
+
     void onCouponDownloadError(String error);
 }

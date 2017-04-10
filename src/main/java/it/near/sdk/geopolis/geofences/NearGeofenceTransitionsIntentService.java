@@ -102,7 +102,7 @@ public class NearGeofenceTransitionsIntentService extends IntentService {
         for (Geofence geofence : triggeringGeofences) {
             triggeringGeofencesIdsList.add(geofence.getRequestId());
         }
-        String triggeringGeofencesIdsString = TextUtils.join(", ",  triggeringGeofencesIdsList);
+        String triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofencesIdsList);
 
         return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
     }

@@ -6,9 +6,9 @@ import android.os.Parcelable;
 /**
  * @author cattaneostefano
  */
-public class ImageSet implements Parcelable{
-    String fullSize;
-    String smallSize;
+public class ImageSet implements Parcelable {
+    private String fullSize;
+    private String smallSize;
 
     public ImageSet() {
     }

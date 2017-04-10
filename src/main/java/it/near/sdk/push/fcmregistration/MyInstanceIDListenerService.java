@@ -27,7 +27,7 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
 
     /**
      * Persist registration to NearIt servers.
-     *
+     * <p>
      * Modify this method to associate the user's Fcm registration token with any server-side account
      * maintained by your application.
      *

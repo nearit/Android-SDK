@@ -5,19 +5,18 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
-import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
  * Created by cattaneostefano on 11/10/2016.
  */
 
-public class Feedback extends ReactionBundle implements Parcelable{
+public class Feedback extends ReactionBundle implements Parcelable {
 
     @SerializedName("question")
     public String question;
 
-    String recipeId;
+    private String recipeId;
 
     public Feedback() {
     }
