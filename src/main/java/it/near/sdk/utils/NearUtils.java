@@ -24,11 +24,6 @@ import it.near.sdk.reactions.simplenotification.SimpleNotification;
 import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
 import it.near.sdk.recipes.models.Recipe;
 
-/**
- * Near utilities
- *
- * @author cattaneostefano
- */
 public class NearUtils {
 
     /**
@@ -92,10 +87,14 @@ public class NearUtils {
         String reaction_plugin = intent.getStringExtra(NearItIntentConstants.REACTION_PLUGIN);
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
 
-        return intent.hasExtra(NearItIntentConstants.CONTENT) &&
-                parseContent(intent, intent.getParcelableExtra(NearItIntentConstants.CONTENT),
-                        recipeId, reaction_plugin, listener);
-
+        return carriesNearItContent(intent) &&
+                parseContent(
+                        intent,
+                        intent.getParcelableExtra(NearItIntentConstants.CONTENT),
+                        recipeId,
+                        reaction_plugin,
+                        listener
+                );
     }
 
     /**
@@ -149,6 +148,16 @@ public class NearUtils {
                 break;
         }
         return coreContent;
+    }
+
+    /**
+     * Checks if the intent carries NearIT content.
+     *
+     * @param intent the intent to check
+     * @return true if the intent carries NearIT content, false otherwise.
+     */
+    public static boolean carriesNearItContent(Intent intent) {
+        return intent.hasExtra(NearItIntentConstants.CONTENT);
     }
 
     /**
