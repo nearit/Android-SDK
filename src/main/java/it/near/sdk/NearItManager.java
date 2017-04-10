@@ -51,7 +51,6 @@ import it.near.sdk.utils.NearUtils;
  * }
  * </pre>
  *
- * @author cattaneostefano
  */
 public class NearItManager {
 
@@ -63,10 +62,10 @@ public class NearItManager {
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
     private SimpleNotificationReaction simpleNotification;
-    private PollReaction pollNotification;
+    private PollReaction polls;
     private CouponReaction couponReaction;
-    private CustomJSONReaction customJSONReaction;
-    private FeedbackReaction feedbackReaction;
+    private CustomJSONReaction customJSON;
+    private FeedbackReaction feedback;
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
     private Application application;
 
@@ -123,17 +122,17 @@ public class NearItManager {
         simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
         recipesManager.addReaction(simpleNotification);
 
-        pollNotification = new PollReaction(application, nearNotifier);
-        recipesManager.addReaction(pollNotification);
+        polls = new PollReaction(application, nearNotifier);
+        recipesManager.addReaction(polls);
 
         couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
 
-        customJSONReaction = new CustomJSONReaction(application, nearNotifier);
-        recipesManager.addReaction(customJSONReaction);
+        customJSON = new CustomJSONReaction(application, nearNotifier);
+        recipesManager.addReaction(customJSON);
 
-        feedbackReaction = new FeedbackReaction(application, nearNotifier, globalConfig);
-        recipesManager.addReaction(feedbackReaction);
+        feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
+        recipesManager.addReaction(feedback);
 
     }
 
@@ -197,7 +196,10 @@ public class NearItManager {
         recipesManager.refreshConfig(listener);
         geopolis.refreshConfig();
         contentNotification.refreshConfig();
-        pollNotification.refreshConfig();
+        simpleNotification.refreshConfig();
+        customJSON.refreshConfig();
+        polls.refreshConfig();
+        feedback.refreshConfig();
     }
 
     private NearNotifier nearNotifier = new NearNotifier() {
@@ -252,10 +254,10 @@ public class NearItManager {
     public boolean sendEvent(Event event, NearITEventHandler handler) {
         switch (event.getPlugin()) {
             case PollEvent.PLUGIN_NAME:
-                pollNotification.sendEvent((PollEvent) event, handler);
+                polls.sendEvent((PollEvent) event, handler);
                 return true;
             case FeedbackEvent.PLUGIN_NAME:
-                feedbackReaction.sendEvent((FeedbackEvent) event, handler);
+                feedback.sendEvent((FeedbackEvent) event, handler);
                 return true;
         }
         return false;
