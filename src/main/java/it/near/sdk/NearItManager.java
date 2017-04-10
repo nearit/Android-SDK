@@ -157,14 +157,23 @@ public class NearItManager {
     }
 
     /**
-     * Set a notification image. Refer to the Android guidelines to determine the best image for a notification
+     * Set an icon for proximity notification.
      *
-     * @param imgRes the resource int of the image
-     * @see <a href="http://developer.android.com/design/patterns/notifications.html">jsonAPI 1.0 specifications</a>
+     * @param imgRes the resource int of the image.
      */
-    public void setNotificationImage(int imgRes) {
-        globalConfig.setNotificationImage(imgRes);
+    public void setProximityNotificationIcon(int imgRes) {
+        globalConfig.setProximityNotificationIcon(imgRes);
     }
+
+    /**
+     * Set an icon for push notification.
+     *
+     * @param imgRes the resource int of the image.
+     */
+    public void setPushNotificationIcon(int imgRes) {
+        globalConfig.setPushNotificationIcon(imgRes);
+    }
+
 
     /**
      * Force the refresh of all SDK configurations.
