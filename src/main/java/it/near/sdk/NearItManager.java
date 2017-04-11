@@ -35,6 +35,7 @@ import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.RecipeCooler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
 
@@ -104,8 +105,8 @@ public class NearItManager {
 
     private void plugInSetup(Application application, GlobalConfig globalConfig) {
 
-        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.NEAR_RECIPECOOLER_PREFSNAME, 0);
-        RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP);
+        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.RECIPE_COOLER_PREFS_NAME, 0);
+        RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP, new CurrentTime());
         SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
         recipesManager = new RecipesManager(application,
                 globalConfig,

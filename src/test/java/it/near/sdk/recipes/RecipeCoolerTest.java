@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.utils.CurrentTime;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static it.near.sdk.recipes.RecipeCooler.*;
@@ -29,10 +30,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.mockito.Mockito.*;
-
-/**
- * Created by cattaneostefano on 14/02/2017.
- */
 
 @RunWith(MockitoJUnitRunner.class)
 public class RecipeCoolerTest {
@@ -51,12 +48,12 @@ public class RecipeCoolerTest {
         mCriticalRecipe = buildRecipe("critical", buildCooldown(0L, 0L));
         mNonCriticalRecipe = buildRecipe("pedestrian", buildCooldown(24 * 60 * 60L,
                                                                     24 * 60 * 60L));
-
         when(mMockSharedPreferences.edit()).thenReturn(mMockEditor);
         when(mMockEditor.remove(anyString())).thenReturn(mMockEditor);
         when(mMockEditor.commit()).thenReturn(true);
 
-        mRecipeCooler = new RecipeCooler(mMockSharedPreferences);
+        CurrentTime currentTime = new CurrentTime();
+        mRecipeCooler = new RecipeCooler(mMockSharedPreferences, currentTime);
     }
 
     @Test

@@ -11,38 +11,26 @@ import java.util.List;
 import java.util.Map;
 
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.utils.CurrentTime;
 
 import static it.near.sdk.utils.NearUtils.checkNotNull;
 
 public class RecipeCooler {
 
-    private final SharedPreferences mSharedPreferences;
-
-    public static final String NEAR_RECIPECOOLER_PREFSNAME = "NearRecipeCoolerPrefsName";
+    public static final String RECIPE_COOLER_PREFS_NAME = "NearRecipeCoolerPrefsName";
     private static final String LOG_MAP = "LOG_MAP";
     private static final String LATEST_LOG = "LATEST_LOG";
+    public static final String GLOBAL_COOLDOWN = "global_cooldown";
+    public static final String SELF_COOLDOWN = "self_cooldown";
 
-    static final String GLOBAL_COOLDOWN = "global_cooldown";
-    static final String SELF_COOLDOWN = "self_cooldown";
-
+    private final SharedPreferences sharedPreferences;
+    private final CurrentTime currentTime;
     private Map<String, Long> mRecipeLogMap;
     private Long mLatestLogEntry;
 
-    public RecipeCooler(@NonNull SharedPreferences sharedPreferences) {
-        mSharedPreferences = checkNotNull(sharedPreferences);
-        ;
-    }
-
-    /**
-     * Register the recipe as shown for future cooldown evaluation.
-     *
-     * @param recipeId the recipe identifier.
-     */
-    public void markRecipeAsShown(String recipeId) {
-        long timeStamp = System.currentTimeMillis();
-        getRecipeLogMap().put(recipeId, timeStamp);
-        saveMap(mRecipeLogMap);
-        saveLatestEntry(System.currentTimeMillis());
+    public RecipeCooler(@NonNull SharedPreferences sharedPreferences, @NonNull CurrentTime currentTime) {
+        this.sharedPreferences = checkNotNull(sharedPreferences);
+        this.currentTime = checkNotNull(currentTime);
     }
 
     /**
@@ -57,6 +45,30 @@ public class RecipeCooler {
                 it.remove();
             }
         }
+    }
+
+    private boolean canShowRecipe(Recipe recipe) {
+        Map<String, Object> cooldown = recipe.getCooldown();
+        return cooldown == null ||
+                (globalCooldownCheck(cooldown) && selfCooldownCheck(recipe, cooldown));
+    }
+
+    private boolean globalCooldownCheck(Map<String, Object> cooldown) {
+        if (!cooldown.containsKey(GLOBAL_COOLDOWN) ||
+                cooldown.get(GLOBAL_COOLDOWN) == null) return true;
+
+        long expiredSeconds = (currentTime.currentTimestamp() - getLatestLogEntry()) / 1000;
+        return expiredSeconds >= (Long) cooldown.get(GLOBAL_COOLDOWN);
+    }
+
+    private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown) {
+        if (!cooldown.containsKey(SELF_COOLDOWN) ||
+                cooldown.get(SELF_COOLDOWN) == null ||
+                !getRecipeLogMap().containsKey(recipe.getId())) return true;
+
+        long recipeLatestEntry = getRecipeLogMap().get(recipe.getId());
+        long expiredSeconds = (currentTime.currentTimestamp() - recipeLatestEntry) / 1000;
+        return expiredSeconds >= (Long) cooldown.get(SELF_COOLDOWN);
     }
 
     /**
@@ -83,35 +95,23 @@ public class RecipeCooler {
         return mRecipeLogMap;
     }
 
-    private boolean canShowRecipe(Recipe recipe) {
-        Map<String, Object> cooldown = recipe.getCooldown();
-        return cooldown == null ||
-                (globalCooldownCheck(cooldown) && selfCooldownCheck(recipe, cooldown));
-    }
-
-    private boolean globalCooldownCheck(Map<String, Object> cooldown) {
-        if (!cooldown.containsKey(GLOBAL_COOLDOWN) ||
-                cooldown.get(GLOBAL_COOLDOWN) == null) return true;
-
-        long expiredSeconds = (System.currentTimeMillis() - getLatestLogEntry()) / 1000;
-        return expiredSeconds >= (Long) cooldown.get(GLOBAL_COOLDOWN);
-    }
-
-    private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown) {
-        if (!cooldown.containsKey(SELF_COOLDOWN) ||
-                cooldown.get(SELF_COOLDOWN) == null ||
-                !getRecipeLogMap().containsKey(recipe.getId())) return true;
-
-        long recipeLatestEntry = getRecipeLogMap().get(recipe.getId());
-        long expiredSeconds = (System.currentTimeMillis() - recipeLatestEntry) / 1000;
-        return expiredSeconds >= (Long) cooldown.get(SELF_COOLDOWN);
+    /**
+     * Register the recipe as shown for future cooldown evaluation.
+     *
+     * @param recipeId the recipe identifier.
+     */
+    public void markRecipeAsShown(String recipeId) {
+        long timeStamp = currentTime.currentTimestamp();
+        getRecipeLogMap().put(recipeId, timeStamp);
+        saveMap(mRecipeLogMap);
+        saveLatestEntry(currentTime.currentTimestamp());
     }
 
     private void saveMap(Map<String, Long> inputMap) {
-        if (mSharedPreferences != null) {
+        if (sharedPreferences != null) {
             JSONObject jsonObject = new JSONObject(inputMap);
             String jsonString = jsonObject.toString();
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.remove(LOG_MAP).commit();
             editor.putString(LOG_MAP, jsonString);
             editor.commit();
@@ -121,8 +121,8 @@ public class RecipeCooler {
     private Map<String, Long> loadMap() {
         Map<String, Long> outputMap = new HashMap<String, Long>();
         try {
-            if (mSharedPreferences != null) {
-                String jsonString = mSharedPreferences.getString(LOG_MAP, (new JSONObject()).toString());
+            if (sharedPreferences != null) {
+                String jsonString = sharedPreferences.getString(LOG_MAP, (new JSONObject()).toString());
                 JSONObject jsonObject = new JSONObject(jsonString);
                 Iterator<String> keysItr = jsonObject.keys();
                 while (keysItr.hasNext()) {
@@ -138,20 +138,19 @@ public class RecipeCooler {
     }
 
     private Long loadLatestEntry() {
-        if (mSharedPreferences != null) {
-            return mSharedPreferences.getLong(LATEST_LOG, 0L);
+        if (sharedPreferences != null) {
+            return sharedPreferences.getLong(LATEST_LOG, 0L);
         }
         return 0L;
     }
 
     private void saveLatestEntry(long timestamp) {
         mLatestLogEntry = timestamp;
-        if (mSharedPreferences != null) {
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
+        if (sharedPreferences != null) {
+            SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.remove(LATEST_LOG).commit();
             editor.putLong(LATEST_LOG, timestamp);
             editor.commit();
         }
     }
-
 }
