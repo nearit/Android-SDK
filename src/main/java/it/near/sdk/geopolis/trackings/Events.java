@@ -1,4 +1,4 @@
-package it.near.sdk.trackings;
+package it.near.sdk.geopolis.trackings;
 
 public interface Events {
     String ENTER_PLACE = "enter_place";

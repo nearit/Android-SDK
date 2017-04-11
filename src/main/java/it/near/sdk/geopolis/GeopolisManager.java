@@ -10,30 +10,23 @@ import android.net.Uri;
 import android.util.Log;
 
 import org.altbeacon.beacon.Region;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
-import it.near.sdk.geopolis.geofences.GeoFenceMonitor;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.communication.NearNetworkUtil;
+import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
+import it.near.sdk.geopolis.geofences.GeoFenceMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
-import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
-import it.near.sdk.GlobalConfig;
+import it.near.sdk.geopolis.trackings.Events;
+import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
 import it.near.sdk.recipes.RecipesManager;
-import it.near.sdk.trackings.Events;
-import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Manages a beacon forest, the plugin for monitoring regions structured in a tree.
@@ -56,8 +49,8 @@ public class GeopolisManager {
 
     private static final String TAG = "GeopolisManager";
     private static final String PREFS_SUFFIX = "GeopolisManager";
-    private static final String PLUGIN_NAME = "geopolis";
-    private static final String TRACKING_RES = "trackings";
+    public static final String PLUGIN_NAME = "geopolis";
+    private static final String NODES_RES = "nodes";
 
     private static final String RADAR_ON = "radar_on";
     public static final String GF_ENTRY_ACTION_SUFFIX = "REGION_ENTRY";
@@ -74,8 +67,8 @@ public class GeopolisManager {
     private final GeoFenceMonitor geofenceMonitor;
     private final GlobalConfig globalConfig;
     private final SharedPreferences sp;
+    private final GeopolisTrackingsManager geopolisTrackingsManager;
 
-    private List<Region> regionList;
     private AltBeaconMonitor altBeaconMonitor;
     private NodesManager nodesManager;
 
@@ -86,8 +79,8 @@ public class GeopolisManager {
         this.recipesManager = recipesManager;
         this.globalConfig = globalConfig;
 
-        SharedPreferences nodesManSP = application.getSharedPreferences(NodesManager.NODES_MANAGER_PREF_NAME, 0);
-        this.nodesManager = new NodesManager(nodesManSP);
+        SharedPreferences nodesManagerSP = NodesManager.getSharedPreferences(application);
+        this.nodesManager = new NodesManager(nodesManagerSP);
 
         this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
         if (isRadarStarted(application)) {
@@ -95,12 +88,21 @@ public class GeopolisManager {
         }
         this.geofenceMonitor = new GeoFenceMonitor(application);
 
+        SharedPreferences geopolisTrackingManagerSP = GeopolisTrackingsManager.getSharedPreferences(application);
+        this.geopolisTrackingsManager =
+                new GeopolisTrackingsManager(
+                        new NearAsyncHttpClient(),
+                        geopolisTrackingManagerSP,
+                        application,
+                        globalConfig
+                );
+
         registerProximityReceiver();
         registerResetReceiver();
 
         String PACK_NAME = this.application.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
-        sp = this.application.getSharedPreferences(PREFS_NAME, 0);
+        sp = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
         httpClient = new NearAsyncHttpClient();
         refreshConfig();
@@ -132,10 +134,10 @@ public class GeopolisManager {
      */
     public void refreshConfig() {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath("geopolis")
-                .appendPath("nodes")
+                .appendPath(PLUGIN_NAME)
+                .appendPath(NODES_RES)
                 .appendQueryParameter("filter[app_id]", globalConfig.getAppId())
-                .appendQueryParameter("include", "**.children")
+                .appendQueryParameter(NearNetworkUtil.INCLUDE_PARAMETER, "**.children")
                 .build();
         try {
             httpClient.nearGet(application, url.toString(), new NearJsonHttpResponseHandler() {
@@ -180,19 +182,7 @@ public class GeopolisManager {
         geofenceMonitor.stopGFRadar();
     }
 
-    /**
-     * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
-     *
-     * @param pulseAction the action of the pulse to notify
-     * @param pulseBundle the region identifier of the pulse
-     */
-    private void firePulse(String pulseAction, String pulseBundle) {
-        Log.d(TAG, "firePulse!");
-        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
-    }
-
-
-    BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
+    private BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
         public static final String TAG = "RegionEventReceiver";
 
         @Override
@@ -237,17 +227,16 @@ public class GeopolisManager {
         }
     };
 
-    /**
-     * Tracks the geographical interaction and fires the proper pulse. It does nothing if the identifier is null.
-     *
-     * @param node
-     * @param event
-     */
     private void trackAndFirePulse(Node node, String event) {
-        if (node != null || node.getIdentifier() != null) {
-            trackEvent(node.getIdentifier(), event);
+        if (node != null && node.getIdentifier() != null) {
+            geopolisTrackingsManager.trackEvent(node.getIdentifier(), event);
             firePulse(event, node.getIdentifier());
         }
+    }
+
+    private void firePulse(String pulseAction, String pulseBundle) {
+        Log.d(TAG, "firePulse!");
+        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
     }
 
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
@@ -264,42 +253,6 @@ public class GeopolisManager {
     };
 
     /**
-     * Send tracking data to the Forest beacon APIs about a region enter (every beacon is a region).
-     */
-    private void trackEvent(String identifier, String event) {
-        try {
-            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                    .appendPath(PLUGIN_NAME)
-                    .appendPath(TRACKING_RES).build();
-            NearNetworkUtil.sendTrack(application, url.toString(), buildTrackBody(identifier, event));
-        } catch (JSONException e) {
-            Log.d(TAG, "Unable to send track: " + e.toString());
-        }
-    }
-
-    /**
-     * Compute the HTTP request body from the region identifier in jsonAPI format.
-     *
-     * @param identifier the node identifier
-     * @param event      the event
-     * @return the correctly formed body
-     * @throws JSONException
-     */
-    private String buildTrackBody(String identifier, String event) throws JSONException {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("identifier", identifier);
-        map.put("event", event);
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        Date now = new Date(System.currentTimeMillis());
-        String formatted = sdf.format(now);
-        map.put("tracked_at", formatted);
-        map.put("profile_id", globalConfig.getProfileId());
-        map.put("installation_id", globalConfig.getInstallationId());
-        map.put("app_id", globalConfig.getAppId());
-        return NearJsonAPIUtils.toJsonAPI("trackings", map);
-    }
-
-    /**
      * Returns whether the app started the location radar.
      *
      * @param context the context object
@@ -313,6 +266,5 @@ public class GeopolisManager {
 
     private void setRadarState(boolean b) {
         sp.edit().putBoolean(RADAR_ON, b).apply();
-
     }
 }

@@ -17,6 +17,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
  */
 public class NearNetworkUtil {
     public static final String TAG = "NearNetworkUtil";
+    public static final String INCLUDE_PARAMETER = "include";
 
     /**
      * Send tracking information to the back-end.
@@ -26,7 +27,6 @@ public class NearNetworkUtil {
      * @param body    the HTTP request body.
      */
     public static void sendTrack(Context context, String url, String body) {
-        // TODO not tested
         NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
         try {
             httpClient.nearPost(context, url, body, new NearJsonHttpResponseHandler() {

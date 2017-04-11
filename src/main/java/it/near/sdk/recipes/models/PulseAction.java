@@ -1,7 +1,7 @@
 package it.near.sdk.recipes.models;
 
 import it.near.sdk.morpheusnear.Resource;
-import it.near.sdk.trackings.Events;
+import it.near.sdk.geopolis.trackings.Events;
 
 /**
  * @author cattaneostefano
