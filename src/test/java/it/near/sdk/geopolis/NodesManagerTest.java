@@ -125,7 +125,7 @@ public class NodesManagerTest {
         assertThat(nodesManager.getRangedNodesOnEnter("6e076bcb-f583-4643-a192-122f98138530"), hasSize(0));
         assertThat(nodesManager.getRangedNodesOnEnter("e2c3174c-bfb9-4a16-aa28-b05fe310e8ad"), hasSize(0));
         // ranging nodes of a node with 2 beacon children
-        assertThat(nodesManager.getRangedNodesOnEnter("28160b69-52a8-4f96-8fe2-aaa36c9bd794"), hasSize(2));
+        assertThat(nodesManager.getRangedNodesOnEnter("28160b69-52a8-4f96-8fe2-aaa36c9bd794"), hasSize(1));
         // ranging nodes of a beacon, special case
         assertThat(nodesManager.getRangedNodesOnEnter("ca7bb03e-beef-4554-bd9e-035f06374d4b"), hasSize(0));
 
