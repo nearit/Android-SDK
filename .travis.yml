@@ -1,16 +1,17 @@
 language: android
 jdk:
-  - oraclejdk8
+- oraclejdk8
 android:
   components:
-    - platform-tools
-    - tools # to get the new `repository-11.xml`
-    - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
-    - build-tools-25.0.2
-    - android-25
-    # Additional components
-    - extra-google-m2repository
-    - extra-android-m2repository
-
+  - platform-tools
+  - tools # to get the new `repository-11.xml`
+  - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
+  - build-tools-25.0.2
+  - android-25
+  - extra-google-m2repository
+  - extra-android-m2repository
 script:
-   - ./gradlew build connectedCheck
+- ./gradlew nearit:build nearit:connectedCheck
+notifications:
+  slack:
+    secure: luqJp1itNRPGusUaTE3+KkD52LJLg3wCQN6F2M2Z5QMrZdrWk1l/HRn7M+sm6gIKo9O4k2Wn+h0MZsmfOs0mHOQVwaj4FEP1b8qyLqzVMfcmTceV2eX79dGM6m2kVz6180TlI+5+af/+qxLQAe0OCbtvbyWaxoPvmKpBFJn3Cq02mTFhCU+sT9qfMYwugehXxTdz5o/+jTxTh2dd4Gvs02b/EHKxWfohsj6/aZ4eH6tsJM2O/PV0uv4po+87JvNjHzN6Xjz3LqVuvMFHXgsaJLuU8V0YARdAcOMLhtYJhvUERIsZvnZ1F3t+DNS2S1zIOihC4tol6Nwbvq89fsoAG/2sIGfcoqc49AFqX0Mx1yyizjVL6xSSCAfozHZvQTs3aD7d2tLJst3ABelenQgCO5dzBcOczwCTPNisVOaGuzWpW79dwg1lyV5rq2Ctj8Vby5IHe+0+pm+jUTxZaE5XjLEdw7auuHtzhssLLvaIJEDy17uhYRuUoFYE5AqGIkHzgLMzin5d4Y82k9aXICaMdJQxDbY2Szl9cvy7dVayQ96wgrl681OfVigZtDrrfJeAoA1OhSJQ4C40B2uU6pXBf8uXPuBouyoqRPrB6LKtDbmzQzFFFbp9y26On2rqklNQlHqvqgw77mQGA1m5oAJzsEH7WddsVXiViZKtXrXF6ME=
