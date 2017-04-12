@@ -124,9 +124,6 @@ artifacts {
     archives generateSourcesJar
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 // Upload to bintray
 
 group = 'it.near.sdk.core'
