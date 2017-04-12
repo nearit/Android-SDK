@@ -1,7 +1,20 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+        jcenter()
+        flatDir{
+            dirs 'libs'
+        }
+    }
+    dependencies {
+        classpath 'com.novoda:build-properties-plugin:1.2.1'
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
-
+apply plugin: 'com.novoda.build-properties'
 
 /*
  * Gets the version name from the latest Git tag
@@ -51,6 +64,12 @@ allprojects{
     version = "${getVersionName()}"
 }
 
+buildProperties {
+    localProperties {
+        file project.file("local.properties")
+    }
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
@@ -71,8 +90,6 @@ android {
         }
     }
 }
-
-
 
 configurations {
     javadocDeps
@@ -115,8 +132,8 @@ properties.load(project.rootProject.file('local.properties').newDataInputStream(
 group = 'it.near.sdk.core'
 
 bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
+    user = (buildProperties.localProperties['bintray.user'] | buildProperties.env['BINTRAY_USER']).string
+    key = (buildProperties.localProperties['bintray.apikey'] | buildProperties.env['BINTRAY_APIKEY']).string
 
     pkg {
         repo = 'maven'
@@ -142,25 +159,6 @@ dependencies{
     ftpAntTask ("org.apache.ant:ant-commons-net:1.8.4") {
         module("commons-net:commons-net:1.4.1") {
             dependencies "oro:oro:2.0.8:jar"
-        }
-    }
-}
-
-task uploadDocs {
-    mustRunAfter generateJavadocs
-    description = "Upload javadocs to our ftp server"
-    def ftpHost = properties.getProperty("docs.ftp.host")
-    def ftpDir = properties.getProperty("docs.ftp.dir")
-    def ftpUser = properties.getProperty("docs.ftp.user")
-    def ftpPassword = properties.getProperty("docs.ftp.password")
-    doLast{
-        ant {
-            taskdef(name: 'ftp',
-                    classname: 'org.apache.tools.ant.taskdefs.optional.net.FTP',
-                    classpath: configurations.ftpAntTask.asPath)
-            ftp(server: ftpHost, userid: ftpUser, password: ftpPassword, remoteDir: ftpDir, passive: 'yes') {
-                fileset(dir: 'build/docs/javadoc/')
-            }
         }
     }
 }
@@ -201,14 +199,4 @@ dependencies {
     javadocDeps 'org.altbeacon:android-beacon-library:2.9.2'
 
 
-}
-
-
-buildscript {
-    repositories {
-        jcenter()
-        flatDir{
-            dirs 'libs'
-        }
-    }
 }
