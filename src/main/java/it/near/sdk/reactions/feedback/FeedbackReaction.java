@@ -2,7 +2,7 @@ package it.near.sdk.reactions.feedback;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -22,6 +22,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.recipes.models.ReactionBundle;
@@ -64,23 +65,23 @@ public class FeedbackReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, response.toString());
+                    NearLog.d(TAG, response.toString());
                     feedbackList = NearJsonAPIUtils.parseList(morpheus, response, Feedback.class);
                     persistList(TAG, feedbackList);
                 }
 
                 @Override
                 public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    Log.d(TAG, "Error: " + statusCode);
+                    NearLog.d(TAG, "Error: " + statusCode);
                     try {
                         feedbackList = loadList();
                     } catch (JSONException e) {
-                        Log.d(TAG, "Data format error");
+                        NearLog.d(TAG, "Data format error");
                     }
                 }
             });
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
     }
 
@@ -103,7 +104,7 @@ public class FeedbackReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
     }
 
@@ -130,7 +131,7 @@ public class FeedbackReaction extends CoreReaction {
         }
         try {
             String answerBody = event.toJsonAPI(globalConfig);
-            Log.d(TAG, "Answer" + answerBody);
+            NearLog.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)
                     .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
@@ -140,13 +141,13 @@ public class FeedbackReaction extends CoreReaction {
                 httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.d(TAG, "Feedback sent successfully");
+                        NearLog.d(TAG, "Feedback sent successfully");
                         handler.onSuccess();
                     }
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        Log.d(TAG, "Error in sending answer: " + statusCode);
+                        NearLog.d(TAG, "Error in sending answer: " + statusCode);
                         handler.onFail(statusCode, responseString);
                     }
                 });
@@ -164,7 +165,7 @@ public class FeedbackReaction extends CoreReaction {
             try {
                 feedbackList = loadList();
             } catch (JSONException e) {
-                Log.d(TAG, "Data format error");
+                NearLog.d(TAG, "Data format error");
             }
         }
         for (Feedback fb : safe(feedbackList)) {

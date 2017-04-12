@@ -2,7 +2,7 @@ package it.near.sdk.reactions.coupon;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -19,6 +19,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.content.Image;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
@@ -112,7 +113,7 @@ public class CouponReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
 
     }
@@ -130,12 +131,12 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("filter[claims.profile_id]", profile_id)
                 .appendQueryParameter("include", "claims,icon").build();
         String output = url.toString();
-        Log.d(TAG, output);
+        NearLog.d(TAG, output);
         try {
             httpClient.nearGet(context, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, "Copuns downloaded: " + response.toString());
+                    NearLog.d(TAG, "Copuns downloaded: " + response.toString());
                     List<Coupon> coupons = NearJsonAPIUtils.parseList(morpheus, response, Coupon.class);
                     formatLinks(coupons);
                     listener.onCouponsDownloaded(coupons);
@@ -153,7 +154,7 @@ public class CouponReaction extends CoreReaction {
 
     @Override
     protected void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener) {
-        Log.d(TAG, "Not implemented");
+        NearLog.d(TAG, "Not implemented");
     }
 
 

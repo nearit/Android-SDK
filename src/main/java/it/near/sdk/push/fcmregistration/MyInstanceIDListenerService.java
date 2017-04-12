@@ -1,12 +1,13 @@
 package it.near.sdk.push.fcmregistration;
 
-import android.util.Log;
+
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.logging.NearLog;
 
 /**
  * Handles token refreshes. When a new device token is obtained it triggers a remote registration.
@@ -21,7 +22,7 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
     @Override
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Refreshed token: " + refreshedToken);
+        NearLog.d(TAG, "Refreshed token: " + refreshedToken);
         sendRegistrationToServer(refreshedToken);
     }
 

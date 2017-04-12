@@ -1,7 +1,7 @@
 package it.near.sdk.communication;
 
 import android.content.Context;
-import android.util.Log;
+
 
 import org.json.JSONObject;
 
@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.logging.NearLog;
 
 /**
  * Contains a static method to send trackings
@@ -37,16 +38,16 @@ public class NearNetworkUtil {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, "Tracking data sent.");
+                    NearLog.d(TAG, "Tracking data sent.");
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    Log.d(TAG, "Tracking data not sent. Error: " + statusCode);
+                    NearLog.d(TAG, "Tracking data not sent. Error: " + statusCode);
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            Log.d(TAG, "Data error");
+            NearLog.d(TAG, "Data error");
         }
     }
 

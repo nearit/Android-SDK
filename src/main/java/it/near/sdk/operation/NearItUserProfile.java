@@ -2,7 +2,7 @@ package it.near.sdk.operation;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,6 +20,7 @@ import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.GlobalState;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -97,7 +98,7 @@ public class NearItUserProfile {
             httpClient.nearPost(context, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, "got profile: " + response.toString());
+                    NearLog.d(TAG, "got profile: " + response.toString());
 
                     String profileId = null;
                     try {
@@ -114,7 +115,7 @@ public class NearItUserProfile {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    Log.d(TAG, "profile erro: " + statusCode);
+                    NearLog.d(TAG, "profile erro: " + statusCode);
                     listener.onProfileCreationError("network error: " + statusCode);
                 }
 
@@ -177,7 +178,7 @@ public class NearItUserProfile {
             httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, "datapoint created: " + response.toString());
+                    NearLog.d(TAG, "datapoint created: " + response.toString());
                     GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                     listener.onDataCreated();
                 }
@@ -242,7 +243,7 @@ public class NearItUserProfile {
             httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, "datapoint created: " + response.toString());
+                    NearLog.d(TAG, "datapoint created: " + response.toString());
                     GlobalState.getInstance(context).getRecipesManager().refreshConfig();
                     listener.onDataCreated();
                 }

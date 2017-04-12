@@ -6,7 +6,7 @@ public interface NearLogger {
     void v(String tag, String msg, Throwable tr);
 
     void d(String tag, String msg);
-    
+
     void d(String tag, String msg, Throwable tr);
 
     void i(String tag, String msg);

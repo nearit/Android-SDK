@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
+
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
@@ -19,6 +19,7 @@ import java.util.HashMap;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -60,27 +61,27 @@ public class NearInstallation {
                 registerOrEditInstallation(context, installationId, installBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.d(TAG, "Installation data sent");
+                        NearLog.d(TAG, "Installation data sent");
                         // If the registration is correct, we save the installationId locally
                         try {
                             String installationId = response.getJSONObject("data").getString("id");
                             GlobalConfig.getInstance(context).setInstallationId(installationId);
                         } catch (JSONException e) {
-                            Log.d(TAG, "Data format error");
+                            NearLog.d(TAG, "Data format error");
                         }
                     }
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        Log.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
+                        NearLog.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
                     }
                 });
             } catch (UnsupportedEncodingException | AuthenticationException e) {
-                Log.d(TAG, "Data error");
+                NearLog.d(TAG, "Data error");
             }
 
         } catch (JSONException e) {
-            Log.d(TAG, "Unable to send installation data");
+            NearLog.d(TAG, "Unable to send installation data");
         }
     }
 

@@ -4,13 +4,14 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
+
 
 import org.json.JSONException;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.NearItIntentConstants;
@@ -58,7 +59,7 @@ public class NearItIntentService extends IntentService {
         try {
             RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
-            Log.d(TAG, "Data format error");
+            NearLog.d(TAG, "Data format error");
         }
         NearNotification.send(this, imgResFromIntent(intent), notif_title, notifText, targetIntent, notificationCodeFromIntent(intent));
 

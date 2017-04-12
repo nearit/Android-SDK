@@ -2,7 +2,7 @@ package it.near.sdk.reactions.poll;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -20,6 +20,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.recipes.models.ReactionBundle;
@@ -76,7 +77,7 @@ public class PollReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
     }
 
@@ -86,7 +87,7 @@ public class PollReaction extends CoreReaction {
             try {
                 pollList = loadList();
             } catch (JSONException e) {
-                Log.d(TAG, "Data format error");
+                NearLog.d(TAG, "Data format error");
             }
         }
         for (Poll pn : safe(pollList)) {
@@ -121,23 +122,23 @@ public class PollReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, response.toString());
+                    NearLog.d(TAG, response.toString());
                     pollList = NearJsonAPIUtils.parseList(morpheus, response, Poll.class);
                     persistList(TAG, pollList);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    Log.d(TAG, "Error: " + statusCode);
+                    NearLog.d(TAG, "Error: " + statusCode);
                     try {
                         pollList = loadList();
                     } catch (JSONException e) {
-                        Log.d(TAG, "Data format error");
+                        NearLog.d(TAG, "Data format error");
                     }
                 }
             });
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
     }
 
@@ -174,7 +175,7 @@ public class PollReaction extends CoreReaction {
     public void sendEvent(PollEvent event, final NearITEventHandler handler) {
         try {
             String answerBody = event.toJsonAPI(mContext);
-            Log.d(TAG, "Answer" + answerBody);
+            NearLog.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(POLL_NOTIFICATION)
                     .appendPath(POLL_NOTIFICATION_RESOURCE)
@@ -185,13 +186,13 @@ public class PollReaction extends CoreReaction {
                 httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Log.d(TAG, "Answer sent successfully");
+                        NearLog.d(TAG, "Answer sent successfully");
                         handler.onSuccess();
                     }
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        Log.d(TAG, "Error in sending answer: " + statusCode);
+                        NearLog.d(TAG, "Error in sending answer: " + statusCode);
                         handler.onFail(statusCode, responseString);
                     }
                 });
@@ -200,7 +201,7 @@ public class PollReaction extends CoreReaction {
             }
         } catch (JSONException e) {
             ;
-            Log.d(TAG, "Error: incorrect format " + e.toString());
+            NearLog.d(TAG, "Error: incorrect format " + e.toString());
             handler.onFail(422, "Incorrect format");
         }
     }

@@ -1,6 +1,6 @@
 package it.near.sdk.push;
 
-import android.util.Log;
+
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -8,6 +8,7 @@ import com.google.firebase.messaging.RemoteMessage;
 import java.util.Map;
 
 import it.near.sdk.GlobalState;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipesManager;
 
 /**
@@ -25,8 +26,8 @@ public class MyFcmListenerService extends FirebaseMessagingService {
     // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage message) {
-        Log.d(TAG, "From: " + message.getFrom());
-        Log.d(TAG, "Message: " + message);
+        NearLog.d(TAG, "From: " + message.getFrom());
+        NearLog.d(TAG, "Message: " + message);
 
         Map data = message.getData();
         String recipe_id = (String) data.get("recipe_id");

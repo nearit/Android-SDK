@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.RemoteException;
-import android.util.Log;
+
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,6 +33,7 @@ import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.Node;
 import it.near.sdk.geopolis.NodesManager;
 import it.near.sdk.geopolis.beacons.ranging.BeaconDynamicRadar;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.AppVisibilityDetector;
 import it.near.sdk.utils.OnLifecycleEventListener;
 
@@ -59,7 +60,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 
     public AltBeaconMonitor(Application application, NodesManager nodesManager) {
-        Log.d(TAG, "Altbeacon started");
+        NearLog.d(TAG, "Altbeacon started");
         this.mApplication = application;
         this.nodesManager = nodesManager;
         this.rangingRadars = new HashMap<>();
@@ -162,7 +163,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         if (regions == null) {
             return;
         }
-        Log.d(TAG, "add regions with " + regions.size());
+        NearLog.d(TAG, "add regions with " + regions.size());
         for (Region region : regions) {
             if (!this.regions.contains(region)) {
                 this.regions.add(region);
@@ -216,7 +217,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
      * Switch to ranging mode
      */
     private void startRanging() {
-        Log.d(TAG, "startRanging");
+        NearLog.d(TAG, "startRanging");
         RangedBeacon.setSampleExpirationMilliseconds(5000);
         beaconManager.setBackgroundMode(false);
         beaconManager.addRangeNotifier(this);
@@ -232,7 +233,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     @Override
     public void onBeaconServiceConnect() {
-        Log.d(TAG, "onBeaconServiceConnect");
+        NearLog.d(TAG, "onBeaconServiceConnect");
     }
 
     @Override
@@ -269,7 +270,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
     public void onForeground() {
-        Log.d(TAG, "onForeground");
+        NearLog.d(TAG, "onForeground");
         // When going to the foreground, if we have regions to range, start ranging
 
         refreshRangingList();
@@ -278,14 +279,14 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private void refreshRangingList() {
         if (loadRegions() == null) return;
-        Log.d(TAG, "refreshranging list on: " + loadRegions().size());
+        NearLog.d(TAG, "refreshranging list on: " + loadRegions().size());
         for (Region region : loadRegions()) {
             beaconManager.requestStateForRegion(region);
         }
     }
 
     public void onBackground() {
-        Log.d(TAG, "onBackground");
+        NearLog.d(TAG, "onBackground");
         // Console.clear();
         // When going to the background stop ranging, in an idempotent way (we might haven't been ranging)
         stopRanging();
@@ -297,7 +298,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void didEnterRegion(Region region) {
         String msg = "enter region: " + region.toString();
-        Log.d(TAG, msg);
+        NearLog.d(TAG, msg);
 
         logRangedRegions();
         // nearit trigger
@@ -305,7 +306,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
     private void notifiyEventOnBeaconRegion(Region region, String eventActionSuffix) {
-        Log.d(TAG, "Region event: " + eventActionSuffix + " on region: " + region.toString());
+        NearLog.d(TAG, "Region event: " + eventActionSuffix + " on region: " + region.toString());
         Intent intent = new Intent();
         String packageName = mApplication.getPackageName();
         intent.setAction(packageName + "." + eventActionSuffix);
@@ -316,7 +317,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void didExitRegion(Region region) {
         String msg = "exit region: " + region.toString();
-        Log.d(TAG, msg);
+        NearLog.d(TAG, msg);
 
         logRangedRegions();
         notifiyEventOnBeaconRegion(region, GeopolisManager.BT_EXIT_ACTION_SUFFIX);
@@ -333,7 +334,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         // so we don't want to trigger and track a recipe here, but we still handle the region ranging in this callback.
         // basically, idempotent logic lives here
 
-        Log.d(TAG, "determine state " + i + " for region: " + region.toString());
+        NearLog.d(TAG, "determine state " + i + " for region: " + region.toString());
 
         try {
             if (i == MonitorNotifier.INSIDE) {
@@ -355,7 +356,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
             }
         } catch (RemoteException e) {
         }
-        Log.d(TAG, "regions ranged: " + beaconManager.getRangedRegions().size());
+        NearLog.d(TAG, "regions ranged: " + beaconManager.getRangedRegions().size());
         logRangedRegions();
 
     }
@@ -391,7 +392,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void didRangeBeaconsInRegion(Collection<Beacon> collection, Region region) {
         String msg = "For region: " + region.getUniqueId() + " found " + collection.size() + " beacons. Distance: " + (collection.iterator().hasNext() ? collection.iterator().next().getDistance() : "none");
-        Log.d(TAG, msg);
+        NearLog.d(TAG, msg);
 
         BeaconDynamicRadar radar = rangingRadars.get(region);
         if (radar == null) {
@@ -404,7 +405,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private void logRangedRegions() {
         String msg1 = "regions ranged: " + beaconManager.getRangedRegions().size();
-        Log.d(TAG, msg1);
+        NearLog.d(TAG, msg1);
     }
 
     @Override

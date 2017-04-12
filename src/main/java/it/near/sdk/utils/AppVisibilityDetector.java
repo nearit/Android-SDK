@@ -25,9 +25,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
+
 
 import java.util.List;
+
+import it.near.sdk.logging.NearLog;
 
 /**
  * Author: zyc945@gmail.com
@@ -54,13 +56,13 @@ public final class AppVisibilityDetector {
                 switch (msg.what) {
                     case MSG_GOTO_FOREGROUND:
                         if (DEBUG) {
-                            Log.d(TAG, "handleMessage(MSG_GOTO_FOREGROUND)");
+                            NearLog.d(TAG, "handleMessage(MSG_GOTO_FOREGROUND)");
                         }
                         performAppGotoForeground();
                         break;
                     case MSG_GOTO_BACKGROUND:
                         if (DEBUG) {
-                            Log.d(TAG, "handleMessage(MSG_GOTO_BACKGROUND)");
+                            NearLog.d(TAG, "handleMessage(MSG_GOTO_BACKGROUND)");
                         }
                         performAppGotoBackground();
                         break;
@@ -115,7 +117,7 @@ public final class AppVisibilityDetector {
         @Override
         public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
             if (DEBUG) {
-                Log.d(TAG, activity.getClass().getName() + " onActivityCreated");
+                NearLog.d(TAG, activity.getClass().getName() + " onActivityCreated");
             }
         }
 
@@ -129,7 +131,7 @@ public final class AppVisibilityDetector {
             activityDisplayCount++;
 
             if (DEBUG) {
-                Log.d(TAG, activity.getClass().getName() + " onActivityStarted "
+                NearLog.d(TAG, activity.getClass().getName() + " onActivityStarted "
                         + " activityDisplayCount: " + activityDisplayCount);
             }
         }
@@ -137,21 +139,21 @@ public final class AppVisibilityDetector {
         @Override
         public void onActivityResumed(Activity activity) {
             if (DEBUG) {
-                Log.d(TAG, activity.getClass().getName() + " onActivityResumed");
+                NearLog.d(TAG, activity.getClass().getName() + " onActivityResumed");
             }
         }
 
         @Override
         public void onActivityPaused(Activity activity) {
             if (DEBUG) {
-                Log.d(TAG, activity.getClass().getName() + " onActivityPaused");
+                NearLog.d(TAG, activity.getClass().getName() + " onActivityPaused");
             }
         }
 
         @Override
         public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
             if (DEBUG) {
-                Log.d(TAG, activity.getClass().getName() + " onActivitySaveInstanceState");
+                NearLog.d(TAG, activity.getClass().getName() + " onActivitySaveInstanceState");
             }
         }
 
@@ -168,7 +170,7 @@ public final class AppVisibilityDetector {
             }
 
             if (DEBUG) {
-                Log.d(TAG, activity.getClass().getName() + " onActivityStopped "
+                NearLog.d(TAG, activity.getClass().getName() + " onActivityStopped "
                         + " activityDisplayCount: " + activityDisplayCount);
             }
         }
@@ -176,7 +178,7 @@ public final class AppVisibilityDetector {
         @Override
         public void onActivityDestroyed(Activity activity) {
             if (DEBUG) {
-                Log.d(TAG, activity.getClass().getName() + " onActivityDestroyed");
+                NearLog.d(TAG, activity.getClass().getName() + " onActivityDestroyed");
             }
         }
     }

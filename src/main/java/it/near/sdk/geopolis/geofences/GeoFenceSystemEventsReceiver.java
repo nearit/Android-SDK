@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
-import android.util.Log;
+
+import it.near.sdk.logging.NearLog;
+
 
 /**
  * Receiver for the BOOT_COMPLETED and PROVIDERS_CHANGED system events.
@@ -20,7 +22,7 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d(TAG, "received intent: " + intent.getAction());
+        NearLog.d(TAG, "received intent: " + intent.getAction());
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             sendResetIntent(context, true);
         }

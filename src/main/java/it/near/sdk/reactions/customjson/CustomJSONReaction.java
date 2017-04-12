@@ -2,7 +2,7 @@ package it.near.sdk.reactions.customjson;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -20,6 +20,7 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.recipes.models.ReactionBundle;
@@ -80,26 +81,26 @@ public class CustomJSONReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, response.toString());
+                    NearLog.d(TAG, response.toString());
                     jsonList = NearJsonAPIUtils.parseList(morpheus, response, CustomJSON.class);
                     persistList(TAG, jsonList);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    Log.d(TAG, "Error: " + statusCode);
+                    NearLog.d(TAG, "Error: " + statusCode);
                     if (statusCode == 0) {
-                        Log.d(TAG, throwable.toString());
+                        NearLog.d(TAG, throwable.toString());
                     }
                     try {
                         jsonList = loadList();
                     } catch (JSONException e) {
-                        Log.d(TAG, "Data format error");
+                        NearLog.d(TAG, "Data format error");
                     }
                 }
             });
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
 
     }
@@ -130,7 +131,7 @@ public class CustomJSONReaction extends CoreReaction {
             try {
                 jsonList = loadList();
             } catch (JSONException e) {
-                Log.d(TAG, "Data format error");
+                NearLog.d(TAG, "Data format error");
             }
         }
         for (CustomJSON json : safe(jsonList)) {
@@ -168,7 +169,7 @@ public class CustomJSONReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
     }
 }

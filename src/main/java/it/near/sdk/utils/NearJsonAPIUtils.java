@@ -1,6 +1,6 @@
 package it.near.sdk.utils;
 
-import android.util.Log;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.JsonApiObject;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.morpheusnear.Resource;
@@ -112,7 +113,7 @@ public class NearJsonAPIUtils {
         try {
             jsonApiObject = morpheus.parse(json);
         } catch (Exception e) {
-            Log.d(TAG, "Parsing error");
+            NearLog.d(TAG, "Parsing error");
         }
 
         List<T> returnList = new ArrayList<T>();
@@ -139,7 +140,7 @@ public class NearJsonAPIUtils {
         try {
             jsonApiObject = morpheus.parse(json);
         } catch (Exception e) {
-            Log.d(TAG, "Parsing error");
+            NearLog.d(TAG, "Parsing error");
         }
         return (T) jsonApiObject.getResource();
     }

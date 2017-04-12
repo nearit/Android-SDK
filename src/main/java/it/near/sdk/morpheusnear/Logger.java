@@ -1,6 +1,7 @@
 package it.near.sdk.morpheusnear;
 
-import android.util.Log;
+
+import it.near.sdk.logging.NearLog;
 
 /**
  * Logger you can turn on and off.
@@ -11,7 +12,7 @@ public class Logger {
 
   public static void debug(String message) {
     if (debug) {
-      Log.d(TAG, message);
+      NearLog.d(TAG, message);
     }
   }
 

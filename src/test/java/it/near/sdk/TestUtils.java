@@ -1,7 +1,5 @@
 package it.near.sdk;
 
-import android.util.Log;
-
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;

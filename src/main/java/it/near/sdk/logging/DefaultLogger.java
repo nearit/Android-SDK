@@ -1,5 +1,6 @@
 package it.near.sdk.logging;
 
+
 import android.util.Log;
 
 public class DefaultLogger implements NearLogger {

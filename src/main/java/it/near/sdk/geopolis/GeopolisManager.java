@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.util.Log;
+
 
 import org.altbeacon.beacon.Region;
 import org.json.JSONException;
@@ -31,6 +31,7 @@ import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.trackings.Events;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -141,7 +142,7 @@ public class GeopolisManager {
             httpClient.nearGet(application, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, response.toString());
+                    NearLog.d(TAG, response.toString());
 
                     List<Node> nodes = nodesManager.parseAndSetNodes(response);
                     startRadarOnNodes(nodes);
@@ -149,13 +150,13 @@ public class GeopolisManager {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    Log.d(TAG, "Error " + statusCode);
+                    NearLog.d(TAG, "Error " + statusCode);
                     // load the config
                     startRadarOnNodes(nodesManager.getNodes());
                 }
             });
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
     }
 
@@ -187,7 +188,7 @@ public class GeopolisManager {
      * @param pulseBundle the region identifier of the pulse
      */
     private void firePulse(String pulseAction, String pulseBundle) {
-        Log.d(TAG, "firePulse!");
+        NearLog.d(TAG, "firePulse!");
         recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
     }
 
@@ -197,7 +198,7 @@ public class GeopolisManager {
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "receiverEvent");
+            NearLog.d(TAG, "receiverEvent");
             if (!intent.hasExtra(NODE_ID)) return;
             // trim the package name
             String packageName = application.getPackageName();
@@ -253,7 +254,7 @@ public class GeopolisManager {
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(TAG, "reset intent received");
+            NearLog.d(TAG, "reset intent received");
             if (intent.getBooleanExtra(GeoFenceSystemEventsReceiver.LOCATION_STATUS, false)) {
                 startRadarOnNodes(nodesManager.getNodes());
             } else {
@@ -273,7 +274,7 @@ public class GeopolisManager {
                     .appendPath(TRACKING_RES).build();
             NearNetworkUtil.sendTrack(application, url.toString(), buildTrackBody(identifier, event));
         } catch (JSONException e) {
-            Log.d(TAG, "Unable to send track: " + e.toString());
+            NearLog.d(TAG, "Unable to send track: " + e.toString());
         }
     }
 
