@@ -89,6 +89,9 @@ android {
             consumerProguardFiles 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
 }
 // Upload to bintray
 
