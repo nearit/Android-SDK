@@ -90,40 +90,6 @@ android {
         }
     }
 }
-
-configurations {
-    javadocDeps
-}
-
-task generateSourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier 'sources'
-}
-
-task generateJavadocs(type: Javadoc) {
-    title = "Android NearIt SDK $version API"
-    description = "Generates JavaDoc for $version"
-    println "Generating Javadocs for $version"
-    // failOnError false
-    options.author = true
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath()
-            .join(File.pathSeparator))
-    classpath += configurations.javadocDeps
-}
-
-task generateJavadocsJar(type: Jar) {
-    from generateJavadocs.destinationDir
-    classifier 'javadoc'
-}
-
-generateJavadocsJar.dependsOn generateJavadocs
-
-artifacts {
-    archives generateJavadocsJar
-    archives generateSourcesJar
-}
-
 // Upload to bintray
 
 group = 'it.near.sdk.core'
@@ -191,10 +157,4 @@ dependencies {
     androidTestCompile 'com.android.support.test:runner:0.5'
     // using the latest java7-compatible guava version
     androidTestCompile "com.google.guava:guava:20.0"
-
-    javadocDeps 'com.android.support:support-annotations:24.0.0'
-    javadocDeps 'org.altbeacon:android-beacon-library:2.9.2'
-    javadocDeps 'com.loopj.android:android-async-http:1.4.9'
-
-
 }
