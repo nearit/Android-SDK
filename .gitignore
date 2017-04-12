@@ -29,6 +29,9 @@ proguard/
 # Android Studio Navigation editor temp files
 .navigation/
 
+#Localmodules
+localmodules
+
 # Android Studio captures folder
 captures/
 
@@ -37,7 +40,6 @@ captures/
 
 # Keystore files
 *.jks
-
 
 .DS_Store
 /captures
