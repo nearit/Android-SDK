@@ -194,6 +194,7 @@ dependencies {
 
     javadocDeps 'com.android.support:support-annotations:24.0.0'
     javadocDeps 'org.altbeacon:android-beacon-library:2.9.2'
+    javadocDeps 'com.loopj.android:android-async-http:1.4.9'
 
 
 }
