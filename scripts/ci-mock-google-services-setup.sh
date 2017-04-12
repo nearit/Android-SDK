@@ -66,4 +66,4 @@ echo '{
     }
   ],
   "configuration_version": "1"
-}' > app/google-services.json
+}' > sample/google-services.json
