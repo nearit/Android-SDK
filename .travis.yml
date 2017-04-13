@@ -9,7 +9,6 @@ env:
     - ADB_INSTALL_TIMEOUT=10
 android:
   components:
-  - tools # to get the new `repository-11.xml`
   - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
   - build-tools-25.0.2
   - platform-tools
