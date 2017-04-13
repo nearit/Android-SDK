@@ -17,6 +17,8 @@ before_install:
 script:
   - ./gradlew build connectedCheck
 before_script:
+before_install:
+  - chmod +x scripts/ci-mock-google-services-setup.sh
   - ./scripts/ci-mock-google-services-setup.sh
 notifications:
   slack:
