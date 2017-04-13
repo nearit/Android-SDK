@@ -1,4 +1,23 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+        jcenter()
+        flatDir{
+            dirs 'libs'
+        }
+    }
+    dependencies {
+        classpath 'com.novoda:build-properties-plugin:1.2.1'
+    }
+}
 apply plugin: 'com.android.application'
+apply plugin: 'com.novoda.build-properties'
+
+buildProperties {
+    localProperties {
+        file project.file("local.properties")
+    }
+}
 
 android {
     signingConfigs {
@@ -13,6 +32,8 @@ android {
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
+
+        resValue "string", "near_api_key", (buildProperties.localProperties['nearit_api'] | buildProperties.env['NEAR_API']).string
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
