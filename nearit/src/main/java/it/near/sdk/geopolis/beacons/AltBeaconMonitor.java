@@ -51,7 +51,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private final BeaconManager beaconManager;
     private final NodesManager nodesManager;
-    private Application mApplication;
+    private final Application mApplication;
     private RegionBootstrap regionBootstrap;
     private String prefsNameSuffix = "AltMonitor";
     private SharedPreferences sp;
@@ -301,10 +301,10 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
         logRangedRegions();
         // nearit trigger
-        notifiyEventOnBeaconRegion(region, GeopolisManager.BT_ENTRY_ACTION_SUFFIX);
+        notifyEventOnBeaconRegion(region, GeopolisManager.BT_ENTRY_ACTION_SUFFIX);
     }
 
-    private void notifiyEventOnBeaconRegion(Region region, String eventActionSuffix) {
+    private void notifyEventOnBeaconRegion(Region region, String eventActionSuffix) {
         Log.d(TAG, "Region event: " + eventActionSuffix + " on region: " + region.toString());
         Intent intent = new Intent();
         String packageName = mApplication.getPackageName();
@@ -319,7 +319,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         Log.d(TAG, msg);
 
         logRangedRegions();
-        notifiyEventOnBeaconRegion(region, GeopolisManager.BT_EXIT_ACTION_SUFFIX);
+        notifyEventOnBeaconRegion(region, GeopolisManager.BT_EXIT_ACTION_SUFFIX);
         if (beaconManager.getRangedRegions().size() == 0) {
             // if the list of ranged regions is empty, we stop ranging
             stopRanging();
@@ -329,7 +329,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void didDetermineStateForRegion(int i, Region region) {
 
-        // This is called both on region entry/exit and when the the monitor gets rebooted to re-inforce in which regions we are in and out
+        // This is called both on region entry/exit and when the the monitor gets rebooted to re-enforce in which regions we are in and out
         // so we don't want to trigger and track a recipe here, but we still handle the region ranging in this callback.
         // basically, idempotent logic lives here
 

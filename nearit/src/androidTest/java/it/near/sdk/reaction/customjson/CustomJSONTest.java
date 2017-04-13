@@ -13,8 +13,6 @@ import java.util.HashMap;
 import it.near.sdk.reactions.customjson.CustomJSON;
 
 import static junit.framework.Assert.*;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 
 /**
  * Created by cattaneostefano on 28/02/2017.

@@ -9,8 +9,6 @@ import org.junit.runner.RunWith;
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
 
 import static junit.framework.Assert.*;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.junit.Assert.assertThat;
 
 /**
  * Created by cattaneostefano on 28/02/2017.

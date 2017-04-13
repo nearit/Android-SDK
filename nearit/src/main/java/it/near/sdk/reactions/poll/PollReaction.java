@@ -199,7 +199,6 @@ public class PollReaction extends CoreReaction {
                 handler.onFail(422, "Incorrect format");
             }
         } catch (JSONException e) {
-            ;
             Log.d(TAG, "Error: incorrect format " + e.toString());
             handler.onFail(422, "Incorrect format");
         }

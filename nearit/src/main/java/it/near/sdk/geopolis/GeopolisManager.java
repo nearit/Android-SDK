@@ -15,7 +15,6 @@ import org.json.JSONObject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +28,6 @@ import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
-import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.trackings.Events;

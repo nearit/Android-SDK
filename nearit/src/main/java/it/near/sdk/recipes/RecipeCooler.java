@@ -30,7 +30,6 @@ public class RecipeCooler {
 
     public RecipeCooler(@NonNull SharedPreferences sharedPreferences) {
         mSharedPreferences = checkNotNull(sharedPreferences);
-        ;
     }
 
     /**

@@ -91,7 +91,7 @@ public class Deserializer {
    * @throws NotExtendingResourceException when none of the superclasses are {@link Resource}.
    */
   public Resource setIdField(Resource resourceObject, Object data) throws NotExtendingResourceException {
-    Class superClass = null;
+    Class superClass;
     try {
       superClass = getMorpheusResourceSuperClass(resourceObject);
     } catch (NotExtendingResourceException e) {

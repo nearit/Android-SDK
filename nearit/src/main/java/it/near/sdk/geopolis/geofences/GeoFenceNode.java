@@ -124,7 +124,7 @@ public class GeoFenceNode extends Node implements Parcelable {
      * @return
      */
     public static ExclusionStrategy getExclusionStrategy() {
-        ExclusionStrategy es = new ExclusionStrategy() {
+        return new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(FieldAttributes f) {
                 return f.getName().equals("parent") || f.getName().equals("children");
@@ -135,6 +135,5 @@ public class GeoFenceNode extends Node implements Parcelable {
                 return false;
             }
         };
-        return es;
     }
 }

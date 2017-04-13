@@ -16,7 +16,7 @@ import it.near.sdk.GlobalConfig;
  */
 public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
 
-    private static final String TAG = "MyInstanceIDListenerService";
+    private static final String TAG = "NearInstIDListenerServ";
 
     @Override
     public void onTokenRefresh() {

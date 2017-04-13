@@ -18,7 +18,6 @@ public class NodesManager2 {
 
     private Morpheus morpheus;
     private List<Node> emptyList = Collections.<Node>emptyList();
-    ;
 
     public NodesManager2(Morpheus morpheus) {
         this.morpheus = morpheus;

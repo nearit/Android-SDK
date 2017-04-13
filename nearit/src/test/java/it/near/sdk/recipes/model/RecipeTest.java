@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.Map;
 
 import static junit.framework.Assert.*;
-import static org.mockito.Mockito.mock;
 
 import it.near.sdk.recipes.models.Recipe;
 

@@ -14,7 +14,7 @@ import android.util.Log;
 
 public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "GeoFenceSystemEventsReceiver";
+    private static final String TAG = "GFSystemEventsReceiver";
     public static final String LOCATION_STATUS = "location_status";
     public static final String RESET_MONITOR_ACTION_SUFFIX = "RESET_SCAN";
 

@@ -118,8 +118,7 @@ public class CouponReaction extends CoreReaction {
     }
 
     public void getCoupons(Context context, final CouponListener listener) throws UnsupportedEncodingException, MalformedURLException {
-        String profile_id = null;
-        profile_id = globalConfig.getProfileId();
+        String profile_id = globalConfig.getProfileId();
         if (profile_id == null) {
             listener.onCouponDownloadError("Missing profileId");
             return;
