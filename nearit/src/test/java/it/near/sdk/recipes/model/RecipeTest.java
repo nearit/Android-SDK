@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static junit.framework.Assert.*;
@@ -29,7 +30,15 @@ import it.near.sdk.recipes.models.Recipe;
 
 public class RecipeTest {
 
-    Recipe mRecipe;
+    private static final String TIME_FORMAT = "HH:mm:ss";
+    private static final String DATE_FORMAT = "yyyy-MM-dd";
+    private static final String KEY_FROM = "from";
+    private static final String KEY_TO = "to";
+    private static final String KEY_DATE = "date";
+    private static final String KEY_TIMETABLE = "timetable";
+    private static SimpleDateFormat timeFormatter = new SimpleDateFormat(TIME_FORMAT, Locale.US);
+
+    private Recipe mRecipe;
 
     @Before
     public void setUp(){
@@ -159,33 +168,31 @@ public class RecipeTest {
         LocalTime endTime = new LocalTime(18, 0, 0);
         HashMap<String, Object> scheduling = buildScheduling(null, null, startTime, endTime);
         mRecipe.setScheduling(scheduling);
-
-
     }
 
     private HashMap<String, Object> buildScheduling(DateTime startDate, DateTime endDate,
                                                          LocalTime startTime, LocalTime endTime){
         HashMap<String, Object> scheduling = Maps.newHashMap();
         if (startDate != null || endDate != null)
-            scheduling.put("date", buildSchedulingBlockForDate(startDate, endDate));
+            scheduling.put(KEY_DATE, buildSchedulingBlockForDate(startDate, endDate));
         if (startTime != null || endTime != null)
-            scheduling.put("timetable", buildSchedulingBlockForTimeOfDay(startTime, endTime));
+            scheduling.put(KEY_TIMETABLE, buildSchedulingBlockForTimeOfDay(startTime, endTime));
         return scheduling;
     }
 
     private Map<String, Object> buildSchedulingBlockForDate(@Nullable DateTime startDate, @Nullable DateTime endDate){
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd");
+        DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT);
         Map<String, Object> date = Maps.newLinkedHashMap();
-        if (startDate != null) date.put("from", startDate.toString(formatter));
-        if (endDate != null) date.put("to", endDate.toString(formatter));
+        if (startDate != null) date.put(KEY_FROM, startDate.toString(formatter));
+        if (endDate != null) date.put(KEY_TO, endDate.toString(formatter));
         return date;
     }
 
     private Map<String, Object> buildSchedulingBlockForTimeOfDay(@Nullable LocalTime startTime, @Nullable LocalTime endTime) {
-        DateTimeFormatter fmt = DateTimeFormat.forPattern("HH:mm:ss");
+        DateTimeFormatter fmt = DateTimeFormat.forPattern(TIME_FORMAT);
         Map<String, Object> timetable = Maps.newLinkedHashMap();
-        if (startTime != null) timetable.put("from", startTime.toString(fmt));
-        if (endTime != null) timetable.put("to", endTime.toString(fmt));
+        if (startTime != null) timetable.put(KEY_FROM, startTime.toString(fmt));
+        if (endTime != null) timetable.put(KEY_TO, endTime.toString(fmt));
         return timetable;
     }
 
@@ -197,7 +204,6 @@ public class RecipeTest {
     }
 
     private Calendar buildCalendarFrom(LocalTime localTime) throws ParseException {
-        SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
         Date fromHourDate = timeFormatter.parse(localTime.toString());
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(fromHourDate);
