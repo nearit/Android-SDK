@@ -5,16 +5,16 @@
 echo '{
   "project_info": {
     "project_number": "1234567894652",
-    "firebase_url": "https://squanchy-mock.firebaseio.com",
-    "project_id": "squanchy-mock",
-    "storage_bucket": "squanchy-mock.appspot.com"
+    "firebase_url": "https://near-mock.firebaseio.com",
+    "project_id": "near-mock",
+    "storage_bucket": "near-mock.appspot.com"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "0",
         "android_client_info": {
-          "package_name": "net.squanchy.example"
+          "package_name": "com.nearit.sample"
         }
       },
       "oauth_client": [
@@ -22,7 +22,7 @@ echo '{
           "client_id": "XXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "net.squanchy.example",
+            "package_name": "com.nearit.sample",
             "certificate_hash": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
           }
         },
@@ -30,7 +30,7 @@ echo '{
           "client_id": "XXXXXXXXXXXX-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "net.squanchy.example",
+            "package_name": "com.nearit.sample",
             "certificate_hash": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
           }
         },
