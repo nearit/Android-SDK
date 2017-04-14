@@ -66,8 +66,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         this.rangingRadars = new HashMap<>();
         this.regions = new ArrayList<>();
 
-        initAppLifecycleMonitor(application);
-
         beaconManager = BeaconManager.getInstanceForApplication(application.getApplicationContext());
         beaconManager.getBeaconParsers().clear();
         // set beacon layout for iBeacons
@@ -80,7 +78,6 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         sp = application.getSharedPreferences(PREFS_NAME, 0);
 
         addAltRegions(loadRegions());
-
     }
 
 
@@ -144,13 +141,12 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         }
     }
 
-
     /**
      * Initialize app lifecycle monitor to detect the app going to the background/foreground
      *
      * @param application
      */
-    private void initAppLifecycleMonitor(Application application) {
+    public void initAppLifecycleMonitor(Application application) {
         AppVisibilityDetector.init(application, this);
     }
 
