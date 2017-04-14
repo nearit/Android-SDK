@@ -23,7 +23,7 @@ def getVersionName = {
     def stdout = new ByteArrayOutputStream()
     try {
         exec {
-            commandLine 'git', 'describe', '--tags'
+            commandLine 'git', 'describe', '--tags', '--abbrev=0'
             standardOutput = stdout
         }
         return stdout.toString().trim()
