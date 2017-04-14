@@ -1,0 +1,163 @@
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+        jcenter()
+        flatDir{
+            dirs 'libs'
+        }
+    }
+    dependencies {
+        classpath 'com.novoda:build-properties-plugin:1.2.1'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.novoda.build-properties'
+
+/*
+ * Gets the version name from the latest Git tag
+ */
+def getVersionName = {
+    def stdout = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'describe', '--tags'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (e) {
+        println("Can't get version from git: " + e);
+        return "adhoc"
+    }
+}
+
+def getLatestVersionName = {
+    def stdout = new ByteArrayOutputStream()
+    try {
+        exec {
+            commandLine 'git', 'describe', '--tags', '--abbrev=0'
+            standardOutput = stdout
+        }
+        def versionFromTag = stdout.toString().trim()
+        stdout.reset()
+        exec {
+            commandLine 'git', 'describe', '--contains', '--all', 'HEAD'
+            standardOutput = stdout
+        }
+        def branchName = stdout.toString()
+        def versionFromReleaseBranch = branchName.substring(branchName.indexOf('/') + 1).trim()
+        return versionFromTag == versionFromReleaseBranch ? versionFromTag : versionFromReleaseBranch
+        // return branchName
+    }
+    catch (e) {
+        printl("Can't get version from git: " + e);
+        return "adhoc"
+    }
+}
+
+def playServicesVersion = '10.2.0'
+
+allprojects{
+    version = "${getVersionName()}"
+}
+
+buildProperties {
+    localProperties {
+        file project.file("local.properties")
+    }
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.2'
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 25
+        versionCode 0
+        versionName version
+        buildConfigField("int", "API_VERSION", "2")
+        multiDexEnabled true
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            consumerProguardFiles 'proguard-rules.pro'
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+// Upload to bintray
+
+group = 'it.near.sdk.core'
+
+bintray {
+    user = (buildProperties.localProperties['bintray.user'] | buildProperties.env['BINTRAY_USER']).string
+    key = (buildProperties.localProperties['bintray.apikey'] | buildProperties.env['BINTRAY_APIKEY']).string
+
+    pkg {
+        repo = 'maven'
+        name = 'it.near.sdk.core'
+
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/catt-stefano/near-sdk-core.git'
+        websiteUrl = 'https://github.com/catt-stefano/near-sdk-core'
+    }
+    configurations = ['archives']
+    publish = true
+}
+
+// Upload docs on ftp
+
+repositories{
+    mavenCentral()
+}
+configurations {
+    ftpAntTask
+}
+dependencies{
+    ftpAntTask ("org.apache.ant:ant-commons-net:1.8.4") {
+        module("commons-net:commons-net:1.4.1") {
+            dependencies "oro:oro:2.0.8:jar"
+        }
+    }
+}
+
+task injectVersionsInMarkdowns(type: Copy){
+    duplicatesStrategy 'exclude'
+    from('docs/src') {
+        include '*'
+        filter{ it.replaceAll('@@versionNumber@@', "${getLatestVersionName()}")}
+        filter{ it.replaceAll('@@playServicesNumber@@', playServicesVersion)}
+    }
+    into 'docs'
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.loopj.android:android-async-http:1.4.9'
+    compile 'com.google.code.gson:gson:2.8.0'
+    compile 'org.altbeacon:android-beacon-library:2.9.2'
+    compile "com.google.firebase:firebase-messaging:${playServicesVersion}"
+    compile "com.google.firebase:firebase-core:${playServicesVersion}"
+    compile "com.google.android.gms:play-services-location:${playServicesVersion}"
+
+    testCompile 'junit:junit:4.12'
+    testCompile "org.mockito:mockito-core:2.7.6"
+    testCompile "com.google.guava:guava:21.0"
+    testCompile 'org.hamcrest:hamcrest-library:1.3'
+    testCompile 'org.json:json:20160212'
+    testCompile 'joda-time:joda-time:2.9.3'
+
+    androidTestCompile 'junit:junit:4.12'
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    // using the latest java7-compatible guava version
+    androidTestCompile "com.google.guava:guava:20.0"
+}
