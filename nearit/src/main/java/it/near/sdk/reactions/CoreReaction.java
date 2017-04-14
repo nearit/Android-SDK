@@ -3,7 +3,7 @@ package it.near.sdk.reactions;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
-import android.util.Log;
+
 
 import com.google.gson.Gson;
 
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;
@@ -81,7 +82,7 @@ public abstract class CoreReaction extends Reaction {
      */
     protected void persistList(String key, List list) {
         String persistedString = gson.toJson(list);
-        Log.d(key, "Persist: " + persistedString);
+        NearLog.d(key, "Persist: " + persistedString);
         editor.putString(key, persistedString);
         editor.apply();
     }
@@ -100,7 +101,7 @@ public abstract class CoreReaction extends Reaction {
 
             @Override
             public void onContentFetchError(String error) {
-                Log.d(TAG, "Content not found");
+                NearLog.d(TAG, "Content not found");
             }
         });
     }

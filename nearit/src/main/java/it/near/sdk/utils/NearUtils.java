@@ -3,13 +3,14 @@ package it.near.sdk.utils;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Base64;
-import android.util.Log;
+
 
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.content.Content;
 import it.near.sdk.reactions.content.ContentReaction;
 import it.near.sdk.reactions.coupon.Coupon;
@@ -41,7 +42,7 @@ public class NearUtils {
             JSONObject account = jwt.getJSONObject("data").getJSONObject("account");
             appId = account.getString("id");
         } catch (Exception e) {
-            Log.e("NearITErrors", "Error while processing NearIT API token. Please check if you are using the correct key.");
+            NearLog.e("NearITErrors", "Error while processing NearIT API token. Please check if you are using the correct key.");
         }
         return appId;
     }

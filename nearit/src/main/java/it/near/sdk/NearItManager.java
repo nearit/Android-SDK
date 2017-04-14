@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Parcelable;
-import android.util.Log;
+
 
 import org.altbeacon.beacon.BeaconManager;
 
@@ -17,6 +17,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
 import it.near.sdk.reactions.content.ContentReaction;
@@ -88,13 +89,13 @@ public class NearItManager {
         NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
-                Log.d(TAG, created ? "Profile created successfully." : "Profile is present");
+                NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
                 refreshConfigs();
             }
 
             @Override
             public void onProfileCreationError(String error) {
-                Log.d(TAG, "Error creating profile. Profile not present");
+                NearLog.d(TAG, "Error creating profile. Profile not present");
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
                 NearInstallation.registerInstallation(application);
@@ -222,7 +223,7 @@ public class NearItManager {
     };
 
     private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId) {
-        Log.d(TAG, "deliver Event: " + parcelable.toString());
+        NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
         Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
         if (action.equals(PUSH_MESSAGE_ACTION)) {

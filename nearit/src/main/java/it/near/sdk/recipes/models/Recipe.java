@@ -1,10 +1,14 @@
 package it.near.sdk.recipes.models;
 
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Parcelable;
 
+
 import com.google.gson.annotations.SerializedName;
+import com.google.gson.internal.LinkedTreeMap;
 
 import org.json.JSONException;
 
@@ -18,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.morpheusnear.annotations.Relationship;
 import it.near.sdk.morpheusnear.Resource;
@@ -28,18 +33,6 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  * @author cattaneostefano
  */
 public class Recipe extends Resource {
-
-    private static final String RECIPE_TRACK_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    public static final String NOTIFIED_STATUS = "notified";
-    public static final String ENGAGED_STATUS = "engaged";
-    private static final String ONLINE = "online";
-    private static final String DATE_SCHEDULING = "date";
-    private static final String TIMETABLE_SCHEDULING = "timetable";
-    private static final String DAYS_SCHEDULING = "days";
-    private static final String KEY_NOTIFICATION_TITLE = "title";
-    private static final String KEY_NOTIFICATION_BODY = "body";
-    private static final String SCHEDULE_DATE_FORMAT = "yyyy-MM-dd";
-    private static final String SCHEDULE_TIME_FORMAT = "HH:mm:ss";
 
     @SerializedName("name")
     public String name;
@@ -64,6 +57,13 @@ public class Recipe extends Resource {
     @Relationship("reaction_action")
     public ReactionAction reaction_action;
 
+    public static final String NOTIFIED_STATUS = "notified";
+    public static final String ENGAGED_STATUS = "engaged";
+
+    private static final String ONLINE = "online";
+    public static final String DATE_SCHEDULING = "date";
+    public static final String TIMETABLE_SCHEDULING = "timetable";
+    public static final String DAYS_SCHEDULING = "days";
 
     public String getName() {
         return name;
@@ -85,9 +85,12 @@ public class Recipe extends Resource {
         return labels;
     }
 
-    public boolean isEvaluatedOnline() {
-        return labels.containsKey(ONLINE) &&
-                labels.get(ONLINE).equals(true);
+    public boolean isEvaluatedOnline(){
+        if (!labels.containsKey(ONLINE)){
+            return false;
+        } else {
+            return labels.get(ONLINE).equals(true);
+        }
     }
 
     public void setLabels(HashMap<String, Object> labels) {
@@ -157,24 +160,25 @@ public class Recipe extends Resource {
     }
 
     public String getNotificationTitle() {
-        if (getNotification().containsKey(KEY_NOTIFICATION_TITLE)) {
-            return getNotification().get(KEY_NOTIFICATION_TITLE).toString();
+        if (getNotification().containsKey("title")){
+            return getNotification().get("title").toString();
         }
         return null;
     }
 
     public String getNotificationBody() {
-        if (getNotification().containsKey(KEY_NOTIFICATION_BODY)) {
-            return getNotification().get(KEY_NOTIFICATION_BODY).toString();
+        if (getNotification().containsKey("body")){
+            return getNotification().get("body").toString();
         }
         return null;
     }
 
+
+
     /**
      * Builds the tracking send request body.
-     *
-     * @param globalConfig  the app global config.
-     * @param recipeId      the recipe identifier.
+     * @param globalConfig the app global config.
+     * @param recipeId the recipe identifier.
      * @param trackingEvent the tracking event string.
      * @return the http body string.
      * @throws JSONException
@@ -185,10 +189,10 @@ public class Recipe extends Resource {
         String installationId = globalConfig.getInstallationId();
         if (recipeId == null ||
                 profileId == null ||
-                installationId == null) {
+                installationId == null ){
             throw new JSONException("missing data");
         }
-        DateFormat sdf = new SimpleDateFormat(RECIPE_TRACK_DATE_FORMAT, Locale.US);
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         Date now = new Date(System.currentTimeMillis());
         String formattedDate = sdf.format(now);
         HashMap<String, Object> attributes = new HashMap<>();
@@ -207,22 +211,20 @@ public class Recipe extends Resource {
 
     /**
      * Check if the recipe is valid according to the scheduling information.
-     *
      * @return the validity of the recipe.
      */
-    public boolean isScheduledNow(Calendar now) {
+    public boolean isScheduledNow(Calendar now){
         return scheduling == null ||
-                (isDateValid(now) &&
-                        isTimetableValid(now) &&
-                        isDaysValid(now));
+                ( isDateValid(now) &&
+                isTimetableValid(now) &&
+                isDaysValid(now) );
     }
 
     /**
      * Check if the date range is valid.
-     *
      * @return if the date range is respected.
      */
-    private boolean isDateValid(Calendar now) {
+    private boolean isDateValid(Calendar now){
         Map<String, Object> date = (Map<String, Object>) scheduling.get(DATE_SCHEDULING);
         if (date == null) return true;
         String fromDateString = (String) date.get("from");
@@ -230,7 +232,7 @@ public class Recipe extends Resource {
         boolean valid = true;
         try {
             // do not move the dateformatter to be an instance variable, it messes the parsing
-            SimpleDateFormat dateFormatter = new SimpleDateFormat(SCHEDULE_DATE_FORMAT, Locale.US);
+            SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
             if (fromDateString != null) {
                 Date fromDate = dateFormatter.parse(fromDateString);
@@ -252,7 +254,6 @@ public class Recipe extends Resource {
 
     /**
      * Check if the time range is valid.
-     *
      * @return if the time range is respected.
      */
     private boolean isTimetableValid(Calendar now) {
@@ -262,14 +263,14 @@ public class Recipe extends Resource {
         String toHour = (String) timetable.get("to");
         boolean valid = true;
         try {
-            SimpleDateFormat timeFormatter = new SimpleDateFormat(SCHEDULE_TIME_FORMAT, Locale.US);
+            SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
             if (fromHour != null) {
                 Date fromHourDate = timeFormatter.parse(fromHour);
                 Calendar fromHourCalendar = Calendar.getInstance();
                 fromHourCalendar.setTime(fromHourDate);
                 valid &= fromHourCalendar.before(now) || fromHourCalendar.equals(now);
             }
-            if (toHour != null) {
+            if (toHour != null){
                 Date toHourDate = timeFormatter.parse(toHour);
                 Calendar toHourCalendar = Calendar.getInstance();
                 toHourCalendar.setTime(toHourDate);
@@ -283,7 +284,6 @@ public class Recipe extends Resource {
 
     /**
      * Check if the days selection is valid.
-     *
      * @return if the days selection is respected.
      */
     private boolean isDaysValid(Calendar now) {
@@ -296,7 +296,6 @@ public class Recipe extends Resource {
 
     /**
      * Get today's day of week.
-     *
      * @return the day of week in "EE" format e.g. Sat.
      */
     private String getTodaysDate(Calendar now) {
@@ -308,9 +307,8 @@ public class Recipe extends Resource {
 
     /**
      * Fill the intent with extras regarding the recipe and the parcelable content.
-     *
-     * @param intent     the intent for the background event.
-     * @param recipe     the recipe causing the intent.
+     * @param intent the intent for the background event.
+     * @param recipe the recipe causing the intent.
      * @param parcelable the content to be delivered.
      */
     public static void fillIntentExtras(Intent intent, Recipe recipe, Parcelable parcelable) {

@@ -16,7 +16,7 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
+
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.near.sdk.geopolis.GeopolisManager;
+import it.near.sdk.logging.NearLog;
 
 /**
  * Service for monitoring geofences.
@@ -53,13 +54,13 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d(TAG, "onCreate()");
+        NearLog.d(TAG, "onCreate()");
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // can be called multiple times
-        Log.d(TAG, "onStartCommand()");
+        NearLog.d(TAG, "onStartCommand()");
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
             startGoogleApiClient();
         }
@@ -94,30 +95,30 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         locationManager.requestSingleUpdate(criteria, new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
-                Log.d(TAG, "onLocationChanged");
-                Log.d(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
+                NearLog.d(TAG, "onLocationChanged");
+                NearLog.d(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
             }
 
             @Override
             public void onStatusChanged(String s, int i, Bundle bundle) {
-                Log.d(TAG, "onStatusChanged");
+                NearLog.d(TAG, "onStatusChanged");
             }
 
             @Override
             public void onProviderEnabled(String s) {
-                Log.d(TAG, "onProviderEnabled");
+                NearLog.d(TAG, "onProviderEnabled");
             }
 
             @Override
             public void onProviderDisabled(String s) {
-                Log.d(TAG, "onProviderDisabled");
+                NearLog.d(TAG, "onProviderDisabled");
             }
         }, null);
     }
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "onDestroy on geofence service");
+        NearLog.d(TAG, "onDestroy on geofence service");
         super.onDestroy();
         stopAllGeofences();
         resetIds(this);
@@ -286,7 +287,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        Log.d(TAG, "startGeofencing");
+        NearLog.d(TAG, "startGeofencing");
         LocationServices.GeofencingApi.addGeofences(
                 mGoogleApiClient,
                 request,
@@ -332,7 +333,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.d(TAG, "onConnected");
+        NearLog.d(TAG, "onConnected");
         // If we have pending geofences (that need to be started)
         // we start the geofence now that the client is connected.
         if (mPendingGeofences != null) {
@@ -342,17 +343,17 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnectionSuspended(int i) {
-        Log.d(TAG, "onConnectionSuspended");
+        NearLog.d(TAG, "onConnectionSuspended");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.d(TAG, "onConnectionFailed");
+        NearLog.d(TAG, "onConnectionFailed");
     }
 
     @Override
     public void onResult(@NonNull Status status) {
-        Log.d(TAG, "onResult: " + status.getStatusMessage());
+        NearLog.d(TAG, "onResult: " + status.getStatusMessage());
     }
 
     public static String getSharedPrefName(Context context) {

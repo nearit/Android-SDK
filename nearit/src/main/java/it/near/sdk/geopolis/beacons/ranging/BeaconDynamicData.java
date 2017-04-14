@@ -2,13 +2,14 @@ package it.near.sdk.geopolis.beacons.ranging;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import it.near.sdk.geopolis.beacons.BeaconNode;
 import it.near.sdk.geopolis.GeopolisManager;
+import it.near.sdk.logging.NearLog;
 
 /**
  * @author cattaneostefano
@@ -41,7 +42,7 @@ public class BeaconDynamicData {
     }
 
     private void notifiyEvent(BeaconNode beaconNode, int newProximity) {
-        Log.d(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.getIdentifier());
+        NearLog.d(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.getIdentifier());
         Intent intent = new Intent();
         String packageName = mContext.getPackageName();
         intent.setAction(packageName + "." + getActionFrom(newProximity));

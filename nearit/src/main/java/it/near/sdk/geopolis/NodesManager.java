@@ -2,7 +2,7 @@ package it.near.sdk.geopolis;
 
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.util.Log;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +11,7 @@ import java.util.List;
 
 import it.near.sdk.geopolis.beacons.BeaconNode;
 import it.near.sdk.geopolis.geofences.GeoFenceNode;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
@@ -110,7 +111,7 @@ public class NodesManager {
             try {
                 nodes = loadNodes();
             } catch (JSONException e) {
-                Log.d(TAG, "Data format error");
+                NearLog.d(TAG, "Data format error");
             }
         }
         return nodes;

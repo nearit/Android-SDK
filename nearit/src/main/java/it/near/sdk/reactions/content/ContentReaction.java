@@ -2,7 +2,7 @@ package it.near.sdk.reactions.content;
 
 import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
+
 
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -19,6 +19,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.recipes.models.ReactionBundle;
@@ -65,7 +66,7 @@ public class ContentReaction extends CoreReaction {
             try {
                 contentList = loadList();
             } catch (JSONException e) {
-                Log.d(TAG, "Data format error");
+                NearLog.d(TAG, "Data format error");
             }
         }
         for (Content cn : safe(contentList)) {
@@ -97,7 +98,7 @@ public class ContentReaction extends CoreReaction {
             httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Log.d(TAG, response.toString());
+                    NearLog.d(TAG, response.toString());
                     contentList = NearJsonAPIUtils.parseList(morpheus, response, Content.class);
                     formatLinks(contentList);
                     persistList(TAG, contentList);
@@ -105,17 +106,17 @@ public class ContentReaction extends CoreReaction {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    Log.d(TAG, "Error: " + statusCode);
+                    NearLog.d(TAG, "Error: " + statusCode);
                     try {
                         contentList = loadList();
                     } catch (JSONException e) {
-                        Log.d(TAG, "Data format error");
+                        NearLog.d(TAG, "Data format error");
                     }
                 }
 
             });
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
 
     }
@@ -137,7 +138,7 @@ public class ContentReaction extends CoreReaction {
         try {
             httpClient.nearGet(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
-            Log.d(TAG, "Auth error");
+            NearLog.d(TAG, "Auth error");
         }
     }
 
