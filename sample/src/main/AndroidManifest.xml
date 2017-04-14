@@ -37,9 +37,6 @@
         <activity android:name=".ForegroundActivity" />
         <activity android:name=".PermissionsActivity"></activity>
 
-        <activity
-            android:name=".DialogActivity"
-            android:theme="@style/dialogcustom" />
     </application>
 
 </manifest>

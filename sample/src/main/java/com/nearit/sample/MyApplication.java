@@ -1,13 +1,8 @@
 package com.nearit.sample;
 
-
 import android.app.Application;
 
 import it.near.sdk.NearItManager;
-
-/**
- * Created by cattaneostefano on 02/12/2016.
- */
 
 public class MyApplication extends Application {
 

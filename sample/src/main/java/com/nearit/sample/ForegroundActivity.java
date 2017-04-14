@@ -17,7 +17,6 @@ import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearUtils;
 
-
 public class ForegroundActivity extends AppCompatActivity implements ProximityListener, CoreContentsListener {
 
     @Override
