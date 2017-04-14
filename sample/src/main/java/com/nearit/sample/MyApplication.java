@@ -17,6 +17,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         nearItManager = new NearItManager(this, getString(R.string.near_api_key));
+        nearItManager.initLifecycleMethods(this);
         nearItManager.setProximityNotificationIcon(R.drawable.common_full_open_on_phone);
         nearItManager.setPushNotificationIcon(R.drawable.googleg_disabled_color_18);
     }
