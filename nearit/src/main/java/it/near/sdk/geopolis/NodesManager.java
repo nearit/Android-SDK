@@ -1,5 +1,6 @@
 package it.near.sdk.geopolis;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
@@ -26,7 +27,7 @@ public class NodesManager {
 
     private static final String PREFS_SUFFIX = "NodesManager";
     private static final String NODES_CONFIG = "nodes_config";
-    public static final String NODES_MANAGER_PREF_NAME = "NearNodesManager";
+    private static final String NODES_MANAGER_PREF_NAME = "NearNodesManagerPrefs";
     private static final String TAG = "NodesManager";
     private List<Node> nodes;
     private Morpheus morpheus;
@@ -145,5 +146,9 @@ public class NodesManager {
 
     private String getSavedConfig() {
         return sp.getString(NODES_CONFIG, null);
+    }
+
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(NODES_MANAGER_PREF_NAME, Context.MODE_PRIVATE);
     }
 }

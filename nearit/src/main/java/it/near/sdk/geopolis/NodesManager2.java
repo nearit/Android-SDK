@@ -92,11 +92,14 @@ public class NodesManager2 {
         Node node = findNodeIn(nodes, nodeId);
         if (node == null || BeaconNode.isBeacon(node) || node.getChildren() == null)
             return emptyList;
-        List<Node> beaconsToReturn = new ArrayList<>();
-        for (Node child : safe(node.getChildren())) {
-            if (BeaconNode.isBeacon(child))
-                beaconsToReturn.add(child);
+
+        for (Node child : node.getChildren()) {
+            if (BeaconNode.isBeacon(child)){
+                List<Node> regionsToRange = new ArrayList<>();
+                regionsToRange.add(node);
+                return regionsToRange;
+            }
         }
-        return beaconsToReturn;
+        return emptyList;
     }
 }
