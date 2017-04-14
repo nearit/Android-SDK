@@ -189,18 +189,6 @@ public class GeopolisManager {
         geofenceMonitor.stopGFRadar();
     }
 
-    /**
-     * Notify the RECIPES_PATH manager of the occurance of a registered pulse.
-     *
-     * @param pulseAction the action of the pulse to notify
-     * @param pulseBundle the region identifier of the pulse
-     */
-    private void firePulse(String pulseAction, String pulseBundle) {
-        NearLog.d(TAG, "firePulse!");
-        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
-    }
-
-
     BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
         public static final String TAG = "RegionEventReceiver";
 
@@ -254,7 +242,7 @@ public class GeopolisManager {
     }
 
     private void firePulse(String pulseAction, String pulseBundle) {
-        Log.d(TAG, "firePulse!");
+        NearLog.d(TAG, "firePulse!");
         recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
     }
 
