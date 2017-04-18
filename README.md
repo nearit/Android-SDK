@@ -50,6 +50,7 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
     public void onCreate() {
         super.onCreate();
         nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
+        // calling this method on the Application onCreate is MANDATORY
         nearItManager.initLifecycleMethods(this);
     }
 ```
