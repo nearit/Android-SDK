@@ -25,7 +25,9 @@ public class NearNotification {
                 .setSound(sound_notification)
                 .setVibrate(new long[]{100, 200, 100, 500});
 
-        Notification notification = mBuilder.build();
+
+        Notification notification = new NotificationCompat.BigTextStyle(mBuilder).bigText(message).build();
+                mBuilder.build();
 
         showNotification(context, code, notification);
     }
