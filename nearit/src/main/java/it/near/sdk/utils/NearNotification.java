@@ -15,13 +15,15 @@ public class NearNotification {
     public static void send(Context context, int imgRes, String title, String message, Intent resultIntent, int code) {
         Uri sound_notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(imgRes)
-                .setLights(Color.RED, 500, 500)
-                .setSound(sound_notification)
-                .setVibrate(new long[]{100, 200, 100, 500})
                 .setContentTitle(title)
                 .setContentText(message)
-                .setContentIntent(getPendingIntent(context, resultIntent));
+                .setContentIntent(getPendingIntent(context, resultIntent))
+                .setSmallIcon(imgRes)
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(message))
+                .setLights(Color.RED, 500, 500)
+                .setSound(sound_notification)
+                .setVibrate(new long[]{100, 200, 100, 500});
 
         Notification notification = mBuilder.build();
 
