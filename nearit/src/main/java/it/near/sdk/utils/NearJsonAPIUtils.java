@@ -1,7 +1,5 @@
 package it.near.sdk.utils;
 
-
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,13 +14,18 @@ import it.near.sdk.morpheusnear.JsonApiObject;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.morpheusnear.Resource;
 
+import static it.near.sdk.utils.NearUtils.safe;
+
 /**
- * Serializing utils mothods for building json api coded strings.
- * Created by cattaneostefano on 18/10/2016.
+ * Serializing utils methods for building json api coded strings.
  */
 
 public class NearJsonAPIUtils {
     private static final String TAG = "NearJsonAPIUtils";
+    private static final String KEY_DATA_ELEMENT = "data";
+    private static final String KEY_ID = "id";
+    private static final String KEY_TYPE = "type";
+    private static final String KEY_ATTRIBUTES = "attributes";
 
     /**
      * Turns an hashmap of values to a jsonapi resource string.
@@ -45,17 +48,17 @@ public class NearJsonAPIUtils {
      * @throws JSONException if map can be transformed into JSONObject
      */
     public static String toJsonAPI(String type, List<HashMap<String, Object>> maps) throws JSONException {
-        JSONArray array = new JSONArray();
-        for (HashMap<String, Object> map : maps) {
-            array.put(getResObj(type, null, map));
+        JSONArray resources = new JSONArray();
+        for (HashMap<String, Object> map : safe(maps)) {
+            resources.put(buildResourceObject(type, null, map));
         }
-        JSONObject outerObj = new JSONObject();
-        outerObj.put("data", array);
-        return outerObj.toString();
+        JSONObject jsonApiObject = new JSONObject();
+        jsonApiObject.put(KEY_DATA_ELEMENT, resources);
+        return jsonApiObject.toString();
     }
 
     /**
-     * Turns an hasmap of values to a jsonapi resource string. Also sets the id.
+     * Turns an hashmap of values to a jsonapi resource string. Also sets the id.
      *
      * @param type jsonapi resource type.
      * @param id   id of the resource.
@@ -64,10 +67,10 @@ public class NearJsonAPIUtils {
      * @throws JSONException if map can be transformed into JSONObject
      */
     public static String toJsonAPI(String type, String id, HashMap<String, Object> map) throws JSONException {
-        JSONObject dataObject = getResObj(type, id, map);
-        JSONObject outerObj = new JSONObject();
-        outerObj.put("data", dataObject);
-        return outerObj.toString();
+        JSONObject resource = buildResourceObject(type, id, map);
+        JSONObject jsonApiObject = new JSONObject();
+        jsonApiObject.put(KEY_DATA_ELEMENT, resource);
+        return jsonApiObject.toString();
     }
 
     /**
@@ -79,24 +82,27 @@ public class NearJsonAPIUtils {
      * @return JSONObject representation of map object.
      * @throws JSONException if map can be transformed into JSONObject
      */
-    private static JSONObject getResObj(String type, String id, HashMap<String, Object> map) throws JSONException {
-        JSONObject attributesObj = new JSONObject();
+    private static JSONObject buildResourceObject(String type, String id, HashMap<String, Object> map) throws JSONException {
+        if (map == null)
+            throw new JSONException("Attribute map can't be null");
+
+        JSONObject attributes = new JSONObject();
 
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             if (entry.getValue() instanceof HashMap) {
-                attributesObj.put(entry.getKey(), new JSONObject((Map) entry.getValue()));
+                attributes.put(entry.getKey(), new JSONObject((Map) entry.getValue()));
             } else {
-                attributesObj.put(entry.getKey(), entry.getValue() != null ? entry.getValue() : JSONObject.NULL);
+                attributes.put(entry.getKey(), entry.getValue() != null ? entry.getValue() : JSONObject.NULL);
             }
         }
 
-        JSONObject dataObject = new JSONObject();
+        JSONObject resource = new JSONObject();
         if (id != null) {
-            dataObject.put("id", id);
+            resource.put(KEY_ID, id);
         }
-        dataObject.put("type", type);
-        dataObject.put("attributes", attributesObj);
-        return dataObject;
+        resource.put(KEY_TYPE, type);
+        resource.put(KEY_ATTRIBUTES, attributes);
+        return resource;
     }
 
     /**
