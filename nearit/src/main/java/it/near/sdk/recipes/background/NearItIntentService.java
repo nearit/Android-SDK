@@ -49,17 +49,17 @@ public class NearItIntentService extends IntentService {
      */
     protected void sendSimpleNotification(@NonNull Intent intent) {
 
-        String notif_title = intent.getStringExtra(NearItIntentConstants.NOTIF_TITLE);
         String notifText = intent.getStringExtra(NearItIntentConstants.NOTIF_BODY);
-        if (notif_title == null) {
-            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        String notifTitle = intent.getStringExtra(NearItIntentConstants.NOTIF_TITLE);
+        if (notifTitle == null) {
+            notifTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
 
         sendNotifiedTracking(intent);
 
         NearNotification.send(this,
                 imgResFromIntent(intent),
-                notif_title,
+                notifTitle,
                 notifText,
                 getLauncherTargetIntent(intent),
                 notificationCodeFromIntent(intent)
