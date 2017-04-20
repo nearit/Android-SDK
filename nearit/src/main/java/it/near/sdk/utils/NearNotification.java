@@ -37,6 +37,7 @@ public class NearNotification {
                                                          String message,
                                                          int imgRes,
                                                          Intent resultIntent) {
+        
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
                 .setContentText(message)
                 .setContentIntent(getPendingIntent(context, resultIntent))
