@@ -12,7 +12,7 @@ import it.near.sdk.recipes.background.NearItBroadcastReceiver;
  *    android:name=".MyCustomBroadcastReceiver"
  *    android:exported="false">
  *      <intent-filter>
- *          <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
+ *          <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
  *          <category android:name="android.intent.category.DEFAULT" />
  *      </intent-filter>
  *      <intent-filter>
@@ -20,7 +20,6 @@ import it.near.sdk.recipes.background.NearItBroadcastReceiver;
  *          <category android:name="android.intent.category.DEFAULT" />
  *      </intent-filter>
  *  </receiver>
- * Created by cattaneostefano on 26/01/2017.
  */
 
 public class MyCustomBroadcastReceiver extends NearItBroadcastReceiver {

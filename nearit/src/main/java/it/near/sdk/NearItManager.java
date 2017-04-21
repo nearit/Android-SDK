@@ -135,7 +135,6 @@ public class NearItManager {
 
         feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
-
     }
 
     /**
@@ -175,7 +174,6 @@ public class NearItManager {
         globalConfig.setPushNotificationIcon(imgRes);
     }
 
-
     /**
      * Force the refresh of all SDK configurations.
      */
@@ -202,6 +200,10 @@ public class NearItManager {
         customJSON.refreshConfig();
         polls.refreshConfig();
         feedback.refreshConfig();
+    }
+
+    public void initLifecycleMethods(Application application) {
+        geopolis.initLifecycle(application);
     }
 
     private NearNotifier nearNotifier = new NearNotifier() {

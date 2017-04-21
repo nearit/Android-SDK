@@ -13,12 +13,10 @@ import it.near.sdk.recipes.background.NearItIntentService;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearUtils;
 
-
 /**
  * This is the manifest element for the IntentService
  * <service android:name=".MyCustomIntentService"
  *           android:exported="false"/>
- * Created by cattaneostefano on 26/01/2017.
  */
 
 public class MyCustomIntentService extends NearItIntentService implements CoreContentsListener {

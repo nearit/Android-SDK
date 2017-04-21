@@ -22,6 +22,8 @@ public class NearItIntentService extends IntentService {
     public static final int REGION_NOTIFICATION_ID = 1;
     public static final int PUSH_NOTIFICATION_ID = 2;
     private static final String TAG = "NearITIntentService";
+    private static final int DEFAULT_GEO_NOTIFICATION_ICON = R.drawable.icon_geo_default_24dp;
+    private static final int DEFAULT_PUSH_NOTIFICATION_ICON = R.drawable.icon_push_default_24dp;
 
     /**
      * Creates an IntentService.  Invoked by your subclass's constructor.
@@ -46,23 +48,38 @@ public class NearItIntentService extends IntentService {
      * @param intent the intent from the receiver.
      */
     protected void sendSimpleNotification(@NonNull Intent intent) {
-        Intent targetIntent = getPackageManager().getLaunchIntentForPackage(this.getPackageName());
-        targetIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 
-        targetIntent.putExtras(intent.getExtras());
-        String notif_title = intent.getStringExtra(NearItIntentConstants.NOTIF_TITLE);
         String notifText = intent.getStringExtra(NearItIntentConstants.NOTIF_BODY);
-        if (notif_title == null) {
-            notif_title = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        String notifTitle = intent.getStringExtra(NearItIntentConstants.NOTIF_TITLE);
+        if (notifTitle == null) {
+            notifTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
         }
+
+        sendNotifiedTracking(intent);
+
+        NearNotification.send(this,
+                imgResFromIntent(intent),
+                notifTitle,
+                notifText,
+                getLauncherTargetIntent(intent),
+                notificationCodeFromIntent(intent)
+        );
+    }
+
+    private Intent getLauncherTargetIntent(@NonNull Intent intent) {
+        return getPackageManager()
+                .getLaunchIntentForPackage(this.getPackageName())
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK)
+                .putExtras(intent.getExtras());
+    }
+
+    private void sendNotifiedTracking(@NonNull Intent intent) {
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
             RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
             NearLog.d(TAG, "Data format error");
         }
-        NearNotification.send(this, imgResFromIntent(intent), notif_title, notifText, targetIntent, notificationCodeFromIntent(intent));
-
     }
 
     private int imgResFromIntent(@NonNull Intent intent) {
@@ -70,7 +87,8 @@ public class NearItIntentService extends IntentService {
             return fetchPushNotification();
         } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)) {
             return fetchProximityNotification();
-        } else return fetchProximityNotification();
+        } else
+            return fetchProximityNotification();
     }
 
     private int fetchProximityNotification() {
@@ -78,7 +96,7 @@ public class NearItIntentService extends IntentService {
         if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
             return imgRes;
         } else {
-            return R.drawable.ic_place_white_24dp;
+            return DEFAULT_GEO_NOTIFICATION_ICON;
         }
     }
 
@@ -87,7 +105,7 @@ public class NearItIntentService extends IntentService {
         if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
             return imgRes;
         } else {
-            return R.drawable.ic_send_white_24dp;
+            return DEFAULT_PUSH_NOTIFICATION_ICON;
         }
     }
 
@@ -101,5 +119,4 @@ public class NearItIntentService extends IntentService {
                 return REGION_NOTIFICATION_ID;
         }
     }
-
 }

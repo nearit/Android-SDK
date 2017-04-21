@@ -274,4 +274,8 @@ public class GeopolisManager {
     private void setRadarState(boolean b) {
         sp.edit().putBoolean(RADAR_ON, b).apply();
     }
+
+    public void initLifecycle(Application application) {
+        altBeaconMonitor.initAppLifecycleMonitor(application);
+    }
 }
