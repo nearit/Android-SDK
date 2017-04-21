@@ -17,6 +17,7 @@ import it.near.sdk.GlobalConfig;
 import static it.near.sdk.recipes.RecipesManager.PULSE_ACTION_ID_KEY;
 import static it.near.sdk.recipes.RecipesManager.PULSE_BUNDLE_ID_KEY;
 import static it.near.sdk.recipes.RecipesManager.PULSE_PLUGIN_ID_KEY;
+import static junit.framework.Assert.fail;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -41,6 +42,11 @@ public class RecipesManagerTest {
     }
 
     @Test
+    public void failTest() {
+        fail();
+    }
+
+    /*@Test
     public void buildCorrectEvaluationBody_noCoolerNoPulse() throws JSONException {
         String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, null, null, null, null);
         JSONObject actualObj = new JSONObject(actual);
@@ -102,5 +108,5 @@ public class RecipesManagerTest {
         assertThat(Long.valueOf((Integer)actualObj.get("recipe_id_1")), is(0L));
         assertThat(Long.valueOf((Integer)actualObj.get("recipe_id_2")), is(1000L));
     }
-
+*/
 }

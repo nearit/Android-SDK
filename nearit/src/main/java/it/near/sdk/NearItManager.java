@@ -8,6 +8,7 @@ import android.os.Parcelable;
 
 
 import org.altbeacon.beacon.BeaconManager;
+import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -52,7 +53,6 @@ import it.near.sdk.utils.NearUtils;
  * nearItManager.setNotificationImage(R.drawable.beacon_notif_icon);
  * }
  * </pre>
- *
  */
 public class NearItManager {
 
@@ -109,10 +109,13 @@ public class NearItManager {
         SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.RECIPE_COOLER_PREFS_NAME, 0);
         RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP, new CurrentTime());
         SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
-        recipesManager = new RecipesManager(application,
+
+        recipesManager = new RecipesManager(
+                application,
                 globalConfig,
                 recipeCooler,
-                recipeManagerSP);
+                recipeManagerSP
+        );
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
@@ -302,6 +305,14 @@ public class NearItManager {
 
     public void removeAllProximityListener() {
         proximityListenerList.clear();
+    }
+
+    public void sendTracking(String recipeId, String event) {
+        try {
+            recipesManager.sendTracking(recipeId, event);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }

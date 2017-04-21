@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -62,6 +63,8 @@ public class RecipesManager {
     private static final String KEY_LAST_NOTIFIED_AT = "last_notified_at";
     private static final String KEY_RECIPES_NOTIFIED_AT = "recipes_notified_at";
 
+    private static RecipesManager instance;
+
     private final SharedPreferences sp;
     private Context mContext;
     private Morpheus morpheus;
@@ -69,7 +72,7 @@ public class RecipesManager {
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private SharedPreferences.Editor editor;
     private NearAsyncHttpClient httpClient;
-    private static RecipeCooler mRecipeCooler;
+    private RecipeCooler mRecipeCooler;
     private final GlobalConfig globalConfig;
 
     public RecipesManager(Context context,
@@ -90,6 +93,15 @@ public class RecipesManager {
         }
         setUpMorpheusParser();
         refreshConfig();
+    }
+
+    public static void setInstance(RecipesManager instance) {
+        RecipesManager.instance = instance;
+    }
+
+    @Nullable
+    public static RecipesManager getInstance() {
+        return instance;
     }
 
     /**
@@ -366,27 +378,27 @@ public class RecipesManager {
     /**
      * Sends tracking on a recipe. Lets choose the notified status.
      *
-     * @param context       the app context.
      * @param recipeId      the recipe identifier.
      * @param trackingEvent notified status to send. Can either be NO
      * @throws JSONException
      */
-    public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
+    public void sendTracking(String recipeId, String trackingEvent) throws JSONException {
         if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
             if (mRecipeCooler != null) {
                 mRecipeCooler.markRecipeAsShown(recipeId);
             }
         }
+
         String trackingBody = Recipe.buildTrackingBody(
-                GlobalConfig.getInstance(context),
+                globalConfig,
                 recipeId,
                 trackingEvent
         );
         Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
-        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
+        NearNetworkUtil.sendTrack(mContext, url.toString(), trackingBody);
     }
 
-    public static String buildEvaluateBody(@NonNull GlobalConfig globalConfig,
+    public String buildEvaluateBody(@NonNull GlobalConfig globalConfig,
                                            @Nullable RecipeCooler recipeCooler,
                                            @Nullable String pulse_plugin,
                                            @Nullable String pulse_action,
