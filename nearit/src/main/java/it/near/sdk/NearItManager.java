@@ -31,6 +31,7 @@ import it.near.sdk.reactions.feedback.FeedbackReaction;
 import it.near.sdk.reactions.poll.PollEvent;
 import it.near.sdk.reactions.poll.PollReaction;
 import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.Recipe;
@@ -109,11 +110,12 @@ public class NearItManager {
         SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.RECIPE_COOLER_PREFS_NAME, 0);
         RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP, new CurrentTime());
         SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
-
+        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(recipeCooler, globalConfig);
         recipesManager = new RecipesManager(
                 application,
                 globalConfig,
                 recipeCooler,
+                evaluationBodyBuilder,
                 recipeManagerSP
         );
         RecipesManager.setInstance(recipesManager);

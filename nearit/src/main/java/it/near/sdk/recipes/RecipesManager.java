@@ -69,11 +69,12 @@ public class RecipesManager {
     public RecipesManager(Context context,
                           GlobalConfig globalConfig,
                           RecipeCooler recipeCooler,
+                          EvaluationBodyBuilder evaluationBodyBuilder,
                           SharedPreferences sp) {
         this.mContext = context;
         this.globalConfig = globalConfig;
         this.recipeCooler = recipeCooler;
-        evaluationBodyBuilder = new EvaluationBodyBuilder(recipeCooler, globalConfig);
+        this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.sp = sp;
         editor = sp.edit();
 
@@ -387,7 +388,7 @@ public class RecipesManager {
         NearNetworkUtil.sendTrack(mContext, url.toString(), trackingBody);
     }
 
-    public String buildTrackingBody(String recipeId, String trackingEvent) throws JSONException {
+    private String buildTrackingBody(String recipeId, String trackingEvent) throws JSONException {
         String profileId = globalConfig.getProfileId();
         String appId = globalConfig.getAppId();
         String installationId = globalConfig.getInstallationId();
