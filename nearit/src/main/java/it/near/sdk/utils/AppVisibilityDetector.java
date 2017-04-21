@@ -28,6 +28,7 @@ import android.text.TextUtils;
 
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.near.sdk.logging.NearLog;
 
@@ -39,7 +40,7 @@ import it.near.sdk.logging.NearLog;
 public final class AppVisibilityDetector {
     private static boolean DEBUG = false;
     private static final String TAG = "AppVisibilityDetector";
-    private static AppVisibilityCallback sAppVisibilityCallback;
+    private static CopyOnWriteArrayList<AppVisibilityCallback> sAppVisibilityCallbackList = new CopyOnWriteArrayList<>();
     public static boolean sIsForeground = false;
     private static Handler sHandler;
     private static final int MSG_GOTO_FOREGROUND = 1;
@@ -47,7 +48,7 @@ public final class AppVisibilityDetector {
 
     public static void init(final Application app, AppVisibilityCallback appVisibilityCallback) {
         checkIsMainProcess(app);
-        sAppVisibilityCallback = appVisibilityCallback;
+        sAppVisibilityCallbackList.add(appVisibilityCallback);
         app.registerActivityLifecycleCallbacks(new AppActivityLifecycleCallbacks());
 
         sHandler = new Handler(app.getMainLooper()) {
@@ -73,6 +74,14 @@ public final class AppVisibilityDetector {
         };
     }
 
+    public static void addVisibilityCallback(AppVisibilityCallback callback) {
+        sAppVisibilityCallbackList.add(callback);
+    }
+
+    public static void removeVisibilityCallback(AppVisibilityCallback callback) {
+        sAppVisibilityCallbackList.remove(callback);
+    }
+
     private static void checkIsMainProcess(Application app) {
         ActivityManager activityManager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
         List<RunningAppProcessInfo> runningAppProcessInfoList = activityManager.getRunningAppProcesses();
@@ -92,16 +101,20 @@ public final class AppVisibilityDetector {
     }
 
     private static void performAppGotoForeground() {
-        if (!sIsForeground && null != sAppVisibilityCallback) {
+        if (!sIsForeground && null != sAppVisibilityCallbackList) {
             sIsForeground = true;
-            sAppVisibilityCallback.onAppGotoForeground();
+            for (AppVisibilityCallback callback : sAppVisibilityCallbackList) {
+                callback.onAppGotoForeground();
+            }
         }
     }
 
     private static void performAppGotoBackground() {
-        if (sIsForeground && null != sAppVisibilityCallback) {
+        if (sIsForeground && null != sAppVisibilityCallbackList) {
             sIsForeground = false;
-            sAppVisibilityCallback.onAppGotoBackground();
+            for (AppVisibilityCallback callback : sAppVisibilityCallbackList) {
+                callback.onAppGotoBackground();
+            }
         }
     }
 
