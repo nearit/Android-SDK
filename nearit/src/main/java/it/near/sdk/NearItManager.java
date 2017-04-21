@@ -116,6 +116,7 @@ public class NearItManager {
                 recipeCooler,
                 recipeManagerSP
         );
+        RecipesManager.setInstance(recipesManager);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
