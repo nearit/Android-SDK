@@ -1,18 +1,24 @@
 package it.near.sdk.recipes;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import com.google.common.collect.Maps;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.MockitoRule;
 
 import java.util.Map;
 
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.utils.NearMockitoRule;
 
 import static it.near.sdk.recipes.RecipesManager.PULSE_ACTION_ID_KEY;
 import static it.near.sdk.recipes.RecipesManager.PULSE_BUNDLE_ID_KEY;
@@ -29,26 +35,31 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RecipesManagerTest {
 
+    /*@Rule
+    public NearMockitoRule mockitoRule = new NearMockitoRule();
+    */
     @Mock
     GlobalConfig mockGlobalConfig;
     @Mock
     RecipeCooler mockRecipeCooler;
+    @Mock
+    Context mockContext;
+    @Mock
+    SharedPreferences mockSharedPreferences;
+
+    RecipesManager recipesManager;
 
     @Before
     public void setUp() {
         when(mockGlobalConfig.getAppId()).thenReturn("app_id");
         when(mockGlobalConfig.getInstallationId()).thenReturn("installation_id");
         when(mockGlobalConfig.getProfileId()).thenReturn("profile_id");
+        recipesManager = new RecipesManager(mockContext, mockGlobalConfig, mockRecipeCooler, mockSharedPreferences);
     }
 
     @Test
-    public void failTest() {
-        fail();
-    }
-
-    /*@Test
     public void buildCorrectEvaluationBody_noCoolerNoPulse() throws JSONException {
-        String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, null, null, null, null);
+        String actual = recipesManager.buildEvaluateBody(mockGlobalConfig, null, null, null, null);
         JSONObject actualObj = new JSONObject(actual);
         assertThat(actualObj = actualObj.getJSONObject("data"), is(notNullValue()));
         assertThat(actualObj = actualObj.getJSONObject("attributes"), is(notNullValue()));
@@ -62,6 +73,7 @@ public class RecipesManagerTest {
         assertThat(actualObj.has("cooldown"), is(false));
     }
 
+    /*
     @Test
     public void buildCorrectEvaluationBody_noCooldownNoPulse() throws JSONException {
         String actual = RecipesManager.buildEvaluateBody(mockGlobalConfig, mockRecipeCooler, null, null, null);
