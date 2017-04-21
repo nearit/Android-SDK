@@ -384,6 +384,7 @@ public class RecipesManager {
                 recipeId,
                 trackingEvent
         );
+
         Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
         NearNetworkUtil.sendTrack(mContext, url.toString(), trackingBody);
     }

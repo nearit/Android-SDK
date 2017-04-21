@@ -3,10 +3,14 @@ package it.near.sdk.trackings;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import it.near.sdk.logging.NearLog;
+import it.near.sdk.logging.NearLogger;
 import it.near.sdk.utils.AppVisibilityDetector;
 import it.near.sdk.utils.ApplicationVisibility;
 
 public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback {
+
+    private static final String TAG = "TrackManager";
 
     private final ConnectivityManager connectivityManager;
     private final TrackSender trackSender;
@@ -24,8 +28,20 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
         applicationVisibility.setCallback(this);
     }
 
-    public void sendTracking(TrackRequest trackRequest) {
+    public void sendTracking(final TrackRequest trackRequest) {
+        if (isConnectionAvailable()) {
+            trackSender.sendTrack(trackRequest, new TrackSender.RequestListener() {
+                @Override
+                public void onSuccess() {
+                    NearLog.d(TAG, "tracking sent");
+                }
 
+                @Override
+                public void onFailure(int statusCode) {
+                    trackCache.addToCache(trackRequest);
+                }
+            });
+        }
     }
 
     @Override
