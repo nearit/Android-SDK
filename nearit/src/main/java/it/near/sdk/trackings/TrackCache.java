@@ -86,3 +86,4 @@ public class TrackCache {
         return context.getSharedPreferences(TRACKING_PREFS_NAME, Context.MODE_PRIVATE);
     }
 }
+
