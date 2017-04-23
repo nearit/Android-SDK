@@ -31,4 +31,16 @@ public class TrackRequest {
         String body = json.getString(KEY_BODY);
         return new TrackRequest(url, body);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TrackRequest that = (TrackRequest) o;
+
+        if (url != null ? !url.equals(that.url) : that.url != null) return false;
+        return body != null ? body.equals(that.body) : that.body == null;
+
+    }
 }

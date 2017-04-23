@@ -70,4 +70,11 @@ public class TrackRequestTest {
         jsonObject.put(KEY_BODY, null);
         TrackRequest.fromJsonObject(jsonObject);
     }
+
+    @Test
+    public void sameTrackings_shouldBeEqual() {
+        TrackRequest request = new TrackRequest(DUMMY_URL, DUMMY_BODY);
+        TrackRequest request2 = new TrackRequest(DUMMY_URL, DUMMY_BODY);
+        assertThat(request, is(request2));
+    }
 }
