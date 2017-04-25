@@ -95,7 +95,7 @@ public class ContentReaction extends CoreReaction {
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                 .appendQueryParameter("include", "images,audio,upload").build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
@@ -136,7 +136,7 @@ public class ContentReaction extends CoreReaction {
                 .appendPath(bundleId)
                 .appendQueryParameter("include", "images").build();
         try {
-            httpClient.nearGet(mContext, url.toString(), responseHandler);
+            httpClient.get(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }

@@ -75,7 +75,7 @@ public class PollReaction extends CoreReaction {
                 .appendPath(POLL_NOTIFICATION_RESOURCE)
                 .appendPath(bundleId).build();
         try {
-            httpClient.nearGet(mContext, url.toString(), responseHandler);
+            httpClient.get(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }
@@ -119,7 +119,7 @@ public class PollReaction extends CoreReaction {
                 .appendPath(POLL_NOTIFICATION_RESOURCE).build();
         // TODO not tested
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
@@ -183,7 +183,7 @@ public class PollReaction extends CoreReaction {
                     .appendPath("answers").build();
             // TODO not tested
             try {
-                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
+                httpClient.post(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         NearLog.d(TAG, "Answer sent successfully");

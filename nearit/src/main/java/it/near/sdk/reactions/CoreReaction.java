@@ -47,7 +47,7 @@ public abstract class CoreReaction extends Reaction {
         PACK_NAME = mContext.getApplicationContext().getPackageName();
         setUpMorpheus();
         initSharedPreferences(getPrefSuffix());
-        httpClient = new NearAsyncHttpClient();
+        httpClient = new NearAsyncHttpClient(mContext);
         refreshConfig();
     }
 

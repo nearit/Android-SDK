@@ -78,7 +78,7 @@ public class CustomJSONReaction extends CoreReaction {
                 .appendPath(JSON_CONTENT_RES)
                 .appendQueryParameter("filter[app_id]", appId).build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
@@ -167,7 +167,7 @@ public class CustomJSONReaction extends CoreReaction {
                 .appendPath(JSON_CONTENT_RES)
                 .appendPath(bundleId).build();
         try {
-            httpClient.nearGet(mContext, url.toString(), responseHandler);
+            httpClient.get(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }

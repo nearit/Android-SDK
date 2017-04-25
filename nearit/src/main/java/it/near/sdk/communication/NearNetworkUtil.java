@@ -28,9 +28,9 @@ public class NearNetworkUtil {
      * @param body    the HTTP request body.
      */
     public static void sendTrack(Context context, String url, String body) {
-        NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
+        NearAsyncHttpClient httpClient = new NearAsyncHttpClient(context);
         try {
-            httpClient.nearPost(context, url, body, new NearJsonHttpResponseHandler() {
+            httpClient.post(context, url, body, new NearJsonHttpResponseHandler() {
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
@@ -60,8 +60,8 @@ public class NearNetworkUtil {
      * @param handler the response handler.
      */
     public static void sendTrack(Context context, String url, String body, NearJsonHttpResponseHandler handler) throws UnsupportedEncodingException, AuthenticationException {
-        NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
-        httpClient.nearPost(context, url, body, handler);
+        NearAsyncHttpClient httpClient = new NearAsyncHttpClient(context);
+        httpClient.post(context, url, body, handler);
     }
 
 }

@@ -78,7 +78,7 @@ public class RecipesManager {
         this.sp = sp;
         editor = sp.edit();
 
-        httpClient = new NearAsyncHttpClient();
+        httpClient = new NearAsyncHttpClient(context);
         try {
             recipes = loadChachedList();
         } catch (JSONException e) {
@@ -157,7 +157,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
+            httpClient.post(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Got recipes: " + response.toString());
@@ -265,7 +265,7 @@ public class RecipesManager {
                 .appendQueryParameter("include", "reaction_bundle")
                 .build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -297,7 +297,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
+            httpClient.post(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
@@ -340,7 +340,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
+            httpClient.post(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
