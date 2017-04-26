@@ -157,7 +157,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.post(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Got recipes: " + response.toString());
@@ -265,7 +265,7 @@ public class RecipesManager {
                 .appendQueryParameter("include", "reaction_bundle")
                 .build();
         try {
-            httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -297,7 +297,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.post(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
@@ -340,7 +340,7 @@ public class RecipesManager {
         }
 
         try {
-            httpClient.post(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
