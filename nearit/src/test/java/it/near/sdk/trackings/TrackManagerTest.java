@@ -13,18 +13,14 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import java.util.List;
-
 import it.near.sdk.utils.ApplicationVisibility;
 
-import static org.hamcrest.MatcherAssert.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -132,9 +128,9 @@ public class TrackManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 if (result == SUCCESS) {
-                    ((TrackSender.RequestListener)invocation.getArguments()[1]).onSuccess();
+                    ((TrackSender.RequestListener) invocation.getArguments()[1]).onSuccess();
                 } else {
-                    ((TrackSender.RequestListener)invocation.getArguments()[1]).onFailure(MADE_UP_FAIL_STATUS_CODE);
+                    ((TrackSender.RequestListener) invocation.getArguments()[1]).onFailure(MADE_UP_FAIL_STATUS_CODE);
                 }
                 return null;
             }
@@ -146,9 +142,9 @@ public class TrackManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 if (result == SUCCESS) {
-                    ((TrackSender.RequestListener)invocation.getArguments()[1]).onSuccess();
+                    ((TrackSender.RequestListener) invocation.getArguments()[1]).onSuccess();
                 } else {
-                    ((TrackSender.RequestListener)invocation.getArguments()[1]).onFailure(MADE_UP_FAIL_STATUS_CODE);
+                    ((TrackSender.RequestListener) invocation.getArguments()[1]).onFailure(MADE_UP_FAIL_STATUS_CODE);
                 }
                 return null;
             }
