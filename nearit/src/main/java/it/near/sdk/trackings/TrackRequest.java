@@ -8,14 +8,15 @@ public class TrackRequest {
 
     static final String KEY_URL = "url";
     static final String KEY_BODY = "body";
+    private static final boolean DEFAULT_SENDING_STATUS = false;
     final String url;
     final String body;
     boolean sending;
 
-    public TrackRequest(String url, String body, boolean sending) {
+    public TrackRequest(String url, String body) {
         this.url = url;
         this.body = body;
-        this.sending = sending;
+        this.sending = DEFAULT_SENDING_STATUS;
     }
 
     public JSONObject getJsonObject() {
@@ -31,7 +32,7 @@ public class TrackRequest {
     public static TrackRequest fromJsonObject(JSONObject json) throws JSONException {
         String url = json.getString(KEY_URL);
         String body = json.getString(KEY_BODY);
-        return new TrackRequest(url, body, false);
+        return new TrackRequest(url, body);
     }
 
     @Override

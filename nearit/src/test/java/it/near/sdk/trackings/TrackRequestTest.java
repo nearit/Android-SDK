@@ -41,7 +41,7 @@ public class TrackRequestTest {
     public void serializationTest() throws JSONException {
         String url = DUMMY_URL;
         String body = DUMMY_BODY;
-        TrackRequest requestToSerialize = new TrackRequest(url, body, DEFUALT_SENDING_STATUS);
+        TrackRequest requestToSerialize = new TrackRequest(url, body);
         JSONObject json = requestToSerialize.getJsonObject();
         assertThat(json.getString(KEY_URL), is(url));
         assertThat(json.getString(KEY_BODY), is(body));
@@ -75,20 +75,20 @@ public class TrackRequestTest {
 
     @Test
     public void sameTrackings_shouldBeEqual() {
-        TrackRequest requestA = new TrackRequest(DUMMY_URL, DUMMY_BODY, DEFUALT_SENDING_STATUS);
-        TrackRequest requestB = new TrackRequest(DUMMY_URL, DUMMY_BODY, DEFUALT_SENDING_STATUS);
+        TrackRequest requestA = new TrackRequest(DUMMY_URL, DUMMY_BODY);
+        TrackRequest requestB = new TrackRequest(DUMMY_URL, DUMMY_BODY);
         assertThat(requestA, is(requestB));
         // sending status should not be considered
         requestA.sending = false;
         requestB.sending = true;
         assertThat(requestA, is(requestB));
         // different url requests should not be equal
-        requestA = new TrackRequest("a", DUMMY_BODY, DEFUALT_SENDING_STATUS);
-        requestB = new TrackRequest("b", DUMMY_BODY, DEFUALT_SENDING_STATUS);
+        requestA = new TrackRequest("a", DUMMY_BODY);
+        requestB = new TrackRequest("b", DUMMY_BODY);
         assertThat(requestA, is(not(requestB)));
         // different body requests should not be equal
-        requestA = new TrackRequest(DUMMY_URL, "a", DEFUALT_SENDING_STATUS);
-        requestB = new TrackRequest(DUMMY_URL, "b", DEFUALT_SENDING_STATUS);
+        requestA = new TrackRequest(DUMMY_URL, "a");
+        requestB = new TrackRequest(DUMMY_URL, "b");
         assertThat(requestA, is(not(requestB)));
     }
 }
