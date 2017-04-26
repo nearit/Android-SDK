@@ -1,5 +1,6 @@
 package it.near.sdk.recipes;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
@@ -152,5 +153,9 @@ public class RecipeCooler {
             editor.putLong(LATEST_LOG, timestamp);
             editor.commit();
         }
+    }
+
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(RECIPE_COOLER_PREFS_NAME, Context.MODE_PRIVATE);
     }
 }

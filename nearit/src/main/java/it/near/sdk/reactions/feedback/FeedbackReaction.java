@@ -62,7 +62,7 @@ public class FeedbackReaction extends CoreReaction {
                 .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE).build();
 
         try {
-            httpClient.nearGet(mContext, url.toString(), new JsonHttpResponseHandler() {
+            httpClient.get(mContext, url.toString(), new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
@@ -102,7 +102,7 @@ public class FeedbackReaction extends CoreReaction {
                 .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
                 .appendPath(bundleId).build();
         try {
-            httpClient.nearGet(mContext, url.toString(), responseHandler);
+            httpClient.get(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }
@@ -138,7 +138,7 @@ public class FeedbackReaction extends CoreReaction {
                     .appendPath(event.getFeedbackId())
                     .appendPath(ANSWERS_RESOURCE).build();
             try {
-                httpClient.nearPost(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
+                httpClient.post(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         NearLog.d(TAG, "Feedback sent successfully");

@@ -173,38 +173,6 @@ public class Recipe extends Resource {
         return null;
     }
 
-
-
-    /**
-     * Builds the tracking send request body.
-     * @param globalConfig the app global config.
-     * @param recipeId the recipe identifier.
-     * @param trackingEvent the tracking event string.
-     * @return the http body string.
-     * @throws JSONException
-     */
-    public static String buildTrackingBody(GlobalConfig globalConfig, String recipeId, String trackingEvent) throws JSONException {
-        String profileId = globalConfig.getProfileId();
-        String appId = globalConfig.getAppId();
-        String installationId = globalConfig.getInstallationId();
-        if (recipeId == null ||
-                profileId == null ||
-                installationId == null ){
-            throw new JSONException("missing data");
-        }
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        Date now = new Date(System.currentTimeMillis());
-        String formattedDate = sdf.format(now);
-        HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put("profile_id", profileId);
-        attributes.put("installation_id", installationId);
-        attributes.put("app_id", appId);
-        attributes.put("recipe_id", recipeId);
-        attributes.put("event", trackingEvent);
-        attributes.put("tracked_at", formattedDate);
-        return NearJsonAPIUtils.toJsonAPI("trackings", attributes);
-    }
-
     public boolean isForegroundRecipe() {
         return getPulse_action().isForeground();
     }
