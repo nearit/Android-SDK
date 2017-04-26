@@ -3,8 +3,6 @@ package it.near.sdk.trackings;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import it.near.sdk.logging.NearLog;
-import it.near.sdk.logging.NearLogger;
 import it.near.sdk.utils.AppVisibilityDetector;
 import it.near.sdk.utils.ApplicationVisibility;
 
@@ -23,7 +21,7 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
         this.trackSender = trackSender;
         this.trackCache = trackCache;
         this.applicationVisibility = applicationVisibility;
-        applicationVisibility.setCallback(this);
+        this.applicationVisibility.setCallback(this);
     }
 
     public void sendTracking(final TrackRequest trackRequest) {
@@ -56,7 +54,6 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
             }
         });
     }
-
 
     @Override
     public void onAppGotoForeground() {

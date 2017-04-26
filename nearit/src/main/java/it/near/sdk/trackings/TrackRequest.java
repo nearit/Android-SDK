@@ -46,4 +46,12 @@ public class TrackRequest {
         return body != null ? body.equals(that.body) : that.body == null;
 
     }
+
+    @Override
+    public String toString() {
+        return "TrackRequest{" +
+                "url='" + url + '\'' +
+                ", body='" + body + '\'' +
+                '}';
+    }
 }
