@@ -27,6 +27,7 @@ import it.near.sdk.logging.NearLog;
 import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.trackings.TrackManager;
 
 /**
  * Manages a beacon forest, the plugin for monitoring regions structured in a tree.
@@ -74,7 +75,7 @@ public class GeopolisManager {
 
     private NearAsyncHttpClient httpClient;
 
-    public GeopolisManager(Application application, RecipesManager recipesManager, GlobalConfig globalConfig) {
+    public GeopolisManager(Application application, RecipesManager recipesManager, GlobalConfig globalConfig, TrackManager trackManager) {
         this.application = application;
         this.recipesManager = recipesManager;
         this.globalConfig = globalConfig;
@@ -88,14 +89,10 @@ public class GeopolisManager {
         }
         this.geofenceMonitor = new GeoFenceMonitor(application);
 
-        SharedPreferences geopolisTrackingManagerSP = GeopolisTrackingsManager.getSharedPreferences(application);
-        this.geopolisTrackingsManager =
-                new GeopolisTrackingsManager(
-                        new NearAsyncHttpClient(application),
-                        geopolisTrackingManagerSP,
-                        application,
-                        globalConfig
-                );
+        this.geopolisTrackingsManager = new GeopolisTrackingsManager(
+                trackManager,
+                globalConfig
+        );
 
         registerProximityReceiver();
         registerResetReceiver();

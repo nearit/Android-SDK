@@ -16,16 +16,17 @@ import java.util.Locale;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
-import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.GeopolisManager;
+import it.near.sdk.logging.NearLog;
+import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackRequest;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.checkNotNull;
 
 public class GeopolisTrackingsManager {
 
-    private static final String TRACKING_MANAGER_PREF_NAME = "TrackingManagerPrefs";
     private static final String TRACKING_RES = "trackings";
     private static final String TAG = "GeopolisTrackingManager";
     private static final String KEY_IDENTIFIER = "identifier";
@@ -37,18 +38,12 @@ public class GeopolisTrackingsManager {
     private static final String KEY_TRACKINGS = "trackings";
     private static final String TRACK_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
-    private final NearAsyncHttpClient nearAsyncHttpClient;
-    private final SharedPreferences sp;
-    private final Context context;
     private final GlobalConfig globalConfig;
+    private final TrackManager trackManager;
 
-    public GeopolisTrackingsManager(@NonNull NearAsyncHttpClient nearAsyncHttpClient,
-                                    @NonNull SharedPreferences sp,
-                                    @NonNull Context context,
+    public GeopolisTrackingsManager(@NonNull TrackManager trackManager,
                                     @NonNull GlobalConfig globalConfig) {
-        this.nearAsyncHttpClient = checkNotNull(nearAsyncHttpClient);
-        this.sp = checkNotNull(sp);
-        this.context = checkNotNull(context);
+        this.trackManager = checkNotNull(trackManager);
         this.globalConfig = checkNotNull(globalConfig);
     }
 
@@ -58,9 +53,9 @@ public class GeopolisTrackingsManager {
                     .appendPath(GeopolisManager.PLUGIN_NAME)
                     .appendPath(TRACKING_RES).build();
             // TODO caching and retry policy
-            NearNetworkUtil.sendTrack(context, url.toString(), buildTrackBody(identifier, event));
+            trackManager.sendTracking(new TrackRequest(url.toString(), buildTrackBody(identifier, event)));
         } catch (JSONException e) {
-            Log.d(TAG, "Unable to send track: " + e.toString());
+            NearLog.d(TAG, "Unable to format tracking body: " + e.toString());
         }
     }
 
@@ -77,8 +72,5 @@ public class GeopolisTrackingsManager {
         map.put(KEY_APP_ID, globalConfig.getAppId());
         return NearJsonAPIUtils.toJsonAPI(KEY_TRACKINGS, map);
     }
-
-    public static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences(TRACKING_MANAGER_PREF_NAME, Context.MODE_PRIVATE);
-    }
 }
+

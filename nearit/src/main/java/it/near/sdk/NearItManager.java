@@ -131,7 +131,7 @@ public class NearItManager {
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
-        geopolis = new GeopolisManager(application, recipesManager, globalConfig);
+        geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
         contentNotification = new ContentReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification);
