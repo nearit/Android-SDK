@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TrackCacheTest {
 
+    private static final boolean DEFAULT_SENDING_STATUS = false;
     @Mock
     SharedPreferences mockSharedPreferences;
     @Mock
@@ -55,7 +56,7 @@ public class TrackCacheTest {
         trackCache.removeAll();
         // should still be empty after removing all trackings
         assertThat(trackCache.getRequests(), hasSize(0));
-        TrackRequest dummy = new TrackRequest("", "");
+        TrackRequest dummy = new TrackRequest("", "", DEFAULT_SENDING_STATUS);
         // should not remove non cached trackings
         assertThat(trackCache.removeFromCache(dummy), is(false));
         assertThat(trackCache.getRequests(), hasSize(0));
@@ -67,7 +68,7 @@ public class TrackCacheTest {
     public void trackRequest_shouldCached() {
         when(mockSharedPreferences.getStringSet(KEY_DISK_CACHE, null)).thenReturn(null);
         assertThat(trackCache.getRequests(), hasSize(0));
-        TrackRequest dummy = new TrackRequest("dummy", "dummy");
+        TrackRequest dummy = new TrackRequest("dummy", "dummy", DEFAULT_SENDING_STATUS);
         // cache with one tracking
         trackCache.addToCache(dummy);
         // should write item on disk
@@ -77,12 +78,12 @@ public class TrackCacheTest {
         assertThat(trackCache.getRequests(), hasSize(1));
         assertThat(trackCache.getRequests(), hasItem(dummy));
         // after removing non cached tracking
-        trackCache.removeFromCache(new TrackRequest("not", "cached"));
+        trackCache.removeFromCache(new TrackRequest("not", "cached", DEFAULT_SENDING_STATUS));
         // should return tracking
         assertThat(trackCache.getRequests(), hasSize(1));
         assertThat(trackCache.getRequests(), hasItem(dummy));
         // after adding another tracking
-        TrackRequest dummy2 = new TrackRequest("dummy2", "dummy2");
+        TrackRequest dummy2 = new TrackRequest("dummy2", "dummy2", DEFAULT_SENDING_STATUS);
         trackCache.addToCache(dummy2);
         verify(mockEditor, times(2)).putStringSet(anyString(), stringSetCaptor.capture());
         // writes both request to cache
@@ -98,8 +99,8 @@ public class TrackCacheTest {
     public void cachedTracking_shouldBeRemoved() {
         when(mockSharedPreferences.getStringSet(KEY_DISK_CACHE, null)).thenReturn(null);
         assertThat(trackCache.getRequests(), hasSize(0));
-        TrackRequest dummy = new TrackRequest("dummy", "dummy");
-        TrackRequest dummy2 = new TrackRequest("dummy2", "dummy2");
+        TrackRequest dummy = new TrackRequest("dummy", "dummy", DEFAULT_SENDING_STATUS);
+        TrackRequest dummy2 = new TrackRequest("dummy2", "dummy2", DEFAULT_SENDING_STATUS);
         // cache with 2 trackings
         trackCache.addToCache(dummy);
         trackCache.addToCache(dummy2);
@@ -119,13 +120,28 @@ public class TrackCacheTest {
 
     @Test
     public void previouslyCachedTrackings_shouldBeReturned() {
-        TrackRequest dummy = new TrackRequest("dummy", "dummy");
-        TrackRequest dummy2 = new TrackRequest("dummy2", "dummy2");
+        TrackRequest dummy = new TrackRequest("dummy", "dummy", DEFAULT_SENDING_STATUS);
+        TrackRequest dummy2 = new TrackRequest("dummy2", "dummy2", DEFAULT_SENDING_STATUS);
         Set<String> setToReturn = new HashSet<>();
         setToReturn.add(dummy.getJsonObject().toString());
         setToReturn.add(dummy2.getJsonObject().toString());
         when(mockSharedPreferences.getStringSet(KEY_DISK_CACHE, null)).thenReturn(setToReturn);
         assertThat(trackCache.getRequests(), hasSize(2));
         assertThat(trackCache.getRequests(), hasItems(dummy, dummy2));
+    }
+
+    @Test
+    public void sendingStatus_shouldNotBePersisted() {
+        TrackRequest dummyRequest = new TrackRequest("dummy", "dummy", DEFAULT_SENDING_STATUS);
+        trackCache.addToCache(dummyRequest);
+        assertThat(trackCache.getRequests().get(0).sending, is(DEFAULT_SENDING_STATUS));
+        dummyRequest.sending = true;
+        assertThat(trackCache.getRequests().get(0).sending, is(true));
+        Set<String> setToReturn = new HashSet<>();
+        setToReturn.add("{\"url\" : \"dummy\", \"body\" : \"dummy\"}"); /* no sending status is returned */
+        when(mockSharedPreferences.getStringSet(KEY_DISK_CACHE, null)).thenReturn(setToReturn);
+        trackCache = new TrackCache(mockSharedPreferences);
+        assertThat(trackCache.getRequests().get(0), is(dummyRequest));
+        assertThat(trackCache.getRequests().get(0).sending, is(DEFAULT_SENDING_STATUS));
     }
 }

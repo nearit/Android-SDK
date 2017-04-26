@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 public class TrackCache {
@@ -35,13 +36,13 @@ public class TrackCache {
 
     public void addToCache(TrackRequest request) {
         getRequests().add(request);
-        persistList(getRequests());
+        persistList();
     }
 
     public boolean removeFromCache(TrackRequest request) {
         boolean removed = getRequests().remove(request);
         if (removed) {
-            persistList(getRequests());
+            persistList();
         }
         return removed;
     }
@@ -49,12 +50,12 @@ public class TrackCache {
     public void removeAll() {
         if (requestCache != null) {
             requestCache = new ArrayList<>();
-            persistList(requestCache);
+            persistList();
         }
     }
 
     private List<TrackRequest> readListFromCache() {
-        List<TrackRequest> items = new ArrayList<>();
+        List<TrackRequest> items = new CopyOnWriteArrayList<>();
         Set<String> set = sharedPreferences.getStringSet(KEY_DISK_CACHE, null);
         if (set != null) {
             for (String string : set) {
@@ -71,7 +72,7 @@ public class TrackCache {
     }
 
     @SuppressLint("ApplySharedPref")
-    private void persistList(List<TrackRequest> listToPersist) {
+    private void persistList() {
         Set<String> set = new HashSet<>();
         for (TrackRequest trackRequest : getRequests()) {
             set.add(trackRequest.getJsonObject().toString());
