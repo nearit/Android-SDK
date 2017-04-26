@@ -10,8 +10,6 @@ import it.near.sdk.utils.ApplicationVisibility;
 
 public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback {
 
-    private static final String TAG = "TrackManager";
-
     private final ConnectivityManager connectivityManager;
     private final TrackSender trackSender;
     private final TrackCache trackCache;
@@ -29,24 +27,40 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
     }
 
     public void sendTracking(final TrackRequest trackRequest) {
-        if (isConnectionAvailable()) {
-            trackSender.sendTrack(trackRequest, new TrackSender.RequestListener() {
-                @Override
-                public void onSuccess() {
-                    NearLog.d(TAG, "tracking sent");
-                }
+        trackCache.addToCache(trackRequest);
+        launchCachedRequests();
+    }
 
-                @Override
-                public void onFailure(int statusCode) {
-                    trackCache.addToCache(trackRequest);
+    private void launchCachedRequests() {
+        if (isConnectionAvailable()) {
+            for (final TrackRequest trackRequest : trackCache.getRequests()) {
+                if (!trackRequest.sending) {
+                    trackRequest.sending = true;
+                    sendCachedRequest(trackRequest);
                 }
-            });
+            }
         }
     }
 
+    private void sendCachedRequest(final TrackRequest trackRequest) {
+        trackSender.sendTrack(trackRequest, new TrackSender.RequestListener() {
+            @Override
+            public void onSuccess() {
+                trackRequest.sending = false;
+                trackCache.removeFromCache(trackRequest);
+            }
+
+            @Override
+            public void onFailure(int statusCode) {
+                trackRequest.sending = false;
+            }
+        });
+    }
+
+
     @Override
     public void onAppGotoForeground() {
-
+        launchCachedRequests();
     }
 
     @Override
