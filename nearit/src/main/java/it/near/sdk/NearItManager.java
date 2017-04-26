@@ -4,7 +4,9 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 
 import org.altbeacon.beacon.BeaconManager;
@@ -15,6 +17,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
@@ -38,6 +41,10 @@ import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.RecipeCooler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.trackings.TrackCache;
+import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackSender;
+import it.near.sdk.utils.ApplicationVisibility;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
@@ -106,18 +113,20 @@ public class NearItManager {
     }
 
     private void plugInSetup(Application application, GlobalConfig globalConfig) {
-
-        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.RECIPE_COOLER_PREFS_NAME, 0);
-        RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP, new CurrentTime());
-        SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
+        RecipeCooler recipeCooler = new RecipeCooler(
+                RecipeCooler.getSharedPreferences(application),
+                new CurrentTime()
+        );
         EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(recipeCooler, globalConfig);
+        TrackManager trackManager = getTrackManager(application);
+
         recipesManager = new RecipesManager(
-                application,
+                new NearAsyncHttpClient(application),
                 globalConfig,
                 recipeCooler,
                 evaluationBodyBuilder,
-                recipeManagerSP
-        );
+                RecipesManager.getSharedPreferences(application),
+                trackManager);
         RecipesManager.setInstance(recipesManager);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
@@ -141,6 +150,15 @@ public class NearItManager {
 
         feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
+    }
+
+    @NonNull
+    private TrackManager getTrackManager(Application application) {
+        return new TrackManager(
+                (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE),
+                new TrackSender(new NearAsyncHttpClient(application)),
+                new TrackCache(TrackCache.getSharedPreferences(application)),
+                new ApplicationVisibility());
     }
 
     /**

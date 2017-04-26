@@ -27,7 +27,6 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
@@ -38,6 +37,8 @@ import it.near.sdk.recipes.models.PulseBundle;
 import it.near.sdk.recipes.models.ReactionAction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackRequest;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -48,37 +49,36 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 public class RecipesManager {
 
     private static final String TAG = "RecipesManager";
-    public static final String PREFS_NAME = "NearRecipes";
+    private static final String NEAR_RECIPES_PREFS_NAME = "NearRecipes";
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
     private static final String TRACKINGS_PATH = "trackings";
 
     private static RecipesManager instance;
 
-    private final SharedPreferences sp;
-    private Context mContext;
     private Morpheus morpheus;
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
-    private SharedPreferences.Editor editor;
-    private NearAsyncHttpClient httpClient;
-    private RecipeCooler recipeCooler;
+    private final NearAsyncHttpClient httpClient;
+    private final SharedPreferences sp;
+    private final RecipeCooler recipeCooler;
     private final GlobalConfig globalConfig;
     private final EvaluationBodyBuilder evaluationBodyBuilder;
+    private final TrackManager trackManager;
 
-    public RecipesManager(Context context,
+    public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
                           RecipeCooler recipeCooler,
                           EvaluationBodyBuilder evaluationBodyBuilder,
-                          SharedPreferences sp) {
-        this.mContext = context;
+                          SharedPreferences sp,
+                          TrackManager trackManager) {
+        this.httpClient = httpClient;
         this.globalConfig = globalConfig;
         this.recipeCooler = recipeCooler;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.sp = sp;
-        editor = sp.edit();
+        this.trackManager = trackManager;
 
-        httpClient = new NearAsyncHttpClient(context);
         try {
             recipes = loadChachedList();
         } catch (JSONException e) {
@@ -185,8 +185,9 @@ public class RecipesManager {
     private void persistList(List<Recipe> recipes) {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
-        editor.putString(TAG, listStringified);
-        editor.apply();
+        sp.edit()
+            .putString(TAG, listStringified)
+            .apply();
     }
 
     private List<Recipe> loadChachedList() throws JSONException {
@@ -386,7 +387,8 @@ public class RecipesManager {
         );
 
         Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
-        NearNetworkUtil.sendTrack(mContext, url.toString(), trackingBody);
+
+        trackManager.sendTracking(new TrackRequest(url.toString(), trackingBody));
     }
 
     private String buildTrackingBody(String recipeId, String trackingEvent) throws JSONException {
@@ -409,5 +411,9 @@ public class RecipesManager {
         attributes.put("event", trackingEvent);
         attributes.put("tracked_at", formattedDate);
         return NearJsonAPIUtils.toJsonAPI("trackings", attributes);
+    }
+
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(NEAR_RECIPES_PREFS_NAME, Context.MODE_PRIVATE);
     }
 }
