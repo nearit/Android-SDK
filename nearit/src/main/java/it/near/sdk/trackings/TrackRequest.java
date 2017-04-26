@@ -10,10 +10,12 @@ public class TrackRequest {
     static final String KEY_BODY = "body";
     final String url;
     final String body;
+    boolean sending;
 
-    public TrackRequest(String url, String body) {
+    public TrackRequest(String url, String body, boolean sending) {
         this.url = url;
         this.body = body;
+        this.sending = sending;
     }
 
     public JSONObject getJsonObject() {
@@ -29,7 +31,7 @@ public class TrackRequest {
     public static TrackRequest fromJsonObject(JSONObject json) throws JSONException {
         String url = json.getString(KEY_URL);
         String body = json.getString(KEY_BODY);
-        return new TrackRequest(url, body);
+        return new TrackRequest(url, body, false);
     }
 
     @Override

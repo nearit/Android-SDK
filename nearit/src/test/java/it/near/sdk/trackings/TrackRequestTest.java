@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import static it.near.sdk.trackings.TrackRequest.KEY_BODY;
 import static it.near.sdk.trackings.TrackRequest.KEY_URL;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.core.Is.is;
 
@@ -34,12 +35,13 @@ public class TrackRequestTest {
             "        }\n" +
             "    }\n" +
             "}";
+    public static final boolean DEFUALT_SENDING_STATUS = false;
 
     @Test
     public void serializationTest() throws JSONException {
         String url = DUMMY_URL;
         String body = DUMMY_BODY;
-        TrackRequest requestToSerialize = new TrackRequest(url, body);
+        TrackRequest requestToSerialize = new TrackRequest(url, body, DEFUALT_SENDING_STATUS);
         JSONObject json = requestToSerialize.getJsonObject();
         assertThat(json.getString(KEY_URL), is(url));
         assertThat(json.getString(KEY_BODY), is(body));
@@ -73,8 +75,20 @@ public class TrackRequestTest {
 
     @Test
     public void sameTrackings_shouldBeEqual() {
-        TrackRequest request = new TrackRequest(DUMMY_URL, DUMMY_BODY);
-        TrackRequest request2 = new TrackRequest(DUMMY_URL, DUMMY_BODY);
-        assertThat(request, is(request2));
+        TrackRequest requestA = new TrackRequest(DUMMY_URL, DUMMY_BODY, DEFUALT_SENDING_STATUS);
+        TrackRequest requestB = new TrackRequest(DUMMY_URL, DUMMY_BODY, DEFUALT_SENDING_STATUS);
+        assertThat(requestA, is(requestB));
+        // sending status should not be considered
+        requestA.sending = false;
+        requestB.sending = true;
+        assertThat(requestA, is(requestB));
+        // different url requests should not be equal
+        requestA = new TrackRequest("a", DUMMY_BODY, DEFUALT_SENDING_STATUS);
+        requestB = new TrackRequest("b", DUMMY_BODY, DEFUALT_SENDING_STATUS);
+        assertThat(requestA, is(not(requestB)));
+        // different body requests should not be equal
+        requestA = new TrackRequest(DUMMY_URL, "a", DEFUALT_SENDING_STATUS);
+        requestB = new TrackRequest(DUMMY_URL, "b", DEFUALT_SENDING_STATUS);
+        assertThat(requestA, is(not(requestB)));
     }
 }
