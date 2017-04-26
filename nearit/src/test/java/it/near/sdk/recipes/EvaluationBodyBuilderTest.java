@@ -20,6 +20,7 @@ import static it.near.sdk.recipes.EvaluationBodyBuilder.PULSE_PLUGIN_ID_KEY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,7 +31,7 @@ public class EvaluationBodyBuilderTest {
     @Mock
     RecipeCooler mockRecipeCooler;
 
-    EvaluationBodyBuilder evaluationBodyBuilder;
+    private EvaluationBodyBuilder evaluationBodyBuilder;
 
     @Before
     public void setUp() {
@@ -85,5 +86,11 @@ public class EvaluationBodyBuilderTest {
         assertThat(actualObj.length(), is(2));
         assertThat(Long.valueOf((Integer) actualObj.get("recipe_id_1")), is(0L));
         assertThat(Long.valueOf((Integer) actualObj.get("recipe_id_2")), is(1000L));
+    }
+
+    @Test(expected = JSONException.class)
+    public void whenMissingGlobalData_shouldThrow() throws JSONException {
+        when(mockGlobalConfig.getAppId()).thenReturn(null);
+        evaluationBodyBuilder.buildEvaluateBody("plugin", "action", "bundle");
     }
 }
