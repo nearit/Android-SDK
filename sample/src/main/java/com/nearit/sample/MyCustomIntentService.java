@@ -16,7 +16,7 @@ import it.near.sdk.utils.NearUtils;
 /**
  * This is the manifest element for the IntentService
  * <service android:name=".MyCustomIntentService"
- *           android:exported="false"/>
+ * android:exported="false"/>
  */
 
 public class MyCustomIntentService extends NearItIntentService implements CoreContentsListener {
@@ -28,20 +28,21 @@ public class MyCustomIntentService extends NearItIntentService implements CoreCo
         /*
         Do whatever you want with the intent, like setting a cooldown or filter events
 
-        There is an utility method to automatically process known content types and calls the CoreContentsListener callback methods.
-        parseCoreContents(Intent intent, CoreContentsListener listener);
+        to notify it to the user with a system notification, call
+        super.sendSimpleNotification(intent);
+        this method also sends the proper tracking information to our servers.
+        If you want to completely customize the user experience, you should implement your logic here.
+        You may use this method:
+        NearUtils.parseCoreContents(intent, coreContentListener); // to get casted content in the listener callback methods
 
         IMPORTANT
-        Since you are overriding the default notification mechanism, remember to track the recipe as notified with:
-        String recipeId = intent.getStringExtra("recipe_id");
+        If you are overriding the default notification mechanism, remember to track the recipe as notified with:
+        String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
             nearItManager.getRecipesManager().sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        There is an utility method for creating notifications
-        NearNotification.send(context, GlobalConfig.getInstance(this).getProximityNotificationIcon(), notificationTitle, notificationText, targetIntent, NOTIFICATION_ID);
+        }
         */
         NearUtils.parseCoreContents(intent, this);
 
