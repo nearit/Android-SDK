@@ -29,7 +29,17 @@ public class NearAsyncHttpClient {
     private static AsyncHttpClient syncHttpClient = new SyncHttpClient();
     private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
-    public static RequestHandle nearGet(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
+    private final Context context;
+
+    public NearAsyncHttpClient(Context context) {
+        this.context = context;
+    }
+
+    public RequestHandle nearGet(String url, ResponseHandlerInterface responseHandlerInterface) throws AuthenticationException {
+        return NearAsyncHttpClient.get(context, url, responseHandlerInterface);
+    }
+
+    public static RequestHandle get(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
         return getClient().get(context,
                 buildUrl(context, url),
                 getHeaders(context),
@@ -44,7 +54,11 @@ public class NearAsyncHttpClient {
         return asyncHttpClient;
     }
 
-    public static RequestHandle nearPost(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
+    public RequestHandle nearPost(String url, String requestBody, ResponseHandlerInterface responseHandlerInterface) throws AuthenticationException, UnsupportedEncodingException {
+        return NearAsyncHttpClient.post(context, url, requestBody, responseHandlerInterface);
+    }
+
+    public static RequestHandle post(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
         HttpEntity body = new StringEntity(requestBody);
         return getClient().post(context,
                 buildUrl(context, url),
@@ -54,7 +68,11 @@ public class NearAsyncHttpClient {
                 responseHandler);
     }
 
-    public static RequestHandle nearPut(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws UnsupportedEncodingException, AuthenticationException {
+    public RequestHandle nearPut(String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
+        return NearAsyncHttpClient.put(context, url, requestBody, responseHandler);
+    }
+
+    public static RequestHandle put(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws UnsupportedEncodingException, AuthenticationException {
         HttpEntity body = new StringEntity(requestBody);
         return getClient().put(context,
                 buildUrl(context, url),

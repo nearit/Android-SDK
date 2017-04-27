@@ -111,7 +111,7 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("filter[claims.profile_id]", profileId)
                 .appendQueryParameter("include", "claims,icon").build();
         try {
-            httpClient.nearGet(mContext, url.toString(), responseHandler);
+            httpClient.get(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }
@@ -132,7 +132,7 @@ public class CouponReaction extends CoreReaction {
         String output = url.toString();
         NearLog.d(TAG, output);
         try {
-            httpClient.nearGet(context, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.get(context, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Copuns downloaded: " + response.toString());

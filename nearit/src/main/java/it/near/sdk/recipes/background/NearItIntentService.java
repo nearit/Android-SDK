@@ -76,7 +76,10 @@ public class NearItIntentService extends IntentService {
     private void sendNotifiedTracking(@NonNull Intent intent) {
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
-            RecipesManager.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
+            RecipesManager recipesManager = RecipesManager.getInstance();
+            if (recipesManager != null) {
+                recipesManager.sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
+            }
         } catch (JSONException e) {
             NearLog.d(TAG, "Data format error");
         }

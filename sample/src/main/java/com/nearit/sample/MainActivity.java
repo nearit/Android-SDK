@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         permissionCheck();
 
         MyApplication.getNearItManager().addProximityListener(this);
-        
+
     }
 
     @Override
@@ -87,16 +87,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        if (intent!= null &&
+        if (intent != null &&
                 intent.getExtras() != null &&
                 intent.hasExtra(NearItIntentConstants.RECIPE_ID)) {
             // we got a NearIT intent
-            try {
-                // track it as engaged, since we tapped on it
-                RecipesManager.sendTracking(this, intent.getStringExtra(NearItIntentConstants.RECIPE_ID), Recipe.ENGAGED_STATUS);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+
+            // track it as engaged, since we tapped on it
+            MyApplication.getNearItManager().sendTracking(
+                    intent.getStringExtra(NearItIntentConstants.RECIPE_ID),
+                    Recipe.ENGAGED_STATUS
+            );
 
             NearUtils.parseCoreContents(intent, this);
         }

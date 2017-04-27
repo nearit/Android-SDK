@@ -4,16 +4,20 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 
 import org.altbeacon.beacon.BeaconManager;
+import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
@@ -30,12 +34,17 @@ import it.near.sdk.reactions.feedback.FeedbackReaction;
 import it.near.sdk.reactions.poll.PollEvent;
 import it.near.sdk.reactions.poll.PollReaction;
 import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.RecipeCooler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.trackings.TrackCache;
+import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackSender;
+import it.near.sdk.utils.ApplicationVisibility;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
@@ -52,7 +61,6 @@ import it.near.sdk.utils.NearUtils;
  * nearItManager.setNotificationImage(R.drawable.beacon_notif_icon);
  * }
  * </pre>
- *
  */
 public class NearItManager {
 
@@ -105,18 +113,25 @@ public class NearItManager {
     }
 
     private void plugInSetup(Application application, GlobalConfig globalConfig) {
+        RecipeCooler recipeCooler = new RecipeCooler(
+                RecipeCooler.getSharedPreferences(application),
+                new CurrentTime()
+        );
+        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(recipeCooler, globalConfig);
+        TrackManager trackManager = getTrackManager(application);
 
-        SharedPreferences recipeCoolerSP = application.getSharedPreferences(RecipeCooler.RECIPE_COOLER_PREFS_NAME, 0);
-        RecipeCooler recipeCooler = new RecipeCooler(recipeCoolerSP, new CurrentTime());
-        SharedPreferences recipeManagerSP = application.getSharedPreferences(RecipesManager.PREFS_NAME, 0);
-        recipesManager = new RecipesManager(application,
+        recipesManager = new RecipesManager(
+                new NearAsyncHttpClient(application),
                 globalConfig,
                 recipeCooler,
-                recipeManagerSP);
+                evaluationBodyBuilder,
+                RecipesManager.getSharedPreferences(application),
+                trackManager);
+        RecipesManager.setInstance(recipesManager);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
-        geopolis = new GeopolisManager(application, recipesManager, globalConfig);
+        geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
         contentNotification = new ContentReaction(application, nearNotifier);
         recipesManager.addReaction(contentNotification);
@@ -135,6 +150,15 @@ public class NearItManager {
 
         feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
+    }
+
+    @NonNull
+    private TrackManager getTrackManager(Application application) {
+        return new TrackManager(
+                (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE),
+                new TrackSender(new NearAsyncHttpClient(application)),
+                new TrackCache(TrackCache.getSharedPreferences(application)),
+                new ApplicationVisibility());
     }
 
     /**
@@ -302,6 +326,14 @@ public class NearItManager {
 
     public void removeAllProximityListener() {
         proximityListenerList.clear();
+    }
+
+    public void sendTracking(String recipeId, String event) {
+        try {
+            recipesManager.sendTracking(recipeId, event);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 }

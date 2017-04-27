@@ -3,7 +3,6 @@ package it.near.sdk.recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 
@@ -15,8 +14,11 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,7 +27,6 @@ import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
@@ -36,6 +37,8 @@ import it.near.sdk.recipes.models.PulseBundle;
 import it.near.sdk.recipes.models.ReactionAction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackRequest;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -46,43 +49,36 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 public class RecipesManager {
 
     private static final String TAG = "RecipesManager";
-    public static final String PREFS_NAME = "NearRecipes";
+    private static final String NEAR_RECIPES_PREFS_NAME = "NearRecipes";
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
     private static final String TRACKINGS_PATH = "trackings";
-    static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
-    static final String PULSE_ACTION_ID_KEY = "pulse_action_id";
-    static final String PULSE_BUNDLE_ID_KEY = "pulse_bundle_id";
-    private static final String KEY_CORE = "core";
-    private static final String KEY_EVALUATION = "evaluation";
-    private static final String KEY_PROFILE_ID = "profile_id";
-    private static final String KEY_INSTALLATION_ID = "installation_id";
-    private static final String KEY_APP_ID = "app_id";
-    private static final String KEY_COOLDOWN = "cooldown";
-    private static final String KEY_LAST_NOTIFIED_AT = "last_notified_at";
-    private static final String KEY_RECIPES_NOTIFIED_AT = "recipes_notified_at";
 
-    private final SharedPreferences sp;
-    private Context mContext;
+    private static RecipesManager instance;
+
     private Morpheus morpheus;
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
-    private SharedPreferences.Editor editor;
-    private NearAsyncHttpClient httpClient;
-    private static RecipeCooler mRecipeCooler;
+    private final NearAsyncHttpClient httpClient;
+    private final SharedPreferences sp;
+    private final RecipeCooler recipeCooler;
     private final GlobalConfig globalConfig;
+    private final EvaluationBodyBuilder evaluationBodyBuilder;
+    private final TrackManager trackManager;
 
-    public RecipesManager(Context context,
+    public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
                           RecipeCooler recipeCooler,
-                          SharedPreferences sp) {
-        this.mContext = context;
+                          EvaluationBodyBuilder evaluationBodyBuilder,
+                          SharedPreferences sp,
+                          TrackManager trackManager) {
+        this.httpClient = httpClient;
         this.globalConfig = globalConfig;
-        mRecipeCooler = recipeCooler;
+        this.recipeCooler = recipeCooler;
+        this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.sp = sp;
-        editor = sp.edit();
+        this.trackManager = trackManager;
 
-        httpClient = new NearAsyncHttpClient();
         try {
             recipes = loadChachedList();
         } catch (JSONException e) {
@@ -90,6 +86,15 @@ public class RecipesManager {
         }
         setUpMorpheusParser();
         refreshConfig();
+    }
+
+    public static void setInstance(RecipesManager instance) {
+        RecipesManager.instance = instance;
+    }
+
+    @Nullable
+    public static RecipesManager getInstance() {
+        return instance;
     }
 
     /**
@@ -145,14 +150,14 @@ public class RecipesManager {
                 .appendPath(PROCESS_PATH).build();
         String requestBody = null;
         try {
-            requestBody = buildEvaluateBody(globalConfig, null, null, null, null);
+            requestBody = evaluationBodyBuilder.buildEvaluateBody();
         } catch (JSONException e) {
             NearLog.d(TAG, "Can't build request body");
             return;
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Got recipes: " + response.toString());
@@ -180,8 +185,9 @@ public class RecipesManager {
     private void persistList(List<Recipe> recipes) {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
-        editor.putString(TAG, listStringified);
-        editor.apply();
+        sp.edit()
+            .putString(TAG, listStringified)
+            .apply();
     }
 
     private List<Recipe> loadChachedList() throws JSONException {
@@ -221,7 +227,7 @@ public class RecipesManager {
             }
         }
 
-        mRecipeCooler.filterRecipe(validRecipes);
+        recipeCooler.filterRecipe(validRecipes);
 
         if (validRecipes.isEmpty()) {
             // if no recipe is found the the online fallback
@@ -260,7 +266,7 @@ public class RecipesManager {
                 .appendQueryParameter("include", "reaction_bundle")
                 .build();
         try {
-            httpClient.nearGet(mContext, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -285,15 +291,14 @@ public class RecipesManager {
                 .appendEncodedPath(EVALUATE).build();
         String evaluateBody = null;
         try {
-            evaluateBody = buildEvaluateBody(globalConfig,
-                    mRecipeCooler, pulse_plugin, pulse_action, pulse_bundle);
+            evaluateBody = evaluationBodyBuilder.buildEvaluateBody(pulse_plugin, pulse_action, pulse_bundle);
         } catch (JSONException e) {
             NearLog.d(TAG, "body build error");
             return;
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
@@ -329,15 +334,14 @@ public class RecipesManager {
                 .appendPath(EVALUATE).build();
         String evaluateBody = null;
         try {
-            evaluateBody = buildEvaluateBody(globalConfig,
-                    mRecipeCooler, null, null, null);
+            evaluateBody = evaluationBodyBuilder.buildEvaluateBody();
         } catch (JSONException e) {
             NearLog.d(TAG, "body build error");
             return;
         }
 
         try {
-            httpClient.nearPost(mContext, url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void setUsePoolThread(boolean pool) {
                     super.setUsePoolThread(true);
@@ -366,60 +370,50 @@ public class RecipesManager {
     /**
      * Sends tracking on a recipe. Lets choose the notified status.
      *
-     * @param context       the app context.
      * @param recipeId      the recipe identifier.
      * @param trackingEvent notified status to send. Can either be NO
      * @throws JSONException
      */
-    public static void sendTracking(Context context, String recipeId, String trackingEvent) throws JSONException {
+    public void sendTracking(String recipeId, String trackingEvent) throws JSONException {
         if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
-            if (mRecipeCooler != null) {
-                mRecipeCooler.markRecipeAsShown(recipeId);
+            if (recipeCooler != null) {
+                recipeCooler.markRecipeAsShown(recipeId);
             }
         }
-        String trackingBody = Recipe.buildTrackingBody(
-                GlobalConfig.getInstance(context),
+
+        String trackingBody = buildTrackingBody(
                 recipeId,
                 trackingEvent
         );
+
         Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
-        NearNetworkUtil.sendTrack(context, url.toString(), trackingBody);
+
+        trackManager.sendTracking(new TrackRequest(url.toString(), trackingBody));
     }
 
-    public static String buildEvaluateBody(@NonNull GlobalConfig globalConfig,
-                                           @Nullable RecipeCooler recipeCooler,
-                                           @Nullable String pulse_plugin,
-                                           @Nullable String pulse_action,
-                                           @Nullable String pulse_bundle) throws JSONException {
-        if (globalConfig.getProfileId() == null ||
-                globalConfig.getAppId() == null) {
+    private String buildTrackingBody(String recipeId, String trackingEvent) throws JSONException {
+        String profileId = globalConfig.getProfileId();
+        String appId = globalConfig.getAppId();
+        String installationId = globalConfig.getInstallationId();
+        if (recipeId == null ||
+                profileId == null ||
+                installationId == null) {
             throw new JSONException("missing data");
         }
+        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        Date now = new Date(System.currentTimeMillis());
+        String formattedDate = sdf.format(now);
         HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put(KEY_CORE, buildCoreObject(globalConfig, recipeCooler));
-        if (pulse_plugin != null) attributes.put(PULSE_PLUGIN_ID_KEY, pulse_plugin);
-        if (pulse_action != null) attributes.put(PULSE_ACTION_ID_KEY, pulse_action);
-        if (pulse_bundle != null) attributes.put(PULSE_BUNDLE_ID_KEY, pulse_bundle);
-        return NearJsonAPIUtils.toJsonAPI(KEY_EVALUATION, attributes);
+        attributes.put("profile_id", profileId);
+        attributes.put("installation_id", installationId);
+        attributes.put("app_id", appId);
+        attributes.put("recipe_id", recipeId);
+        attributes.put("event", trackingEvent);
+        attributes.put("tracked_at", formattedDate);
+        return NearJsonAPIUtils.toJsonAPI("trackings", attributes);
     }
 
-    private static HashMap<String, Object> buildCoreObject(@NonNull GlobalConfig globalConfig,
-                                                           @Nullable RecipeCooler recipeCooler) {
-        HashMap<String, Object> coreObj = new HashMap<>();
-        coreObj.put(KEY_PROFILE_ID, globalConfig.getProfileId());
-        coreObj.put(KEY_INSTALLATION_ID, globalConfig.getInstallationId());
-        coreObj.put(KEY_APP_ID, globalConfig.getAppId());
-        if (recipeCooler != null) {
-            coreObj.put(KEY_COOLDOWN, buildCooldownBlock(recipeCooler));
-        }
-
-        return coreObj;
-    }
-
-    private static HashMap<String, Object> buildCooldownBlock(@NonNull RecipeCooler recipeCooler) {
-        HashMap<String, Object> block = new HashMap<>();
-        block.put(KEY_LAST_NOTIFIED_AT, recipeCooler.getLatestLogEntry());
-        block.put(KEY_RECIPES_NOTIFIED_AT, recipeCooler.getRecipeLogMap());
-        return block;
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(NEAR_RECIPES_PREFS_NAME, Context.MODE_PRIVATE);
     }
 }

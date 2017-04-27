@@ -41,8 +41,6 @@ public class NearInstallation {
     private static final String TAG = "NearInstallation";
     private static final String PROFILE_ID = "profile_id";
 
-    private static NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
-
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
      * or a PUT if an installationId is already present.
@@ -88,10 +86,10 @@ public class NearInstallation {
 
     private static void registerOrEditInstallation(Context context, String installationId, String installBody, AsyncHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
         if (installationId == null) {
-            httpClient.nearPost(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler);
+            NearAsyncHttpClient.post(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler);
         } else {
             String subPath = "/" + installationId;
-            httpClient.nearPut(context, Constants.API.INSTALLATIONS_PATH + subPath, installBody, jsonHttpResponseHandler);
+            NearAsyncHttpClient.put(context, Constants.API.INSTALLATIONS_PATH + subPath, installBody, jsonHttpResponseHandler);
         }
     }
 

@@ -34,7 +34,6 @@ public class NearItUserProfile {
     private static final String PROFILE_RES_TYPE = "profiles";
     private static final String DATA_POINTS_RES_TYPE = "data_points";
     private static final String TAG = "NearItUserProfile";
-    private static NearAsyncHttpClient httpClient = new NearAsyncHttpClient();
 
     /**
      * Set the profileId of the user using this app installation. This string usually comes from the authentication service for the app.
@@ -95,7 +94,7 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE).build();
 
         try {
-            httpClient.nearPost(context, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
+            NearAsyncHttpClient.post(context, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "got profile: " + response.toString());
@@ -175,7 +174,7 @@ public class NearItUserProfile {
                 .appendPath(DATA_POINTS_RES_TYPE).build();
         //TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+            NearAsyncHttpClient.post(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
@@ -240,7 +239,7 @@ public class NearItUserProfile {
 
         // TODO not tested
         try {
-            httpClient.nearPost(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+            NearAsyncHttpClient.post(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());

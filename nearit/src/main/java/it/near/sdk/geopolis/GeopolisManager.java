@@ -9,14 +9,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 
 
-import org.altbeacon.beacon.Region;
 import org.json.JSONObject;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -29,11 +23,11 @@ import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.trackings.TrackManager;
 
 /**
  * Manages a beacon forest, the plugin for monitoring regions structured in a tree.
@@ -81,7 +75,7 @@ public class GeopolisManager {
 
     private NearAsyncHttpClient httpClient;
 
-    public GeopolisManager(Application application, RecipesManager recipesManager, GlobalConfig globalConfig) {
+    public GeopolisManager(Application application, RecipesManager recipesManager, GlobalConfig globalConfig, TrackManager trackManager) {
         this.application = application;
         this.recipesManager = recipesManager;
         this.globalConfig = globalConfig;
@@ -95,14 +89,10 @@ public class GeopolisManager {
         }
         this.geofenceMonitor = new GeoFenceMonitor(application);
 
-        SharedPreferences geopolisTrackingManagerSP = GeopolisTrackingsManager.getSharedPreferences(application);
-        this.geopolisTrackingsManager =
-                new GeopolisTrackingsManager(
-                        new NearAsyncHttpClient(),
-                        geopolisTrackingManagerSP,
-                        application,
-                        globalConfig
-                );
+        this.geopolisTrackingsManager = new GeopolisTrackingsManager(
+                trackManager,
+                globalConfig
+        );
 
         registerProximityReceiver();
         registerResetReceiver();
@@ -111,7 +101,7 @@ public class GeopolisManager {
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
         sp = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        httpClient = new NearAsyncHttpClient();
+        httpClient = new NearAsyncHttpClient(application);
         refreshConfig();
     }
 
@@ -147,7 +137,7 @@ public class GeopolisManager {
                 .appendQueryParameter(NearNetworkUtil.INCLUDE_PARAMETER, "**.children")
                 .build();
         try {
-            httpClient.nearGet(application, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.get(application, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
