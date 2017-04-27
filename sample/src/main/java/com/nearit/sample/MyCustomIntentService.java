@@ -35,7 +35,7 @@ public class MyCustomIntentService extends NearItIntentService implements CoreCo
         Since you are overriding the default notification mechanism, remember to track the recipe as notified with:
         String recipeId = intent.getStringExtra("recipe_id");
         try {
-            Recipe.sendTracking(getApplicationContext(), recipeId, Recipe.NOTIFIED_STATUS);
+            nearItManager.getRecipesManager().sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
         } catch (JSONException e) {
             e.printStackTrace();
         }
