@@ -26,4 +26,7 @@
         <item name="android:windowSoftInputMode">stateUnspecified|adjustPan</item>
     </style>
 
+    <style name="NearDialogTheme" parent="style/Theme.AppCompat.DayNight.Dialog">
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

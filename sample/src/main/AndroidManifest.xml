@@ -35,7 +35,9 @@
         </receiver>
 
         <activity android:name=".ForegroundActivity" />
-        <activity android:name=".PermissionsActivity"></activity>
+        <activity android:name=".PermissionsActivity"
+            android:theme="@style/NearDialogTheme" >
+        </activity>
 
     </application>
 
