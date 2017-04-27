@@ -1,35 +1,15 @@
 package com.nearit.sample;
 
-import android.Manifest;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-
-import org.json.JSONException;
 
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.reactions.content.Content;
@@ -38,7 +18,6 @@ import it.near.sdk.reactions.customjson.CustomJSON;
 import it.near.sdk.reactions.feedback.Feedback;
 import it.near.sdk.reactions.poll.Poll;
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
-import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearItIntentConstants;
@@ -61,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
                 startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
             }
         });
-        // permissionCheck();
 
         MyApplication.getNearItManager().addProximityListener(this);
     }

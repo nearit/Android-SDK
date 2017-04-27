@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,7 +17,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -55,20 +55,43 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
             @Override
             public void onClick(View v) {
                 if (!permissionGiven) {
-                    permissionCheck();
+                    askPermissions();
                 } else {
                     setResult(Activity.RESULT_OK);
                     finish();
                 }
             }
         });
+
+        if (allPermissionGranted()) {
+            onPermissionsReady();
+        }
+    }
+
+    public boolean allPermissionGranted() {
+        boolean anyLocationProv = false;
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        anyLocationProv |= locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        anyLocationProv |= locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        boolean bluetoothOn = false;
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothOn = mBluetoothAdapter != null && mBluetoothAdapter.isEnabled();
+
+        int permissionCheck = PackageManager.PERMISSION_DENIED;
+        permissionCheck = ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION);
+
+        return anyLocationProv &&
+                bluetoothOn &&
+                permissionCheck == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
      * Checks and asks for missing permissions for Android 23+ devices.
      * Otherwise request for enabling system wise location services.
      */
-    private void permissionCheck() {
+    private void askPermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             boolean isPermissionGranted = checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
             if (isPermissionGranted) {
@@ -124,7 +147,7 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
         } else if (requestCode == BLUETOOTH_SETTINGS_CODE) {
             //Nothing to do
             if (resultCode == Activity.RESULT_OK) {
-                allPermissionReady();
+                onPermissionsReady();
             }
         }
     }
@@ -174,17 +197,24 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
             startActivityForResult(enableBtIntent, BLUETOOTH_SETTINGS_CODE);
         } else {
             Log.d(TAG, "All permission available");
-            allPermissionReady();
+            onPermissionsReady();
         }
 
     }
 
-    private void allPermissionReady() {
+    private void onPermissionsReady() {
         // You have all the right permissions to start the NearIT radar
         permissionGiven = true;
         enableBtn.setText("You are set to go!");
         enableBtn.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
-        Toast.makeText(this, "Near radar can be started", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (permissionGiven) {
+            setResult(Activity.RESULT_OK);
+        }
+        finish();
     }
 
     @Override
