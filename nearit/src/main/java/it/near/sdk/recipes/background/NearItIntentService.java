@@ -81,7 +81,7 @@ public class NearItIntentService extends IntentService {
                 recipesManager.sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
             }
         } catch (JSONException e) {
-            NearLog.d(TAG, "Data format error");
+            NearLog.d(TAG, "Invalid track body");
         }
     }
 
