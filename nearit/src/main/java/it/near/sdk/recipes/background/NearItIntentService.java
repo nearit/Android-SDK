@@ -34,7 +34,7 @@ public class NearItIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        // Send the notification about the content intent
+        // Create the notification about the content inside the intent
         if (intent != null) {
             sendSimpleNotification(intent);
             // Release the wake lock provided by the WakefulBroadcastReceiver.
