@@ -157,7 +157,8 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
         LocationRequest locationRequest = LocationRequest.create();
         locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest).setNeedBle(true);
+                .addLocationRequest(locationRequest)
+                .setNeedBle(true);
 
         final PendingResult<LocationSettingsResult> result =
                 LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
