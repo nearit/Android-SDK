@@ -336,4 +336,8 @@ public class NearItManager {
         }
     }
 
+    public ContentReaction getContentPlugin() {
+        return contentNotification;
+    }
+
 }

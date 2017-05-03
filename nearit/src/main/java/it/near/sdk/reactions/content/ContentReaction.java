@@ -189,4 +189,8 @@ public class ContentReaction extends CoreReaction {
         supportedActions.add(SHOW_CONTENT_ACTION_NAME);
     }
 
+    public List<Content> getContentList() {
+        return contentList;
+    }
+
 }
