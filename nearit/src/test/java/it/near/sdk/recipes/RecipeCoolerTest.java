@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -162,7 +163,7 @@ public class RecipeCoolerTest {
         mRecipeCooler.markRecipeAsShown(mNonCriticalRecipe.getId());
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
-        // then it gets treaded as critical
+        // then it gets treated as critical
         assertThat(recipeList, hasSize(1));
         assertThat(recipeList, hasItem(mNonCriticalRecipe));
     }
@@ -174,9 +175,30 @@ public class RecipeCoolerTest {
         mNonCriticalRecipe.setCooldown(buildCooldown(null, 0L));
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
-        // then its get treaded as critical
+        // then its get treated as critical
         assertThat(recipeList, hasSize(1));
         assertThat(recipeList, hasItem(mNonCriticalRecipe));
+    }
+
+    @Test
+    public void whenRecipeIsNeverToBeShownAgain_itShouldNeverBeShown() {
+        CurrentTime mockCurrentTime = mock(CurrentTime.class);
+        mRecipeCooler = new RecipeCooler(mMockSharedPreferences, mockCurrentTime);
+        Recipe onlyOnceRecipe = buildRecipe("never again", buildCooldown(0L, -1L));
+        // when a one time only recipe is shown
+        when(mockCurrentTime.currentTimestamp()).thenReturn(System.currentTimeMillis());
+        mRecipeCooler.markRecipeAsShown(onlyOnceRecipe.getId());
+        List<Recipe> recipeList = newArrayList(onlyOnceRecipe);
+        mRecipeCooler.filterRecipe(recipeList);
+        // it should never be shown again
+        assertThat(recipeList, hasSize(0));
+        // even if it is checked in the far future
+        DateTime farFuture = new DateTime(2060, 1, 1, 1, 1, 1);
+        when(mockCurrentTime.currentTimestamp()).thenReturn(farFuture.getMillis());
+        recipeList = newArrayList(onlyOnceRecipe);
+        mRecipeCooler.filterRecipe(recipeList);
+        // it should never be shown again
+        assertThat(recipeList, hasSize(0));
     }
 
     private List<String> keySetOf(Map<String, Long> map){
