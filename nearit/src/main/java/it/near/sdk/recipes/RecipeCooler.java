@@ -18,11 +18,12 @@ import static it.near.sdk.utils.NearUtils.checkNotNull;
 
 public class RecipeCooler {
 
-    public static final String RECIPE_COOLER_PREFS_NAME = "NearRecipeCoolerPrefsName";
+    private static final String RECIPE_COOLER_PREFS_NAME = "NearRecipeCoolerPrefsName";
     private static final String LOG_MAP = "LOG_MAP";
+    static final long NEVER_REPEAT = -1L;
     private static final String LATEST_LOG = "LATEST_LOG";
-    public static final String GLOBAL_COOLDOWN = "global_cooldown";
-    public static final String SELF_COOLDOWN = "self_cooldown";
+    static final String GLOBAL_COOLDOWN = "global_cooldown";
+    static final String SELF_COOLDOWN = "self_cooldown";
 
     private final SharedPreferences sharedPreferences;
     private final CurrentTime currentTime;

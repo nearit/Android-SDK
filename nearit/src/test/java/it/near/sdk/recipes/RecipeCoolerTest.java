@@ -184,7 +184,7 @@ public class RecipeCoolerTest {
     public void whenRecipeIsNeverToBeShownAgain_itShouldNeverBeShown() {
         CurrentTime mockCurrentTime = mock(CurrentTime.class);
         mRecipeCooler = new RecipeCooler(mMockSharedPreferences, mockCurrentTime);
-        Recipe onlyOnceRecipe = buildRecipe("never again", buildCooldown(0L, -1L));
+        Recipe onlyOnceRecipe = buildRecipe("never again", buildCooldown(0L, NEVER_REPEAT));
         // when a one time only recipe is shown
         when(mockCurrentTime.currentTimestamp()).thenReturn(System.currentTimeMillis());
         mRecipeCooler.markRecipeAsShown(onlyOnceRecipe.getId());
