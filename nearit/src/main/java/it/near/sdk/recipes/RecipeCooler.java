@@ -68,6 +68,9 @@ public class RecipeCooler {
                 cooldown.get(SELF_COOLDOWN) == null ||
                 !getRecipeLogMap().containsKey(recipe.getId())) return true;
 
+        if ((Long)cooldown.get(SELF_COOLDOWN) == NEVER_REPEAT &&
+                getRecipeLogMap().containsKey(recipe.getId())) return false;
+
         long recipeLatestEntry = getRecipeLogMap().get(recipe.getId());
         long expiredSeconds = (currentTime.currentTimestamp() - recipeLatestEntry) / 1000;
         return expiredSeconds >= (Long) cooldown.get(SELF_COOLDOWN);
