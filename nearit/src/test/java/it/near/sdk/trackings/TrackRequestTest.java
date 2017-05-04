@@ -35,7 +35,15 @@ public class TrackRequestTest {
             "        }\n" +
             "    }\n" +
             "}";
-    public static final boolean DEFUALT_SENDING_STATUS = false;
+
+
+    @Test
+    public void newTrackRequest_shouldHaveFalseSendingStatus() {
+        String url = DUMMY_URL;
+        String body = DUMMY_BODY;
+        TrackRequest dummyRequest = new TrackRequest(url, body);
+        assertThat(dummyRequest.sending, is(TrackRequest.DEFAULT_SENDING_STATUS));
+    }
 
     @Test
     public void serializationTest() throws JSONException {

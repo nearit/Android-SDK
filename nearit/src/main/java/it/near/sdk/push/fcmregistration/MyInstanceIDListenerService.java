@@ -1,7 +1,5 @@
 package it.near.sdk.push.fcmregistration;
 
-
-
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 

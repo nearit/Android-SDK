@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- https://dev-api.nearit.com/ -->
-    <string name="API_BASE_URL" translatable="false">https://api.nearit.com/</string>
+    <string name="API_BASE_URL" translatable="false">https://dev-api.nearit.com/</string>
 </resources>

@@ -8,7 +8,7 @@ public class TrackRequest {
 
     static final String KEY_URL = "url";
     static final String KEY_BODY = "body";
-    private static final boolean DEFAULT_SENDING_STATUS = false;
+    static final boolean DEFAULT_SENDING_STATUS = false;
     final String url;
     final String body;
     boolean sending;

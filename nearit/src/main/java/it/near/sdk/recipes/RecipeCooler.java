@@ -18,11 +18,12 @@ import static it.near.sdk.utils.NearUtils.checkNotNull;
 
 public class RecipeCooler {
 
-    public static final String RECIPE_COOLER_PREFS_NAME = "NearRecipeCoolerPrefsName";
+    private static final String RECIPE_COOLER_PREFS_NAME = "NearRecipeCoolerPrefsName";
     private static final String LOG_MAP = "LOG_MAP";
+    static final double NEVER_REPEAT = -1D;
     private static final String LATEST_LOG = "LATEST_LOG";
-    public static final String GLOBAL_COOLDOWN = "global_cooldown";
-    public static final String SELF_COOLDOWN = "self_cooldown";
+    static final String GLOBAL_COOLDOWN = "global_cooldown";
+    static final String SELF_COOLDOWN = "self_cooldown";
 
     private final SharedPreferences sharedPreferences;
     private final CurrentTime currentTime;
@@ -59,7 +60,7 @@ public class RecipeCooler {
                 cooldown.get(GLOBAL_COOLDOWN) == null) return true;
 
         long expiredSeconds = (currentTime.currentTimestamp() - getLatestLogEntry()) / 1000;
-        return expiredSeconds >= (Long) cooldown.get(GLOBAL_COOLDOWN);
+        return expiredSeconds >= ((Double) cooldown.get(GLOBAL_COOLDOWN)).longValue();
     }
 
     private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown) {
@@ -67,9 +68,12 @@ public class RecipeCooler {
                 cooldown.get(SELF_COOLDOWN) == null ||
                 !getRecipeLogMap().containsKey(recipe.getId())) return true;
 
+        if ((Double)cooldown.get(SELF_COOLDOWN) == NEVER_REPEAT &&
+                getRecipeLogMap().containsKey(recipe.getId())) return false;
+
         long recipeLatestEntry = getRecipeLogMap().get(recipe.getId());
         long expiredSeconds = (currentTime.currentTimestamp() - recipeLatestEntry) / 1000;
-        return expiredSeconds >= (Long) cooldown.get(SELF_COOLDOWN);
+        return expiredSeconds >= ((Double) cooldown.get(SELF_COOLDOWN)).longValue();
     }
 
     /**
