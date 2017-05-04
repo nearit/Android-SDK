@@ -46,9 +46,9 @@ public class RecipeCoolerTest {
 
     @Before
     public void setUp() {
-        mCriticalRecipe = buildRecipe("critical", buildCooldown(0L, 0L));
-        mNonCriticalRecipe = buildRecipe("pedestrian", buildCooldown(24 * 60 * 60L,
-                                                                    24 * 60 * 60L));
+        mCriticalRecipe = buildRecipe("critical", buildCooldown(0D, 0D));
+        mNonCriticalRecipe = buildRecipe("pedestrian", buildCooldown(24 * 60 * 60D,
+                                                                    24 * 60 * 60D));
         when(mMockSharedPreferences.edit()).thenReturn(mMockEditor);
         when(mMockEditor.remove(anyString())).thenReturn(mMockEditor);
         when(mMockEditor.commit()).thenReturn(true);
@@ -159,7 +159,7 @@ public class RecipeCoolerTest {
     @Test
     public void whenMissingSelfCooldown_considerItZero() {
         // when a recipe has no selfcooldown
-        mNonCriticalRecipe.setCooldown(buildCooldown(0L, null));
+        mNonCriticalRecipe.setCooldown(buildCooldown(0D, null));
         mRecipeCooler.markRecipeAsShown(mNonCriticalRecipe.getId());
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
@@ -172,7 +172,7 @@ public class RecipeCoolerTest {
     public void whenMissingGlobalCoolDown_considerItZero() {
         // when a recipe has no globalcooldown
         mRecipeCooler.markRecipeAsShown(mCriticalRecipe.getId());
-        mNonCriticalRecipe.setCooldown(buildCooldown(null, 0L));
+        mNonCriticalRecipe.setCooldown(buildCooldown(null, 0D));
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then its get treated as critical
@@ -184,7 +184,7 @@ public class RecipeCoolerTest {
     public void whenRecipeIsNeverToBeShownAgain_itShouldNeverBeShown() {
         CurrentTime mockCurrentTime = mock(CurrentTime.class);
         mRecipeCooler = new RecipeCooler(mMockSharedPreferences, mockCurrentTime);
-        Recipe onlyOnceRecipe = buildRecipe("never again", buildCooldown(0L, NEVER_REPEAT));
+        Recipe onlyOnceRecipe = buildRecipe("never again", buildCooldown(0D, NEVER_REPEAT));
         // when a one time only recipe is shown
         when(mockCurrentTime.currentTimestamp()).thenReturn(System.currentTimeMillis());
         mRecipeCooler.markRecipeAsShown(onlyOnceRecipe.getId());
@@ -212,7 +212,7 @@ public class RecipeCoolerTest {
         return criticalRecipe;
     }
 
-    private HashMap<String, Object> buildCooldown(Long globalCD, Long selfCD) {
+    private HashMap<String, Object> buildCooldown(Double globalCD, Double selfCD) {
         HashMap<String, Object> cooldown = Maps.newHashMap();
         cooldown.put(GLOBAL_COOLDOWN, globalCD);
         cooldown.put(SELF_COOLDOWN, selfCD);
