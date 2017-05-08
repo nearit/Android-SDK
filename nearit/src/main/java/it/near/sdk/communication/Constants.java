@@ -45,6 +45,5 @@ public class Constants {
 
         String PLUGINS_ROOT = "plugins";
         String INSTALLATIONS_PATH = "installations";
-        String INCLUDE_PARAMETER = "include";
     }
 }
