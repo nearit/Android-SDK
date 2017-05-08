@@ -138,9 +138,9 @@ public class Content extends ReactionBundle implements Parcelable {
         setUpload((Upload) in.readParcelable(Upload.class.getClassLoader()));
     }
 
-    public boolean isSimpleNotification() {
-        return content == null &&
-                images_links.size() == 0 &&
-                video_link == null;
+    public boolean hasContentToInclude() {
+        return audio != null ||
+                (images != null && images.size() > 0) ||
+                upload != null;
     }
 }
