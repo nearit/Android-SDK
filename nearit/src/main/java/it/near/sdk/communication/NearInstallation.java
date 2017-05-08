@@ -43,6 +43,7 @@ public class NearInstallation {
     private static final String PROFILE_ID = "profile_id";
 
     private static final int UNAUTHORIZED_ERROR_CODE = 403;
+    private static final int NOT_FOUND_ERROR_CODE = 404;
 
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
@@ -75,7 +76,8 @@ public class NearInstallation {
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         NearLog.d(TAG, "Installation data sending error: " + statusCode + " " + responseString);
-                        if (statusCode == UNAUTHORIZED_ERROR_CODE) {
+                        if (statusCode == UNAUTHORIZED_ERROR_CODE ||
+                                statusCode == NOT_FOUND_ERROR_CODE) {
                             GlobalConfig.getInstance(context).setInstallationId(null);
                         }
                     }

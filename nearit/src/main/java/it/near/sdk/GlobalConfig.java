@@ -46,7 +46,7 @@ public class GlobalConfig {
     }
 
     private void setUpSharedPreferences() {
-        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
+        sp = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
         editor = sp.edit();
     }
 
@@ -103,19 +103,6 @@ public class GlobalConfig {
     public void setAppId(String appId) {
         this.appId = appId;
         setLocalString(APPID, appId);
-    }
-
-
-    public String getSenderId() {
-        if (senderId == null) {
-            senderId = getLocalString(SENDERID);
-        }
-        return senderId;
-    }
-
-    public void setSenderId(String senderId) {
-        this.senderId = senderId;
-        setLocalString(SENDERID, senderId);
     }
 
     public String getDeviceToken() {
