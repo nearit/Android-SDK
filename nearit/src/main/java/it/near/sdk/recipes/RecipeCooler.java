@@ -51,11 +51,15 @@ public class RecipeCooler {
 
     private boolean canShowRecipe(Recipe recipe) {
         Map<String, Object> cooldown = recipe.getCooldown();
-        return cooldown == null ||
-                (globalCooldownCheck(cooldown) && selfCooldownCheck(recipe, cooldown));
+        try {
+            return cooldown == null ||
+                    (globalCooldownCheck(cooldown) && selfCooldownCheck(recipe, cooldown));
+        } catch (ClassCastException exp) {
+            return true;
+        }
     }
 
-    private boolean globalCooldownCheck(Map<String, Object> cooldown) {
+    private boolean globalCooldownCheck(Map<String, Object> cooldown) throws ClassCastException {
         if (!cooldown.containsKey(GLOBAL_COOLDOWN) ||
                 cooldown.get(GLOBAL_COOLDOWN) == null) return true;
 
@@ -63,7 +67,7 @@ public class RecipeCooler {
         return expiredSeconds >= ((Double) cooldown.get(GLOBAL_COOLDOWN)).longValue();
     }
 
-    private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown) {
+    private boolean selfCooldownCheck(Recipe recipe, Map<String, Object> cooldown) throws ClassCastException {
         if (!cooldown.containsKey(SELF_COOLDOWN) ||
                 cooldown.get(SELF_COOLDOWN) == null ||
                 !getRecipeLogMap().containsKey(recipe.getId())) return true;
