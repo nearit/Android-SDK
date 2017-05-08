@@ -35,7 +35,7 @@ import static it.near.sdk.utils.NearUtils.safe;
 public class ContentReaction extends CoreReaction {
     // ---------- content notification plugin ----------
     public static final String PLUGIN_NAME = "content-notification";
-    public static final String INCLUDE_RESOURCES = "images,audio,upload";
+    private static final String INCLUDE_RESOURCES = "images,audio,upload";
     private static final String CONTENT_NOTIFICATION_PATH = "content-notification";
     private static final String CONTENT_NOTIFICATION_RESOURCE = "contents";
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
@@ -95,7 +95,7 @@ public class ContentReaction extends CoreReaction {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
-                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, "images,audio,upload").build();
+                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
         try {
             httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
