@@ -1,3 +1,10 @@
+repositories {
+    jcenter()
+    maven {
+        url  "http://dl.bintray.com/catt-stefano/maven"
+    }
+}
+
 buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
@@ -55,7 +62,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'it.near.sdk.core:nearit:2.1.12'
+    compile 'it.near.sdk:nearit:2.1.14'
     // compile project(':nearit')
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.google.firebase:firebase-core:10.0.1'
