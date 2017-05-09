@@ -106,8 +106,6 @@ bintray {
         name = 'it.near.sdk.core'
 
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/catt-stefano/near-sdk-core.git'
-        websiteUrl = 'https://github.com/catt-stefano/near-sdk-core'
     }
     configurations = ['archives']
     publish = true
