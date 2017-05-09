@@ -52,7 +52,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
     }
 
     private RecipesManager getRecipesManager() {
-        return GlobalState.getInstance(getApplicationContext()).getRecipesManager();
+        return RecipesManager.getInstance();
     }
     // [END receive_message]
 
