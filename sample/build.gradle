@@ -1,8 +1,5 @@
 repositories {
     jcenter()
-    maven {
-        url  "http://dl.bintray.com/catt-stefano/maven"
-    }
 }
 
 buildscript {

@@ -6,11 +6,6 @@ Minimum Requirements:
 To start using the SDK, include this in your app *build.gradle*
 
 ```java
-repositories {
-    maven {
-        url  "http://dl.bintray.com/catt-stefano/maven"
-    }
-}
 dependencies {
     compile 'it.near.sdk.core:nearit:2.1.13'
 }
