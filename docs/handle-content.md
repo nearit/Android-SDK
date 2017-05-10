@@ -96,7 +96,8 @@ nearItManager.sendEvent(new FeedbackEvent(...), responseHandler);
     - `getName()` returns the coupon name
     - `getDescription()` returns the coupon description
     - `getValue()` returns the value string
-    - `getExpires_at()` returns the expiring date (as a string)
+    - `getExpires_at()` returns the expiring date (as a string), might be null
+    - `getRedeemableFrom()` returns the validity start date (as a string), might be null
     - `getIconSet()` returns an *ImageSet* object containing the source links for the icon
     - `getSerial()` returns the serial code of the single coupon as a string
     - `getClaimedAt()` returns the claimed date (when the coupon was earned) of the coupon as a string
