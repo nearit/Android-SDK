@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
@@ -110,7 +111,7 @@ public class NearInstallation {
         // set SDK version
         attributeMap.put(SDK_VERSION, it.near.sdk.BuildConfig.VERSION_NAME);
         // Set device token (for GCM)
-        attributeMap.put(DEVICE_IDENTIFIER, GlobalConfig.getInstance(context).getDeviceToken());
+        attributeMap.put(DEVICE_IDENTIFIER, getDeviceToken(context));
         // Set app ID (as defined by our APIs)
         attributeMap.put(APP_ID, GlobalConfig.getInstance(context).getAppId());
         // Set the profile if I have it.
@@ -132,5 +133,17 @@ public class NearInstallation {
             }
         }
         return false;
+    }
+
+    public static String getDeviceToken(Context context) {
+        String token = GlobalConfig.getInstance(context).getDeviceToken();
+        if (token == null) {
+            String firebaseToken = FirebaseInstanceId.getInstance().getToken();
+            if (firebaseToken != null) {
+                token = firebaseToken;
+                GlobalConfig.getInstance(context).setDeviceToken(token);
+            }
+        }
+        return token;
     }
 }

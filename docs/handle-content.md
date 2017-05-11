@@ -96,11 +96,16 @@ nearItManager.sendEvent(new FeedbackEvent(...), responseHandler);
     - `getName()` returns the coupon name
     - `getDescription()` returns the coupon description
     - `getValue()` returns the value string
-    - `getExpires_at()` returns the expiring date (as a string)
+    - `getExpires_at()` returns the expiring date (as a string), might be null
+    - `getExpiresAtDate()` returns a the expiring Date object. Since coupon validity period is timezone related, consider showing the time of day.
+    - `getRedeemableFrom()` returns the validity start date (as a string), might be null
+    - `getRedeemableFromDate()` returns the validity start Date object. Since coupon validity period is timezone related, consider showing the time of day.
     - `getIconSet()` returns an *ImageSet* object containing the source links for the icon
     - `getSerial()` returns the serial code of the single coupon as a string
     - `getClaimedAt()` returns the claimed date (when the coupon was earned) of the coupon as a string
+    - `getClaimedAtDate()` returns the claimed Date object.
     - `getRedeemedAt()` returns the redeemed date (when the coupon was used) of the coupon as a string
+    - `getRedeemedAtDate()` returns the redeemed Date object.
     
 - `CustomJSON` with the following getters:
     - `getContent()` returns the json content as an *HashMap<String, Object>* (just like Gson)

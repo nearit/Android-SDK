@@ -36,9 +36,8 @@ Minimum Requirements:
 To start using the SDK, include this in your app *build.gradle*
 
 ```java
-
 dependencies {
-    compile 'it.near.sdk:nearit:2.1.14'
+    compile 'it.near.sdk:nearit:2.1.15'
 }
 ```
 
