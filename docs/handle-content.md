@@ -29,7 +29,7 @@ To receive foreground content (e.g. ranging recipes) set a proximity listener wi
 public void foregroundEvent(Parcelable content, Recipe recipe) {
     // handle the event
     // To extract the content and to have it automatically casted to the appropriate object type
-    // NearUtils.parseCoreContents(content, recipe, coreContentListener)
+    NearUtils.parseCoreContents(content, recipe, coreContentListener)
 }   
 ```
 

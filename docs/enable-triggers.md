@@ -17,7 +17,7 @@ The SDK automatically includes the permission for location access in its manifes
 ## Push Triggers
 
 To enable push recipes to reach the user, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps.](firebase.md)
-Enter the cloud messaging firebase server key into the appropriate NearIT CMS section. Don't follow FCM-specific integration guides, we already deal with everything inside the SDK code.
+Enter the cloud messaging firebase server key into the appropriate NearIT CMS section (pay attention to what ). Don't follow FCM-specific integration guides, we already deal with everything inside the SDK code. That means, you should not put any special FCM-related receiver or intent service in you app.
 
 ## Enable Background Notification
 
