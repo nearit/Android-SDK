@@ -332,7 +332,7 @@ public class NearItManager {
         try {
             recipesManager.sendTracking(recipeId, event);
         } catch (JSONException e) {
-            e.printStackTrace();
+            NearLog.d(TAG, "invalid tracking body");
         }
     }
 

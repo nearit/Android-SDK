@@ -10,3 +10,5 @@ Additionally to the location permission request, you should also ask the user to
 
 The last check should be on the Bluetooth system settings. Just like with the location settings, you can ask the user to turn Bluetooth on through a system dialog.
 [Turning Bluetooth on](https://developer.android.com/guide/topics/connectivity/bluetooth.html#SettingUp)
+
+You can take a look at the `PermissionActivity` class in the sample app [on Github](https://github.com/nearit/Android-SDK/blob/master/sample/src/main/java/com/nearit/sample/PermissionsActivity.java) to see what we think is the best flow for asking for all the permissions. The sample is an activity with a parent theme of `Dialog` that returns an activity result of RESULT_OK when it gets closed after all the permission requisites have been met. Feel free to customize it the way you like it.

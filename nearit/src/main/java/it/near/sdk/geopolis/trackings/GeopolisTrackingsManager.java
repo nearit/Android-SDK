@@ -1,10 +1,7 @@
 package it.near.sdk.geopolis.trackings;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import org.json.JSONException;
 
@@ -16,7 +13,6 @@ import java.util.Locale;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
-import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.trackings.TrackManager;

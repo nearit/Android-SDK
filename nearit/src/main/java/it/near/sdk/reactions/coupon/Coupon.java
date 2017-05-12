@@ -104,7 +104,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         this.icon_id = icon_id;
     }
 
-    public Image getIcon() {
+    private Image getIcon() {
         return icon;
     }
 

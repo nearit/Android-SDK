@@ -38,11 +38,12 @@ public class Constants {
      */
     public interface API {
 
+        String INCLUDE_PARAMETER = "include";
+
         // ---------- Recipes paths ----------
         String RECIPES_PATH = "recipes";
 
         String PLUGINS_ROOT = "plugins";
         String INSTALLATIONS_PATH = "installations";
-        String INCLUDE_PARAMETER = "include";
     }
 }

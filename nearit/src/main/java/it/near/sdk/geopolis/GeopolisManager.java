@@ -19,7 +19,6 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.communication.NearNetworkUtil;
 import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
@@ -134,7 +133,7 @@ public class GeopolisManager {
                 .appendPath(PLUGIN_NAME)
                 .appendPath(NODES_RES)
                 .appendQueryParameter("filter[app_id]", globalConfig.getAppId())
-                .appendQueryParameter(NearNetworkUtil.INCLUDE_PARAMETER, "**.children")
+                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, "**.children")
                 .build();
         try {
             httpClient.get(application, url.toString(), new NearJsonHttpResponseHandler() {

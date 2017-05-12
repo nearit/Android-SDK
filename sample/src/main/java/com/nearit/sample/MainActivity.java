@@ -1,35 +1,15 @@
 package com.nearit.sample;
 
-import android.Manifest;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
-import android.content.IntentSender;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
-
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.common.api.Status;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResult;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
-
-import org.json.JSONException;
 
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.reactions.content.Content;
@@ -38,19 +18,15 @@ import it.near.sdk.reactions.customjson.CustomJSON;
 import it.near.sdk.reactions.feedback.Feedback;
 import it.near.sdk.reactions.poll.Poll;
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
-import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
 
-public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, CoreContentsListener, ProximityListener {
+public class MainActivity extends AppCompatActivity implements ProximityListener, CoreContentsListener {
 
     private static final String TAG = "MainActivity";
-    private GoogleApiClient mGoogleApiClient;
-    public static final int PERMISSION_REQUEST_FINE_LOCATION = 6000;
-    private static final int LOCATION_SETTINGS_CODE = 5000;
-    private static final int BLUETOOTH_SETTINGS_CODE = 4000;
+    private static final int NEAR_PERMISSION_REQUEST = 1000;
     Button button;
 
     @Override
@@ -61,13 +37,20 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getBaseContext(), ForegroundActivity.class));
+                startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
             }
         });
-        permissionCheck();
 
         MyApplication.getNearItManager().addProximityListener(this);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == NEAR_PERMISSION_REQUEST &&
+                resultCode == Activity.RESULT_OK) {
+            MyApplication.getNearItManager().startRadar();
+        }
     }
 
     @Override
@@ -82,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         onNewIntent(getIntent());
     }
-
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -100,110 +82,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             NearUtils.parseCoreContents(intent, this);
         }
-    }
-
-    private void permissionCheck() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            boolean isPermissionGranted = checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-            if (isPermissionGranted) {
-                openLocationSettings();
-            } else {
-                requestFineLocationPermission();
-            }
-        } else {
-            openLocationSettings();
-        }
-    }
-
-    private void requestFineLocationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_FINE_LOCATION);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == LOCATION_SETTINGS_CODE) {
-            if (resultCode == Activity.RESULT_OK) {
-                openBluetoothSettings();
-                startNearRadar();
-            }
-        } else if (requestCode == BLUETOOTH_SETTINGS_CODE) {
-            //Nothing to do
-            if (resultCode == Activity.RESULT_OK) {
-                startNearRadar();
-            }
-        }
-    }
-
-    private void openLocationSettings() {
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this).build();
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(locationRequest).setNeedBle(true);
-
-        final PendingResult<LocationSettingsResult> result =
-                LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
-        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
-            @Override
-            public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
-                final Status status = locationSettingsResult.getStatus();
-                switch (status.getStatusCode()) {
-                    case LocationSettingsStatusCodes.SUCCESS:
-                        startNearRadar();
-                        openBluetoothSettings();
-                        break;
-                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                        try {
-                            status.startResolutionForResult(
-                                    MainActivity.this,
-                                    LOCATION_SETTINGS_CODE);
-                        } catch (IntentSender.SendIntentException e) {
-                            e.printStackTrace();
-
-                        }
-                        break;
-                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-
-                        break;
-                }
-            }
-        });
-    }
-
-    private void openBluetoothSettings() {
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, BLUETOOTH_SETTINGS_CODE);
-        } else {
-            Log.d(TAG, "ALl permission availble");
-        }
-    }
-
-    private void startNearRadar() {
-        Log.d(TAG, "Start radar");
-        MyApplication.getNearItManager().startRadar();
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
     }
 
     @Override
