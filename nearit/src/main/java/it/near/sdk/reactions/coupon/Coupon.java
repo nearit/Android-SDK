@@ -104,7 +104,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         this.icon_id = icon_id;
     }
 
-    private Image getIcon() {
+    public Image getIcon() {
         return icon;
     }
 
@@ -160,6 +160,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         dest.writeString(description);
         dest.writeString(value);
         dest.writeString(expires_at);
+        dest.writeString(redeemable_from);
         dest.writeString(icon_id);
         dest.writeList(claims);
         dest.writeParcelable(iconSet, flags);
@@ -183,6 +184,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         description = in.readString();
         value = in.readString();
         expires_at = in.readString();
+        redeemable_from = in.readString();
         icon_id = in.readString();
         claims = new ArrayList<Claim>();
         in.readList(claims, Claim.class.getClassLoader());

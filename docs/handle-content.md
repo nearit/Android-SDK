@@ -63,6 +63,7 @@ nearItManager.getRecipesManager().sendTracking(recipe.getId(), Recipe.NOTIFIED_S
 // and
 nearItManager.getRecipesManager().sendTracking(recipe.getId(), Recipe.ENGAGED_STATUS);
 ```
+The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
 
 ## Content Objects
 

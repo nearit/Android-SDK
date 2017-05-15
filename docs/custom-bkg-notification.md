@@ -1,6 +1,6 @@
 # Custom Background Notification
 
-To receive background notifications, you can add our built-in receiver as shown in the [Enable Triggers](enable-triggers.md) section. The receiver shows a system notification, with the provided texts and a pre-set system icon. There's no time-limit or special condition to be met to show the notification so you will always get it. To handle complex use cases, you can write your own receivers by subclassing the built-in one.
+To receive background notifications, you can add our built-in receiver as shown in the [Enable Triggers](enable-triggers.md) section. The receiver shows a system notification, with the provided texts and a pre-set system icon. Other than our platform **cooldown** feature, there's no time-limit or special condition to be met to show the notification so you will always get it. To handle complex use cases, you can write your own receivers by subclassing the built-in one.
 
 ## Custom Receiver and Service
 
@@ -41,9 +41,9 @@ In the `onHandleIntent` of the custom IntentService:
 @Override
 protected void onHandleIntent(Intent intent) {
   /*
-  Do whatever you want with the intent, like setting a cooldown or filter events
+  Do whatever you want with the intent, like custom trackings or 
 
-  to notify it to the user with a system notification, call 
+  To notify it to the user with a system notification, call 
   super.sendSimpleNotification(intent);
   this method also sends the proper tracking information to our servers.
   If you want to completely customize the user experience, you should implement your logic here.
@@ -85,5 +85,5 @@ Then replace the custom broadcast receiver and add the custom intent service to 
 </receiver>
 ```
 
-By combination of receivers and intent filters, you can customize only one kind of background notifications, or use 2 different receivers for the 2 cases.
+By combination of receivers and intent filters, you can customize only one kind of background notifications, or use 2 different receivers for the 2 situations.
 Remember that you can always programmatically check the action of an intent, inside `onReceive` in the receiver and inside `onHandleIntent` in the intent service with `intent.getAction()`.
