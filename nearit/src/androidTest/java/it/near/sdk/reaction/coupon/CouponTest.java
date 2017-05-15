@@ -31,6 +31,7 @@ public class CouponTest {
         coupon.setDescription("coupon_description");
         coupon.setValue("coupon_value");
         coupon.setExpires_at("expiring_soon");
+        coupon.setRedeemable_from("redeemable_from");
         coupon.setIcon_id("coupon_icon_id");
         coupon.setClaims(Lists.newArrayList(new Claim(), new Claim()));
         coupon.setIconSet(new ImageSet());
@@ -45,6 +46,7 @@ public class CouponTest {
         assertEquals(coupon.getDescription(), actual.getDescription());
         assertEquals(coupon.getValue(), actual.getValue());
         assertEquals(coupon.getExpiresAt(), actual.getExpiresAt());
+        assertEquals(coupon.getRedeemableFrom(), actual.getRedeemableFrom());
         assertEquals(coupon.getIcon_id(), actual.getIcon_id());
         assertThat(coupon.getClaims(), containsInAnyOrder(actual.getClaims().toArray()));
         assertEquals(coupon.getIconSet(), actual.getIconSet());
