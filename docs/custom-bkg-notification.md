@@ -79,7 +79,7 @@ Then replace the custom broadcast receiver and add the custom intent service to 
         <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
     <intent-filter>
-            <action android:name="it.near.sdk.permission.REGION_MESSAGE" />
+            <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
             <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
 </receiver>
