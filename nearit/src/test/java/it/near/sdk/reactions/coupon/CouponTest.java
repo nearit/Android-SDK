@@ -42,5 +42,4 @@ public class CouponTest {
         Date actual = coupon.toDate(null);
         assertNull(actual);
     }
-
 }
