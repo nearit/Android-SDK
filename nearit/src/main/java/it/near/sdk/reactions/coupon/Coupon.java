@@ -120,24 +120,48 @@ public class Coupon extends ReactionBundle implements Parcelable {
         this.claims = claims;
     }
 
+    @Nullable
     public String getSerial() {
-        return getClaims().get(0).getSerial_number();
+        if (anyClaim()) {
+            return getClaims().get(0).getSerial_number();
+        }
+        return null;
     }
 
+    private boolean anyClaim() {
+        return getClaims().size() > 0;
+    }
+
+    @Nullable
     public String getClaimedAt() {
-        return getClaims().get(0).getClaimed_at();
+        if (anyClaim()) {
+            return getClaims().get(0).getClaimed_at();
+        }
+        return null;
     }
 
+    @Nullable
     public Date getClaimedAtDate() {
-        return toDate(getClaimedAt());
+        if (anyClaim()) {
+            return toDate(getClaimedAt());
+        }
+        return null;
     }
 
+    @Nullable
     public String getRedeemedAt() {
-        return getClaims().get(0).getRedeemed_at();
+        if (anyClaim()) {
+            return getClaims().get(0).getRedeemed_at();
+        }
+        return null;
     }
 
+    @Nullable
     public Date getRedeemedAtDate() {
-        return toDate(getRedeemedAt());
+        if (anyClaim()) {
+            return toDate(getRedeemedAt());
+        }
+        return null;
     }
 
     public ImageSet getIconSet() {
