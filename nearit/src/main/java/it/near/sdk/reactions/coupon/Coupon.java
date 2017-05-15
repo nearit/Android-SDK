@@ -201,4 +201,8 @@ public class Coupon extends ReactionBundle implements Parcelable {
             return null;
         }
     }
+
+    public boolean hasContentToInclude() {
+        return icon != null;
+    }
 }
