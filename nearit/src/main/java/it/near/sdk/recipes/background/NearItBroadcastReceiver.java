@@ -41,7 +41,7 @@ public class NearItBroadcastReceiver extends WakefulBroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         // Explicitly specify that RegionIntentService will handle the intent.
-        ComponentName comp = new ComponentName(context.getPackageName(), NearItIntentService.class.getName());
+        ComponentName comp = new ComponentName(context, NearItIntentService.class);
 
         // Start the service, keeping the device awake while it is launching.
         startWakefulService(context, (intent.setComponent(comp)));
