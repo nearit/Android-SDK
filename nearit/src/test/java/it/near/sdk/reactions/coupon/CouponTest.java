@@ -14,7 +14,7 @@ import static org.junit.Assert.assertThat;
 @RunWith(JUnit4.class)
 public class CouponTest {
 
-    Coupon coupon;
+    private Coupon coupon;
 
     @Before
     public void setUp() {
