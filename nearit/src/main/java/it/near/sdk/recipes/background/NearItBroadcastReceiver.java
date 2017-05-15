@@ -30,8 +30,6 @@ import android.support.v4.content.WakefulBroadcastReceiver;
  */
 public class NearItBroadcastReceiver extends WakefulBroadcastReceiver {
 
-    private static final String TAG = "NearItBroadcastReceiver";
-
     /**
      * Starts @RegionIntentService in wakeful mode.
      * @param context the current context
