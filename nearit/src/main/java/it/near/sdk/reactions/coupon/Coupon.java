@@ -164,6 +164,10 @@ public class Coupon extends ReactionBundle implements Parcelable {
         return null;
     }
 
+    public String getRecipeId() {
+        return getClaims().get(0).getRecipe_id();
+    }
+
     public ImageSet getIconSet() {
         return iconSet;
     }
