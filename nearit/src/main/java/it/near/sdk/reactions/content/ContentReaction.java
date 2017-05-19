@@ -92,6 +92,20 @@ public class ContentReaction extends CoreReaction {
     }
 
     public void refreshConfig() {
+        refreshConfig(new ContentRefreshListener() {
+            @Override
+            public void onSuccess(List<Content> contents) {
+
+            }
+
+            @Override
+            public void onError() {
+
+            }
+        });
+    }
+
+    public void refreshConfig(final ContentRefreshListener listener) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
@@ -104,6 +118,7 @@ public class ContentReaction extends CoreReaction {
                     contentList = NearJsonAPIUtils.parseList(morpheus, response, Content.class);
                     formatLinks(contentList);
                     persistList(TAG, contentList);
+                    listener.onSuccess(contentList);
                 }
 
                 @Override
@@ -114,11 +129,13 @@ public class ContentReaction extends CoreReaction {
                     } catch (JSONException e) {
                         NearLog.d(TAG, "Data format error");
                     }
+                    listener.onError();
                 }
 
             });
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
+            listener.onError();
         }
 
     }
@@ -210,4 +227,8 @@ public class ContentReaction extends CoreReaction {
         return contentList;
     }
 
+    public interface ContentRefreshListener {
+        void onSuccess(List<Content> contents);
+        void onError();
+    }
 }
