@@ -1,18 +1,12 @@
 package it.near.sdk.recipes.models;
 
 
-import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Parcelable;
 
 
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.internal.LinkedTreeMap;
 
-import org.json.JSONException;
-
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,12 +16,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import it.near.sdk.communication.NearNetworkUtil;
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.morpheusnear.annotations.Relationship;
 import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.utils.NearItIntentConstants;
-import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * @author cattaneostefano

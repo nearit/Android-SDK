@@ -29,7 +29,7 @@ To receive foreground content (e.g. ranging recipes) set a proximity listener wi
 public void foregroundEvent(Parcelable content, Recipe recipe) {
     // handle the event
     // To extract the content and to have it automatically casted to the appropriate object type
-    // NearUtils.parseCoreContents(content, recipe, coreContentListener)
+    NearUtils.parseCoreContents(content, recipe, coreContentListener)
 }   
 ```
 
@@ -63,6 +63,7 @@ nearItManager.getRecipesManager().sendTracking(recipe.getId(), Recipe.NOTIFIED_S
 // and
 nearItManager.getRecipesManager().sendTracking(recipe.getId(), Recipe.ENGAGED_STATUS);
 ```
+The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
 
 ## Content Objects
 
@@ -96,15 +97,37 @@ nearItManager.sendEvent(new FeedbackEvent(...), responseHandler);
     - `getName()` returns the coupon name
     - `getDescription()` returns the coupon description
     - `getValue()` returns the value string
-    - `getExpires_at()` returns the expiring date (as a string)
+    - `getExpires_at()` returns the expiring date (as a string), might be null
+    - `getExpiresAtDate()` returns a the expiring Date object. Since coupon validity period is timezone related, consider showing the time of day.
+    - `getRedeemableFrom()` returns the validity start date (as a string), might be null
+    - `getRedeemableFromDate()` returns the validity start Date object. Since coupon validity period is timezone related, consider showing the time of day.
     - `getIconSet()` returns an *ImageSet* object containing the source links for the icon
     - `getSerial()` returns the serial code of the single coupon as a string
     - `getClaimedAt()` returns the claimed date (when the coupon was earned) of the coupon as a string
+    - `getClaimedAtDate()` returns the claimed Date object.
     - `getRedeemedAt()` returns the redeemed date (when the coupon was used) of the coupon as a string
+    - `getRedeemedAtDate()` returns the redeemed Date object.
     
 - `CustomJSON` with the following getters:
     - `getContent()` returns the json content as an *HashMap<String, Object>* (just like Gson)
 
+## Fetch current user coupon
 
+We handle the complete emission and redemption coupon cycle in our platform, and we deliver a coupon content only when a coupon is emitted (you will not be notified of recipes when a profile has already received the coupon, even if the coupon is still valid).
+You can ask the library to fetch the list of all the user current coupons with the method:
+```java
+nearItManager.getCoupons(new CouponListener() {
+            @Override
+            public void onCouponsDownloaded(List<Coupon> list) {
+
+            }
+
+            @Override
+            public void onCouponDownloadError(String s) {
+
+            }
+        });
+```
+The method will also return already redeemed coupons so you get to decide to filter them if necessary.
 
 

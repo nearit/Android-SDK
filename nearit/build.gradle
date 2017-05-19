@@ -11,6 +11,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.jfrog.bintray" version "1.4"
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
@@ -95,22 +99,22 @@ android {
 }
 // Upload to bintray
 
-group = 'it.near.sdk.core'
+group = 'it.near.sdk'
 
 bintray {
     user = (buildProperties.localProperties['bintray.user'] | buildProperties.env['BINTRAY_USER']).string
     key = (buildProperties.localProperties['bintray.apikey'] | buildProperties.env['BINTRAY_APIKEY']).string
+    configurations = ['archives']
 
     pkg {
         repo = 'maven'
-        name = 'it.near.sdk.core'
+        name = 'it.near.sdk:nearit'
+        vcsUrl = 'https://github.com/nearit/Android-SDK.git'
+        websiteUrl = 'https://nearit.com'
 
         licenses = ['MIT']
-        vcsUrl = 'https://github.com/catt-stefano/near-sdk-core.git'
-        websiteUrl = 'https://github.com/catt-stefano/near-sdk-core'
+        publish = true
     }
-    configurations = ['archives']
-    publish = true
 }
 
 // Upload docs on ftp

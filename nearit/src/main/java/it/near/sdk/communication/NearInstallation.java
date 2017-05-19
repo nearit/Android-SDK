@@ -8,6 +8,7 @@ import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
@@ -41,6 +42,9 @@ public class NearInstallation {
     private static final String TAG = "NearInstallation";
     private static final String PROFILE_ID = "profile_id";
 
+    private static final int UNAUTHORIZED_ERROR_CODE = 403;
+    private static final int NOT_FOUND_ERROR_CODE = 404;
+
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
      * or a PUT if an installationId is already present.
@@ -71,7 +75,11 @@ public class NearInstallation {
 
                     @Override
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        NearLog.d(TAG, "Installation datat sending error: " + statusCode + " " + responseString);
+                        NearLog.d(TAG, "Installation data sending error: " + statusCode + " " + responseString);
+                        if (statusCode == UNAUTHORIZED_ERROR_CODE ||
+                                statusCode == NOT_FOUND_ERROR_CODE) {
+                            GlobalConfig.getInstance(context).setInstallationId(null);
+                        }
                     }
                 });
             } catch (UnsupportedEncodingException | AuthenticationException e) {
@@ -110,7 +118,7 @@ public class NearInstallation {
         // set SDK version
         attributeMap.put(SDK_VERSION, it.near.sdk.BuildConfig.VERSION_NAME);
         // Set device token (for GCM)
-        attributeMap.put(DEVICE_IDENTIFIER, GlobalConfig.getInstance(context).getDeviceToken());
+        attributeMap.put(DEVICE_IDENTIFIER, getDeviceToken(context));
         // Set app ID (as defined by our APIs)
         attributeMap.put(APP_ID, GlobalConfig.getInstance(context).getAppId());
         // Set the profile if I have it.
@@ -118,8 +126,13 @@ public class NearInstallation {
         // Set bluetooth availability
         attributeMap.put(BLUETOOTH, getBluetoothStatus());
         // Set location permission
-        attributeMap.put(LOCATION, ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED);
+        attributeMap.put(LOCATION, getLocationPermissionStatus(context));
         return NearJsonAPIUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
+    }
+
+    private static boolean getLocationPermissionStatus(Context context) {
+        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     public static boolean getBluetoothStatus() {
@@ -132,5 +145,17 @@ public class NearInstallation {
             }
         }
         return false;
+    }
+
+    public static String getDeviceToken(Context context) {
+        String token = GlobalConfig.getInstance(context).getDeviceToken();
+        if (token == null) {
+            String firebaseToken = FirebaseInstanceId.getInstance().getToken();
+            if (firebaseToken != null) {
+                token = firebaseToken;
+                GlobalConfig.getInstance(context).setDeviceToken(token);
+            }
+        }
+        return token;
     }
 }

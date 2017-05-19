@@ -17,11 +17,13 @@ The SDK automatically includes the permission for location access in its manifes
 ## Push Triggers
 
 To enable push recipes to reach the user, set up a firebase project and follow the official instructions to integrate it into an app. [If you need help follow those steps.](firebase.md)
-Enter the cloud messaging firebase server key into the appropriate NearIT CMS section. Don't follow FCM-specific integration guides, we already deal with everything inside the SDK code.
+Enter the cloud messaging firebase server key into the appropriate NearIT CMS section (see the screenshot and make sure to use the right api key).
+![fcmkey](fcmkeylocation.png "")
+Don't follow FCM-specific integration guides, we already deal with everything inside the SDK code. That means, you should not put any special FCM-related receiver or intent service in you app.
 
 ## Enable Background Notification
 
-To enable background system notifications for both location and push triggers, add this in your app manifest application element.
+To enable our built-in background system notifications for both location and push triggers, add this in your app manifest application element.
 ```xml
 <!-- built in background receiver -->
 <receiver
@@ -37,7 +39,7 @@ To enable background system notifications for both location and push triggers, a
     </intent-filter>
 </receiver>
 ```
-To learn how to deal with in-app content see this [section](handle-content.md).
+To learn how to deal with in-app content once the user taps on the notification, see this [section](handle-content.md).
 You can use your own receiver for custom notification handling. See this [section](custom-bkg-notification.md).
 
 You can set your own icon for the location-based notifications with the method *setNotificationImage(int imgRes)* of *NearItManager*

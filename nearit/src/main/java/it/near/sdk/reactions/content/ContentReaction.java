@@ -35,6 +35,7 @@ import static it.near.sdk.utils.NearUtils.safe;
 public class ContentReaction extends CoreReaction {
     // ---------- content notification plugin ----------
     public static final String PLUGIN_NAME = "content-notification";
+    private static final String INCLUDE_RESOURCES = "images,audio,upload";
     private static final String CONTENT_NOTIFICATION_PATH = "content-notification";
     private static final String CONTENT_NOTIFICATION_RESOURCE = "contents";
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
@@ -61,7 +62,7 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    protected void getContent(String reaction_bundle, Recipe recipe, final ContentFetchListener listener) {
+    protected void getContent(String reactionBundleId, Recipe recipe, final ContentFetchListener listener) {
         if (contentList == null) {
             try {
                 contentList = loadList();
@@ -70,15 +71,16 @@ public class ContentReaction extends CoreReaction {
             }
         }
         for (Content cn : safe(contentList)) {
-            if (cn.getId().equals(reaction_bundle)) {
+            if (cn.getId().equals(reactionBundleId)) {
                 listener.onContentFetched(cn, true);
                 return;
             }
         }
-        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
+                formatLinks(content);
                 listener.onContentFetched(content, false);
             }
 
@@ -93,7 +95,7 @@ public class ContentReaction extends CoreReaction {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
-                .appendQueryParameter("include", "images,audio,upload").build();
+                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
         try {
             httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
@@ -124,8 +126,23 @@ public class ContentReaction extends CoreReaction {
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
         Content content = (Content) reactionBundle;
-        formatLinks(content);
-        nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+        if (content.hasContentToInclude()) {
+            requestSingleReaction(reactionBundle.getId(), new NearJsonHttpResponseHandler() {
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
+                    formatLinks(content);
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                }
+
+                @Override
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                    NearLog.d(TAG, "couldn't fetch content for push recipe");
+                }
+            });
+        } else {
+            nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+        }
+
     }
 
 
@@ -134,7 +151,7 @@ public class ContentReaction extends CoreReaction {
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                 .appendPath(bundleId)
-                .appendQueryParameter("include", "images").build();
+                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
         try {
             httpClient.get(mContext, url.toString(), responseHandler);
         } catch (AuthenticationException e) {
