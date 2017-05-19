@@ -18,6 +18,8 @@ public class Claim extends Resource implements Parcelable {
     public String claimed_at;
     @SerializedName("redeemed_at")
     public String redeemed_at;
+    @SerializedName("recipe_id")
+    public String recipe_id;
     @Relationship("coupon")
     public Coupon coupon;
 
@@ -56,6 +58,14 @@ public class Claim extends Resource implements Parcelable {
         this.coupon = coupon;
     }
 
+    public String getRecipe_id() {
+        return recipe_id;
+    }
+
+    public void setRecipe_id(String recipe_id) {
+        this.recipe_id = recipe_id;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -67,6 +77,7 @@ public class Claim extends Resource implements Parcelable {
         dest.writeString(serial_number);
         dest.writeString(claimed_at);
         dest.writeString(redeemed_at);
+        dest.writeString(recipe_id);
     }
 
     public static final Creator<Claim> CREATOR = new Creator<Claim>() {
@@ -86,7 +97,9 @@ public class Claim extends Resource implements Parcelable {
         serial_number = in.readString();
         claimed_at = in.readString();
         redeemed_at = in.readString();
+        recipe_id = in.readString();
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -99,7 +112,9 @@ public class Claim extends Resource implements Parcelable {
             return false;
         if (claimed_at != null ? !claimed_at.equals(claim.claimed_at) : claim.claimed_at != null)
             return false;
-        return redeemed_at != null ? redeemed_at.equals(claim.redeemed_at) : claim.redeemed_at == null;
+        if (redeemed_at != null ? !redeemed_at.equals(claim.redeemed_at) : claim.redeemed_at != null)
+            return false;
+        return recipe_id != null ? recipe_id.equals(claim.recipe_id) : claim.recipe_id == null;
 
     }
 
@@ -108,6 +123,7 @@ public class Claim extends Resource implements Parcelable {
         int result = serial_number != null ? serial_number.hashCode() : 0;
         result = 31 * result + (claimed_at != null ? claimed_at.hashCode() : 0);
         result = 31 * result + (redeemed_at != null ? redeemed_at.hashCode() : 0);
+        result = 31 * result + (recipe_id != null ? recipe_id.hashCode() : 0);
         return result;
     }
 }
