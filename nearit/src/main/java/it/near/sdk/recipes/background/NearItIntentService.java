@@ -73,7 +73,7 @@ public class NearItIntentService extends IntentService {
                 .putExtras(intent.getExtras());
     }
 
-    private void sendNotifiedTracking(@NonNull Intent intent) {
+    protected void sendNotifiedTracking(@NonNull Intent intent) {
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
             RecipesManager recipesManager = RecipesManager.getInstance();
