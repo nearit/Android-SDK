@@ -23,7 +23,7 @@ import it.near.sdk.recipes.models.ReactionBundle;
  * @author cattaneostefano.
  */
 public class Coupon extends ReactionBundle implements Parcelable {
-    private static final String COUPON_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSX";
+    private static final String COUPON_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
     @SerializedName("name")
     public String name;
     @SerializedName("description")
