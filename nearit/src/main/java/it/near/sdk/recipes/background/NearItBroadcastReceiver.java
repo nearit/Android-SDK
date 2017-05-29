@@ -30,8 +30,6 @@ import android.support.v4.content.WakefulBroadcastReceiver;
  */
 public class NearItBroadcastReceiver extends WakefulBroadcastReceiver {
 
-    private static final String TAG = "NearItBroadcastReceiver";
-
     /**
      * Starts @RegionIntentService in wakeful mode.
      * @param context the current context
@@ -41,7 +39,7 @@ public class NearItBroadcastReceiver extends WakefulBroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         // Explicitly specify that RegionIntentService will handle the intent.
-        ComponentName comp = new ComponentName(context.getPackageName(), NearItIntentService.class.getName());
+        ComponentName comp = new ComponentName(context, NearItIntentService.class);
 
         // Start the service, keeping the device awake while it is launching.
         startWakefulService(context, (intent.setComponent(comp)));
