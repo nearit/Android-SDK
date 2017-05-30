@@ -132,10 +132,10 @@ public class RecipeCoolerTest {
 
     @Test
     public void whenRecipeIsShown_updateLastLogEntry() {
-        long beforeTimestamp = System.currentTimeMillis();
+        long beforeTimestamp = System.currentTimeMillis() / 1000;
         // when we mark a recipe as shown
         mRecipeCooler.markRecipeAsShown(mCriticalRecipe.getId());
-        long afterTimestamp = System.currentTimeMillis();
+        long afterTimestamp = System.currentTimeMillis() / 1000;
         long actualTimestamp = mRecipeCooler.getLatestLogEntry();
         // then the latest log entry is updated
         assertTrue(beforeTimestamp <= actualTimestamp);
@@ -186,7 +186,7 @@ public class RecipeCoolerTest {
         mRecipeCooler = new RecipeCooler(mMockSharedPreferences, mockCurrentTime);
         Recipe onlyOnceRecipe = buildRecipe("never again", buildCooldown(0D, NEVER_REPEAT));
         // when a one time only recipe is shown
-        when(mockCurrentTime.currentTimestamp()).thenReturn(System.currentTimeMillis());
+        when(mockCurrentTime.currentTimeStampSeconds()).thenReturn(System.currentTimeMillis()/1000);
         mRecipeCooler.markRecipeAsShown(onlyOnceRecipe.getId());
         List<Recipe> recipeList = newArrayList(onlyOnceRecipe);
         mRecipeCooler.filterRecipe(recipeList);
@@ -194,7 +194,7 @@ public class RecipeCoolerTest {
         assertThat(recipeList, hasSize(0));
         // even if it is checked in the far future
         DateTime farFuture = new DateTime(2060, 1, 1, 1, 1, 1);
-        when(mockCurrentTime.currentTimestamp()).thenReturn(farFuture.getMillis());
+        when(mockCurrentTime.currentTimeStampSeconds()).thenReturn(farFuture.getMillis()/1000);
         recipeList = newArrayList(onlyOnceRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // it should never be shown again
