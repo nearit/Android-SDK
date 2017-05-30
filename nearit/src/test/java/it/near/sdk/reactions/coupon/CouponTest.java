@@ -20,8 +20,7 @@ public class CouponTest {
     public void setUp() {
         coupon = new Coupon();
     }
-
-    @Test
+    
     public void testDateParser() {
         String dateString = "2017-02-15T23:59:59.999Z";
         Date actual = coupon.toDate(dateString);

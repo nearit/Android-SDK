@@ -63,7 +63,7 @@ public class RecipeCooler {
         if (!cooldown.containsKey(GLOBAL_COOLDOWN) ||
                 cooldown.get(GLOBAL_COOLDOWN) == null) return true;
 
-        long expiredSeconds = (currentTime.currentTimestamp() - getLatestLogEntry()) / 1000;
+        long expiredSeconds = (currentTime.currentTimeStampSeconds() - getLatestLogEntry());
         return expiredSeconds >= ((Double) cooldown.get(GLOBAL_COOLDOWN)).longValue();
     }
 
@@ -76,7 +76,7 @@ public class RecipeCooler {
                 getRecipeLogMap().containsKey(recipe.getId())) return false;
 
         long recipeLatestEntry = getRecipeLogMap().get(recipe.getId());
-        long expiredSeconds = (currentTime.currentTimestamp() - recipeLatestEntry) / 1000;
+        long expiredSeconds = (currentTime.currentTimeStampSeconds() - recipeLatestEntry);
         return expiredSeconds >= ((Double) cooldown.get(SELF_COOLDOWN)).longValue();
     }
 
@@ -110,10 +110,10 @@ public class RecipeCooler {
      * @param recipeId the recipe identifier.
      */
     public void markRecipeAsShown(String recipeId) {
-        long timeStamp = currentTime.currentTimestamp();
+        long timeStamp = currentTime.currentTimeStampSeconds();
         getRecipeLogMap().put(recipeId, timeStamp);
         saveMap(mRecipeLogMap);
-        saveLatestEntry(currentTime.currentTimestamp());
+        saveLatestEntry(currentTime.currentTimeStampSeconds());
     }
 
     private void saveMap(Map<String, Long> inputMap) {
