@@ -74,7 +74,7 @@ public class TrackCache {
     @SuppressLint("ApplySharedPref")
     private void persistList() {
         Set<String> set = new HashSet<>();
-        for (TrackRequest trackRequest : getRequests()) {
+        for (TrackRequest trackRequest : new ArrayList<>(getRequests())) {
             set.add(trackRequest.getJsonObject().toString());
         }
 
