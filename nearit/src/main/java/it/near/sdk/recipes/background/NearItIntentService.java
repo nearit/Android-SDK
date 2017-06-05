@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 
+import java.util.Calendar;
+
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
@@ -62,7 +64,7 @@ public class NearItIntentService extends IntentService {
                 notifTitle,
                 notifText,
                 getLauncherTargetIntent(intent),
-                notificationCodeFromIntent(intent)
+                uniqueNotificationCode()
         );
     }
 
@@ -110,6 +112,10 @@ public class NearItIntentService extends IntentService {
         } else {
             return DEFAULT_PUSH_NOTIFICATION_ICON;
         }
+    }
+
+    private int uniqueNotificationCode() {
+        return (int) Calendar.getInstance().getTimeInMillis();
     }
 
     private int notificationCodeFromIntent(@NonNull Intent intent) {
