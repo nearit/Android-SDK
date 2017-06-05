@@ -1,1 +1,1 @@
-include ':nearit', ':sample', ':localmodules:pitcher'
+include ':nearit', ':sample'
