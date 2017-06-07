@@ -23,12 +23,15 @@ public class EvaluationBodyBuilder {
     private static final String KEY_LAST_NOTIFIED_AT = "last_notified_at";
     private static final String KEY_RECIPES_NOTIFIED_AT = "recipes_notified_at";
 
-    private final RecipeCooler recipeCooler;
+    // private final RecipeCooler recipeCooler;
     private final GlobalConfig globalConfig;
+    private final RecipesHistory recipesHistory;
 
-    public EvaluationBodyBuilder(RecipeCooler recipeCooler, GlobalConfig globalConfig) {
-        this.recipeCooler = recipeCooler;
+    public EvaluationBodyBuilder(GlobalConfig globalConfig,
+                                 RecipesHistory recipesHistory) {
+        // this.recipeCooler = recipeCooler;
         this.globalConfig = globalConfig;
+        this.recipesHistory = recipesHistory;
     }
 
     public String buildEvaluateBody() throws JSONException {
@@ -55,7 +58,7 @@ public class EvaluationBodyBuilder {
         coreObj.put(KEY_PROFILE_ID, globalConfig.getProfileId());
         coreObj.put(KEY_INSTALLATION_ID, globalConfig.getInstallationId());
         coreObj.put(KEY_APP_ID, globalConfig.getAppId());
-        if (recipeCooler != null) {
+        if (recipesHistory != null) {
             coreObj.put(KEY_COOLDOWN, buildCooldownBlock());
         }
 
@@ -64,8 +67,8 @@ public class EvaluationBodyBuilder {
 
     private HashMap<String, Object> buildCooldownBlock() {
         HashMap<String, Object> block = new HashMap<>();
-        block.put(KEY_LAST_NOTIFIED_AT, recipeCooler.getLatestLogEntry());
-        block.put(KEY_RECIPES_NOTIFIED_AT, recipeCooler.getRecipeLogMap());
+        block.put(KEY_LAST_NOTIFIED_AT, recipesHistory.getLatestLogEntry());
+        block.put(KEY_RECIPES_NOTIFIED_AT, recipesHistory.getRecipeLogMap());
         return block;
     }
 }
