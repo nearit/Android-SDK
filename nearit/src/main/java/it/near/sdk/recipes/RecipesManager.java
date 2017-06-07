@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -17,17 +16,16 @@ import java.lang.reflect.Type;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.reactions.Reaction;
@@ -37,6 +35,7 @@ import it.near.sdk.recipes.models.PulseBundle;
 import it.near.sdk.recipes.models.ReactionAction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackRequest;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -61,21 +60,24 @@ public class RecipesManager {
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private final NearAsyncHttpClient httpClient;
     private final SharedPreferences sp;
-    private final RecipeCooler recipeCooler;
     private final GlobalConfig globalConfig;
+    private final RecipesHistory recipeHistory;
     private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final TrackManager trackManager;
+    private final RecipeValidationFilter recipeValidationFilter;
 
     public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
-                          RecipeCooler recipeCooler,
+                          RecipesHistory recipeHistory,
+                          RecipeValidationFilter recipeValidationFilter,
                           EvaluationBodyBuilder evaluationBodyBuilder,
                           SharedPreferences sp,
                           TrackManager trackManager) {
         this.httpClient = httpClient;
         this.globalConfig = globalConfig;
-        this.recipeCooler = recipeCooler;
+        this.recipeHistory = recipeHistory;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
+        this.recipeValidationFilter = recipeValidationFilter;
         this.sp = sp;
         this.trackManager = trackManager;
 
@@ -217,24 +219,15 @@ public class RecipesManager {
                 matchingRecipes.add(recipe);
             }
         }
+        
+        recipeValidationFilter.filterRecipes(matchingRecipes);
 
-        // From all the recipes, filter the ones that are scheduled for now
-        List<Recipe> validRecipes = new ArrayList<>();
-        Calendar now = Calendar.getInstance();
-        for (Recipe matchingRecipe : matchingRecipes) {
-            if (matchingRecipe.isScheduledNow(now)) {
-                validRecipes.add(matchingRecipe);
-            }
-        }
-
-        recipeCooler.filterRecipe(validRecipes);
-
-        if (validRecipes.isEmpty()) {
+        if (matchingRecipes.isEmpty()) {
             // if no recipe is found the the online fallback
             onlinePulseEvaluation(pulse_plugin, pulse_action, pulse_bundle);
         } else {
             // take the first recipe and run with it
-            Recipe winnerRecipe = validRecipes.get(0);
+            Recipe winnerRecipe = matchingRecipes.get(0);
             if (winnerRecipe.isEvaluatedOnline()) {
                 evaluateRecipe(winnerRecipe.getId());
             } else {
@@ -376,8 +369,8 @@ public class RecipesManager {
      */
     public void sendTracking(String recipeId, String trackingEvent) throws JSONException {
         if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
-            if (recipeCooler != null) {
-                recipeCooler.markRecipeAsShown(recipeId);
+            if (recipeHistory != null) {
+                recipeHistory.markRecipeAsShown(recipeId);
             }
         }
 

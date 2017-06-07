@@ -23,7 +23,6 @@ public class EvaluationBodyBuilder {
     private static final String KEY_LAST_NOTIFIED_AT = "last_notified_at";
     private static final String KEY_RECIPES_NOTIFIED_AT = "recipes_notified_at";
 
-    // private final RecipeCooler recipeCooler;
     private final GlobalConfig globalConfig;
     private final RecipesHistory recipesHistory;
 
