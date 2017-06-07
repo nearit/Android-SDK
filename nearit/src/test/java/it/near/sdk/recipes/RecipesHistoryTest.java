@@ -14,6 +14,7 @@ import it.near.sdk.utils.CurrentTime;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.AdditionalAnswers.returnsSecondArg;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -42,6 +43,8 @@ public class RecipesHistoryTest {
         testRecipe.setId(TEST_RECIPE_ID);
 
         when(mMockSharedPreferences.edit()).thenReturn(mMockEditor);
+        when(mMockSharedPreferences.getString(anyString(), anyString()))
+                .then(returnsSecondArg());
         when(mMockEditor.remove(anyString())).thenReturn(mMockEditor);
         when(mMockEditor.commit()).thenReturn(true);
 
