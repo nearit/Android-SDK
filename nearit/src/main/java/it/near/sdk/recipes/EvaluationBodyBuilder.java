@@ -28,7 +28,6 @@ public class EvaluationBodyBuilder {
 
     public EvaluationBodyBuilder(GlobalConfig globalConfig,
                                  RecipesHistory recipesHistory) {
-        // this.recipeCooler = recipeCooler;
         this.globalConfig = globalConfig;
         this.recipesHistory = recipesHistory;
     }

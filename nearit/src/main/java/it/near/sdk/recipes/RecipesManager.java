@@ -219,7 +219,7 @@ public class RecipesManager {
                 matchingRecipes.add(recipe);
             }
         }
-        
+
         recipeValidationFilter.filterRecipes(matchingRecipes);
 
         if (matchingRecipes.isEmpty()) {
