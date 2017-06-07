@@ -20,7 +20,6 @@ import static it.near.sdk.recipes.EvaluationBodyBuilder.PULSE_PLUGIN_ID_KEY;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,7 +28,7 @@ public class EvaluationBodyBuilderTest {
     @Mock
     GlobalConfig mockGlobalConfig;
     @Mock
-    RecipeCooler mockRecipeCooler;
+    RecipesHistory mockRecipeHistory;
 
     private EvaluationBodyBuilder evaluationBodyBuilder;
 
@@ -38,7 +37,7 @@ public class EvaluationBodyBuilderTest {
         when(mockGlobalConfig.getAppId()).thenReturn("app_id");
         when(mockGlobalConfig.getInstallationId()).thenReturn("installation_id");
         when(mockGlobalConfig.getProfileId()).thenReturn("profile_id");
-        evaluationBodyBuilder = new EvaluationBodyBuilder(mockRecipeCooler, mockGlobalConfig);
+        evaluationBodyBuilder = new EvaluationBodyBuilder(mockGlobalConfig, mockRecipeHistory);
     }
 
     @Test
@@ -75,7 +74,7 @@ public class EvaluationBodyBuilderTest {
         Map<String, Long> logMap = Maps.newHashMap();
         logMap.put("recipe_id_1", 0L);
         logMap.put("recipe_id_2", 1000L);
-        when(mockRecipeCooler.getRecipeLogMap()).thenReturn(logMap);
+        when(mockRecipeHistory.getRecipeLogMap()).thenReturn(logMap);
         String actual = evaluationBodyBuilder.buildEvaluateBody("plugin", "action", "bundle");
         JSONObject actualObj = new JSONObject(actual);
         assertThat(actualObj = actualObj.getJSONObject("data"), is(notNullValue()));
