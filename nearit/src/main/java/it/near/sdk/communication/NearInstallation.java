@@ -150,10 +150,14 @@ public class NearInstallation {
     public static String getDeviceToken(Context context) {
         String token = GlobalConfig.getInstance(context).getDeviceToken();
         if (token == null) {
-            String firebaseToken = FirebaseInstanceId.getInstance().getToken();
-            if (firebaseToken != null) {
-                token = firebaseToken;
-                GlobalConfig.getInstance(context).setDeviceToken(token);
+            try {
+                String firebaseToken = FirebaseInstanceId.getInstance().getToken();
+                if (firebaseToken != null) {
+                    token = firebaseToken;
+                    GlobalConfig.getInstance(context).setDeviceToken(token);
+                }
+            } catch (IllegalStateException e) {
+                NearLog.e(TAG, "We can't get your firebase instance. Near push notification might not work");
             }
         }
         return token;
