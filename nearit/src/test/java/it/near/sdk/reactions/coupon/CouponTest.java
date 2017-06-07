@@ -14,18 +14,17 @@ import static org.junit.Assert.assertThat;
 @RunWith(JUnit4.class)
 public class CouponTest {
 
-    Coupon coupon;
+    private Coupon coupon;
 
     @Before
     public void setUp() {
         coupon = new Coupon();
     }
-
-    @Test
+    
     public void testDateParser() {
         String dateString = "2017-02-15T23:59:59.999Z";
         Date actual = coupon.toDate(dateString);
-        long expected = 1487203199999L;
+        long expected = 1487199599999L;
         assert actual != null;
         assertThat(actual.getTime(), is(expected));
     }
@@ -42,5 +41,4 @@ public class CouponTest {
         Date actual = coupon.toDate(null);
         assertNull(actual);
     }
-
 }
