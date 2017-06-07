@@ -6,6 +6,6 @@ public abstract class Validator {
 
     abstract boolean validate(Recipe recipe);
 
-    public Validator() {
+    Validator() {
     }
 }
