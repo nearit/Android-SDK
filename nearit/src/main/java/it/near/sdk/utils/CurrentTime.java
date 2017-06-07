@@ -1,12 +1,12 @@
 package it.near.sdk.utils;
 
-public class CurrentTime {
+import java.util.Calendar;
 
-    public Long currentTimestamp() {
-        return System.currentTimeMillis();
-    }
+public class CurrentTime {
 
     public Long currentTimeStampSeconds() {
         return System.currentTimeMillis() / 1000;
     }
+
+    public Calendar currentCalendar() { return Calendar.getInstance();}
 }
