@@ -9,7 +9,6 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Before;
-import org.junit.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -164,14 +163,7 @@ public class RecipeTest {
         assertFalse(mRecipe.isScheduledNow(after));
     }
 */
-    @Test
-    public void whenRecipeIsNotScheduledForThisTimeOfDay_isNotValid() throws ParseException {
-        // when a recipe is not scheduled for this time of day
-        LocalTime startTime = new LocalTime(15, 0, 0);
-        LocalTime endTime = new LocalTime(18, 0, 0);
-        HashMap<String, Object> scheduling = buildScheduling(null, null, startTime, endTime);
-        mRecipe.setScheduling(scheduling);
-    }
+
 
     private HashMap<String, Object> buildScheduling(DateTime startDate, DateTime endDate,
                                                          LocalTime startTime, LocalTime endTime){
