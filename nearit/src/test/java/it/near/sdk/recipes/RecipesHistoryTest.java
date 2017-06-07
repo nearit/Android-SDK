@@ -3,26 +3,17 @@ package it.near.sdk.recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.google.common.collect.Lists;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.List;
-import java.util.Map;
-
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CurrentTime;
 
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.both;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.core.IsNot.not;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -34,6 +25,7 @@ import static org.mockito.Mockito.when;
 public class RecipesHistoryTest {
 
     private static final String TEST_RECIPE_ID = "test_recipe_id";
+
     @Mock
     SharedPreferences mMockSharedPreferences;
     @Mock
@@ -59,8 +51,7 @@ public class RecipesHistoryTest {
     @Test
     public void whenNoHistory_HistoryHasDefaultValues() {
         assertThat(recipesHistory.getLatestLogEntry(), is(0L));
-        Map<String, Long> historyMap = recipesHistory.getRecipeLogMap();
-        assertThat(historyMap.values(), hasSize(0));
+        assertThat(recipesHistory.isRecipeInLog(TEST_RECIPE_ID), is(false));
     }
 
     @Test
@@ -71,13 +62,13 @@ public class RecipesHistoryTest {
         // when we mark a recipe as shown
         recipesHistory.markRecipeAsShown(testRecipe.getId());
         // then its timestamp is put in history
-        assertThat(keySetOf(recipesHistory.getRecipeLogMap()), both(hasItem(testRecipe.getId()))
-                .and(not(hasItem(anotherRecipe.getId()))));
+        assertThat(recipesHistory.isRecipeInLog(TEST_RECIPE_ID),is(true));
+        assertThat(recipesHistory.isRecipeInLog(anotherRecipeID), is(false));
         // when we mark another recipe as shown
         recipesHistory.markRecipeAsShown(anotherRecipe.getId());
         // then its timestamp is added to history
-        assertThat(keySetOf(recipesHistory.getRecipeLogMap()), both(hasItem(testRecipe.getId()))
-                .and(hasItem(anotherRecipe.getId())));
+        assertThat(recipesHistory.isRecipeInLog(TEST_RECIPE_ID),is(true));
+        assertThat(recipesHistory.isRecipeInLog(anotherRecipeID), is(true));
     }
 
     @Test
@@ -89,7 +80,8 @@ public class RecipesHistoryTest {
         long actualTimestamp = recipesHistory.getLatestLogEntry();
         // then the latest log entry is updated
         assertThat(actualTimestamp, is(expected));
-        assertThat(keySetOf(recipesHistory.getRecipeLogMap()), hasItem(testRecipe.getId()));
+        assertThat(recipesHistory.isRecipeInLog(TEST_RECIPE_ID), is(true));
+        assertThat(recipesHistory.latestLogEntryFor(TEST_RECIPE_ID), is(expected));
     }
 
     @Test
@@ -104,8 +96,8 @@ public class RecipesHistoryTest {
                 .thenReturn(latestLogMock);
 
         assertThat(recipesHistory.getLatestLogEntry(), is(latestLogMock));
-        assertThat(keySetOf(recipesHistory.getRecipeLogMap()), hasItem(testRecipe.getId()));
-        assertThat(recipesHistory.getRecipeLogMap().get(TEST_RECIPE_ID), is(latestLogMock));
+        assertThat(recipesHistory.isRecipeInLog(TEST_RECIPE_ID), is(true));
+        assertThat(recipesHistory.latestLogEntryFor(TEST_RECIPE_ID), is(latestLogMock));
     }
 
     @Test
@@ -113,9 +105,5 @@ public class RecipesHistoryTest {
         Context mockContext = mock(Context.class);
         when(mockContext.getSharedPreferences(anyString(), anyInt())).thenReturn(mMockSharedPreferences);
         assertThat(RecipesHistory.getSharedPreferences(mockContext), is(mMockSharedPreferences));
-    }
-
-    private List<String> keySetOf(Map<String, Long> map) {
-        return Lists.newArrayList(map.keySet());
     }
 }

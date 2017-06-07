@@ -52,11 +52,22 @@ public class RecipesHistory {
     }
 
     /**
-     * Get the map of recipe shown event timestamps.
-     *
-     * @return the map of timestamps.
+     * @param recipeId the recipe identifier
+     * @return whether the recipe was ever shown according to the local DB
      */
-    public Map<String, Long> getRecipeLogMap() {
+    public boolean isRecipeInLog(String recipeId) {
+        return getRecipeLogMap().containsKey(recipeId);
+    }
+
+    /**
+     * @param recipeId the recipe identifier
+     * @return the latest epoch timestamp for the latest recipe occurrence of a certain recipe
+     */
+    public Long latestLogEntryFor(String recipeId) {
+        return getRecipeLogMap().get(recipeId);
+    }
+
+    private Map<String, Long> getRecipeLogMap() {
         if (mRecipeLogMap == null) {
             mRecipeLogMap = loadMap();
         }
