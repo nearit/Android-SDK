@@ -67,7 +67,7 @@ public class RecipesHistory {
         return getRecipeLogMap().get(recipeId);
     }
 
-    private Map<String, Long> getRecipeLogMap() {
+    public Map<String, Long> getRecipeLogMap() {
         if (mRecipeLogMap == null) {
             mRecipeLogMap = loadMap();
         }
@@ -89,7 +89,7 @@ public class RecipesHistory {
         Map<String, Long> outputMap = new HashMap<String, Long>();
         try {
             if (sharedPreferences != null) {
-                String jsonString = sharedPreferences.getString(LOG_MAP, (new JSONObject()).toString());
+                String jsonString = sharedPreferences.getString(LOG_MAP, (new JSONObject("{}")).toString());
                 JSONObject jsonObject = new JSONObject(jsonString);
                 Iterator<String> keysItr = jsonObject.keys();
                 while (keysItr.hasNext()) {
