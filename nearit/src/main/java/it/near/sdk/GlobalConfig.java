@@ -25,8 +25,6 @@ public class GlobalConfig {
     private String apiKey;
     private final String APPID = "appid";
     private String appId;
-    private final String SENDERID = "senderid";
-    private String senderId;
     private final String DEVICETOKEN = "devicetoken";
     private String deviceToken;
     private static final String INSTALLATIONID = "installationid";
