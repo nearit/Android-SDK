@@ -164,7 +164,7 @@ public class AdvScheduleValidatorTest {
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(10, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
-        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(12, 3, 0, 0));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(12, 30, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(13, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
@@ -198,7 +198,6 @@ public class AdvScheduleValidatorTest {
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(18, 50, 4, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
-
     }
 
     private void mockCurrentCalendar(DateTime dateTime) {
