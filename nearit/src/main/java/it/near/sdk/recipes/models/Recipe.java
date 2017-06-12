@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.HashMap;
+import java.util.List;
 
 import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.morpheusnear.annotations.Relationship;
@@ -24,7 +25,7 @@ public class Recipe extends Resource {
     @SerializedName("labels")
     public HashMap<String, Object> labels;
     @SerializedName("scheduling")
-    public HashMap<String, Object> scheduling;
+    public List<Object> scheduling;
     @SerializedName("cooldown")
     public HashMap<String, Object> cooldown;
     @SerializedName("pulse_plugin_id")
@@ -134,7 +135,7 @@ public class Recipe extends Resource {
         return cooldown;
     }
 
-    public void setScheduling(HashMap<String, Object> scheduling) {
+    public void setScheduling(List<Object> scheduling) {
         this.scheduling = scheduling;
     }
 
