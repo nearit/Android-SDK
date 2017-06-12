@@ -110,7 +110,7 @@ public class RecipeCooler {
      * @param recipeId the recipe identifier.
      */
     public void markRecipeAsShown(String recipeId) {
-        long timeStamp = currentTime.currentTimeStampSeconds();
+        Long timeStamp = currentTime.currentTimeStampSeconds();
         getRecipeLogMap().put(recipeId, timeStamp);
         saveMap(mRecipeLogMap);
         saveLatestEntry(currentTime.currentTimeStampSeconds());
