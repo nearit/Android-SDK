@@ -201,6 +201,22 @@ public class RecipeCoolerTest {
         assertThat(recipeList, hasSize(0));
     }
 
+    @Test
+    public void whenThereIsHistoryOnDisk_itShouldLoadUp() {
+        String logMapStringMock = "{\n" +
+                "    \"test_recipe_id\" : 1496769570\n" +
+                "}";
+        when(mMockSharedPreferences.getString(eq(LOG_MAP), anyString()))
+                .thenReturn(logMapStringMock);
+        Long latestLogMock = 1496769570L;
+        when(mMockSharedPreferences.getLong(eq(LATEST_LOG), anyLong()))
+                .thenReturn(latestLogMock);
+
+        assertThat(mRecipeCooler.getRecipeLogMap().containsKey("test_recipe_id"), is(true));
+        assertThat(mRecipeCooler.getRecipeLogMap().get("test_recipe_id"), is(latestLogMock));
+        assertThat(mRecipeCooler.getLatestLogEntry(), is(latestLogMock));
+    }
+
     private List<String> keySetOf(Map<String, Long> map){
         return Lists.newArrayList(map.keySet());
     }

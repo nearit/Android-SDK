@@ -19,9 +19,9 @@ import static it.near.sdk.utils.NearUtils.checkNotNull;
 public class RecipeCooler {
 
     private static final String RECIPE_COOLER_PREFS_NAME = "NearRecipeCoolerPrefsName";
-    private static final String LOG_MAP = "LOG_MAP";
+    static final String LOG_MAP = "LOG_MAP";
     static final double NEVER_REPEAT = -1D;
-    private static final String LATEST_LOG = "LATEST_LOG";
+    static final String LATEST_LOG = "LATEST_LOG";
     static final String GLOBAL_COOLDOWN = "global_cooldown";
     static final String SELF_COOLDOWN = "self_cooldown";
 
@@ -136,7 +136,7 @@ public class RecipeCooler {
                 Iterator<String> keysItr = jsonObject.keys();
                 while (keysItr.hasNext()) {
                     String key = keysItr.next();
-                    Long value = (Long) jsonObject.get(key);
+                    Long value = ((Integer) jsonObject.get(key)).longValue();
                     outputMap.put(key, value);
                 }
             }
