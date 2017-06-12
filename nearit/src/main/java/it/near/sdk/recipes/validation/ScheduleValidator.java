@@ -27,7 +27,7 @@ public class ScheduleValidator extends Validator {
     @Override
     boolean validate(Recipe recipe) {
         Calendar now = currentTime.currentCalendar();
-        HashMap<String, Object> scheduling = recipe.scheduling;
+        HashMap<String, Object> scheduling = (HashMap<String, Object>) recipe.scheduling.get(0);
         return scheduling == null ||
                 ( isDateValid(scheduling, now) &&
                         isTimetableValid(scheduling, now) &&

@@ -58,7 +58,7 @@ public class ScheduleValidatorTest {
         assertThat(scheduleValidator.validate(testRecipe), is(true));
     }
 
-    @Test
+    /*@Test
     public void whenSchedulingIsForThisMonth_theRecipeIsValid() {
         // when a recipe is scheduled for the month of january 2017
         DateTime startPeriod = new DateTime(2017, 1, 1, 0, 0, 0).withTimeAtStartOfDay();
@@ -77,9 +77,9 @@ public class ScheduleValidatorTest {
                 .thenReturn(buildCalendarFrom(new DateTime(2017, 1, 15, 0, 0, 0)));
         // then is valid in the middle of the period
         assertThat(scheduleValidator.validate(testRecipe), is(true));
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void whenNotScheduledForToday_theRecipeIsNotValid() {
         // when a recipe is scheduled for the month of january 2017
         DateTime startPeriod = new DateTime(2017, 1, 1, 0, 0, 0).withTimeAtStartOfDay();
@@ -102,9 +102,9 @@ public class ScheduleValidatorTest {
         when(mockCurrentTime.currentCalendar())
                 .thenReturn(buildCalendarFrom(startPeriod.minusYears(1)));
         assertThat(scheduleValidator.validate(testRecipe), is(false));
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void whenRecipeOnlyHasLowerBound_thenValidityIsChecked() {
         // when a recipe is scheduled from february 1st 2017
         DateTime startDate = new DateTime(2017, 2, 1, 0, 0, 0).withTimeAtStartOfDay();
@@ -132,9 +132,9 @@ public class ScheduleValidatorTest {
         when(mockCurrentTime.currentCalendar())
                 .thenReturn(buildCalendarFrom(startDate.minusYears(1)));
         assertThat(scheduleValidator.validate(testRecipe), is(false));
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void whenRecipeOnlyHasUpperBound_thenValidityIsChecked() {
         // when a recipe is scheduled until january 31st 2017
         DateTime endDate = new DateTime(2017, 1, 31, 0, 0, 0).withTimeAtStartOfDay();
@@ -197,7 +197,7 @@ public class ScheduleValidatorTest {
                 .thenReturn(buildCalendarFrom(endTime.plusHours(2)));
         assertThat(scheduleValidator.validate(testRecipe), is(false));
     }
-
+*/
     private HashMap<String, Object> buildScheduling(DateTime startDate, DateTime endDate,
                                                     LocalTime startTime, LocalTime endTime) {
         HashMap<String, Object> scheduling = Maps.newHashMap();
