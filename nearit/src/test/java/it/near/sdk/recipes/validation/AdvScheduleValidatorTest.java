@@ -138,6 +138,67 @@ public class AdvScheduleValidatorTest {
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.tuesday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
+
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.wednesday()));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.thursday()));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.friday()));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.saturday()));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+    }
+
+    @Test
+    public void whenRecipeIsScheduledForMultipleTimeframes_itsValidityIsChecked() throws Exception {
+        List<Object> schedule = readJsonFile("various_daily_timeframes.json");
+        testRecipe.setScheduling(schedule);
+
+        // true values
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(9, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(9, 30, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(10, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(12, 3, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(13, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(14, 45, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(17, 15, 27, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(18, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(18, 50, 3, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+
+        // false values
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.tuesday()).withTime(12, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(8, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(8, 59, 59, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(10, 0, 1, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(11, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(12, 29, 59, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(14, 45, 1, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(16, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(17, 15, 26, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()).withTime(18, 50, 4, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+
     }
 
     private void mockCurrentCalendar(DateTime dateTime) {
