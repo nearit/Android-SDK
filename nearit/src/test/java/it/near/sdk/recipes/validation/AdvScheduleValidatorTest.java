@@ -219,7 +219,7 @@ public class AdvScheduleValidatorTest {
         mockCurrentCalendar(juneDate.withTime(17, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
 
-        // 20th august 2017 exclusive date
+        // 20th august 2017 exclusive hours
         mockCurrentCalendar(juneDate.withTime(20, 30, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
@@ -230,52 +230,53 @@ public class AdvScheduleValidatorTest {
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
         // 2017 exclusive hours
-        mockCurrentCalendar(juneDate.withTime(15, 0, 0, 0));
+        mockCurrentCalendar(dayOf2017.withTime(15, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
 
         // always on hours
-        mockCurrentCalendar(juneDate.withTime(17, 0, 0, 0));
+        mockCurrentCalendar(dayOf2017.withTime(17, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
 
-        // 20th august 2017 exclusive date
-        mockCurrentCalendar(juneDate.withTime(20, 30, 0, 0));
+        // 20th august 2017 exclusive hours
+        mockCurrentCalendar(dayOf2017.withTime(20, 30, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
 
         // on another year
         DateTime otherYearDate = new DateTime(2014, 3, 4, 0, 0);
         // june 2017 exclusive hours
-        mockCurrentCalendar(dayOf2017.withTime(10, 0, 0, 0));
+        mockCurrentCalendar(otherYearDate.withTime(10, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
         // 2017 exclusive hours
-        mockCurrentCalendar(juneDate.withTime(15, 0, 0, 0));
+        mockCurrentCalendar(otherYearDate.withTime(15, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
         // always on hours
-        mockCurrentCalendar(juneDate.withTime(17, 0, 0, 0));
+        mockCurrentCalendar(otherYearDate.withTime(17, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
 
-        // 20th august 2017 exclusive date
-        mockCurrentCalendar(juneDate.withTime(20, 30, 0, 0));
+        // 20th august 2017 exclusive hours
+        mockCurrentCalendar(otherYearDate.withTime(20, 30, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
 
         // on august 20th 2017
+        DateTime august20th2017 = new DateTime(2017, 8, 20, 0, 0);
         // june 2017 exclusive hours
-        mockCurrentCalendar(dayOf2017.withTime(10, 0, 0, 0));
+        mockCurrentCalendar(august20th2017.withTime(10, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
         // 2017 exclusive hours
-        mockCurrentCalendar(juneDate.withTime(15, 0, 0, 0));
+        mockCurrentCalendar(august20th2017.withTime(15, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
 
         // always on hours
-        mockCurrentCalendar(juneDate.withTime(17, 0, 0, 0));
+        mockCurrentCalendar(august20th2017.withTime(17, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
 
-        // 20th august 2017 exclusive date
-        mockCurrentCalendar(juneDate.withTime(20, 30, 0, 0));
+        // 20th august 2017 exclusive hours
+        mockCurrentCalendar(august20th2017.withTime(20, 30, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
 
     }
