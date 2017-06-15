@@ -1,5 +1,8 @@
 package it.near.sdk.recipes.validation;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.joda.time.DateTime;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,6 +14,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.DayOfWeek;
@@ -298,7 +302,10 @@ public class AdvScheduleValidatorTest {
         List<Object> toReturn = new ArrayList<>();
         if (jsonArray != null) {
             for (int i = 0; i < jsonArray.length(); i++) {
-                toReturn.add(jsonArray.get(i));
+                String stringified = jsonArray.get(i).toString();
+                toReturn.add(new Gson().fromJson(
+                        stringified, new TypeToken<HashMap<String, Object>>() {}.getType()
+                ));
             }
             return toReturn;
         } else {
