@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -277,7 +278,7 @@ public class AdvScheduleValidatorTest {
 
         // always on hours
         mockCurrentCalendar(august20th2017.withTime(17, 0, 0, 0));
-        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
 
         // 20th august 2017 exclusive hours
         mockCurrentCalendar(august20th2017.withTime(20, 30, 0, 0));
@@ -292,7 +293,7 @@ public class AdvScheduleValidatorTest {
 
     private Calendar buildCalendarFrom(DateTime dateTime) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateTime.toDate());
+        calendar.setTime(dateTime.withZoneRetainFields(DateTimeZone.getDefault()).toDate());
         return calendar;
     }
 
