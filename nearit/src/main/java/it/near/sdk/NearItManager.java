@@ -3,11 +3,11 @@ package it.near.sdk;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
 
 import org.altbeacon.beacon.BeaconManager;
 import org.json.JSONException;
@@ -18,17 +18,17 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.near.sdk.communication.NearAsyncHttpClient;
-import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.communication.NearInstallation;
+import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
+import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.content.ContentReaction;
 import it.near.sdk.reactions.coupon.CouponListener;
 import it.near.sdk.reactions.coupon.CouponReaction;
 import it.near.sdk.reactions.customjson.CustomJSONReaction;
-import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.feedback.FeedbackEvent;
 import it.near.sdk.reactions.feedback.FeedbackReaction;
 import it.near.sdk.reactions.poll.PollEvent;
@@ -37,10 +37,10 @@ import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
 import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.RecipeCooler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackCache;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackSender;
@@ -242,10 +242,16 @@ public class NearItManager {
         }
 
         @Override
-        public void deliverForegroundReaction(Parcelable content, Recipe recipe) {
-            for (ProximityListener proximityListener : proximityListenerList) {
-                proximityListener.foregroundEvent(content, recipe);
-            }
+        public void deliverForegroundReaction(final Parcelable content, final Recipe recipe) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (ProximityListener proximityListener : proximityListenerList) {
+                        proximityListener.foregroundEvent(content, recipe);
+                    }
+                }
+            });
+
         }
     };
 
