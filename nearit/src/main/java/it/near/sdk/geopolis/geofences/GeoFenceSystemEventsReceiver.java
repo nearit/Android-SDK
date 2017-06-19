@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 
+import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.logging.NearLog;
-
 
 /**
  * Receiver for the BOOT_COMPLETED and PROVIDERS_CHANGED system events.
@@ -35,6 +35,8 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
 
             sendResetIntent(context, anyLocationProv);
         }
+
+        NearInstallation.registerInstallation(context);
     }
 
     /**

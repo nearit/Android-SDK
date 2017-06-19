@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
@@ -249,10 +251,16 @@ public class NearItManager {
         }
 
         @Override
-        public void deliverForegroundReaction(Parcelable content, Recipe recipe) {
-            for (ProximityListener proximityListener : proximityListenerList) {
-                proximityListener.foregroundEvent(content, recipe);
-            }
+        public void deliverForegroundReaction(final Parcelable content, final Recipe recipe) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
+                    for (ProximityListener proximityListener : proximityListenerList) {
+                        proximityListener.foregroundEvent(content, recipe);
+                    }
+                }
+            });
+
         }
     };
 
