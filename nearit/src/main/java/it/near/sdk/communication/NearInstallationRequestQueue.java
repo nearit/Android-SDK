@@ -25,7 +25,6 @@ public class NearInstallationRequestQueue {
     private final GlobalConfig globalConfig;
     private boolean onGoingEdit = false;
 
-    private static final int UNAUTHORIZED_ERROR_CODE = 403;
     private static final int NOT_FOUND_ERROR_CODE = 404;
 
     private ConcurrentLinkedQueue<InstallationRequest> installationRequests = new ConcurrentLinkedQueue<>();
@@ -60,8 +59,7 @@ public class NearInstallationRequestQueue {
                     public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                         super.onFailureUnique(statusCode, headers, throwable, responseString);
                         onGoingEdit = false;
-                        if (statusCode == UNAUTHORIZED_ERROR_CODE ||
-                                statusCode == NOT_FOUND_ERROR_CODE) {
+                        if (statusCode == NOT_FOUND_ERROR_CODE) {
                             globalConfig.setInstallationId(null);
                             registerInstallation(installationBody);
                         }
