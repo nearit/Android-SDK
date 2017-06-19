@@ -42,9 +42,9 @@ import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.validation.AdvScheduleValidator;
 import it.near.sdk.recipes.validation.CooldownValidator;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
-import it.near.sdk.recipes.validation.ScheduleValidator;
 import it.near.sdk.recipes.validation.Validator;
 import it.near.sdk.trackings.TrackCache;
 import it.near.sdk.trackings.TrackManager;
@@ -126,7 +126,7 @@ public class NearItManager {
         TrackManager trackManager = getTrackManager(application);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
-        validators.add(new ScheduleValidator(new CurrentTime()));
+        validators.add(new AdvScheduleValidator(new CurrentTime()));
         RecipeValidationFilter recipeValidationFilter = new RecipeValidationFilter(validators);
         recipesManager = new RecipesManager(
                 new NearAsyncHttpClient(application),
