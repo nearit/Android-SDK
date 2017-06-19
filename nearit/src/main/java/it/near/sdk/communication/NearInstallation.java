@@ -7,18 +7,12 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 
-
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -42,6 +36,8 @@ public class NearInstallation {
     private static final String TAG = "NearInstallation";
     private static final String PROFILE_ID = "profile_id";
 
+    private static NearInstallationRequestQueue requestQueue;
+
     private static final int UNAUTHORIZED_ERROR_CODE = 403;
     private static final int NOT_FOUND_ERROR_CODE = 404;
 
@@ -56,49 +52,21 @@ public class NearInstallation {
         // get the local installation id
         String installationId = GlobalConfig.getInstance(context).getInstallationId();
         try {
-            // build a JSON api request body with or without the id, depending wheter the installID is null or not
+            // build a JSON api request body with or without the id, depending whether the installID is null or not
             String installBody = getInstallationBody(context, installationId);
             // with the same criteria, we decide the type of request to do
-            try {
-                registerOrEditInstallation(context, installationId, installBody, new NearJsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        NearLog.d(TAG, "Installation data sent");
-                        // If the registration is correct, we save the installationId locally
-                        try {
-                            String installationId = response.getJSONObject("data").getString("id");
-                            GlobalConfig.getInstance(context).setInstallationId(installationId);
-                        } catch (JSONException e) {
-                            NearLog.d(TAG, "Data format error");
-                        }
-                    }
-
-                    @Override
-                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        NearLog.d(TAG, "Installation data sending error: " + statusCode + " " + responseString);
-                        if (statusCode == UNAUTHORIZED_ERROR_CODE ||
-                                statusCode == NOT_FOUND_ERROR_CODE) {
-                            GlobalConfig.getInstance(context).setInstallationId(null);
-                        }
-                    }
-                });
-            } catch (UnsupportedEncodingException | AuthenticationException e) {
-                NearLog.d(TAG, "Data error");
-            }
-
+            getRequestQueue(context).registerInstallation(installBody);
         } catch (JSONException e) {
             NearLog.d(TAG, "Unable to send installation data");
         }
     }
 
-
-    private static void registerOrEditInstallation(Context context, String installationId, String installBody, AsyncHttpResponseHandler jsonHttpResponseHandler) throws UnsupportedEncodingException, AuthenticationException {
-        if (installationId == null) {
-            NearAsyncHttpClient.post(context, Constants.API.INSTALLATIONS_PATH, installBody, jsonHttpResponseHandler);
-        } else {
-            String subPath = "/" + installationId;
-            NearAsyncHttpClient.put(context, Constants.API.INSTALLATIONS_PATH + subPath, installBody, jsonHttpResponseHandler);
+    private static NearInstallationRequestQueue getRequestQueue(Context context) {
+        if (requestQueue == null) {
+            NearAsyncHttpClient httpClient = new NearAsyncHttpClient(context);
+            requestQueue = new NearInstallationRequestQueue(httpClient, GlobalConfig.getInstance(context));
         }
+        return requestQueue;
     }
 
     /**
