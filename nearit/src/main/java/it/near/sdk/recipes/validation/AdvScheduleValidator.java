@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -114,27 +115,40 @@ public class AdvScheduleValidator extends Validator {
         }
         try {
             String fromString = (String) hourFrame.get(KEY_FROM);
-            String to = (String) hourFrame.get(KEY_TO);
+            String toString = (String) hourFrame.get(KEY_TO);
 
             Calendar fromCalendar = buildCalendar(fromString);
+            Calendar toCalendar = buildCalendar(toString);
+            Calendar now = fixedDateCurrentCalendar();
+
+            return (fromCalendar.before(now) || fromCalendar.equals(now)) &&
+                    (toCalendar.after(now) || toCalendar.equals(now));
 
         } catch (ClassCastException e) {
             return false;
         } catch (NumberFormatException e) {
             return false;
         }
+    }
 
-        return false;
+    private Calendar fixedDateCurrentCalendar() {
+        Calendar currentCalendar = currentTime.currentCalendar();
+        Calendar fixedDate = new GregorianCalendar(TimeZone.getDefault());
+        fixedDate.set(Calendar.HOUR_OF_DAY, currentCalendar.get(Calendar.HOUR_OF_DAY));
+        fixedDate.set(Calendar.MINUTE, currentCalendar.get(Calendar.MINUTE));
+        fixedDate.set(Calendar.SECOND, currentCalendar.get(Calendar.SECOND));
+        fixedDate.getTime();
+        return fixedDate;
     }
 
     private Calendar buildCalendar(String formattedHours) throws NumberFormatException {
         String[] parts = formattedHours.split(HOUR_FORMAT_SEPARATOR);
-        Calendar cal = Calendar.getInstance();
+        Calendar cal = new GregorianCalendar(TimeZone.getDefault());
         cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(parts[0]));
         cal.set(Calendar.MINUTE, Integer.parseInt(parts[1]));
         cal.set(Calendar.SECOND, Integer.parseInt(parts[2]));
-        cal.setTimeZone(TimeZone.getDefault());
-        return null;
+        cal.getTime();
+        return cal;
     }
 
     public static Date removeTime(Date date) {
