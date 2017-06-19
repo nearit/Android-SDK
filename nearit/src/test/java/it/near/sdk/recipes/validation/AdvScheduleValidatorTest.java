@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimeZone;
 
 import it.near.sdk.DayOfWeek;
 import it.near.sdk.TestUtils;
@@ -293,7 +294,9 @@ public class AdvScheduleValidatorTest {
 
     private Calendar buildCalendarFrom(DateTime dateTime) {
         Calendar calendar = Calendar.getInstance();
-        calendar.setTime(dateTime.withZoneRetainFields(DateTimeZone.getDefault()).toDate());
+        calendar.setTime(dateTime.withZoneRetainFields(
+                DateTimeZone.forTimeZone(TimeZone.getDefault())).toDate());
+        calendar.getTime();
         return calendar;
     }
 
@@ -305,7 +308,8 @@ public class AdvScheduleValidatorTest {
             for (int i = 0; i < jsonArray.length(); i++) {
                 String stringified = jsonArray.get(i).toString();
                 toReturn.add(new Gson().fromJson(
-                        stringified, new TypeToken<HashMap<String, Object>>() {}.getType()
+                        stringified, new TypeToken<HashMap<String, Object>>() {
+                        }.getType()
                 ));
             }
             return toReturn;
