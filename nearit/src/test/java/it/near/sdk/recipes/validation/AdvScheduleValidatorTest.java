@@ -39,62 +39,56 @@ public class AdvScheduleValidatorTest {
     private AdvScheduleValidator advScheduleValidator;
 
     private Recipe testRecipe;
+    private Recipe testRecipe2;
+    private Recipe testRecipe3;
 
     @Before
     public void setUp() throws Exception {
         testRecipe = new Recipe();
+        testRecipe2 = new Recipe();
+        testRecipe3 = new Recipe();
         advScheduleValidator = new AdvScheduleValidator(mockCurrentTime);
     }
 
     @Test
-    public void whenScheduleIsMissing_recipeIsAlwaysValid() {
+    public void whenScheduleIsMissing_recipeIsAlwaysValid() throws Exception {
         testRecipe.setScheduling(null);
 
-        // right now
-        mockCurrentCalendar(new DateTime());
-        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        List<Object> completeCoverageSchedule = readJsonFile("complete_coverage_validity.json");
+        testRecipe2.setScheduling(completeCoverageSchedule);
 
-        // yesterday at 12 O'clock
-        mockCurrentCalendar(new DateTime().minusDays(1).withTime(12, 0, 0, 0));
-        assertThat(advScheduleValidator.validate(testRecipe), is(true));
-
-        // tomorrow at 12 O'clock
-        mockCurrentCalendar(new DateTime().plusDays(1).withTime(12, 0, 0, 0));
-        assertThat(advScheduleValidator.validate(testRecipe), is(true));
-
-        // july 2nd 1989 at 16 O'clock
-        mockCurrentCalendar(new DateTime(1989, 7, 2, 18, 0, 0));
-        assertThat(advScheduleValidator.validate(testRecipe), is(true));
-
-        // far in the future
-        mockCurrentCalendar(new DateTime(2047, 10, 8, 22, 0, 0));
-        assertThat(advScheduleValidator.validate(testRecipe), is(true));
-    }
-
-    @Test
-    public void whenScheduleCoversEverytime_recipeIsAlwaysValid() throws Exception {
-        List<Object> schedule = readJsonFile("complete_coverage_validity.json");
-        testRecipe.setScheduling(schedule);
+        List<Object> edgeCaseSchedule = readJsonFile("always_valid_edge_case.json");
+        testRecipe3.setScheduling(edgeCaseSchedule);
 
         // right now
         mockCurrentCalendar(new DateTime());
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe3), is(true));
 
         // yesterday at 12 O'clock
         mockCurrentCalendar(new DateTime().minusDays(1).withTime(12, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe3), is(true));
 
         // tomorrow at 12 O'clock
         mockCurrentCalendar(new DateTime().plusDays(1).withTime(12, 0, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe3), is(true));
 
         // july 2nd 1989 at 16 O'clock
         mockCurrentCalendar(new DateTime(1989, 7, 2, 18, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe3), is(true));
 
         // far in the future
         mockCurrentCalendar(new DateTime(2047, 10, 8, 22, 0, 0));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe3), is(true));
     }
 
     @Test
@@ -132,30 +126,62 @@ public class AdvScheduleValidatorTest {
     }
 
     @Test
-    public void whenRecipeIsScheduledOnlyForSelectedDaysOfWeek_itsValidityIsChecked() throws Exception {
-        List<Object> schedule = readJsonFile("only_mon_wed_thu_sat.json");
+    public void whenValidityPeriodsHaveSingleLimits_TheirValidityIsChecked() throws Exception {
+        List<Object> schedule = readJsonFile("single_limit_periods.json");
         testRecipe.setScheduling(schedule);
+
+        mockCurrentCalendar(new DateTime(2017, 6, 1, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime(2047, 8, 20, 12, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime(2017, 3, 5, 23, 59, 59));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        mockCurrentCalendar(new DateTime(1989, 7, 2, 16, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(true));
+
+        mockCurrentCalendar(new DateTime(2017, 5, 31, 23, 59, 59));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime(2017, 4, 15, 12, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        mockCurrentCalendar(new DateTime(2017, 3, 6, 0, 0, 0));
+        assertThat(advScheduleValidator.validate(testRecipe), is(false));
+    }
+
+    @Test
+    public void whenRecipeIsScheduledOnlyForSelectedDaysOfWeek_itsValidityIsChecked() throws Exception {
+        List<Object> noDaysSchedule = readJsonFile("only_mon_wed_thu_sat.json");
+        testRecipe.setScheduling(noDaysSchedule);
+
+        List<Object> emptyDaysSchedule = readJsonFile("empty_days_schedule.json");
+        testRecipe2.setScheduling(emptyDaysSchedule);
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.sunday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(false));
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.monday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.tuesday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(false));
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.wednesday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.thursday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.friday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(false));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(false));
 
         mockCurrentCalendar(new DateTime().withDayOfWeek(DayOfWeek.saturday()));
         assertThat(advScheduleValidator.validate(testRecipe), is(true));
+        assertThat(advScheduleValidator.validate(testRecipe2), is(true));
     }
 
     @Test
