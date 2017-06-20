@@ -12,6 +12,8 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
+import static it.near.sdk.utils.NearUtils.checkNotNull;
+
 public class EvaluationBodyBuilder {
 
     static final String PULSE_PLUGIN_ID_KEY = "pulse_plugin_id";
@@ -34,9 +36,9 @@ public class EvaluationBodyBuilder {
     public EvaluationBodyBuilder(GlobalConfig globalConfig,
                                  RecipesHistory recipesHistory,
                                  CurrentTime currentTime) {
-        this.globalConfig = globalConfig;
-        this.recipesHistory = recipesHistory;
-        this.currentTime = currentTime;
+        this.globalConfig = checkNotNull(globalConfig);
+        this.recipesHistory = checkNotNull(recipesHistory);
+        this.currentTime = checkNotNull(currentTime);
     }
 
     public String buildEvaluateBody() throws JSONException {
