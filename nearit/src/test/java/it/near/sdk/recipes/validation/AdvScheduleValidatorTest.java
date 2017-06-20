@@ -294,8 +294,10 @@ public class AdvScheduleValidatorTest {
 
     private Calendar buildCalendarFrom(DateTime dateTime) {
         Calendar calendar = Calendar.getInstance();
+        // set the timezone from java standard library Timezone because Jodatime cannot be initialized in a unit test
         calendar.setTime(dateTime.withZoneRetainFields(
-                DateTimeZone.forTimeZone(TimeZone.getDefault())).toDate());
+                DateTimeZone.forTimeZone(TimeZone.getDefault())).toDate()
+        );
         calendar.getTime();
         return calendar;
     }

@@ -122,7 +122,7 @@ public class NearItManager {
                 RecipesHistory.getSharedPreferences(application),
                 new CurrentTime()
         );
-        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory);
+        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
         TrackManager trackManager = getTrackManager(application);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
