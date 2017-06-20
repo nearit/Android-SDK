@@ -106,6 +106,43 @@ public class EvaluationBodyBuilderTest {
         assertThat(Long.valueOf((Integer) actualObj.get("recipe_id_2")), is(1000L));
     }
 
+    @Test
+    public void whenOperatingInVariuousTimezones_utcOffsetIsCorrectlyBuilt() throws JSONException {
+        when(mockCurrentTime.currentCalendar()).thenReturn(Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30")));
+        assertThat(
+                extractUtcOffsetFrom(evaluationBodyBuilder.buildEvaluateBody()),
+                is("+05:30")
+        );
+        when(mockCurrentTime.currentCalendar()).thenReturn(Calendar.getInstance(TimeZone.getTimeZone("GMT+14:00")));
+        assertThat(
+                extractUtcOffsetFrom(evaluationBodyBuilder.buildEvaluateBody()),
+                is("+14:00")
+        );
+        when(mockCurrentTime.currentCalendar()).thenReturn(Calendar.getInstance(TimeZone.getTimeZone("GMT±00:00")));
+        assertThat(
+                extractUtcOffsetFrom(evaluationBodyBuilder.buildEvaluateBody()),
+                is("+00:00")
+        );
+        when(mockCurrentTime.currentCalendar()).thenReturn(Calendar.getInstance(TimeZone.getTimeZone("GMT-3:30")));
+        assertThat(
+                extractUtcOffsetFrom(evaluationBodyBuilder.buildEvaluateBody()),
+                is("-03:30")
+        );
+        when(mockCurrentTime.currentCalendar()).thenReturn(Calendar.getInstance(TimeZone.getTimeZone("GMT-12:00")));
+        assertThat(
+                extractUtcOffsetFrom(evaluationBodyBuilder.buildEvaluateBody()),
+                is("-12:00")
+        );
+    }
+
+    private String extractUtcOffsetFrom(String actual) throws JSONException {
+        JSONObject actualObj = new JSONObject(actual);
+        actualObj = actualObj.getJSONObject("data");
+        actualObj = actualObj.getJSONObject("attributes");
+        actualObj = actualObj.getJSONObject(KEY_CORE);
+        return (String) actualObj.get(KEY_UTC_OFFSET);
+    }
+
     @Test(expected = JSONException.class)
     public void whenMissingGlobalData_shouldThrow() throws JSONException {
         when(mockGlobalConfig.getAppId()).thenReturn(null);
