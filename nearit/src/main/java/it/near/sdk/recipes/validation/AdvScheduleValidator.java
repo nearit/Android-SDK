@@ -137,6 +137,7 @@ public class AdvScheduleValidator extends Validator {
         fixedDate.set(Calendar.HOUR_OF_DAY, currentCalendar.get(Calendar.HOUR_OF_DAY));
         fixedDate.set(Calendar.MINUTE, currentCalendar.get(Calendar.MINUTE));
         fixedDate.set(Calendar.SECOND, currentCalendar.get(Calendar.SECOND));
+        fixedDate.set(Calendar.MILLISECOND, 0);
         fixedDate.getTime();
         return fixedDate;
     }
@@ -147,6 +148,7 @@ public class AdvScheduleValidator extends Validator {
         cal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(parts[0]));
         cal.set(Calendar.MINUTE, Integer.parseInt(parts[1]));
         cal.set(Calendar.SECOND, Integer.parseInt(parts[2]));
+        cal.set(Calendar.MILLISECOND, 0);
         cal.getTime();
         return cal;
     }
