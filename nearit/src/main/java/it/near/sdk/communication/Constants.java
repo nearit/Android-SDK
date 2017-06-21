@@ -28,7 +28,10 @@ public class Constants {
          * Content-type value
          */
         String jsonApiHeader = "application/vnd.api+json";
+
         String version_header_key = "X-API-Version";
+
+        String near_version_header_key = "X-Near-Version";
     }
 
     // -------------------- PATHS --------------------------
