@@ -131,7 +131,7 @@ public class ContentReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                     formatLinks(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                    nearNotifier.deliverBackgroundPushReaction(content, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
                 }
 
                 @Override
@@ -140,11 +140,15 @@ public class ContentReaction extends CoreReaction {
                 }
             });
         } else {
-            nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+            nearNotifier.deliverBackgroundPushReaction(content, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
         }
 
     }
 
+    @Override
+    public void handlePushReaction(String recipeId, String reactionAction, String reactionBundleId) {
+        // TODO not implemented
+    }
 
     private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()

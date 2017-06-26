@@ -66,7 +66,7 @@ public class PollReaction extends CoreReaction {
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
         Poll poll = (Poll) reactionBundle;
         poll.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundPushReaction(poll, recipe, push_id);
+        nearNotifier.deliverBackgroundPushReaction(poll, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
     }
 
     private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {

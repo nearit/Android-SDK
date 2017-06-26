@@ -52,12 +52,24 @@ public class SimpleNotificationReaction extends CoreReaction {
 
     @Override
     public void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle) {
-        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(recipe), recipe, push_id);
+        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(recipe), push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
     }
+
+    @Override
+    public void handlePushReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleId) {
+        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(notificationText), null, recipeId, notificationText,  );
+    }
+
+    private SimpleNotification contentFromRecipe(String notificationText) {
+        return new SimpleNotification(notificationText, null);
+    }
+
 
     private SimpleNotification contentFromRecipe(Recipe recipe) {
         return new SimpleNotification(recipe.getNotificationBody(), recipe.getNotificationTitle());
     }
+
+
 
     @Override
     protected void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener) {

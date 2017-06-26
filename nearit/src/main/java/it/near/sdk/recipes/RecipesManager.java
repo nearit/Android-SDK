@@ -286,6 +286,19 @@ public class RecipesManager {
         }
     }
 
+    /**
+     * Process a recipe from the reaction triple. Used for getting a content from a push
+     *
+     * @param reactionPlugin
+     * @param reactionAction
+     * @param reactionBundleId
+     */
+    public void processRecipe(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleId) {
+        Reaction reaction = reactions.get(reactionPlugin);
+        if (reaction == null) return;
+        reaction.handlePushReaction(recipeId, notificationText, reactionAction, reactionBundleId);
+    }
+
     private void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(EVALUATE).build();

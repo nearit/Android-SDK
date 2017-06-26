@@ -111,7 +111,7 @@ public class CouponReaction extends CoreReaction {
         if (recipe.isForegroundRecipe()) {
             nearNotifier.deliverForegroundReaction(coupon, recipe);
         } else {
-            nearNotifier.deliverBackgroundReaction(coupon, recipe);
+            nearNotifier.deliverBackgroundReaction(coupon, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
         }
     }
 
@@ -124,7 +124,7 @@ public class CouponReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
                     formatLinks(coupon);
-                    nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
+                    nearNotifier.deliverBackgroundPushReaction(coupon, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
                 }
 
                 @Override
@@ -134,7 +134,7 @@ public class CouponReaction extends CoreReaction {
             });
         } else {
             formatLinks(coupon);
-            nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
+            nearNotifier.deliverBackgroundPushReaction(coupon, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
         }
     }
 

@@ -121,7 +121,7 @@ public class FeedbackReaction extends CoreReaction {
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
         Feedback feedback = (Feedback) reaction_bundle;
         feedback.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
+        nearNotifier.deliverBackgroundPushReaction(feedback, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
     }
 
     public void sendEvent(FeedbackEvent event, final NearITEventHandler handler) {

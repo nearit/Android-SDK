@@ -232,13 +232,13 @@ public class NearItManager {
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe) {
-            deliverBeackgroundEvent(parcelable, recipe, GEO_MESSAGE_ACTION, null);
+        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin,String reactionAction) {
+            deliverBeackgroundEvent(parcelable, GEO_MESSAGE_ACTION, null, recipeId, notificationText, reactionPlugin, reactionAction);
         }
 
         @Override
-        public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id) {
-            deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION, push_id);
+        public void deliverBackgroundPushReaction(Parcelable parcelable, String push_id, String recipeId, String notificationText, String reactionPlugin,String reactionAction) {
+            deliverBeackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, push_id, recipeId, notificationText, reactionPlugin, reactionAction);
         }
 
         @Override
@@ -255,10 +255,14 @@ public class NearItManager {
         }
     };
 
-    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId) {
+    private void deliverBeackgroundEvent(
+            Parcelable parcelable, String action,
+            String pushId, String recipeId,
+            String notificationText, String reactionPlugin,
+            String reactionAction) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
+        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin, reactionAction);
         if (action.equals(PUSH_MESSAGE_ACTION)) {
             resultIntent.putExtra(NearItIntentConstants.PUSH_ID, pushId);
         }

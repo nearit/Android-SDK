@@ -7,9 +7,6 @@ public class NearItIntentConstants {
     public static final String CONTENT = "content";
     public static final String REACTION_PLUGIN = "reaction-plugin";
     public static final String REACTION_ACTION = "reaction-action";
-    public static final String PULSE_PLUGIN = "pulse-plugin";
-    public static final String PULSE_ACTION = "pulse-action";
-    public static final String PULSE_BUNDLE = "pulse-bundle";
     
     @Deprecated
     public static final String NOTIF_TITLE = "notif_title";
