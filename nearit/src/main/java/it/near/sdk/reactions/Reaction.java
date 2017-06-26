@@ -92,5 +92,5 @@ public abstract class Reaction {
      * @param recipeId         the recipe object.
      * @param reactionAction   the reaction action.
      */
-    public abstract void handlePushReaction(String recipeId, String notificationText, String reactionPlugin, String reactionAction);
+    public abstract void handlePushReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleId);
 }

@@ -277,16 +277,12 @@ public class Recipe extends Resource {
      */
     public static void fillIntentExtras(
             Intent intent, Parcelable parcelable,
-            String recipeId, String notificationText,
-            String reactionPlugin, String reactionAction) {
+            String recipeId, String notificationText) {
 
         intent.putExtra(NearItIntentConstants.RECIPE_ID, recipeId);
         // set notification text
         intent.putExtra(NearItIntentConstants.NOTIF_BODY, notificationText);
         // set contet to show
         intent.putExtra(NearItIntentConstants.CONTENT, parcelable);
-        // set the content type so the app can cast the parcelable to correct content
-        intent.putExtra(NearItIntentConstants.REACTION_PLUGIN, reactionPlugin);
-        intent.putExtra(NearItIntentConstants.REACTION_ACTION, reactionAction);
     }
 }

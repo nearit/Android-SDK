@@ -131,7 +131,7 @@ public class ContentReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                     formatLinks(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody());
                 }
 
                 @Override
@@ -140,14 +140,26 @@ public class ContentReaction extends CoreReaction {
                 }
             });
         } else {
-            nearNotifier.deliverBackgroundPushReaction(content, push_id, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
+            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody());
         }
 
     }
 
     @Override
-    public void handlePushReaction(String recipeId, String reactionAction, String reactionBundleId) {
-        // TODO not implemented
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
+                formatLinks(content);
+                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText);
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                NearLog.d(TAG, "couldn't fetch content for push recipe");
+            }
+        });
     }
 
     private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {

@@ -46,7 +46,6 @@ import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackSender;
 import it.near.sdk.utils.ApplicationVisibility;
 import it.near.sdk.utils.CurrentTime;
-import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
 
 /**
@@ -232,13 +231,13 @@ public class NearItManager {
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin,String reactionAction) {
-            deliverBeackgroundEvent(parcelable, GEO_MESSAGE_ACTION, null, recipeId, notificationText, reactionPlugin, reactionAction);
+        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText) {
+            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, recipeId, notificationText);
         }
 
         @Override
-        public void deliverBackgroundPushReaction(Parcelable parcelable, String push_id, String recipeId, String notificationText, String reactionPlugin,String reactionAction) {
-            deliverBeackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, push_id, recipeId, notificationText, reactionPlugin, reactionAction);
+        public void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText) {
+            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, recipeId, notificationText);
         }
 
         @Override
@@ -255,17 +254,12 @@ public class NearItManager {
         }
     };
 
-    private void deliverBeackgroundEvent(
-            Parcelable parcelable, String action,
-            String pushId, String recipeId,
-            String notificationText, String reactionPlugin,
-            String reactionAction) {
+    private void deliverBackgroundEvent(
+            Parcelable parcelable, String action, String recipeId,
+            String notificationText) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin, reactionAction);
-        if (action.equals(PUSH_MESSAGE_ACTION)) {
-            resultIntent.putExtra(NearItIntentConstants.PUSH_ID, pushId);
-        }
+        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText);
         application.sendOrderedBroadcast(resultIntent, null);
     }
 

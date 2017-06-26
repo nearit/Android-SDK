@@ -95,7 +95,7 @@ public abstract class CoreReaction extends Reaction {
                 if (recipe.isForegroundRecipe()) {
                     nearNotifier.deliverForegroundReaction(content, recipe);
                 } else {
-                    nearNotifier.deliverBackgroundReaction(content, recipe.getId(), recipe.getNotificationBody(), recipe.getReaction_plugin_id(), recipe.getReaction_action().getId());
+                    nearNotifier.deliverBackgroundReaction(content, recipe.getId(), recipe.getNotificationBody());
                 }
             }
 
