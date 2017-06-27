@@ -8,7 +8,7 @@ import java.util.zip.Inflater;
 
 public class FormatDecoder {
 
-    public byte[] decodeBae64(String encoded) throws IllegalArgumentException {
+    public byte[] decodeBase64(String encoded) throws IllegalArgumentException {
         return Base64.decode(encoded, Base64.DEFAULT);
     }
 

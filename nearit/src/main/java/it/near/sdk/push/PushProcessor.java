@@ -3,7 +3,7 @@ package it.near.sdk.push;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 
@@ -15,13 +15,13 @@ class PushProcessor {
     private final RecipesManager recipesManager;
     private final FormatDecoder formatDecoder;
 
-    private static final String REACTION_PLUGIN_ID = "reaction_plugin_id";
-    private static final String REACTION_ACTION_ID = "reaction_action_id";
-    private static final String REACTION_BUNDLE_ID = "reaction_bundle_id";
-    private static final String RECIPE_ID = "recipe_id";
-    private static final String NOTIFICATION = "notification";
-    private static final String REACTION_BUNDLE = "reaction_bundle";
-    private static final String NOTIFICATION_BODY = "body";
+    static final String REACTION_PLUGIN_ID = "reaction_plugin_id";
+    static final String REACTION_ACTION_ID = "reaction_action_id";
+    static final String REACTION_BUNDLE_ID = "reaction_bundle_id";
+    static final String RECIPE_ID = "recipe_id";
+    static final String NOTIFICATION = "notification";
+    static final String REACTION_BUNDLE = "reaction_bundle";
+    static final String NOTIFICATION_BODY = "body";
 
     PushProcessor(RecipesManager recipesManager, FormatDecoder formatDecoder) {
         this.recipesManager = recipesManager;
@@ -52,7 +52,7 @@ class PushProcessor {
                             return true;
                         }
 
-                    } catch (IOException | IllegalArgumentException | DataFormatException e) {
+                    } catch (UnsupportedEncodingException | IllegalArgumentException | DataFormatException e) {
                         return processFromBundleId(recipeId, notificationText, reactionPluginId, reactionActionId, reactionBundleId);
                     }
 
@@ -101,9 +101,9 @@ class PushProcessor {
         }
     }
 
-    private String decodeCompressedBundle(Map pushData) throws IOException, DataFormatException {
+    private String decodeCompressedBundle(Map pushData) throws DataFormatException, UnsupportedEncodingException {
         String compressed = (String) pushData.get(REACTION_BUNDLE);
-        byte[] bytes = formatDecoder.decodeBae64(compressed);
+        byte[] bytes = formatDecoder.decodeBase64(compressed);
         return formatDecoder.decompressZLIB(bytes);
     }
 }
