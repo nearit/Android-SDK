@@ -11,7 +11,6 @@ import it.near.sdk.reactions.content.Content;
 import it.near.sdk.reactions.coupon.Coupon;
 import it.near.sdk.reactions.customjson.CustomJSON;
 import it.near.sdk.reactions.feedback.Feedback;
-import it.near.sdk.reactions.poll.Poll;
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
@@ -37,12 +36,6 @@ public class ForegroundActivity extends AppCompatActivity implements ProximityLi
 
     }
 
-
-    // Handle the different contents in those methods
-    @Override
-    public void gotPollNotification(@Nullable Intent intent, Poll notification, String recipeId) {
-
-    }
 
     @Override
     public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId) {

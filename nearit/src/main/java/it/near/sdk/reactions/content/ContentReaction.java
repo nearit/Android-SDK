@@ -162,6 +162,19 @@ public class ContentReaction extends CoreReaction {
         });
     }
 
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            Content content = NearJsonAPIUtils.parseElement(morpheus, toParse, Content.class);
+            formatLinks(content);
+            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText);
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
     private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)

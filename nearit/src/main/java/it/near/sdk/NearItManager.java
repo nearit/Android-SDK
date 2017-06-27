@@ -31,8 +31,6 @@ import it.near.sdk.reactions.coupon.CouponReaction;
 import it.near.sdk.reactions.customjson.CustomJSONReaction;
 import it.near.sdk.reactions.feedback.FeedbackEvent;
 import it.near.sdk.reactions.feedback.FeedbackReaction;
-import it.near.sdk.reactions.poll.PollEvent;
-import it.near.sdk.reactions.poll.PollReaction;
 import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
 import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
@@ -71,7 +69,6 @@ public class NearItManager {
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
     private SimpleNotificationReaction simpleNotification;
-    private PollReaction polls;
     private CouponReaction couponReaction;
     private CustomJSONReaction customJSON;
     private FeedbackReaction feedback;
@@ -137,9 +134,6 @@ public class NearItManager {
 
         simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
         recipesManager.addReaction(simpleNotification);
-
-        polls = new PollReaction(application, nearNotifier);
-        recipesManager.addReaction(polls);
 
         couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
@@ -221,7 +215,6 @@ public class NearItManager {
         contentNotification.refreshConfig();
         simpleNotification.refreshConfig();
         customJSON.refreshConfig();
-        polls.refreshConfig();
         feedback.refreshConfig();
     }
 
@@ -285,9 +278,6 @@ public class NearItManager {
      */
     public boolean sendEvent(Event event, NearITEventHandler handler) {
         switch (event.getPlugin()) {
-            case PollEvent.PLUGIN_NAME:
-                polls.sendEvent((PollEvent) event, handler);
-                return true;
             case FeedbackEvent.PLUGIN_NAME:
                 feedback.sendEvent((FeedbackEvent) event, handler);
                 return true;

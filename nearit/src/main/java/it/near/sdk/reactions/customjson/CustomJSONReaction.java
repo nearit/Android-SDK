@@ -176,6 +176,11 @@ public class CustomJSONReaction extends CoreReaction {
         });
     }
 
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        return false;
+    }
+
 
     public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()

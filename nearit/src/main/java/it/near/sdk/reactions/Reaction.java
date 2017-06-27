@@ -93,4 +93,7 @@ public abstract class Reaction {
      * @param reactionAction   the reaction action.
      */
     public abstract void handlePushReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleId);
+
+
+    public abstract boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString);
 }

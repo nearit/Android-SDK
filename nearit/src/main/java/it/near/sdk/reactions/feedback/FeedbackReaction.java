@@ -3,7 +3,6 @@ package it.near.sdk.reactions.feedback;
 import android.content.Context;
 import android.net.Uri;
 
-
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -19,16 +18,16 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
-import it.near.sdk.recipes.models.ReactionBundle;
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.models.ReactionBundle;
+import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
@@ -139,6 +138,19 @@ public class FeedbackReaction extends CoreReaction {
                 NearLog.d(TAG, "Couldn't fetch content");
             }
         });
+    }
+
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            Feedback fb = NearJsonAPIUtils.parseElement(morpheus, toParse, Feedback.class);
+            fb.setRecipeId(recipeId);
+            nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText);
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
     }
 
     public void sendEvent(FeedbackEvent event, final NearITEventHandler handler) {

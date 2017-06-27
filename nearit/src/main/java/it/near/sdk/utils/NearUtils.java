@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Parcelable;
 import android.util.Base64;
 
-
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -19,8 +18,6 @@ import it.near.sdk.reactions.customjson.CustomJSON;
 import it.near.sdk.reactions.customjson.CustomJSONReaction;
 import it.near.sdk.reactions.feedback.Feedback;
 import it.near.sdk.reactions.feedback.FeedbackReaction;
-import it.near.sdk.reactions.poll.Poll;
-import it.near.sdk.reactions.poll.PollReaction;
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
 import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
 import it.near.sdk.recipes.models.Recipe;
@@ -125,11 +122,6 @@ public class NearUtils {
             case SimpleNotificationReaction.PLUGIN_NAME:
                 SimpleNotification s_notif = (SimpleNotification) content;
                 listener.gotSimpleNotification(intent, s_notif, recipeId);
-                coreContent = true;
-                break;
-            case PollReaction.PLUGIN_NAME:
-                Poll p_notif = (Poll) content;
-                listener.gotPollNotification(intent, p_notif, recipeId);
                 coreContent = true;
                 break;
             case CouponReaction.PLUGIN_NAME:
