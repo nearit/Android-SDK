@@ -131,7 +131,7 @@ public class ContentReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                     formatLinks(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody());
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getPluginName());
                 }
 
                 @Override
@@ -140,7 +140,7 @@ public class ContentReaction extends CoreReaction {
                 }
             });
         } else {
-            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody());
+            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getPluginName());
         }
 
     }
@@ -152,7 +152,7 @@ public class ContentReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                 formatLinks(content);
-                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText);
+                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getPluginName());
             }
 
             @Override
@@ -167,8 +167,9 @@ public class ContentReaction extends CoreReaction {
         try {
             JSONObject toParse = new JSONObject(reactionBundleString);
             Content content = NearJsonAPIUtils.parseElement(morpheus, toParse, Content.class);
+            if (content == null) return false;
             formatLinks(content);
-            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText);
+            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getPluginName());
             return true;
         } catch (JSONException e) {
             return false;

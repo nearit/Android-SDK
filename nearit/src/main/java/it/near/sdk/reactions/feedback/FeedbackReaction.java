@@ -120,7 +120,7 @@ public class FeedbackReaction extends CoreReaction {
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
         Feedback feedback = (Feedback) reaction_bundle;
         feedback.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundPushReaction(feedback, recipe.getId(), recipe.getNotificationBody());
+        nearNotifier.deliverBackgroundPushReaction(feedback, recipe.getId(), recipe.getNotificationBody(), getPluginName());
     }
 
     @Override
@@ -130,7 +130,7 @@ public class FeedbackReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Feedback fb = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
                 fb.setRecipeId(recipeId);
-                nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText);
+                nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getPluginName());
             }
 
             @Override
@@ -145,8 +145,9 @@ public class FeedbackReaction extends CoreReaction {
         try {
             JSONObject toParse = new JSONObject(reactionBundleString);
             Feedback fb = NearJsonAPIUtils.parseElement(morpheus, toParse, Feedback.class);
+            if (fb == null) return false;
             fb.setRecipeId(recipeId);
-            nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText);
+            nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getPluginName());
             return true;
         } catch (JSONException e) {
             return false;

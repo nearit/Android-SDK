@@ -224,13 +224,13 @@ public class NearItManager {
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText) {
-            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, recipeId, notificationText);
+        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
+            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
         }
 
         @Override
-        public void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText) {
-            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, recipeId, notificationText);
+        public void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
+            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
         }
 
         @Override
@@ -249,10 +249,10 @@ public class NearItManager {
 
     private void deliverBackgroundEvent(
             Parcelable parcelable, String action, String recipeId,
-            String notificationText) {
+            String notificationText, String reactionPlugin) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText);
+        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin);
         application.sendOrderedBroadcast(resultIntent, null);
     }
 

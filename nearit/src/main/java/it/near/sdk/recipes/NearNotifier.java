@@ -10,14 +10,14 @@ public interface NearNotifier {
      *
      * @param parcelable the generic parcelable reaction object.
      */
-    void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText);
+    void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin);
 
     /**
      * Deliver a reaction in the background coming from a push.
      *
      * @param parcelable the generic parcelable reaction object.
      */
-    void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText);
+    void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin);
 
     /**
      * Deliver a reaction for a foreground-only recipe e.g. ranging recipe.

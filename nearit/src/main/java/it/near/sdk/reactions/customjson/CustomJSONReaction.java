@@ -157,7 +157,7 @@ public class CustomJSONReaction extends CoreReaction {
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
         CustomJSON customJSON = (CustomJSON) reactionBundle;
-        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody());
+        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody(), getPluginName());
     }
 
     @Override
@@ -166,7 +166,7 @@ public class CustomJSONReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
-                nearNotifier.deliverBackgroundPushReaction(json, recipeId, notificationText);
+                nearNotifier.deliverBackgroundPushReaction(json, recipeId, notificationText, getPluginName());
             }
 
             @Override
@@ -178,7 +178,16 @@ public class CustomJSONReaction extends CoreReaction {
 
     @Override
     public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
-        return false;
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, toParse, CustomJSON.class);
+            if (json == null) return false;
+            nearNotifier.deliverBackgroundPushReaction(json, recipeId, notificationText, getPluginName());
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
