@@ -39,6 +39,7 @@ import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.RecipeRefreshListener;
+import it.near.sdk.recipes.RecipeTrackSender;
 import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
@@ -128,14 +129,15 @@ public class NearItManager {
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
         validators.add(new AdvScheduleValidator(new CurrentTime()));
         RecipeValidationFilter recipeValidationFilter = new RecipeValidationFilter(validators);
+
+        RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipesHistory, trackManager, new CurrentTime());
         recipesManager = new RecipesManager(
                 new NearAsyncHttpClient(application),
                 globalConfig,
-                recipesHistory,
                 recipeValidationFilter,
                 evaluationBodyBuilder,
                 RecipesManager.getSharedPreferences(application),
-                trackManager);
+                recipeTrackSender);
         RecipesManager.setInstance(recipesManager);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);

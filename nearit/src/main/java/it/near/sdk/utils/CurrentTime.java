@@ -8,5 +8,7 @@ public class CurrentTime {
         return System.currentTimeMillis() / 1000;
     }
 
+    public Long currentTimestamp() {return System.currentTimeMillis();}
+
     public Calendar currentCalendar() { return Calendar.getInstance();}
 }
