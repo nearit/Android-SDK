@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -14,20 +13,17 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.reactions.Reaction;
@@ -37,8 +33,6 @@ import it.near.sdk.recipes.models.PulseBundle;
 import it.near.sdk.recipes.models.ReactionAction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
-import it.near.sdk.trackings.TrackManager;
-import it.near.sdk.trackings.TrackRequest;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -64,20 +58,20 @@ public class RecipesManager {
     private final RecipeCooler recipeCooler;
     private final GlobalConfig globalConfig;
     private final EvaluationBodyBuilder evaluationBodyBuilder;
-    private final TrackManager trackManager;
+    private final RecipeTrackSender recipeTrackSender;
 
     public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
                           RecipeCooler recipeCooler,
                           EvaluationBodyBuilder evaluationBodyBuilder,
                           SharedPreferences sp,
-                          TrackManager trackManager) {
+                          RecipeTrackSender recipeTrackSender) {
         this.httpClient = httpClient;
         this.globalConfig = globalConfig;
         this.recipeCooler = recipeCooler;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.sp = sp;
-        this.trackManager = trackManager;
+        this.recipeTrackSender = recipeTrackSender;
 
         try {
             recipes = loadChachedList();
@@ -186,8 +180,8 @@ public class RecipesManager {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
         sp.edit()
-            .putString(TAG, listStringified)
-            .apply();
+                .putString(TAG, listStringified)
+                .apply();
     }
 
     private List<Recipe> loadChachedList() throws JSONException {
@@ -368,49 +362,17 @@ public class RecipesManager {
     }
 
     /**
-     * Sends tracking on a recipe. Lets choose the notified status.
+     * Sends tracking on a recipe.
+     * Those two statuses are natively supported:
+     * {@value Recipe#NOTIFIED_STATUS} and {@value Recipe#ENGAGED_STATUS}
+     * If you wish to use custom tracking, send your string as a tracking event.
      *
      * @param recipeId      the recipe identifier.
-     * @param trackingEvent notified status to send. Can either be NO
+     * @param trackingEvent notified status to send.
      * @throws JSONException
      */
     public void sendTracking(String recipeId, String trackingEvent) throws JSONException {
-        if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
-            if (recipeCooler != null) {
-                recipeCooler.markRecipeAsShown(recipeId);
-            }
-        }
-
-        String trackingBody = buildTrackingBody(
-                recipeId,
-                trackingEvent
-        );
-
-        Uri url = Uri.parse(TRACKINGS_PATH).buildUpon().build();
-
-        trackManager.sendTracking(new TrackRequest(url.toString(), trackingBody));
-    }
-
-    private String buildTrackingBody(String recipeId, String trackingEvent) throws JSONException {
-        String profileId = globalConfig.getProfileId();
-        String appId = globalConfig.getAppId();
-        String installationId = globalConfig.getInstallationId();
-        if (recipeId == null ||
-                profileId == null ||
-                installationId == null) {
-            throw new JSONException("missing data");
-        }
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        Date now = new Date(System.currentTimeMillis());
-        String formattedDate = sdf.format(now);
-        HashMap<String, Object> attributes = new HashMap<>();
-        attributes.put("profile_id", profileId);
-        attributes.put("installation_id", installationId);
-        attributes.put("app_id", appId);
-        attributes.put("recipe_id", recipeId);
-        attributes.put("event", trackingEvent);
-        attributes.put("tracked_at", formattedDate);
-        return NearJsonAPIUtils.toJsonAPI("trackings", attributes);
+        recipeTrackSender.sendTracking(recipeId, trackingEvent);
     }
 
     public static SharedPreferences getSharedPreferences(Context context) {

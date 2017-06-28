@@ -39,6 +39,7 @@ import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.RecipeCooler;
 import it.near.sdk.recipes.RecipeRefreshListener;
+import it.near.sdk.recipes.RecipeTrackSender;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackCache;
@@ -119,6 +120,7 @@ public class NearItManager {
         );
         EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(recipeCooler, globalConfig);
         TrackManager trackManager = getTrackManager(application);
+        RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipeCooler, trackManager, new CurrentTime());
 
         recipesManager = new RecipesManager(
                 new NearAsyncHttpClient(application),
@@ -126,7 +128,7 @@ public class NearItManager {
                 recipeCooler,
                 evaluationBodyBuilder,
                 RecipesManager.getSharedPreferences(application),
-                trackManager);
+                recipeTrackSender);
         RecipesManager.setInstance(recipesManager);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);
