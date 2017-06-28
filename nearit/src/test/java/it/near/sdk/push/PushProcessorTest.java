@@ -13,6 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 
+import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.FormatDecoder;
 
@@ -26,6 +27,8 @@ import static it.near.sdk.push.PushProcessor.RECIPE_ID;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -92,6 +95,22 @@ public class PushProcessorTest {
         verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
         verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
         verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+    }
+
+    @Test
+    public void pushWithSimpleNotification_shouldNotFallbackDueToMissingBundleId() throws Exception {
+        pushMap.put(RECIPE_ID, dummyRecipeId);
+        pushMap.put(REACTION_PLUGIN_ID, SimpleNotificationReaction.PLUGIN_NAME);  // only for this plugin
+        pushMap.put(REACTION_ACTION_ID, dummyReactionAction);
+        // pushMap.put(REACTION_BUNDLE_ID, dummyReactionBundleId); we don't use this
+        pushMap.put(NOTIFICATION, dummyNotification.toString());
+        when(mockRecipeManager.processReactionBundle(dummyRecipeId, dummyNotificationBody, SimpleNotificationReaction.PLUGIN_NAME, dummyReactionAction, dummyDecompressedData))
+                .thenReturn(true);
+        boolean result = pushProcessor.processPush(pushMap);
+        assertThat(result, is(true));
+        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeManager, times(1)).processRecipe(eq(dummyRecipeId), eq(dummyNotificationBody), eq(SimpleNotificationReaction.PLUGIN_NAME), eq(dummyReactionAction), anyString());
+        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, SimpleNotificationReaction.PLUGIN_NAME, dummyReactionAction, dummyDecompressedData);
     }
 
     @Test

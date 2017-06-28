@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 
+import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.FormatDecoder;
 
@@ -31,6 +32,8 @@ class PushProcessor {
     boolean processPush(Map pushData) {
         if (!pushData.containsKey(RECIPE_ID)) return false;
         String recipeId = (String) pushData.get(RECIPE_ID);
+
+        normalizeSimpleNotificationContent(pushData);
 
         if (pushHasReactionInfo(pushData)) {
             String reactionPluginId = (String) pushData.get(REACTION_PLUGIN_ID);
@@ -65,6 +68,13 @@ class PushProcessor {
             }
         } else {
             return oldProcessRequest(recipeId);
+        }
+    }
+
+    private void normalizeSimpleNotificationContent(Map pushData) {
+        if (pushData.containsKey(REACTION_PLUGIN_ID) &&
+                pushData.get(REACTION_PLUGIN_ID).equals(SimpleNotificationReaction.PLUGIN_NAME)) {
+            pushData.put(REACTION_BUNDLE_ID, "dummy");
         }
     }
 
