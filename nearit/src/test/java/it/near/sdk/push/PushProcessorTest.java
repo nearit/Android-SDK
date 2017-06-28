@@ -104,8 +104,6 @@ public class PushProcessorTest {
         pushMap.put(REACTION_ACTION_ID, dummyReactionAction);
         // pushMap.put(REACTION_BUNDLE_ID, dummyReactionBundleId); we don't use this
         pushMap.put(NOTIFICATION, dummyNotification.toString());
-        when(mockRecipeManager.processReactionBundle(dummyRecipeId, dummyNotificationBody, SimpleNotificationReaction.PLUGIN_NAME, dummyReactionAction, dummyDecompressedData))
-                .thenReturn(true);
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
         verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
