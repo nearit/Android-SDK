@@ -90,13 +90,11 @@ public class NearInstallationRequestQueue {
     private void registerOrEditInstallation(InstallationRequest installationRequest) throws UnsupportedEncodingException, AuthenticationException {
         String installationId = globalConfig.getInstallationId();
         if (installationId == null) {
-            NearLog.e(TAG, "POST");
             httpClient.nearPost(
                     Constants.API.INSTALLATIONS_PATH,
                     installationRequest.installationBody,
                     installationRequest.responseHandler);
         } else {
-            NearLog.e(TAG, "PUT " + installationId);
             String subPath = "/" + installationId;
             httpClient.nearPut(
                     Constants.API.INSTALLATIONS_PATH + subPath,
