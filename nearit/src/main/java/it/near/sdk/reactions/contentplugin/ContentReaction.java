@@ -34,9 +34,6 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
 
-/**
- * @author cattaneostefano
- */
 public class ContentReaction extends CoreReaction {
     // ---------- content notification plugin ----------
     public static final String PLUGIN_NAME = "content-notification";
@@ -58,7 +55,7 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch (reaction_action) {
             case SHOW_CONTENT_ACTION_NAME:
                 showContent(reaction_bundle.getId(), recipe);

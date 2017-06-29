@@ -26,38 +26,6 @@ public class Claim extends Resource implements Parcelable {
     public Claim() {
     }
 
-    public String getSerial_number() {
-        return serial_number;
-    }
-
-    public void setSerial_number(String serial_number) {
-        this.serial_number = serial_number;
-    }
-
-    public String getClaimed_at() {
-        return claimed_at;
-    }
-
-    public void setClaimed_at(String claimed_at) {
-        this.claimed_at = claimed_at;
-    }
-
-    public String getRedeemed_at() {
-        return redeemed_at;
-    }
-
-    public void setRedeemed_at(String redeemed_at) {
-        this.redeemed_at = redeemed_at;
-    }
-
-    public String getRecipe_id() {
-        return recipe_id;
-    }
-
-    public void setRecipe_id(String recipe_id) {
-        this.recipe_id = recipe_id;
-    }
-
     @Override
     public int describeContents() {
         return 0;

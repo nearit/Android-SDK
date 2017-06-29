@@ -14,10 +14,6 @@ import it.near.sdk.reactions.contentplugin.model.Upload;
 
 import static junit.framework.Assert.*;
 
-/**
- * Created by cattaneostefano on 02/03/2017.
- */
-
 @RunWith(AndroidJUnit4.class)
 public class UploadTest {
 
@@ -28,13 +24,13 @@ public class UploadTest {
         HashMap<String, Object> map = Maps.newHashMap();
         String pdfUrl = "http://jsnfijegfuien.pdf";
         map.put("url", pdfUrl);
-        upload.setUpload(map);
+        upload.uploadMap = (map);
         Parcel parcel = Parcel.obtain();
         upload.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Upload actual = Upload.CREATOR.createFromParcel(parcel);
         assertEquals(upload.getId(), actual.getId());
-        assertEquals(upload.getUpload(), actual.getUpload());
+        assertEquals(upload.uploadMap, actual.uploadMap);
         assertEquals(pdfUrl, actual.getUrl());
     }
 }

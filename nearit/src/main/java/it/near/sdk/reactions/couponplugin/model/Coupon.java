@@ -68,7 +68,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     @Nullable
     public String getSerial() {
         if (anyClaim()) {
-            return claims.get(0).getSerial_number();
+            return claims.get(0).serial_number;
         }
         return null;
     }
@@ -80,7 +80,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     @Nullable
     public String getClaimedAt() {
         if (anyClaim()) {
-            return claims.get(0).getClaimed_at();
+            return claims.get(0).claimed_at;
         }
         return null;
     }
@@ -96,7 +96,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     @Nullable
     public String getRedeemedAt() {
         if (anyClaim()) {
-            return claims.get(0).getRedeemed_at();
+            return claims.get(0).redeemed_at;
         }
         return null;
     }
@@ -110,7 +110,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     }
 
     public String getRecipeId() {
-        return claims.get(0).getRecipe_id();
+        return claims.get(0).recipe_id;
     }
 
     public ImageSet getIconSet() {

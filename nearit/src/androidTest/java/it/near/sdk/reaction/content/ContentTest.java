@@ -43,7 +43,7 @@ public class ContentTest {
         Upload upload = new Upload();
         HashMap<String, Object> uploadMap = Maps.newHashMap();
         uploadMap.put("url", "a.pdf");
-        upload.setUpload(uploadMap);
+        upload.uploadMap = uploadMap;
         content.upload = upload;
         Parcel parcel = Parcel.obtain();
         content.writeToParcel(parcel, 0);
@@ -55,7 +55,7 @@ public class ContentTest {
         assertEquals(content.getId(), actual.getId());
         assertEquals(content.updated_at, actual.updated_at);
         assertEquals(content.audio.audioMap, actual.audio.audioMap);
-        assertEquals(content.upload.getUpload(), actual.upload.getUpload());
+        assertEquals(content.upload.uploadMap, actual.upload.uploadMap);
     }
 
 }
