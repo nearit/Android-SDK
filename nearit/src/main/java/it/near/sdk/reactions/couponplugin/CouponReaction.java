@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.coupon;
+package it.near.sdk.reactions.couponplugin;
 
 import android.content.Context;
 import android.net.Uri;
@@ -20,9 +20,11 @@ import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.reactions.content.Image;
+import it.near.sdk.reactions.contentplugin.model.Image;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.couponplugin.model.Claim;
+import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;

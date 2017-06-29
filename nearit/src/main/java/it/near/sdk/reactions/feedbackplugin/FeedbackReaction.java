@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.feedback;
+package it.near.sdk.reactions.feedbackplugin;
 
 import android.content.Context;
 import android.net.Uri;
@@ -25,6 +25,7 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearITEventHandler;

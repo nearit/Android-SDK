@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import it.near.sdk.reactions.content.Content;
-import it.near.sdk.reactions.coupon.Coupon;
-import it.near.sdk.reactions.customjson.CustomJSON;
-import it.near.sdk.reactions.feedback.Feedback;
+import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.couponplugin.model.Coupon;
+import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
+import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.poll.Poll;
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
 import it.near.sdk.recipes.background.NearItIntentService;

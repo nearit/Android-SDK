@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.coupon;
+package it.near.sdk.reactions.couponplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

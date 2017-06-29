@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.feedback;
+package it.near.sdk.reactions.feedbackplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

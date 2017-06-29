@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.coupon;
+package it.near.sdk.reactions.couponplugin;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import java.util.Date;
+
+import it.near.sdk.reactions.couponplugin.model.Coupon;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;

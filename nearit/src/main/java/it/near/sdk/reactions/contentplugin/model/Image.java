@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.content;
+package it.near.sdk.reactions.contentplugin.model;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.internal.LinkedTreeMap;

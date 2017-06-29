@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.feedback;
+package it.near.sdk.reactions.feedbackplugin;
 
 import org.json.JSONException;
 
@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.reactions.Event;
+import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**

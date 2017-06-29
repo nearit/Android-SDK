@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.coupon;
+package it.near.sdk.reactions.couponplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Locale;
 
 import it.near.sdk.morpheusnear.annotations.Relationship;
-import it.near.sdk.reactions.content.Image;
-import it.near.sdk.reactions.content.ImageSet;
+import it.near.sdk.reactions.contentplugin.model.Image;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 /**

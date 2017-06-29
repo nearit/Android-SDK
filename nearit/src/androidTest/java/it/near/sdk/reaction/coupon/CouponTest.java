@@ -8,9 +8,9 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import it.near.sdk.reactions.content.ImageSet;
-import it.near.sdk.reactions.coupon.Claim;
-import it.near.sdk.reactions.coupon.Coupon;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
+import it.near.sdk.reactions.couponplugin.model.Claim;
+import it.near.sdk.reactions.couponplugin.model.Coupon;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;

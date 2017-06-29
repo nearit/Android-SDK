@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.content;
+package it.near.sdk.reactions.contentplugin;
 
 import android.content.Context;
 import android.net.Uri;
@@ -22,6 +22,11 @@ import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.contentplugin.model.Audio;
+import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.Image;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
+import it.near.sdk.reactions.contentplugin.model.Upload;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.Recipe;

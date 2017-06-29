@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.customjson;
+package it.near.sdk.reactions.customjsonplugin;
 
 import android.content.Context;
 import android.net.Uri;
@@ -23,6 +23,7 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;

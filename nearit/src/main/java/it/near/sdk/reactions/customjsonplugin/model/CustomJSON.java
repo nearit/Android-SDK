@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.customjson;
+package it.near.sdk.reactions.customjsonplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

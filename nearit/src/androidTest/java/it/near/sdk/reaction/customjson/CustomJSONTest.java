@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
-import it.near.sdk.reactions.customjson.CustomJSON;
+import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 
 import static junit.framework.Assert.*;
 

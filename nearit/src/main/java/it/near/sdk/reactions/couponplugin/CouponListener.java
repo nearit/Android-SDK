@@ -1,6 +1,8 @@
-package it.near.sdk.reactions.coupon;
+package it.near.sdk.reactions.couponplugin;
 
 import java.util.List;
+
+import it.near.sdk.reactions.couponplugin.model.Coupon;
 
 /**
  * @author cattaneostefano.

@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
-import it.near.sdk.reactions.content.Upload;
+import it.near.sdk.reactions.contentplugin.model.Upload;
 
 import static junit.framework.Assert.*;
 

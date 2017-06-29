@@ -11,10 +11,10 @@ import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
-import it.near.sdk.reactions.content.Audio;
-import it.near.sdk.reactions.content.Content;
-import it.near.sdk.reactions.content.ImageSet;
-import it.near.sdk.reactions.content.Upload;
+import it.near.sdk.reactions.contentplugin.model.Audio;
+import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
+import it.near.sdk.reactions.contentplugin.model.Upload;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
