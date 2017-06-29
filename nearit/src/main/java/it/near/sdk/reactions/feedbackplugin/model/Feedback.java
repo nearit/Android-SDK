@@ -39,14 +39,6 @@ public class Feedback extends ReactionBundle implements Parcelable {
         }
     };
 
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
-
     public String getRecipeId() {
         return recipeId;
     }

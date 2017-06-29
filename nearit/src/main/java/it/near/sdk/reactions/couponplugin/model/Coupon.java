@@ -30,6 +30,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     public String description;
     @SerializedName("value")
     public String value;
+    @Nullable
     @SerializedName("expires_at")
     public String expires_at;
     @SerializedName("redeemable_from")
@@ -46,46 +47,14 @@ public class Coupon extends ReactionBundle implements Parcelable {
     public Coupon() {
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getExpiresAt() {
-        return expires_at;
-    }
-
     @Nullable
     public Date getExpiresAtDate() {
         return toDate(expires_at);
     }
 
-    public void setExpires_at(String expires_at) {
-        this.expires_at = expires_at;
-    }
-
-    public String getRedeemableFrom() {
-        return redeemable_from;
-    }
-
     @Nullable
     public Date getRedeemableFromDate() {
         return toDate(redeemable_from);
-    }
-
-    public void setRedeemable_from(String redeemable_from) {
-        this.redeemable_from = redeemable_from;
     }
 
     public String getIcon_id() {
@@ -94,14 +63,6 @@ public class Coupon extends ReactionBundle implements Parcelable {
 
     public void setIcon_id(String icon_id) {
         this.icon_id = icon_id;
-    }
-
-    public Image getIcon() {
-        return icon;
-    }
-
-    public void setIcon(Image icon) {
-        this.icon = icon;
     }
 
     @Nullable

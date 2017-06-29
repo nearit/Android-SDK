@@ -225,7 +225,7 @@ public class CouponReaction extends CoreReaction {
     }
 
     private void formatLinks(Coupon notification) {
-        Image icon = notification.getIcon();
+        Image icon = notification.icon;
         if (icon == null) return;
         notification.setIconSet(icon.toImageSet());
     }

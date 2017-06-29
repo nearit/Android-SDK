@@ -148,7 +148,7 @@ public class RecipeCoolerTest {
         // when there's a recent entry log
         mRecipeCooler.markRecipeAsShown(mNonCriticalRecipe.getId());
         // and a recipe without the cooldown section
-        mNonCriticalRecipe.setCooldown(null);
+        mNonCriticalRecipe.cooldown = null;
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then it gets treated as a critical recipe
@@ -159,7 +159,7 @@ public class RecipeCoolerTest {
     @Test
     public void whenMissingSelfCooldown_considerItZero() {
         // when a recipe has no selfcooldown
-        mNonCriticalRecipe.setCooldown(buildCooldown(0D, null));
+        mNonCriticalRecipe.cooldown = buildCooldown(0D, null);
         mRecipeCooler.markRecipeAsShown(mNonCriticalRecipe.getId());
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
@@ -172,7 +172,7 @@ public class RecipeCoolerTest {
     public void whenMissingGlobalCoolDown_considerItZero() {
         // when a recipe has no globalcooldown
         mRecipeCooler.markRecipeAsShown(mCriticalRecipe.getId());
-        mNonCriticalRecipe.setCooldown(buildCooldown(null, 0D));
+        mNonCriticalRecipe.cooldown = buildCooldown(null, 0D);
         List<Recipe> recipeList = newArrayList(mNonCriticalRecipe);
         mRecipeCooler.filterRecipe(recipeList);
         // then its get treated as critical
@@ -224,7 +224,7 @@ public class RecipeCoolerTest {
     private Recipe buildRecipe(String id, HashMap<String, Object> cooldown) {
         Recipe criticalRecipe = new Recipe();
         criticalRecipe.setId(id);
-        criticalRecipe.setCooldown(cooldown);
+        criticalRecipe.cooldown = cooldown;
         return criticalRecipe;
     }
 

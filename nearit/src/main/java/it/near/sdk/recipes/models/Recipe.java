@@ -25,8 +25,6 @@ import it.near.sdk.utils.NearItIntentConstants;
  */
 public class Recipe extends Resource {
 
-    @SerializedName("name")
-    public String name;
     @SerializedName("notification")
     public HashMap<String, Object> notification;
     @SerializedName("labels")
@@ -56,36 +54,12 @@ public class Recipe extends Resource {
     public static final String TIMETABLE_SCHEDULING = "timetable";
     public static final String DAYS_SCHEDULING = "days";
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public HashMap<String, Object> getNotification() {
-        return notification;
-    }
-
-    public void setNotification(HashMap<String, Object> notification) {
-        this.notification = notification;
-    }
-
-    public HashMap<String, Object> getLabels() {
-        return labels;
-    }
-
     public boolean isEvaluatedOnline() {
         if (!labels.containsKey(ONLINE)) {
             return false;
         } else {
             return labels.get(ONLINE).equals(true);
         }
-    }
-
-    public void setLabels(HashMap<String, Object> labels) {
-        this.labels = labels;
     }
 
     public String getPulse_plugin_id() {
@@ -138,28 +112,20 @@ public class Recipe extends Resource {
         this.reaction_action = reaction_action;
     }
 
-    public HashMap<String, Object> getCooldown() {
-        return cooldown;
-    }
-
     public void setScheduling(HashMap<String, Object> scheduling) {
         this.scheduling = scheduling;
     }
 
-    public void setCooldown(HashMap<String, Object> cooldown) {
-        this.cooldown = cooldown;
-    }
-
     public String getNotificationTitle() {
-        if (getNotification().containsKey("title")) {
-            return getNotification().get("title").toString();
+        if (notification.containsKey("title")) {
+            return notification.get("title").toString();
         }
         return null;
     }
 
     public String getNotificationBody() {
-        if (getNotification().containsKey("body")) {
-            return getNotification().get("body").toString();
+        if (notification.containsKey("body")) {
+            return notification.get("body").toString();
         }
         return null;
     }

@@ -16,10 +16,6 @@ import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 
-/**
- * Created by cattaneostefano on 28/02/2017.
- */
-
 @RunWith(AndroidJUnit4.class)
 public class CouponTest {
 
@@ -27,11 +23,11 @@ public class CouponTest {
     public void couponIsParcelable() {
         Coupon coupon = new Coupon();
         coupon.setId("coupon_id");
-        coupon.setName("coupon_name");
+        coupon.name = "coupon_name";
         coupon.description = "coupon_description";
-        coupon.setValue("coupon_value");
-        coupon.setExpires_at("expiring_soon");
-        coupon.setRedeemable_from("redeemable_from");
+        coupon.value = "coupon_value";
+        coupon.expires_at = "expiring_soon";
+        coupon.redeemable_from = "redeemable_from";
         coupon.setIcon_id("coupon_icon_id");
         coupon.claims = Lists.newArrayList(new Claim(), new Claim());
         coupon.setIconSet(new ImageSet());
@@ -42,11 +38,11 @@ public class CouponTest {
         Coupon actual = Coupon.CREATOR.createFromParcel(parcel);
 
         assertEquals(coupon.getId(), actual.getId());
-        assertEquals(coupon.getName(), actual.getName());
+        assertEquals(coupon.name, actual.name);
         assertEquals(coupon.description, actual.description);
-        assertEquals(coupon.getValue(), actual.getValue());
-        assertEquals(coupon.getExpiresAt(), actual.getExpiresAt());
-        assertEquals(coupon.getRedeemableFrom(), actual.getRedeemableFrom());
+        assertEquals(coupon.value, actual.value);
+        assertEquals(coupon.expires_at, actual.expires_at);
+        assertEquals(coupon.redeemable_from, actual.redeemable_from);
         assertEquals(coupon.getIcon_id(), actual.getIcon_id());
         assertThat(coupon.claims, containsInAnyOrder(actual.claims.toArray()));
         assertEquals(coupon.getIconSet(), actual.getIconSet());

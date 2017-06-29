@@ -20,14 +20,6 @@ public class CustomJSON extends ReactionBundle implements Parcelable {
     public CustomJSON() {
     }
 
-    public HashMap<String, Object> getContent() {
-        return content;
-    }
-
-    public void setContent(HashMap<String, Object> content) {
-        this.content = content;
-    }
-
     protected CustomJSON(Parcel in) {
         content = (HashMap<String, Object>) in.readSerializable();
     }

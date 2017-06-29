@@ -27,13 +27,13 @@ public class AudioTest {
         HashMap<String, Object> map = Maps.newHashMap();
         String audioUrl = "http://jsnfijegfuien.mp3";
         map.put("url", audioUrl);
-        audio.audio = map;
+        audio.audioMap = map;
         audio.setId("audio_id");
         Parcel parcel = Parcel.obtain();
         audio.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Audio actual = Audio.CREATOR.createFromParcel(parcel);
-        assertEquals(audio.audio, actual.audio);
+        assertEquals(audio.audioMap, actual.audioMap);
         assertEquals(audioUrl, actual.getUrl());
         assertEquals(audio.getId(), actual.getId());
     }

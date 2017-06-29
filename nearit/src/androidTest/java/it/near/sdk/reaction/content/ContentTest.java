@@ -30,15 +30,15 @@ public class ContentTest {
     @Test
     public void contentIsParcelable() {
         Content content = new Content();
-        content.setContent("content");
+        content.contentString = "content";
         content.setImages_links(Lists.newArrayList(new ImageSet(), new ImageSet()));
-        content.setVideo_link("video_link");
+        content.video_link = "video_link";
         content.setId("content_id");
-        content.setUpdated_at("updated@whatever");
+        content.updated_at = "updated@whatever";
         Audio audio = new Audio();
         HashMap<String, Object> audioMap = Maps.newHashMap();
         audioMap.put("url", "a.mp3");
-        audio.audio = audioMap;
+        audio.audioMap = audioMap;
         content.audio = audio;
         Upload upload = new Upload();
         HashMap<String, Object> uploadMap = Maps.newHashMap();
@@ -49,12 +49,12 @@ public class ContentTest {
         content.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Content actual = Content.CREATOR.createFromParcel(parcel);
-        assertEquals(content.getContent(), actual.getContent());
+        assertEquals(content.contentString, actual.contentString);
         assertThat(content.getImages_links(), containsInAnyOrder(actual.getImages_links().toArray()));
-        assertEquals(content.getVideo_link(), actual.getVideo_link());
+        assertEquals(content.video_link, actual.video_link);
         assertEquals(content.getId(), actual.getId());
-        assertEquals(content.getUpdated_at(), actual.getUpdated_at());
-        assertEquals(content.audio.audio, actual.audio.audio);
+        assertEquals(content.updated_at, actual.updated_at);
+        assertEquals(content.audio.audioMap, actual.audio.audioMap);
         assertEquals(content.upload.getUpload(), actual.upload.getUpload());
     }
 

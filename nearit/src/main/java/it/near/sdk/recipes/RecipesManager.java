@@ -243,7 +243,6 @@ public class RecipesManager {
      * @param recipe the recipe to trigger.
      */
     public void gotRecipe(Recipe recipe) {
-        String stringRecipe = recipe.getName();
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
