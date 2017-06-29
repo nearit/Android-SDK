@@ -3,7 +3,6 @@ package it.near.sdk.reactions.feedbackplugin;
 import android.content.Context;
 import android.net.Uri;
 
-
 import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -19,17 +18,15 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
-import it.near.sdk.recipes.NearITEventHandler;
-import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
@@ -122,7 +119,38 @@ public class FeedbackReaction extends CoreReaction {
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
         Feedback feedback = (Feedback) reaction_bundle;
         feedback.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundPushReaction(feedback, recipe, push_id);
+        nearNotifier.deliverBackgroundPushReaction(feedback, recipe.getId(), recipe.getNotificationBody(), getPluginName());
+    }
+
+    @Override
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Feedback fb = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
+                fb.setRecipeId(recipeId);
+                nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getPluginName());
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                NearLog.d(TAG, "Couldn't fetch content");
+            }
+        });
+    }
+
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            Feedback fb = NearJsonAPIUtils.parseElement(morpheus, toParse, Feedback.class);
+            if (fb == null) return false;
+            fb.setRecipeId(recipeId);
+            nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getPluginName());
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
     }
 
     public void sendEvent(FeedbackEvent event, final NearITEventHandler handler) {

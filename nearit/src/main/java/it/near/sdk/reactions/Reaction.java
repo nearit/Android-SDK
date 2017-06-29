@@ -85,4 +85,15 @@ public abstract class Reaction {
      * @param reaction_bundle the reaction bundle.
      */
     public abstract void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle);
+
+    /**
+     * Handle a reaction from a push notification. This will fetch the reactionBundle if is not cached.
+     *
+     * @param recipeId         the recipe object.
+     * @param reactionAction   the reaction action.
+     */
+    public abstract void handlePushReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleId);
+
+
+    public abstract boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString);
 }

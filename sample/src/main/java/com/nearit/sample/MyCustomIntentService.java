@@ -8,7 +8,7 @@ import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
-import it.near.sdk.reactions.poll.Poll;
+
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
 import it.near.sdk.recipes.background.NearItIntentService;
 import it.near.sdk.utils.CoreContentsListener;
@@ -33,12 +33,6 @@ public class MyCustomIntentService extends NearItIntentService implements CoreCo
             // Release the wake lock provided by the WakefulBroadcastReceiver.
             MyCustomBroadcastReceiver.completeWakefulIntent(intent);
         }
-    }
-
-    // handle the content specifically for different content types in these callback methods
-    @Override
-    public void gotPollNotification(@Nullable Intent intent, Poll notification, String recipeId) {
-        Log.d(TAG, "gotPollNotification");
     }
 
     @Override

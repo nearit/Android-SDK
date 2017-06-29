@@ -16,7 +16,7 @@ import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
-import it.near.sdk.reactions.poll.Poll;
+
 import it.near.sdk.reactions.simplenotification.SimpleNotification;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
@@ -87,11 +87,6 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     @Override
     public void foregroundEvent(Parcelable content, Recipe recipe) {
         NearUtils.parseCoreContents(content, recipe, this);
-    }
-
-    @Override
-    public void gotPollNotification(@Nullable Intent intent, Poll notification, String recipeId) {
-        Toast.makeText(this, "You received a poll", Toast.LENGTH_SHORT).show();
     }
 
     @Override

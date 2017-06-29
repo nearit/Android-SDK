@@ -76,8 +76,8 @@ public class Recipe extends Resource {
         return labels;
     }
 
-    public boolean isEvaluatedOnline(){
-        if (!labels.containsKey(ONLINE)){
+    public boolean isEvaluatedOnline() {
+        if (!labels.containsKey(ONLINE)) {
             return false;
         } else {
             return labels.get(ONLINE).equals(true);
@@ -151,14 +151,14 @@ public class Recipe extends Resource {
     }
 
     public String getNotificationTitle() {
-        if (getNotification().containsKey("title")){
+        if (getNotification().containsKey("title")) {
             return getNotification().get("title").toString();
         }
         return null;
     }
 
     public String getNotificationBody() {
-        if (getNotification().containsKey("body")){
+        if (getNotification().containsKey("body")) {
             return getNotification().get("body").toString();
         }
         return null;
@@ -170,20 +170,22 @@ public class Recipe extends Resource {
 
     /**
      * Check if the recipe is valid according to the scheduling information.
+     *
      * @return the validity of the recipe.
      */
-    public boolean isScheduledNow(Calendar now){
+    public boolean isScheduledNow(Calendar now) {
         return scheduling == null ||
-                ( isDateValid(now) &&
-                isTimetableValid(now) &&
-                isDaysValid(now) );
+                (isDateValid(now) &&
+                        isTimetableValid(now) &&
+                        isDaysValid(now));
     }
 
     /**
      * Check if the date range is valid.
+     *
      * @return if the date range is respected.
      */
-    private boolean isDateValid(Calendar now){
+    private boolean isDateValid(Calendar now) {
         Map<String, Object> date = (Map<String, Object>) scheduling.get(DATE_SCHEDULING);
         if (date == null) return true;
         String fromDateString = (String) date.get("from");
@@ -213,6 +215,7 @@ public class Recipe extends Resource {
 
     /**
      * Check if the time range is valid.
+     *
      * @return if the time range is respected.
      */
     private boolean isTimetableValid(Calendar now) {
@@ -229,7 +232,7 @@ public class Recipe extends Resource {
                 fromHourCalendar.setTime(fromHourDate);
                 valid &= fromHourCalendar.before(now) || fromHourCalendar.equals(now);
             }
-            if (toHour != null){
+            if (toHour != null) {
                 Date toHourDate = timeFormatter.parse(toHour);
                 Calendar toHourCalendar = Calendar.getInstance();
                 toHourCalendar.setTime(toHourDate);
@@ -243,6 +246,7 @@ public class Recipe extends Resource {
 
     /**
      * Check if the days selection is valid.
+     *
      * @return if the days selection is respected.
      */
     private boolean isDaysValid(Calendar now) {
@@ -255,6 +259,7 @@ public class Recipe extends Resource {
 
     /**
      * Get today's day of week.
+     *
      * @return the day of week in "EE" format e.g. Sat.
      */
     private String getTodaysDate(Calendar now) {
@@ -266,24 +271,20 @@ public class Recipe extends Resource {
 
     /**
      * Fill the intent with extras regarding the recipe and the parcelable content.
-     * @param intent the intent for the background event.
-     * @param recipe the recipe causing the intent.
+     *
+     * @param intent     the intent for the background event.
      * @param parcelable the content to be delivered.
      */
-    public static void fillIntentExtras(Intent intent, Recipe recipe, Parcelable parcelable) {
+    public static void fillIntentExtras(
+            Intent intent, Parcelable parcelable,
+            String recipeId, String notificationText, String reactionPlugin) {
 
-        intent.putExtra(NearItIntentConstants.RECIPE_ID, recipe.getId());
+        intent.putExtra(NearItIntentConstants.RECIPE_ID, recipeId);
         // set notification text
-        intent.putExtra(NearItIntentConstants.NOTIF_TITLE, recipe.getNotificationTitle());
-        intent.putExtra(NearItIntentConstants.NOTIF_BODY, recipe.getNotificationBody());
+        intent.putExtra(NearItIntentConstants.NOTIF_BODY, notificationText);
         // set contet to show
         intent.putExtra(NearItIntentConstants.CONTENT, parcelable);
-        // set the content type so the app can cast the parcelable to correct content
-        intent.putExtra(NearItIntentConstants.REACTION_PLUGIN, recipe.getReaction_plugin_id());
-        intent.putExtra(NearItIntentConstants.REACTION_ACTION, recipe.getReaction_action().getId());
-        // set the pulse info
-        intent.putExtra(NearItIntentConstants.PULSE_PLUGIN, recipe.getPulse_plugin_id());
-        intent.putExtra(NearItIntentConstants.PULSE_ACTION, recipe.getPulse_action().getId());
-        intent.putExtra(NearItIntentConstants.PULSE_BUNDLE, recipe.getPulse_bundle() != null ? recipe.getPulse_bundle().getId() : "");
+
+        intent.putExtra(NearItIntentConstants.REACTION_PLUGIN, reactionPlugin);
     }
 }

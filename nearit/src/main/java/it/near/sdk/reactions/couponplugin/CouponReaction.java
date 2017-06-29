@@ -3,7 +3,6 @@ package it.near.sdk.reactions.couponplugin;
 import android.content.Context;
 import android.net.Uri;
 
-
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONObject;
@@ -16,9 +15,9 @@ import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.contentplugin.model.Image;
 import it.near.sdk.reactions.ContentFetchListener;
@@ -27,7 +26,6 @@ import it.near.sdk.reactions.couponplugin.model.Claim;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
-import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -113,7 +111,7 @@ public class CouponReaction extends CoreReaction {
         if (recipe.isForegroundRecipe()) {
             nearNotifier.deliverForegroundReaction(coupon, recipe);
         } else {
-            nearNotifier.deliverBackgroundReaction(coupon, recipe);
+            nearNotifier.deliverBackgroundReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getPluginName());
         }
     }
 
@@ -126,7 +124,7 @@ public class CouponReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
                     formatLinks(coupon);
-                    nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
+                    nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getPluginName());
                 }
 
                 @Override
@@ -136,8 +134,30 @@ public class CouponReaction extends CoreReaction {
             });
         } else {
             formatLinks(coupon);
-            nearNotifier.deliverBackgroundPushReaction(coupon, recipe, push_id);
+            nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getPluginName());
         }
+    }
+
+    @Override
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        requestSingleResource(reactionBundleId, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
+                formatLinks(coupon);
+                nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getPluginName());
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                NearLog.d(TAG, "couldn't fetch content for push recipe");
+            }
+        });
+    }
+
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        return false;
     }
 
 

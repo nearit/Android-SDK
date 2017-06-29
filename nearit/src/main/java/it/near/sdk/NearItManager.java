@@ -31,8 +31,6 @@ import it.near.sdk.reactions.couponplugin.CouponReaction;
 import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
 import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
 import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
-import it.near.sdk.reactions.poll.PollEvent;
-import it.near.sdk.reactions.poll.PollReaction;
 import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
 import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
@@ -47,7 +45,6 @@ import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackSender;
 import it.near.sdk.utils.ApplicationVisibility;
 import it.near.sdk.utils.CurrentTime;
-import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
 
 /**
@@ -73,7 +70,6 @@ public class NearItManager {
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
     private SimpleNotificationReaction simpleNotification;
-    private PollReaction polls;
     private CouponReaction couponReaction;
     private CustomJSONReaction customJSON;
     private FeedbackReaction feedback;
@@ -140,9 +136,6 @@ public class NearItManager {
 
         simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
         recipesManager.addReaction(simpleNotification);
-
-        polls = new PollReaction(application, nearNotifier);
-        recipesManager.addReaction(polls);
 
         couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
@@ -224,7 +217,6 @@ public class NearItManager {
         contentNotification.refreshConfig();
         simpleNotification.refreshConfig();
         customJSON.refreshConfig();
-        polls.refreshConfig();
         feedback.refreshConfig();
     }
 
@@ -234,13 +226,13 @@ public class NearItManager {
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundReaction(Parcelable parcelable, Recipe recipe) {
-            deliverBeackgroundEvent(parcelable, recipe, GEO_MESSAGE_ACTION, null);
+        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
+            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
         }
 
         @Override
-        public void deliverBackgroundPushReaction(Parcelable parcelable, Recipe recipe, String push_id) {
-            deliverBeackgroundEvent(parcelable, recipe, PUSH_MESSAGE_ACTION, push_id);
+        public void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
+            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
         }
 
         @Override
@@ -257,13 +249,12 @@ public class NearItManager {
         }
     };
 
-    private void deliverBeackgroundEvent(Parcelable parcelable, Recipe recipe, String action, String pushId) {
+    private void deliverBackgroundEvent(
+            Parcelable parcelable, String action, String recipeId,
+            String notificationText, String reactionPlugin) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, recipe, parcelable);
-        if (action.equals(PUSH_MESSAGE_ACTION)) {
-            resultIntent.putExtra(NearItIntentConstants.PUSH_ID, pushId);
-        }
+        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin);
         application.sendOrderedBroadcast(resultIntent, null);
     }
 
@@ -289,9 +280,6 @@ public class NearItManager {
      */
     public boolean sendEvent(Event event, NearITEventHandler handler) {
         switch (event.getPlugin()) {
-            case PollEvent.PLUGIN_NAME:
-                polls.sendEvent((PollEvent) event, handler);
-                return true;
             case FeedbackEvent.PLUGIN_NAME:
                 feedback.sendEvent((FeedbackEvent) event, handler);
                 return true;

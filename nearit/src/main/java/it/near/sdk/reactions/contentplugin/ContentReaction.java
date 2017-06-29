@@ -136,7 +136,7 @@ public class ContentReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                     formatLinks(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getPluginName());
                 }
 
                 @Override
@@ -145,11 +145,41 @@ public class ContentReaction extends CoreReaction {
                 }
             });
         } else {
-            nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getPluginName());
         }
 
     }
 
+    @Override
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
+                formatLinks(content);
+                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getPluginName());
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                NearLog.d(TAG, "couldn't fetch content for push recipe");
+            }
+        });
+    }
+
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            Content content = NearJsonAPIUtils.parseElement(morpheus, toParse, Content.class);
+            if (content == null) return false;
+            formatLinks(content);
+            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getPluginName());
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
 
     private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()

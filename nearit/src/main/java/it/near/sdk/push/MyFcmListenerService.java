@@ -1,15 +1,12 @@
 package it.near.sdk.push;
 
 
-
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import java.util.Map;
-
-import it.near.sdk.GlobalState;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.utils.FormatDecoder;
 
 /**
  * Service that receives push notification.
@@ -29,11 +26,10 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         NearLog.d(TAG, "From: " + message.getFrom());
         NearLog.d(TAG, "Message: " + message);
 
-        Map data = message.getData();
-        String recipe_id = (String) data.get("recipe_id");
-        String push_id = (String) data.get("push_id");
-
-        getRecipesManager().processRecipe(recipe_id);
+        new PushProcessor(
+                getRecipesManager(),
+                new FormatDecoder()
+        ).processPush(message.getData());
 
         // [START_EXCLUDE]
         /*
