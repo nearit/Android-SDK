@@ -95,7 +95,7 @@ public class NodesManager {
         }
         for (Node node : nodes) {
             if (node.getId() != null && node.getId().equals(id)) return node;
-            Node foundNode = findNode(node.getChildren(), id);
+            Node foundNode = findNode(node.children, id);
             if (foundNode != null) return foundNode;
         }
         return null;

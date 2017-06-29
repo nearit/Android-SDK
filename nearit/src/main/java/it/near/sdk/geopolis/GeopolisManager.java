@@ -193,15 +193,15 @@ public class GeopolisManager {
             switch (action) {
                 case GF_ENTRY_ACTION_SUFFIX:
                     trackAndFirePulse(node, Events.ENTER_PLACE);
-                    if (node.getChildren() != null) {
+                    if (node.children != null) {
                         geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnEnter(nodesManager.getNodes(), node));
-                        altBeaconMonitor.addRegions(node.getChildren());
+                        altBeaconMonitor.addRegions(node.children);
                     }
                     break;
                 case GF_EXIT_ACTION_SUFFIX:
                     trackAndFirePulse(node, Events.LEAVE_PLACE);
                     geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnExit(nodesManager.getNodes(), node));
-                    altBeaconMonitor.removeRegions(node.getChildren());
+                    altBeaconMonitor.removeRegions(node.children);
 
                     break;
                 case BT_ENTRY_ACTION_SUFFIX:
@@ -224,9 +224,9 @@ public class GeopolisManager {
     };
 
     private void trackAndFirePulse(Node node, String event) {
-        if (node != null && node.getIdentifier() != null) {
-            geopolisTrackingsManager.trackEvent(node.getIdentifier(), event);
-            firePulse(event, node.getIdentifier());
+        if (node != null && node.identifier != null) {
+            geopolisTrackingsManager.trackEvent(node.identifier, event);
+            firePulse(event, node.identifier);
         }
     }
 

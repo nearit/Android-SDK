@@ -35,7 +35,7 @@ public abstract class Reaction {
 
     public List<String> getSupportedActions() {
         if (supportedActions == null) {
-            buildActions();
+            supportedActions = buildActions();
         }
         return supportedActions;
     }
@@ -46,7 +46,7 @@ public abstract class Reaction {
      * @param recipe matched recipe
      */
     public void handleReaction(Recipe recipe) {
-        if (!getPluginName().equals(recipe.getReaction_plugin_id())) {
+        if (!getReactionPluginName().equals(recipe.getReaction_plugin_id())) {
             return;
         }
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe);
@@ -55,7 +55,7 @@ public abstract class Reaction {
     /**
      * Build supported actions
      */
-    public abstract void buildActions();
+    public abstract List<String> buildActions();
 
     /**
      * Refresh configuration from the server. Consider caching the results so you can support offline mode.
@@ -65,7 +65,7 @@ public abstract class Reaction {
     /**
      * @return the profile name.
      */
-    public abstract String getPluginName();
+    public abstract String getReactionPluginName();
 
     /**
      * Handle a reaction, including the call to the NearNotifier object.
@@ -85,4 +85,15 @@ public abstract class Reaction {
      * @param reaction_bundle the reaction bundle.
      */
     public abstract void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle);
+
+    /**
+     * Handle a reaction from a push notification. This will fetch the reactionBundle if is not cached.
+     *
+     * @param recipeId         the recipe object.
+     * @param reactionAction   the reaction action.
+     */
+    public abstract void handlePushReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleId);
+
+
+    public abstract boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString);
 }

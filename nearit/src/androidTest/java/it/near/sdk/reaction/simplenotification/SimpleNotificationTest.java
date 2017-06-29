@@ -6,7 +6,7 @@ import android.support.test.runner.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import it.near.sdk.reactions.simplenotification.SimpleNotification;
+import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 
 import static junit.framework.Assert.*;
 

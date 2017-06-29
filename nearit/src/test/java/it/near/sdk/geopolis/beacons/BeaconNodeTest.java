@@ -12,27 +12,27 @@ public class BeaconNodeTest {
     @Test
     public void shouldRecognizeBeacon_whenBeacon() {
         BeaconNode beacon = new BeaconNode();
-        beacon.setProximityUUID("dummy_prox_id");
-        beacon.setMajor(12345);
-        beacon.setMinor(54321);
+        beacon.proximityUUID = "dummy_prox_id";
+        beacon.major = 12345;
+        beacon.minor = 54321;
         assertThat(BeaconNode.isBeacon(beacon), is(true));
     }
 
     @Test
     public void shouldNotRecognizeBeacon_whenRegion() {
         BeaconNode region = new BeaconNode();
-        region.setProximityUUID("dummy_prox_id");
+        region.proximityUUID = "dummy_prox_id";
         assertThat(BeaconNode.isBeacon(region), is(false));
-        region.setMajor(98765);
+        region.major = 98765;
         assertThat(BeaconNode.isBeacon(region), is(false));
     }
 
     @Test
     public void shouldNotRecognizeBeacon_whenGeofence() {
         GeoFenceNode geofence = new GeoFenceNode();
-        geofence.setLatitude(1.2345);
-        geofence.setLongitude(9.8765);
-        geofence.setRadius(1.2345);
+        geofence.latitude = 1.2345;
+        geofence.longitude = 9.8765;
+        geofence.radius = 1.2345;
         assertThat(BeaconNode.isBeacon(geofence), is(false));
     }
 

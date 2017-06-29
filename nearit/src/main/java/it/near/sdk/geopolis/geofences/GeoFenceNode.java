@@ -32,46 +32,11 @@ public class GeoFenceNode extends Node implements Parcelable {
         super();
     }
 
-    public Number getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(Double latitude) {
-        this.latitude = latitude;
-    }
-
-    public void setLatitude(Integer latitude) {
-        this.latitude = latitude.doubleValue();
-    }
-
-    public Number getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(Double longitude) {
-        this.longitude = longitude;
-    }
-
-    public void setLongitude(Integer longitude) {
-        this.longitude = longitude.doubleValue();
-    }
-
-    public Number getRadius() {
-        return radius;
-    }
-
-    public void setRadius(Double radius) {
-        this.radius = radius;
-    }
-
-    public void setRadius(Integer radius) {
-        this.radius = radius.doubleValue();
-    }
 
     public Geofence toGeofence() {
         return new Geofence.Builder()
                 .setRequestId(getId())
-                .setCircularRegion(getLatitude().doubleValue(), getLongitude().doubleValue(), getRadius().intValue())
+                .setCircularRegion(latitude.doubleValue(), longitude.doubleValue(), radius.intValue())
                 .setLoiteringDelay(LOITERING_DELAY)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT | Geofence.GEOFENCE_TRANSITION_DWELL)

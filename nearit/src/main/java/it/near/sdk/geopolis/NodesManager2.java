@@ -44,8 +44,8 @@ public class NodesManager2 {
         for (Node node : nodes) {
             if (node.getId().equals(id)) {
                 return node;
-            } else if (node.getChildren() != null) {
-                Node foundNode = findNodeIn(node.getChildren(), id);
+            } else if (node.children != null) {
+                Node foundNode = findNodeIn(node.children, id);
                 if (foundNode != null) return foundNode;
             }
         }
@@ -65,7 +65,7 @@ public class NodesManager2 {
         List<Node> regionsToMonitor = new ArrayList<>();
         regionsToMonitor.addAll(getSibilings(node));
 
-        for (Node child : safe(node.getChildren())) {
+        for (Node child : safe(node.children)) {
             if (!BeaconNode.isBeacon(child))
                 regionsToMonitor.add(child);
         }
@@ -73,8 +73,8 @@ public class NodesManager2 {
     }
 
     private List<Node> getSibilings(Node node) {
-        if (node.getParent() != null)
-            return node.getParent().getChildren();
+        if (node.parent != null)
+            return node.parent.children;
         return nodes;
     }
 
@@ -82,18 +82,18 @@ public class NodesManager2 {
         if (nodes == null) return emptyList;
         Node node = findNodeIn(nodes, nodeId);
         if (node == null || BeaconNode.isBeacon(node)) return emptyList;
-        if (node.getParent() == null) return nodes;
-        return getMonitoredNodesOnEnter(node.getParent());
+        if (node.parent == null) return nodes;
+        return getMonitoredNodesOnEnter(node.parent);
     }
 
 
     public List<Node> getRangedNodesOnEnter(String nodeId) {
         if (nodes == null) return emptyList;
         Node node = findNodeIn(nodes, nodeId);
-        if (node == null || BeaconNode.isBeacon(node) || node.getChildren() == null)
+        if (node == null || BeaconNode.isBeacon(node) || node.children == null)
             return emptyList;
 
-        for (Node child : node.getChildren()) {
+        for (Node child : node.children) {
             if (BeaconNode.isBeacon(child)){
                 List<Node> regionsToRange = new ArrayList<>();
                 regionsToRange.add(node);

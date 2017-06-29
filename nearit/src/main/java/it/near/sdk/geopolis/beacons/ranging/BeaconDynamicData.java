@@ -42,7 +42,7 @@ public class BeaconDynamicData {
     }
 
     private void notifiyEvent(BeaconNode beaconNode, int newProximity) {
-        NearLog.d(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.getIdentifier());
+        NearLog.d(TAG, "Beacon event: " + newProximity + " on beacon: " + beaconNode.identifier);
         Intent intent = new Intent();
         String packageName = mContext.getPackageName();
         intent.setAction(packageName + "." + getActionFrom(newProximity));

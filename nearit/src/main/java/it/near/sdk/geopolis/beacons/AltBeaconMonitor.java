@@ -136,7 +136,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
             // e.printStackTrace();
         }
 
-        for (Node child : node.getChildren()) {
+        for (Node child : node.children) {
             addBranch(child, regionsToMonitor);
         }
     }
@@ -370,9 +370,9 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private List<BeaconNode> rangingBeaconsFor(Region region) {
         List<BeaconNode> nodes = new ArrayList<>();
         Node regionNode = nodesManager.nodeFromId(region.getUniqueId());
-        if (regionNode == null || regionNode.getChildren() == null) return nodes;
+        if (regionNode == null || regionNode.children == null) return nodes;
 
-        for (Node node : regionNode.getChildren()) {
+        for (Node node : regionNode.children) {
             if (BeaconNode.isBeacon(node)) {
                 nodes.add((BeaconNode) node);
             }

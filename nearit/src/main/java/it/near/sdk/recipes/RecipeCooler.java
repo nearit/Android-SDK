@@ -50,7 +50,7 @@ public class RecipeCooler {
     }
 
     private boolean canShowRecipe(Recipe recipe) {
-        Map<String, Object> cooldown = recipe.getCooldown();
+        Map<String, Object> cooldown = recipe.cooldown;
         try {
             return cooldown == null ||
                     (globalCooldownCheck(cooldown) && selfCooldownCheck(recipe, cooldown));

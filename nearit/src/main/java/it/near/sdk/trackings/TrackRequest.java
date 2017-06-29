@@ -35,6 +35,14 @@ public class TrackRequest {
         return new TrackRequest(url, body);
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
