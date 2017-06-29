@@ -25,6 +25,8 @@ import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
+import it.near.sdk.recipes.NearITEventHandler;
+import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
