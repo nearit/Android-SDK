@@ -22,42 +22,18 @@ public class BeaconNode extends Node {
     public BeaconNode() {
     }
 
-    public String getProximityUUID() {
-        return proximityUUID;
-    }
-
-    public void setProximityUUID(String proximityUUID) {
-        this.proximityUUID = proximityUUID;
-    }
-
-    public Integer getMajor() {
-        return major;
-    }
-
-    public void setMajor(Integer major) {
-        this.major = major;
-    }
-
-    public Integer getMinor() {
-        return minor;
-    }
-
-    public void setMinor(Integer minor) {
-        this.minor = minor;
-    }
-
     public static Region toAltRegion(BeaconNode beaconNode) throws NullPointerException {
-        if (beaconNode.identifier == null || beaconNode.getMinor() != null)
+        if (beaconNode.identifier == null || beaconNode.minor != null)
             throw new NullPointerException();
         return new Region(beaconNode.getId(),
-                Identifier.fromUuid(UUID.fromString(beaconNode.getProximityUUID())),
-                beaconNode.getMajor() != null ? Identifier.fromInt(beaconNode.getMajor()) : null,
-                beaconNode.getMinor() != null ? Identifier.fromInt(beaconNode.getMinor()) : null);
+                Identifier.fromUuid(UUID.fromString(beaconNode.proximityUUID)),
+                beaconNode.major != null ? Identifier.fromInt(beaconNode.major) : null,
+                beaconNode.minor != null ? Identifier.fromInt(beaconNode.minor) : null);
     }
 
     public static boolean isBeacon(Node node) {
         return node instanceof BeaconNode &&
-                ((BeaconNode) node).getMinor() != null &&
-                ((BeaconNode) node).getMajor() != null;
+                ((BeaconNode) node).minor != null &&
+                ((BeaconNode) node).major != null;
     }
 }

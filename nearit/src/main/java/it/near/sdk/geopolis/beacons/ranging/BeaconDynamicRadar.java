@@ -74,9 +74,9 @@ public class BeaconDynamicRadar {
 
     BeaconDynamicData findDynamicBeacon(Beacon _beacon) {
         for (BeaconDynamicData data : beaconsDistances) {
-            if (_beacon.getId2().toInt() == data.getBeaconNode().getMajor()
-                    && _beacon.getId3().toInt() == data.getBeaconNode().getMinor()
-                    && _beacon.getId1().toString().equals(data.getBeaconNode().getProximityUUID()))
+            if (_beacon.getId2().toInt() == data.getBeaconNode().major
+                    && _beacon.getId3().toInt() == data.getBeaconNode().minor
+                    && _beacon.getId1().toString().equals(data.getBeaconNode().proximityUUID))
                 return data;
         }
         return null;
