@@ -17,7 +17,7 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 
-import it.near.sdk.reactions.simplenotification.SimpleNotification;
+import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearItIntentConstants;

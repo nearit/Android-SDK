@@ -19,8 +19,8 @@ import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
 
-import it.near.sdk.reactions.simplenotification.SimpleNotification;
-import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
+import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 import it.near.sdk.recipes.models.Recipe;
 
 public class NearUtils {

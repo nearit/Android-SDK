@@ -16,8 +16,8 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
-import it.near.sdk.reactions.simplenotification.SimpleNotification;
-import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
+import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;

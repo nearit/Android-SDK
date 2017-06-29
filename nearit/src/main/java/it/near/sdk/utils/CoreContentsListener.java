@@ -8,7 +8,7 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 
-import it.near.sdk.reactions.simplenotification.SimpleNotification;
+import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 
 /**
  * Interface for being notified of core content types.

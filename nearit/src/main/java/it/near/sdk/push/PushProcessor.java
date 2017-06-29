@@ -7,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 
-import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.FormatDecoder;
 

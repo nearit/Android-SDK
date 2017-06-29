@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.simplenotification;
+package it.near.sdk.reactions.simplenotificationplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

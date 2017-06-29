@@ -20,15 +20,4 @@ public class TestModel extends Resource {
     public TestModel() {
     }
 
-    public String getContent() {
-        return content;
-    }
-
-    public Double getDouble_value() {
-        return double_value;
-    }
-
-    public Integer getInt_value() {
-        return int_value;
-    }
 }

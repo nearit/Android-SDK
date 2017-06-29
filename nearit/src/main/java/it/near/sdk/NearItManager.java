@@ -31,7 +31,7 @@ import it.near.sdk.reactions.couponplugin.CouponReaction;
 import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
 import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
 import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
-import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;

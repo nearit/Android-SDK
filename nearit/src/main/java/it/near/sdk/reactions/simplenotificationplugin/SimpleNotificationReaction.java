@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.simplenotification;
+package it.near.sdk.reactions.simplenotificationplugin;
 
 import android.content.Context;
 
@@ -7,6 +7,7 @@ import java.util.HashMap;
 
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;
