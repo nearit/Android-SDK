@@ -51,6 +51,8 @@ public class MorpheusTest {
         assertThat(object, instanceOf(TestModel.class));
         assertThat(object.getId(), is("1"));
         assertThat(object.content, is("contenuto"));
+        assertThat(object.double_value.doubleValue(), is(45.09843));
+        assertThat(object.int_value.intValue(), is(5000));
     }
 
     @Test

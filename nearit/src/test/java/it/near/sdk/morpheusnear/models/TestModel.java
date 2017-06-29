@@ -13,9 +13,9 @@ public class TestModel extends Resource {
     @SerializedName("content")
     public String content;
     @SerializedName("double_value")
-    public Double double_value;
+    public Number double_value;
     @SerializedName("int_value")
-    public Integer int_value;
+    public Number int_value;
 
     public TestModel() {
     }

@@ -3,7 +3,9 @@
     "type": "test",
     "id": "1",
     "attributes": {
-      "content" : "contenuto"
+      "content" : "contenuto",
+      "double_value" : 45.09843,
+      "int_value" : 5000
       }
     }
   }
