@@ -236,9 +236,10 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<>();
+    public List<String> buildActions() {
+        List<String> supportedActions = new ArrayList<>();
         supportedActions.add(SHOW_CONTENT_ACTION_NAME);
+        return supportedActions;
     }
 
 }

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
@@ -27,9 +28,10 @@ public class SimpleNotificationReaction extends CoreReaction {
     }
 
     @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<String>();
+    public List<String> buildActions() {
+        List<String> supportedActions = new ArrayList<String>();
         supportedActions.add(SHOW_SIMPLE_NOTIFICATION_ACTION_NAME);
+        return supportedActions;
     }
 
     @Override

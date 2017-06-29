@@ -69,9 +69,10 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<String>();
+    public List<String> buildActions() {
+        List<String> supportedActions = new ArrayList<String>();
         supportedActions.add(SHOW_COUPON_ACTION_NAME);
+        return supportedActions;
     }
 
     @Override

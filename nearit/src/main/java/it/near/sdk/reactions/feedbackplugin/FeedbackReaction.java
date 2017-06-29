@@ -239,8 +239,9 @@ public class FeedbackReaction extends CoreReaction {
     }
 
     @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<String>();
+    public List<String> buildActions() {
+        List<String> supportedActions = new ArrayList<String>();
         supportedActions.add(ASK_FEEDBACK_ACTION_NAME);
+        return supportedActions;
     }
 }

@@ -18,7 +18,7 @@ public abstract class Reaction {
     /**
      * List of supported plugin actions. Still unused.
      */
-    protected List<String> supportedActions = null;
+    private List<String> supportedActions = null;
     /**
      * App context.
      */
@@ -35,7 +35,7 @@ public abstract class Reaction {
 
     public List<String> getSupportedActions() {
         if (supportedActions == null) {
-            buildActions();
+            supportedActions = buildActions();
         }
         return supportedActions;
     }
@@ -55,7 +55,7 @@ public abstract class Reaction {
     /**
      * Build supported actions
      */
-    public abstract void buildActions();
+    public abstract List<String> buildActions();
 
     /**
      * Refresh configuration from the server. Consider caching the results so you can support offline mode.

@@ -66,9 +66,10 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
     @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<>();
+    public List<String> buildActions() {
+        List<String> supportedActions = new ArrayList<>();
         supportedActions.add(SHOW_JSON_ACTION);
+        return supportedActions;
     }
 
     @Override
