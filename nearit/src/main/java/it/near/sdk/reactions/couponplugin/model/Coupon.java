@@ -54,14 +54,6 @@ public class Coupon extends ReactionBundle implements Parcelable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getValue() {
         return value;
     }
@@ -112,30 +104,22 @@ public class Coupon extends ReactionBundle implements Parcelable {
         this.icon = icon;
     }
 
-    public List<Claim> getClaims() {
-        return claims;
-    }
-
-    public void setClaims(List<Claim> claims) {
-        this.claims = claims;
-    }
-
     @Nullable
     public String getSerial() {
         if (anyClaim()) {
-            return getClaims().get(0).getSerial_number();
+            return claims.get(0).getSerial_number();
         }
         return null;
     }
 
     private boolean anyClaim() {
-        return getClaims().size() > 0;
+        return claims.size() > 0;
     }
 
     @Nullable
     public String getClaimedAt() {
         if (anyClaim()) {
-            return getClaims().get(0).getClaimed_at();
+            return claims.get(0).getClaimed_at();
         }
         return null;
     }
@@ -151,7 +135,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     @Nullable
     public String getRedeemedAt() {
         if (anyClaim()) {
-            return getClaims().get(0).getRedeemed_at();
+            return claims.get(0).getRedeemed_at();
         }
         return null;
     }
@@ -165,7 +149,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     }
 
     public String getRecipeId() {
-        return getClaims().get(0).getRecipe_id();
+        return claims.get(0).getRecipe_id();
     }
 
     public ImageSet getIconSet() {

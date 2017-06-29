@@ -20,14 +20,6 @@ public class Audio extends Resource implements Parcelable {
     public Audio() {
     }
 
-    public HashMap<String, Object> getAudio() {
-        return audio;
-    }
-
-    public void setAudio(HashMap<String, Object> audio) {
-        this.audio = audio;
-    }
-
     public String getUrl() {
         return (String) audio.get("url");
     }

@@ -40,7 +40,7 @@ public class SimpleNotificationReaction extends CoreReaction {
     }
 
     @Override
-    public String getPluginName() {
+    public String getReactionPluginName() {
         return PLUGIN_NAME;
     }
 
@@ -55,17 +55,17 @@ public class SimpleNotificationReaction extends CoreReaction {
 
     @Override
     public void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle) {
-        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(recipe), recipe.getId(), recipe.getNotificationBody(), getPluginName());
+        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(recipe), recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
     }
 
     @Override
     public void handlePushReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleId) {
-        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(notificationText), recipeId, notificationText, getPluginName());
+        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(notificationText), recipeId, notificationText, getReactionPluginName());
     }
 
     @Override
     public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
-        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(notificationText), recipeId, notificationText, getPluginName());
+        nearNotifier.deliverBackgroundPushReaction(contentFromRecipe(notificationText), recipeId, notificationText, getReactionPluginName());
         return true;
     }
 

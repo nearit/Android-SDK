@@ -81,7 +81,7 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
-    public String getPluginName() {
+    public String getReactionPluginName() {
         return PLUGIN_NAME;
     }
 
@@ -113,7 +113,7 @@ public class CouponReaction extends CoreReaction {
         if (recipe.isForegroundRecipe()) {
             nearNotifier.deliverForegroundReaction(coupon, recipe);
         } else {
-            nearNotifier.deliverBackgroundReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getPluginName());
+            nearNotifier.deliverBackgroundReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
     }
 
@@ -126,7 +126,7 @@ public class CouponReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
                     formatLinks(coupon);
-                    nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getPluginName());
+                    nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
                 }
 
                 @Override
@@ -136,7 +136,7 @@ public class CouponReaction extends CoreReaction {
             });
         } else {
             formatLinks(coupon);
-            nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getPluginName());
+            nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
     }
 
@@ -147,7 +147,7 @@ public class CouponReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
                 formatLinks(coupon);
-                nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getPluginName());
+                nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
             }
 
             @Override

@@ -75,30 +75,6 @@ public class Content extends ReactionBundle implements Parcelable {
         this.images_links = images_links;
     }
 
-    public List<Image> getImages() {
-        return images;
-    }
-
-    public void setImages(List<Image> images) {
-        this.images = images;
-    }
-
-    public Audio getAudio() {
-        return audio;
-    }
-
-    public void setAudio(Audio audio) {
-        this.audio = audio;
-    }
-
-    public Upload getUpload() {
-        return upload;
-    }
-
-    public void setUpload(Upload upload) {
-        this.upload = upload;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -111,8 +87,8 @@ public class Content extends ReactionBundle implements Parcelable {
         dest.writeString(updated_at);
         dest.writeString(getId());
         dest.writeTypedList(getImages_links());
-        dest.writeParcelable(getAudio(), flags);
-        dest.writeParcelable(getUpload(), flags);
+        dest.writeParcelable(audio, flags);
+        dest.writeParcelable(upload, flags);
     }
 
     // Creator
@@ -134,8 +110,8 @@ public class Content extends ReactionBundle implements Parcelable {
         List<ImageSet> list = new ArrayList<ImageSet>();
         in.readTypedList(list, ImageSet.CREATOR);
         setImages_links(list);
-        setAudio((Audio) in.readParcelable(Audio.class.getClassLoader()));
-        setUpload((Upload) in.readParcelable(Upload.class.getClassLoader()));
+        audio = in.readParcelable(Audio.class.getClassLoader());
+        upload = in.readParcelable(Upload.class.getClassLoader());
     }
 
     public boolean hasContentToInclude() {

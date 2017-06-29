@@ -108,7 +108,7 @@ public class RecipesManager {
     }
 
     public void addReaction(Reaction reaction) {
-        reactions.put(reaction.getPluginName(), reaction);
+        reactions.put(reaction.getReactionPluginName(), reaction);
     }
 
     /**

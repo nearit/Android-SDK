@@ -38,13 +38,13 @@ public class ContentTest {
         Audio audio = new Audio();
         HashMap<String, Object> audioMap = Maps.newHashMap();
         audioMap.put("url", "a.mp3");
-        audio.setAudio(audioMap);
-        content.setAudio(audio);
+        audio.audio = audioMap;
+        content.audio = audio;
         Upload upload = new Upload();
         HashMap<String, Object> uploadMap = Maps.newHashMap();
         uploadMap.put("url", "a.pdf");
         upload.setUpload(uploadMap);
-        content.setUpload(upload);
+        content.upload = upload;
         Parcel parcel = Parcel.obtain();
         content.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -54,8 +54,8 @@ public class ContentTest {
         assertEquals(content.getVideo_link(), actual.getVideo_link());
         assertEquals(content.getId(), actual.getId());
         assertEquals(content.getUpdated_at(), actual.getUpdated_at());
-        assertEquals(content.getAudio().getAudio(), actual.getAudio().getAudio());
-        assertEquals(content.getUpload().getUpload(), actual.getUpload().getUpload());
+        assertEquals(content.audio.audio, actual.audio.audio);
+        assertEquals(content.upload.getUpload(), actual.upload.getUpload());
     }
 
 }

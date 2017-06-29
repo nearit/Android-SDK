@@ -18,7 +18,7 @@ public abstract class Reaction {
     /**
      * List of supported plugin actions. Still unused.
      */
-    private List<String> supportedActions = null;
+    protected List<String> supportedActions = null;
     /**
      * App context.
      */
@@ -46,7 +46,7 @@ public abstract class Reaction {
      * @param recipe matched recipe
      */
     public void handleReaction(Recipe recipe) {
-        if (!getPluginName().equals(recipe.getReaction_plugin_id())) {
+        if (!getReactionPluginName().equals(recipe.getReaction_plugin_id())) {
             return;
         }
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe);
@@ -65,7 +65,7 @@ public abstract class Reaction {
     /**
      * @return the profile name.
      */
-    public abstract String getPluginName();
+    public abstract String getReactionPluginName();
 
     /**
      * Handle a reaction, including the call to the NearNotifier object.

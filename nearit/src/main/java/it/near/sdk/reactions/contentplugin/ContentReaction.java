@@ -136,7 +136,7 @@ public class ContentReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                     formatLinks(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getPluginName());
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
                 }
 
                 @Override
@@ -145,7 +145,7 @@ public class ContentReaction extends CoreReaction {
                 }
             });
         } else {
-            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getPluginName());
+            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
 
     }
@@ -157,7 +157,7 @@ public class ContentReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                 formatLinks(content);
-                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getPluginName());
+                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
             }
 
             @Override
@@ -174,7 +174,7 @@ public class ContentReaction extends CoreReaction {
             Content content = NearJsonAPIUtils.parseElement(morpheus, toParse, Content.class);
             if (content == null) return false;
             formatLinks(content);
-            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getPluginName());
+            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
             return true;
         } catch (JSONException e) {
             return false;
@@ -207,7 +207,7 @@ public class ContentReaction extends CoreReaction {
     }
 
     private void formatLinks(Content notification) {
-        List<Image> images = notification.getImages();
+        List<Image> images = notification.images;
         List<ImageSet> imageSets = new ArrayList<>();
         for (Image image : images) {
             imageSets.add(image.toImageSet());
@@ -216,7 +216,7 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public String getPluginName() {
+    public String getReactionPluginName() {
         return PLUGIN_NAME;
     }
 

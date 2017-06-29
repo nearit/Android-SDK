@@ -92,7 +92,7 @@ public class FeedbackReaction extends CoreReaction {
     }
 
     @Override
-    public String getPluginName() {
+    public String getReactionPluginName() {
         return PLUGIN_NAME;
     }
 
@@ -121,7 +121,7 @@ public class FeedbackReaction extends CoreReaction {
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
         Feedback feedback = (Feedback) reaction_bundle;
         feedback.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundPushReaction(feedback, recipe.getId(), recipe.getNotificationBody(), getPluginName());
+        nearNotifier.deliverBackgroundPushReaction(feedback, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
     }
 
     @Override
@@ -131,7 +131,7 @@ public class FeedbackReaction extends CoreReaction {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Feedback fb = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
                 fb.setRecipeId(recipeId);
-                nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getPluginName());
+                nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getReactionPluginName());
             }
 
             @Override
@@ -148,7 +148,7 @@ public class FeedbackReaction extends CoreReaction {
             Feedback fb = NearJsonAPIUtils.parseElement(morpheus, toParse, Feedback.class);
             if (fb == null) return false;
             fb.setRecipeId(recipeId);
-            nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getPluginName());
+            nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getReactionPluginName());
             return true;
         } catch (JSONException e) {
             return false;
