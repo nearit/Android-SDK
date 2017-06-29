@@ -30,9 +30,9 @@ public class BeaconNodeTest {
     @Test
     public void shouldNotRecognizeBeacon_whenGeofence() {
         GeoFenceNode geofence = new GeoFenceNode();
-        geofence.setLatitude(1.2345);
-        geofence.setLongitude(9.8765);
-        geofence.setRadius(1.2345);
+        geofence.latitude = 1.2345;
+        geofence.longitude = 9.8765;
+        geofence.radius = 1.2345;
         assertThat(BeaconNode.isBeacon(geofence), is(false));
     }
 
