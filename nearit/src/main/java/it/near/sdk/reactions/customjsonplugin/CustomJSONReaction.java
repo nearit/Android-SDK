@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.customjson;
+package it.near.sdk.reactions.customjsonplugin;
 
 import android.content.Context;
 import android.net.Uri;
@@ -23,6 +23,7 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;
@@ -65,9 +66,10 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
     @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<>();
+    public List<String> buildActions() {
+        List<String> supportedActions = new ArrayList<>();
         supportedActions.add(SHOW_JSON_ACTION);
+        return supportedActions;
     }
 
     @Override
@@ -112,7 +114,7 @@ public class CustomJSONReaction extends CoreReaction {
     }
 
     @Override
-    public String getPluginName() {
+    public String getReactionPluginName() {
         return PLUGIN_NAME;
     }
 
@@ -157,7 +159,37 @@ public class CustomJSONReaction extends CoreReaction {
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
         CustomJSON customJSON = (CustomJSON) reactionBundle;
-        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe, push_id);
+        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+    }
+
+    @Override
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
+                nearNotifier.deliverBackgroundPushReaction(json, recipeId, notificationText, getReactionPluginName());
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                NearLog.d(TAG, "Couldn't fetch content");
+            }
+        });
+    }
+
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, toParse, CustomJSON.class);
+            if (json == null) return false;
+            nearNotifier.deliverBackgroundPushReaction(json, recipeId, notificationText, getReactionPluginName());
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 

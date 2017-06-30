@@ -51,7 +51,9 @@ public class MorpheusTest {
         assertNotNull(object);
         assertThat(object, instanceOf(TestModel.class));
         assertThat(object.getId(), is("1"));
-        assertThat(object.getContent(), is("contenuto"));
+        assertThat(object.content, is("contenuto"));
+        assertThat(object.double_value.doubleValue(), is(45.09843));
+        assertThat(object.int_value.intValue(), is(5000));
     }
 
     @Test
@@ -61,7 +63,7 @@ public class MorpheusTest {
         assertNotNull(object);
         assertThat(object, instanceOf(TestModel.class));
         assertThat(object.getId(), is("1"));
-        assertThat(object.getContent(), is("contenuto"));
+        assertThat(object.content, is("contenuto"));
     }
 
     @Test
@@ -71,7 +73,7 @@ public class MorpheusTest {
         assertNotNull(object);
         assertThat(object, instanceOf(TestModel.class));
         assertThat(object.getId(), is("1"));
-        assertThat(object.getContent(), is(nullValue()));
+        assertThat(object.content, is(nullValue()));
     }
 
     @Test
@@ -90,9 +92,9 @@ public class MorpheusTest {
         TestWithChildModel objWithChild = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestWithChildModel.class);
         assertThat(objWithChild, is(notNullValue()));
         assertThat(objWithChild.getId(), is("a7663e8c-1c7e-4c3f-95d5-df976f07f81a"));
-        assertThat(objWithChild.getContent(), is("i've got a child"));
-        assertThat(objWithChild.getChild(), is(notNullValue()));
-        TestChildModel child = objWithChild.getChild();
+        assertThat(objWithChild.content, is("i've got a child"));
+        assertThat(objWithChild.child, is(notNullValue()));
+        TestChildModel child = objWithChild.child;
         assertThat(child.getIsFavoChild(), is(true));
     }
 
@@ -102,8 +104,8 @@ public class MorpheusTest {
         TestWithChildrenModel objWithChildren = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestWithChildrenModel.class);
         assertThat(objWithChildren, is(notNullValue()));
         assertThat(objWithChildren.getId(), is("a7663e8c-1c7e-4c3f-95d5-df976f07f81a"));
-        assertThat(objWithChildren.getContent(), is("i've got children"));
-        List<TestChildModel> children = objWithChildren.getChildren();
+        assertThat(objWithChildren.content, is("i've got children"));
+        List<TestChildModel> children = objWithChildren.children;
         assertThat(children, hasSize(2));
         assertThat(children.get(0).getId(), is("e7cde6f7-c2fe-4e4d-9bdc-40dd9b4b4597"));
         assertThat(children.get(0).getIsFavoChild(), is(false));

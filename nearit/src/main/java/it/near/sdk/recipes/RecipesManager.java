@@ -107,7 +107,7 @@ private final RecipeValidationFilter recipeValidationFilter;
     }
 
     public void addReaction(Reaction reaction) {
-        reactions.put(reaction.getPluginName(), reaction);
+        reactions.put(reaction.getReactionPluginName(), reaction);
     }
 
     /**
@@ -233,7 +233,6 @@ private final RecipeValidationFilter recipeValidationFilter;
      * @param recipe the recipe to trigger.
      */
     public void gotRecipe(Recipe recipe) {
-        String stringRecipe = recipe.getName();
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         reaction.handleReaction(recipe);
     }
@@ -268,6 +267,25 @@ private final RecipeValidationFilter recipeValidationFilter;
             });
         } catch (AuthenticationException e) {
         }
+    }
+
+    /**
+     * Process a recipe from the reaction triple. Used for getting a content from a push
+     *
+     * @param reactionPlugin
+     * @param reactionAction
+     * @param reactionBundleId
+     */
+    public void processRecipe(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleId) {
+        Reaction reaction = reactions.get(reactionPlugin);
+        if (reaction == null) return;
+        reaction.handlePushReaction(recipeId, notificationText, reactionAction, reactionBundleId);
+    }
+
+    public boolean processReactionBundle(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleString) {
+        Reaction reaction = reactions.get(reactionPlugin);
+        if (reaction == null) return false;
+        return reaction.handlePushBundledReaction(recipeId, notificationText, reactionAction, reactionBundleString);
     }
 
     private void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle) {
@@ -368,4 +386,5 @@ private final RecipeValidationFilter recipeValidationFilter;
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(NEAR_RECIPES_PREFS_NAME, Context.MODE_PRIVATE);
     }
+
 }

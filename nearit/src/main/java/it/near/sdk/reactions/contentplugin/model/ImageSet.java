@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.content;
+package it.near.sdk.reactions.contentplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

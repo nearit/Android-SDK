@@ -1,12 +1,8 @@
-package it.near.sdk.reactions.simplenotification;
+package it.near.sdk.reactions.simplenotificationplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
-
-/**
- * Created by cattaneostefano on 07/10/2016.
- */
 
 public class SimpleNotification implements Parcelable {
 

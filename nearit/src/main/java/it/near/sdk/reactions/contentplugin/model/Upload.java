@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.content;
+package it.near.sdk.reactions.contentplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,21 +15,13 @@ import it.near.sdk.morpheusnear.Resource;
 
 public class Upload extends Resource implements Parcelable {
     @SerializedName("upload")
-    public HashMap<String, Object> upload;
+    public HashMap<String, Object> uploadMap;
 
     public Upload() {
     }
 
-    public HashMap<String, Object> getUpload() {
-        return upload;
-    }
-
-    public void setUpload(HashMap<String, Object> upload) {
-        this.upload = upload;
-    }
-
     public String getUrl() {
-        return (String) upload.get("url");
+        return (String) uploadMap.get("url");
     }
 
     @Override
@@ -40,12 +32,12 @@ public class Upload extends Resource implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(getId());
-        dest.writeSerializable(upload);
+        dest.writeSerializable(uploadMap);
     }
 
     protected Upload(Parcel in) {
         setId(in.readString());
-        upload = (HashMap<String, Object>) in.readSerializable();
+        uploadMap = (HashMap<String, Object>) in.readSerializable();
     }
 
     public static final Creator<Upload> CREATOR = new Creator<Upload>() {

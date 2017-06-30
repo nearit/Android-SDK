@@ -98,9 +98,9 @@ public class GeoFenceMonitor {
         }
         List<GeoFenceNode> toListen = new ArrayList<>();
         // add children
-        toListen.addAll(filterGeofence(node.getChildren()));
-        if (node.getParent() != null) {
-            toListen.addAll(filterGeofence(node.getParent().getChildren()));
+        toListen.addAll(filterGeofence(node.children));
+        if (node.parent != null) {
+            toListen.addAll(filterGeofence(node.parent.children));
         } else {
             toListen.addAll(filterGeofence(nodes));
         }
@@ -117,16 +117,16 @@ public class GeoFenceMonitor {
             toListen.addAll(nodes);
         } else {
             // node has a parent
-            if (node.getParent().getParent() != null) {
+            if (node.parent.parent != null) {
                 // node has a grand parent
                 // so we add all the grand parent children, aka parent sibilings
-                toListen.addAll(node.getParent().getParent().getChildren());
+                toListen.addAll(node.parent.parent.children);
             } else {
                 // node is a child of a top level node, so we add top level nodes, aka parent sibilings
                 toListen.addAll(nodes);
             }
             // we add the node sibilings
-            toListen.addAll(node.getParent().getChildren());
+            toListen.addAll(node.parent.children);
         }
         return filterGeofence(toListen);
     }

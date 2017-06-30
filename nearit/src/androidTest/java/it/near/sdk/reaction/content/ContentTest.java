@@ -11,10 +11,10 @@ import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
-import it.near.sdk.reactions.content.Audio;
-import it.near.sdk.reactions.content.Content;
-import it.near.sdk.reactions.content.ImageSet;
-import it.near.sdk.reactions.content.Upload;
+import it.near.sdk.reactions.contentplugin.model.Audio;
+import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
+import it.near.sdk.reactions.contentplugin.model.Upload;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
@@ -30,32 +30,32 @@ public class ContentTest {
     @Test
     public void contentIsParcelable() {
         Content content = new Content();
-        content.setContent("content");
+        content.contentString = "content";
         content.setImages_links(Lists.newArrayList(new ImageSet(), new ImageSet()));
-        content.setVideo_link("video_link");
+        content.video_link = "video_link";
         content.setId("content_id");
-        content.setUpdated_at("updated@whatever");
+        content.updated_at = "updated@whatever";
         Audio audio = new Audio();
         HashMap<String, Object> audioMap = Maps.newHashMap();
         audioMap.put("url", "a.mp3");
-        audio.setAudio(audioMap);
-        content.setAudio(audio);
+        audio.audioMap = audioMap;
+        content.audio = audio;
         Upload upload = new Upload();
         HashMap<String, Object> uploadMap = Maps.newHashMap();
         uploadMap.put("url", "a.pdf");
-        upload.setUpload(uploadMap);
-        content.setUpload(upload);
+        upload.uploadMap = uploadMap;
+        content.upload = upload;
         Parcel parcel = Parcel.obtain();
         content.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Content actual = Content.CREATOR.createFromParcel(parcel);
-        assertEquals(content.getContent(), actual.getContent());
+        assertEquals(content.contentString, actual.contentString);
         assertThat(content.getImages_links(), containsInAnyOrder(actual.getImages_links().toArray()));
-        assertEquals(content.getVideo_link(), actual.getVideo_link());
+        assertEquals(content.video_link, actual.video_link);
         assertEquals(content.getId(), actual.getId());
-        assertEquals(content.getUpdated_at(), actual.getUpdated_at());
-        assertEquals(content.getAudio().getAudio(), actual.getAudio().getAudio());
-        assertEquals(content.getUpload().getUpload(), actual.getUpload().getUpload());
+        assertEquals(content.updated_at, actual.updated_at);
+        assertEquals(content.audio.audioMap, actual.audio.audioMap);
+        assertEquals(content.upload.uploadMap, actual.upload.uploadMap);
     }
 
 }

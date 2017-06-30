@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.coupon;
+package it.near.sdk.reactions.couponplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Locale;
 
 import it.near.sdk.morpheusnear.annotations.Relationship;
-import it.near.sdk.reactions.content.Image;
-import it.near.sdk.reactions.content.ImageSet;
+import it.near.sdk.reactions.contentplugin.model.Image;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 /**
@@ -30,6 +30,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     public String description;
     @SerializedName("value")
     public String value;
+    @Nullable
     @SerializedName("expires_at")
     public String expires_at;
     @SerializedName("redeemable_from")
@@ -46,54 +47,14 @@ public class Coupon extends ReactionBundle implements Parcelable {
     public Coupon() {
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getExpiresAt() {
-        return expires_at;
-    }
-
     @Nullable
     public Date getExpiresAtDate() {
         return toDate(expires_at);
     }
 
-    public void setExpires_at(String expires_at) {
-        this.expires_at = expires_at;
-    }
-
-    public String getRedeemableFrom() {
-        return redeemable_from;
-    }
-
     @Nullable
     public Date getRedeemableFromDate() {
         return toDate(redeemable_from);
-    }
-
-    public void setRedeemable_from(String redeemable_from) {
-        this.redeemable_from = redeemable_from;
     }
 
     public String getIcon_id() {
@@ -104,38 +65,22 @@ public class Coupon extends ReactionBundle implements Parcelable {
         this.icon_id = icon_id;
     }
 
-    public Image getIcon() {
-        return icon;
-    }
-
-    public void setIcon(Image icon) {
-        this.icon = icon;
-    }
-
-    public List<Claim> getClaims() {
-        return claims;
-    }
-
-    public void setClaims(List<Claim> claims) {
-        this.claims = claims;
-    }
-
     @Nullable
     public String getSerial() {
         if (anyClaim()) {
-            return getClaims().get(0).getSerial_number();
+            return claims.get(0).serial_number;
         }
         return null;
     }
 
     private boolean anyClaim() {
-        return getClaims().size() > 0;
+        return claims.size() > 0;
     }
 
     @Nullable
     public String getClaimedAt() {
         if (anyClaim()) {
-            return getClaims().get(0).getClaimed_at();
+            return claims.get(0).claimed_at;
         }
         return null;
     }
@@ -151,7 +96,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     @Nullable
     public String getRedeemedAt() {
         if (anyClaim()) {
-            return getClaims().get(0).getRedeemed_at();
+            return claims.get(0).redeemed_at;
         }
         return null;
     }
@@ -165,7 +110,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     }
 
     public String getRecipeId() {
-        return getClaims().get(0).getRecipe_id();
+        return claims.get(0).recipe_id;
     }
 
     public ImageSet getIconSet() {

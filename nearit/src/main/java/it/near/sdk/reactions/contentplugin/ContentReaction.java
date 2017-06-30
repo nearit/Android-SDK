@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.content;
+package it.near.sdk.reactions.contentplugin;
 
 import android.content.Context;
 import android.net.Uri;
@@ -22,6 +22,11 @@ import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
+import it.near.sdk.reactions.contentplugin.model.Audio;
+import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.Image;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
+import it.near.sdk.reactions.contentplugin.model.Upload;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.Recipe;
@@ -29,9 +34,6 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
 
-/**
- * @author cattaneostefano
- */
 public class ContentReaction extends CoreReaction {
     // ---------- content notification plugin ----------
     public static final String PLUGIN_NAME = "content-notification";
@@ -53,7 +55,7 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch (reaction_action) {
             case SHOW_CONTENT_ACTION_NAME:
                 showContent(reaction_bundle.getId(), recipe);
@@ -131,7 +133,7 @@ public class ContentReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
                     formatLinks(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
                 }
 
                 @Override
@@ -140,11 +142,41 @@ public class ContentReaction extends CoreReaction {
                 }
             });
         } else {
-            nearNotifier.deliverBackgroundPushReaction(content, recipe, push_id);
+            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
 
     }
 
+    @Override
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
+                formatLinks(content);
+                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                NearLog.d(TAG, "couldn't fetch content for push recipe");
+            }
+        });
+    }
+
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            Content content = NearJsonAPIUtils.parseElement(morpheus, toParse, Content.class);
+            if (content == null) return false;
+            formatLinks(content);
+            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
 
     private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
@@ -172,7 +204,7 @@ public class ContentReaction extends CoreReaction {
     }
 
     private void formatLinks(Content notification) {
-        List<Image> images = notification.getImages();
+        List<Image> images = notification.images;
         List<ImageSet> imageSets = new ArrayList<>();
         for (Image image : images) {
             imageSets.add(image.toImageSet());
@@ -181,7 +213,7 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public String getPluginName() {
+    public String getReactionPluginName() {
         return PLUGIN_NAME;
     }
 
@@ -201,9 +233,10 @@ public class ContentReaction extends CoreReaction {
     }
 
     @Override
-    public void buildActions() {
-        supportedActions = new ArrayList<>();
+    public List<String> buildActions() {
+        List<String> supportedActions = new ArrayList<>();
         supportedActions.add(SHOW_CONTENT_ACTION_NAME);
+        return supportedActions;
     }
 
 }

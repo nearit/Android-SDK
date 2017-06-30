@@ -8,17 +8,13 @@ import com.google.common.collect.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import it.near.sdk.reactions.content.ImageSet;
-import it.near.sdk.reactions.coupon.Claim;
-import it.near.sdk.reactions.coupon.Coupon;
+import it.near.sdk.reactions.contentplugin.model.ImageSet;
+import it.near.sdk.reactions.couponplugin.model.Claim;
+import it.near.sdk.reactions.couponplugin.model.Coupon;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
-
-/**
- * Created by cattaneostefano on 28/02/2017.
- */
 
 @RunWith(AndroidJUnit4.class)
 public class CouponTest {
@@ -27,13 +23,13 @@ public class CouponTest {
     public void couponIsParcelable() {
         Coupon coupon = new Coupon();
         coupon.setId("coupon_id");
-        coupon.setName("coupon_name");
-        coupon.setDescription("coupon_description");
-        coupon.setValue("coupon_value");
-        coupon.setExpires_at("expiring_soon");
-        coupon.setRedeemable_from("redeemable_from");
+        coupon.name = "coupon_name";
+        coupon.description = "coupon_description";
+        coupon.value = "coupon_value";
+        coupon.expires_at = "expiring_soon";
+        coupon.redeemable_from = "redeemable_from";
         coupon.setIcon_id("coupon_icon_id");
-        coupon.setClaims(Lists.newArrayList(new Claim(), new Claim()));
+        coupon.claims = Lists.newArrayList(new Claim(), new Claim());
         coupon.setIconSet(new ImageSet());
 
         Parcel parcel = Parcel.obtain();
@@ -42,13 +38,13 @@ public class CouponTest {
         Coupon actual = Coupon.CREATOR.createFromParcel(parcel);
 
         assertEquals(coupon.getId(), actual.getId());
-        assertEquals(coupon.getName(), actual.getName());
-        assertEquals(coupon.getDescription(), actual.getDescription());
-        assertEquals(coupon.getValue(), actual.getValue());
-        assertEquals(coupon.getExpiresAt(), actual.getExpiresAt());
-        assertEquals(coupon.getRedeemableFrom(), actual.getRedeemableFrom());
+        assertEquals(coupon.name, actual.name);
+        assertEquals(coupon.description, actual.description);
+        assertEquals(coupon.value, actual.value);
+        assertEquals(coupon.expires_at, actual.expires_at);
+        assertEquals(coupon.redeemable_from, actual.redeemable_from);
         assertEquals(coupon.getIcon_id(), actual.getIcon_id());
-        assertThat(coupon.getClaims(), containsInAnyOrder(actual.getClaims().toArray()));
+        assertThat(coupon.claims, containsInAnyOrder(actual.claims.toArray()));
         assertEquals(coupon.getIconSet(), actual.getIconSet());
 
     }

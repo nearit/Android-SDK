@@ -17,12 +17,4 @@ public class TestWithChildModel extends Resource {
 
     public TestWithChildModel() {
     }
-
-    public String getContent() {
-        return content;
-    }
-
-    public TestChildModel getChild() {
-        return child;
-    }
 }

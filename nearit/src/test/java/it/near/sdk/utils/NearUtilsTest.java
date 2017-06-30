@@ -8,16 +8,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import it.near.sdk.reactions.content.Content;
-import it.near.sdk.reactions.content.ContentReaction;
-import it.near.sdk.reactions.coupon.Coupon;
-import it.near.sdk.reactions.coupon.CouponReaction;
-import it.near.sdk.reactions.customjson.CustomJSON;
-import it.near.sdk.reactions.customjson.CustomJSONReaction;
-import it.near.sdk.reactions.feedback.Feedback;
-import it.near.sdk.reactions.feedback.FeedbackReaction;
-import it.near.sdk.reactions.simplenotification.SimpleNotification;
-import it.near.sdk.reactions.simplenotification.SimpleNotificationReaction;
+import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.ContentReaction;
+import it.near.sdk.reactions.couponplugin.model.Coupon;
+import it.near.sdk.reactions.couponplugin.CouponReaction;
+import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
+import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
+import it.near.sdk.reactions.feedbackplugin.model.Feedback;
+import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
+import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
+import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;

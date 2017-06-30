@@ -23,28 +23,4 @@ public class Node extends Resource {
 
     public Node() {
     }
-
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
-    public Node getParent() {
-        return parent;
-    }
-
-    public void setParent(Node parent) {
-        this.parent = parent;
-    }
-
-    public List<Node> getChildren() {
-        return children;
-    }
-
-    public void setChildren(List<Node> children) {
-        this.children = children;
-    }
 }

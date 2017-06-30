@@ -95,7 +95,7 @@ public class CooldownValidatorTest {
         when(mockRecipesHistory.latestLogEntryFor(mNonCriticalRecipe.getId()))
                 .thenReturn(nowSeconds);
         // and a recipe without the cooldown section
-        mNonCriticalRecipe.setCooldown(null);
+        mNonCriticalRecipe.cooldown = null;
         assertThat(cooldownValidator.validate(mNonCriticalRecipe), is(true));
     }
 
@@ -107,7 +107,7 @@ public class CooldownValidatorTest {
         when(mockRecipesHistory.latestLogEntryFor(mNonCriticalRecipe.getId()))
                 .thenReturn(secondsFor(now()));
         // and the recipe has no self-cooldown
-        mNonCriticalRecipe.setCooldown(buildCooldown(0D, null));
+        mNonCriticalRecipe.cooldown = buildCooldown(0D, null);
         assertThat(cooldownValidator.validate(mNonCriticalRecipe), is(true));
     }
 
@@ -117,7 +117,7 @@ public class CooldownValidatorTest {
         when(mockRecipesHistory.getLatestLogEntry())
                 .thenReturn(secondsFor(now()));
         // and a recipe has no global-cooldown
-        mNonCriticalRecipe.setCooldown(buildCooldown(null, 0D));
+        mNonCriticalRecipe.cooldown = buildCooldown(null, 0D);
         assertThat(cooldownValidator.validate(mNonCriticalRecipe), is(true));
     }
 
@@ -150,7 +150,7 @@ public class CooldownValidatorTest {
     private Recipe buildRecipe(String id, HashMap<String, Object> cooldown) {
         Recipe criticalRecipe = new Recipe();
         criticalRecipe.setId(id);
-        criticalRecipe.setCooldown(cooldown);
+        criticalRecipe.cooldown = cooldown;
         return criticalRecipe;
     }
 

@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 
 import java.util.HashMap;
 
-import it.near.sdk.reactions.customjson.CustomJSON;
+import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 
 import static junit.framework.Assert.*;
 
@@ -30,7 +30,7 @@ public class CustomJSONTest {
         content.put("boolean", true);
         content.put("arrayInt", new int[]{3,2,5,4,1});
         content.put("arrayString", new String[]{"blah", "hey", "yo"});*/
-        customJSON.setContent(content);
+        customJSON.content = content;
 
         Parcel parcel = Parcel.obtain();
         customJSON.writeToParcel(parcel, 0);

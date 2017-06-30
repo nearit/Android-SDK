@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.feedback;
+package it.near.sdk.reactions.feedbackplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -38,14 +38,6 @@ public class Feedback extends ReactionBundle implements Parcelable {
             return new Feedback[size];
         }
     };
-
-    public String getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(String question) {
-        this.question = question;
-    }
 
     public String getRecipeId() {
         return recipeId;

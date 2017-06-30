@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.customjson;
+package it.near.sdk.reactions.customjsonplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -18,14 +18,6 @@ public class CustomJSON extends ReactionBundle implements Parcelable {
     public HashMap<String, Object> content;
 
     public CustomJSON() {
-    }
-
-    public HashMap<String, Object> getContent() {
-        return content;
-    }
-
-    public void setContent(HashMap<String, Object> content) {
-        this.content = content;
     }
 
     protected CustomJSON(Parcel in) {

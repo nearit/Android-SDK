@@ -47,6 +47,10 @@ To enable our built-in background system notifications for both location and pus
 To learn how to deal with in-app content once the user taps on the notification, see this [section](handle-content.md).
 You can use your own receiver for custom notification handling. See this [section](custom-bkg-notification.md).
 
-You can set your own icon for the location-based notifications with the method *setNotificationImage(int imgRes)* of *NearItManager*
+You can set your own icon for the location-based notifications and the push notifications with the methods:
+```java
+nearItManager.setProximityNotificationIcon(R.drawable.ic_my_location_notification);
+nearItManager.setPushNotificationIcon(R.drawable.ic_my_push_notification);
+```
 
 WARNING: If you are using some gms play services in your app and experience runtime malfunctioning, please be sure to use the 10.2.0 version of the gms dependency you are pulling in your app. Conflicting play services version may result in compile-time and run-time errors.
