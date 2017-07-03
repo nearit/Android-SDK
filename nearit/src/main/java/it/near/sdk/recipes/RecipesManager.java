@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -33,6 +32,7 @@ import it.near.sdk.recipes.models.PulseBundle;
 import it.near.sdk.recipes.models.ReactionAction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -46,7 +46,6 @@ public class RecipesManager {
     private static final String NEAR_RECIPES_PREFS_NAME = "NearRecipes";
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
-    private static final String TRACKINGS_PATH = "trackings";
 
     private static RecipesManager instance;
 
@@ -55,21 +54,21 @@ public class RecipesManager {
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private final NearAsyncHttpClient httpClient;
     private final SharedPreferences sp;
-    private final RecipeCooler recipeCooler;
     private final GlobalConfig globalConfig;
     private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final RecipeTrackSender recipeTrackSender;
+private final RecipeValidationFilter recipeValidationFilter;
 
     public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
-                          RecipeCooler recipeCooler,
+                          RecipeValidationFilter recipeValidationFilter,
                           EvaluationBodyBuilder evaluationBodyBuilder,
                           SharedPreferences sp,
                           RecipeTrackSender recipeTrackSender) {
         this.httpClient = httpClient;
         this.globalConfig = globalConfig;
-        this.recipeCooler = recipeCooler;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
+        this.recipeValidationFilter = recipeValidationFilter;
         this.sp = sp;
         this.recipeTrackSender = recipeTrackSender;
 
@@ -212,23 +211,14 @@ public class RecipesManager {
             }
         }
 
-        // From all the recipes, filter the ones that are scheduled for now
-        List<Recipe> validRecipes = new ArrayList<>();
-        Calendar now = Calendar.getInstance();
-        for (Recipe matchingRecipe : matchingRecipes) {
-            if (matchingRecipe.isScheduledNow(now)) {
-                validRecipes.add(matchingRecipe);
-            }
-        }
+        recipeValidationFilter.filterRecipes(matchingRecipes);
 
-        recipeCooler.filterRecipe(validRecipes);
-
-        if (validRecipes.isEmpty()) {
+        if (matchingRecipes.isEmpty()) {
             // if no recipe is found the the online fallback
             onlinePulseEvaluation(pulse_plugin, pulse_action, pulse_bundle);
         } else {
             // take the first recipe and run with it
-            Recipe winnerRecipe = validRecipes.get(0);
+            Recipe winnerRecipe = matchingRecipes.get(0);
             if (winnerRecipe.isEvaluatedOnline()) {
                 evaluateRecipe(winnerRecipe.getId());
             } else {

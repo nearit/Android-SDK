@@ -14,6 +14,7 @@ import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -35,11 +36,15 @@ import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction
 import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.RecipeCooler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipeTrackSender;
+import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.validation.AdvScheduleValidator;
+import it.near.sdk.recipes.validation.CooldownValidator;
+import it.near.sdk.recipes.validation.RecipeValidationFilter;
+import it.near.sdk.recipes.validation.Validator;
 import it.near.sdk.trackings.TrackCache;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackSender;
@@ -110,18 +115,22 @@ public class NearItManager {
     }
 
     private void plugInSetup(Application application, GlobalConfig globalConfig) {
-        RecipeCooler recipeCooler = new RecipeCooler(
-                RecipeCooler.getSharedPreferences(application),
+        RecipesHistory recipesHistory = new RecipesHistory(
+                RecipesHistory.getSharedPreferences(application),
                 new CurrentTime()
         );
-        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(recipeCooler, globalConfig);
+        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
         TrackManager trackManager = getTrackManager(application);
-        RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipeCooler, trackManager, new CurrentTime());
+        List<Validator> validators = new ArrayList<>();
+        validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
+        validators.add(new AdvScheduleValidator(new CurrentTime()));
+        RecipeValidationFilter recipeValidationFilter = new RecipeValidationFilter(validators);
 
+        RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipesHistory, trackManager, new CurrentTime());
         recipesManager = new RecipesManager(
                 new NearAsyncHttpClient(application),
                 globalConfig,
-                recipeCooler,
+                recipeValidationFilter,
                 evaluationBodyBuilder,
                 RecipesManager.getSharedPreferences(application),
                 recipeTrackSender);

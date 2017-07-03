@@ -38,9 +38,6 @@ public class NearInstallation {
 
     private static NearInstallationRequestQueue requestQueue;
 
-    private static final int UNAUTHORIZED_ERROR_CODE = 403;
-    private static final int NOT_FOUND_ERROR_CODE = 404;
-
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
      * or a PUT if an installationId is already present.
@@ -103,7 +100,7 @@ public class NearInstallation {
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static boolean getBluetoothStatus() {
+    private static boolean getBluetoothStatus() {
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBluetoothAdapter == null) {
             return false;
@@ -115,7 +112,7 @@ public class NearInstallation {
         return false;
     }
 
-    public static String getDeviceToken(Context context) {
+    private static String getDeviceToken(Context context) {
         String token = GlobalConfig.getInstance(context).getDeviceToken();
         if (token == null) {
             try {

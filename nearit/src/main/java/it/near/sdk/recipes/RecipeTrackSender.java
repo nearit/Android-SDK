@@ -29,16 +29,16 @@ public class RecipeTrackSender {
     static final String TRACKINGS_TYPE = "trackings";
 
     private final GlobalConfig globalConfig;
-    private final RecipeCooler recipeCooler;
+    private final RecipesHistory recipesHistory;
     private final TrackManager trackManager;
     private final CurrentTime currentTime;
 
     public RecipeTrackSender(GlobalConfig globalConfig,
-                             RecipeCooler recipeCooler,
+                             RecipesHistory recipesHistory,
                              TrackManager trackManager,
                              CurrentTime currentTime) {
         this.globalConfig = checkNotNull(globalConfig);
-        this.recipeCooler = checkNotNull(recipeCooler);
+        this.recipesHistory = checkNotNull(recipesHistory);
         this.trackManager = checkNotNull(trackManager);
         this.currentTime = checkNotNull(currentTime);
     }
@@ -48,7 +48,7 @@ public class RecipeTrackSender {
                 trackingEvent == null) return;
 
         if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
-            recipeCooler.markRecipeAsShown(recipeId);
+            recipesHistory.markRecipeAsShown(recipeId);
         }
 
         String trackingBody = buildTrackingBody(

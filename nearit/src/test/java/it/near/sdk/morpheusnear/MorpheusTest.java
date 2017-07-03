@@ -12,6 +12,7 @@ import it.near.sdk.morpheusnear.models.TestModel;
 import it.near.sdk.morpheusnear.models.TestWithChildModel;
 import it.near.sdk.morpheusnear.models.TestWithChildrenModel;
 import it.near.sdk.TestUtils;
+import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static junit.framework.Assert.*;
@@ -31,7 +32,7 @@ import static org.hamcrest.core.Is.is;
 
 public class MorpheusTest {
 
-    private static final String TEST_RES_FOLDER = "morpheus";
+    private static final String MORPHEUS_TEST_RES_FOLDER = "morpheus";
     private Morpheus morpheus;
 
     @Before
@@ -117,7 +118,7 @@ public class MorpheusTest {
     // TODO circular relationships
 
     private JSONObject readJsonFile(String filename) throws Exception {
-        return TestUtils.readJsonFile(getClass(), TEST_RES_FOLDER + "/" + filename);
+        return TestUtils.readJsonFile(getClass(), MORPHEUS_TEST_RES_FOLDER + "/" + filename);
     }
 
 }
