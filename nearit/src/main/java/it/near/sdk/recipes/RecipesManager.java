@@ -40,7 +40,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  *
  * @author cattaneostefano
  */
-public class RecipesManager {
+public class RecipesManager implements RecipeEvaluator {
 
     private static final String TAG = "RecipesManager";
     private static final String NEAR_RECIPES_PREFS_NAME = "NearRecipes";
@@ -191,44 +191,6 @@ public class RecipesManager {
     }
 
     /**
-     * Tries to trigger a recipe, stating the plugin, action and bundle of the pulse.
-     * If nothing matches, nothing happens.
-     *
-     * @param pulse_plugin the plugin of the pulse.
-     * @param pulse_action the action of the pulse.
-     * @param tags
-     * @param pulse_bundle the bundle of the pulse.
-     */
-    public void gotPulse(String pulse_plugin, String pulse_action, List<String> tags, String pulse_bundle) {
-        List<Recipe> matchingRecipes = new ArrayList<>();
-        if (recipes == null) return;
-        // Find the recipes that matches the pulse
-        for (Recipe recipe : recipes) {
-            // TODO check for null pulse bundle
-            if (recipe.getPulse_plugin_id().equals(pulse_plugin) &&
-                    recipe.getPulse_action().getId().equals(pulse_action) &&
-                    recipe.getPulse_bundle().getId().equals(pulse_bundle)) {
-                matchingRecipes.add(recipe);
-            }
-        }
-
-        recipeValidationFilter.filterRecipes(matchingRecipes);
-
-        if (matchingRecipes.isEmpty()) {
-            // if no recipe is found the the online fallback
-            onlinePulseEvaluation(pulse_plugin, pulse_action, pulse_bundle);
-        } else {
-            // take the first recipe and run with it
-            Recipe winnerRecipe = matchingRecipes.get(0);
-            if (winnerRecipe.isEvaluatedOnline()) {
-                evaluateRecipe(winnerRecipe.getId());
-            } else {
-                gotRecipe(winnerRecipe);
-            }
-        }
-    }
-
-    /**
      * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
      *
      * @param recipe the recipe to trigger.
@@ -370,6 +332,64 @@ public class RecipesManager {
         }
     }
 
+    private void filterAndNotifiy(List<Recipe> matchingRecipes) {
+        recipeValidationFilter.filterRecipes(matchingRecipes);
+        if (matchingRecipes.isEmpty()) return;
+        Recipe winnerRecipe = matchingRecipes.get(0);
+        if (winnerRecipe.isEvaluatedOnline()) {
+            evaluateRecipe(winnerRecipe.getId());
+        } else {
+            gotRecipe(winnerRecipe);
+        }
+    }
+
+    @Override
+    public boolean handlePulseLocally(String plugin_name, String plugin_action, String plugin_bundle) {
+        List<Recipe> matchingRecipes = new ArrayList<>();
+        if (recipes == null) return false;
+        // Find the recipes that matches the pulse
+        for (Recipe recipe : recipes) {
+            // TODO check for null pulse bundle
+            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                    recipe.getPulse_action().getId().equals(plugin_action) &&
+                    recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
+                matchingRecipes.add(recipe);
+            }
+        }
+
+        if (matchingRecipes.isEmpty()) return false;
+
+        filterAndNotifiy(matchingRecipes);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean handlePulseTags(String plugin_name, String plugin_action, List<String> plugin_tags) {
+        List<Recipe> matchingRecipes = new ArrayList<>();
+        if (recipes == null) return false;
+        // Find the recipes that matches the pulse
+        for (Recipe recipe : recipes) {
+            // TODO check for null pulse bundle
+            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                    recipe.getPulse_action().getId().equals(plugin_action) &&
+                    plugin_tags.containsAll(recipe.tags)) {
+                matchingRecipes.add(recipe);
+            }
+        }
+
+        if (matchingRecipes.isEmpty()) return false;
+
+        filterAndNotifiy(matchingRecipes);
+        return true;
+    }
+
+    @Override
+    public void handlePulseOnline(String plugin_name, String plugin_action, String plugin_bundle) {
+        onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+    }
+
     /**
      * Sends tracking on a recipe.
      * Those two statuses are natively supported:
@@ -387,5 +407,4 @@ public class RecipesManager {
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(NEAR_RECIPES_PREFS_NAME, Context.MODE_PRIVATE);
     }
-
 }

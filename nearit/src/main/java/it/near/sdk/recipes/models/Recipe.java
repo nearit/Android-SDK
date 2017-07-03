@@ -30,6 +30,8 @@ public class Recipe extends Resource {
     public String pulse_plugin_id;
     @Relationship("pulse_bundle")
     public PulseBundle pulse_bundle;
+    @SerializedName("tags")
+    public List<String> tags;
     @Relationship("pulse_action")
     public PulseAction pulse_action;
     @SerializedName("reaction_plugin_id")
@@ -43,9 +45,6 @@ public class Recipe extends Resource {
     public static final String ENGAGED_STATUS = "engaged";
 
     private static final String ONLINE = "online";
-    public static final String DATE_SCHEDULING = "date";
-    public static final String TIMETABLE_SCHEDULING = "timetable";
-    public static final String DAYS_SCHEDULING = "days";
 
     public boolean isEvaluatedOnline() {
         if (!labels.containsKey(ONLINE)) {
