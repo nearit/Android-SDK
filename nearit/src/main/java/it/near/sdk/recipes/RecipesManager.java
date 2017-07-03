@@ -57,7 +57,7 @@ public class RecipesManager {
     private final GlobalConfig globalConfig;
     private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final RecipeTrackSender recipeTrackSender;
-private final RecipeValidationFilter recipeValidationFilter;
+    private final RecipeValidationFilter recipeValidationFilter;
 
     public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
@@ -193,7 +193,8 @@ private final RecipeValidationFilter recipeValidationFilter;
     /**
      * Tries to trigger a recipe, stating the plugin, action and bundle of the pulse.
      * If nothing matches, nothing happens.
-     *  @param pulse_plugin the plugin of the pulse.
+     *
+     * @param pulse_plugin the plugin of the pulse.
      * @param pulse_action the action of the pulse.
      * @param tags
      * @param pulse_bundle the bundle of the pulse.
