@@ -5,6 +5,7 @@ import android.net.Uri;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -159,11 +160,20 @@ public class CouponReaction extends CoreReaction {
 
     @Override
     public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
-        return false;
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, toParse, Coupon.class);
+            if (coupon == null || !coupon.anyClaim()) return false;
+            formatLinks(coupon);
+            nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
     }
 
 
-    public void requestSingleResource(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    private void requestSingleResource(String bundleId, AsyncHttpResponseHandler responseHandler) {
         String profileId = globalConfig.getProfileId();
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)

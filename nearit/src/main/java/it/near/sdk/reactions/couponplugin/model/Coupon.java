@@ -73,7 +73,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         return null;
     }
 
-    private boolean anyClaim() {
+    public boolean anyClaim() {
         return claims.size() > 0;
     }
 
