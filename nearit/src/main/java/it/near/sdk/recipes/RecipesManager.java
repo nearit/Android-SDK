@@ -332,7 +332,7 @@ public class RecipesManager implements RecipeEvaluator {
         }
     }
 
-    private void filterAndNotifiy(List<Recipe> matchingRecipes) {
+    private void filterAndNotify(List<Recipe> matchingRecipes) {
         recipeValidationFilter.filterRecipes(matchingRecipes);
         if (matchingRecipes.isEmpty()) return;
         Recipe winnerRecipe = matchingRecipes.get(0);
@@ -359,7 +359,7 @@ public class RecipesManager implements RecipeEvaluator {
 
         if (matchingRecipes.isEmpty()) return false;
 
-        filterAndNotifiy(matchingRecipes);
+        filterAndNotify(matchingRecipes);
         return true;
     }
 
@@ -381,7 +381,7 @@ public class RecipesManager implements RecipeEvaluator {
 
         if (matchingRecipes.isEmpty()) return false;
 
-        filterAndNotifiy(matchingRecipes);
+        filterAndNotify(matchingRecipes);
         return true;
     }
 
