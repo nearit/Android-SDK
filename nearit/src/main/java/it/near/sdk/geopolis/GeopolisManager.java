@@ -226,13 +226,13 @@ public class GeopolisManager {
     private void trackAndFirePulse(Node node, String event) {
         if (node != null && node.identifier != null) {
             geopolisTrackingsManager.trackEvent(node.identifier, event);
-            firePulse(event, node.identifier);
+            firePulse(event, node.tags, node.identifier);
         }
     }
 
-    private void firePulse(String pulseAction, String pulseBundle) {
+    private void firePulse(String pulseAction, List<String> tags, String pulseBundle) {
         NearLog.d(TAG, "firePulse!");
-        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
+        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, tags, pulseBundle);
     }
 
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {

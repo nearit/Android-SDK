@@ -193,12 +193,12 @@ private final RecipeValidationFilter recipeValidationFilter;
     /**
      * Tries to trigger a recipe, stating the plugin, action and bundle of the pulse.
      * If nothing matches, nothing happens.
-     *
-     * @param pulse_plugin the plugin of the pulse.
+     *  @param pulse_plugin the plugin of the pulse.
      * @param pulse_action the action of the pulse.
+     * @param tags
      * @param pulse_bundle the bundle of the pulse.
      */
-    public void gotPulse(String pulse_plugin, String pulse_action, String pulse_bundle) {
+    public void gotPulse(String pulse_plugin, String pulse_action, List<String> tags, String pulse_bundle) {
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return;
         // Find the recipes that matches the pulse
