@@ -8,7 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-
 import org.json.JSONObject;
 
 import java.util.List;
@@ -22,10 +21,10 @@ import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
-import it.near.sdk.logging.NearLog;
 import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
-import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.logging.NearLog;
+import it.near.sdk.recipes.RecipeEvaluator;
 import it.near.sdk.trackings.TrackManager;
 
 /**
@@ -63,7 +62,7 @@ public class GeopolisManager {
     public static final String NODE_ID = "identifier";
 
     private final Application application;
-    private final RecipesManager recipesManager;
+    private final RecipeEvaluator recipeEvaluator;
     private final GeoFenceMonitor geofenceMonitor;
     private final GlobalConfig globalConfig;
     private final SharedPreferences sp;
@@ -74,9 +73,9 @@ public class GeopolisManager {
 
     private NearAsyncHttpClient httpClient;
 
-    public GeopolisManager(Application application, RecipesManager recipesManager, GlobalConfig globalConfig, TrackManager trackManager) {
+    public GeopolisManager(Application application, RecipeEvaluator recipeEvaluator, GlobalConfig globalConfig, TrackManager trackManager) {
         this.application = application;
-        this.recipesManager = recipesManager;
+        this.recipeEvaluator = recipeEvaluator;
         this.globalConfig = globalConfig;
 
         SharedPreferences nodesManagerSP = NodesManager.getSharedPreferences(application);
@@ -211,7 +210,7 @@ public class GeopolisManager {
                     trackAndFirePulse(node, Events.LEAVE_REGION);
                     break;
                 case GF_RANGE_FAR_SUFFIX:
-                    trackAndFirePulse(node, Events.RANGE_FAR);
+                    // trackAndFirePulse(node, Events.RANGE_FAR);
                     break;
                 case GF_RANGE_NEAR_SUFFIX:
                     trackAndFirePulse(node, Events.RANGE_NEAR);
@@ -223,16 +222,19 @@ public class GeopolisManager {
         }
     };
 
-    private void trackAndFirePulse(Node node, String event) {
+    private void trackAndFirePulse(Node node, Events.GeoEvent event) {
         if (node != null && node.identifier != null) {
-            geopolisTrackingsManager.trackEvent(node.identifier, event);
+            geopolisTrackingsManager.trackEvent(node.identifier, event.event);
             firePulse(event, node.tags, node.identifier);
         }
     }
 
-    private void firePulse(String pulseAction, List<String> tags, String pulseBundle) {
+    private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle) {
         NearLog.d(TAG, "firePulse!");
-        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, tags, pulseBundle);
+        if (!recipeEvaluator.handlePulseLocally(PLUGIN_NAME, event.event, pulseBundle) &&
+                !recipeEvaluator.handlePulseTags(PLUGIN_NAME, event.fallback, tags)) {
+                    recipeEvaluator.handlePulseOnline(PLUGIN_NAME, event.event, pulseBundle);
+                }
     }
 
     private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
