@@ -140,19 +140,19 @@ public class NearItManager {
 
         geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
-        contentNotification = new ContentReaction(application, nearNotifier);
+        contentNotification = ContentReaction.obtain(application, nearNotifier);
         recipesManager.addReaction(contentNotification);
 
-        simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
+        simpleNotification = new SimpleNotificationReaction(nearNotifier);
         recipesManager.addReaction(simpleNotification);
 
-        couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
+        couponReaction = CouponReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
 
-        customJSON = new CustomJSONReaction(application, nearNotifier);
+        customJSON = CustomJSONReaction.obtain(application, nearNotifier);
         recipesManager.addReaction(customJSON);
 
-        feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
+        feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
     }
 

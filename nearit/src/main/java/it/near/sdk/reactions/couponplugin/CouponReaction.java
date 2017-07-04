@@ -1,6 +1,7 @@
 package it.near.sdk.reactions.couponplugin;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -19,6 +20,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
@@ -31,13 +33,10 @@ import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
-/**
- * @author cattaneostefano.
- */
-public class CouponReaction extends CoreReaction {
+
+public class CouponReaction extends CoreReaction<Coupon> {
 
     public static final String PLUGIN_NAME = "coupon-blaster";
-    private static final String PREFS_SUFFIX = "NearCoupon";
     private static final String COUPONS_RES = "coupons";
     private static final String CLAIMS_RES = "claims";
     private static final String SHOW_COUPON_ACTION_NAME = "show_coupon";
@@ -46,14 +45,9 @@ public class CouponReaction extends CoreReaction {
 
     private final GlobalConfig globalConfig;
 
-    public CouponReaction(Context mContext, NearNotifier nearNotifier, GlobalConfig globalConfig) {
-        super(mContext, nearNotifier);
+    public CouponReaction(SharedPreferences sp, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        super(sp, httpClient, nearNotifier, Coupon.class);
         this.globalConfig = globalConfig;
-    }
-
-    @Override
-    public String getPrefSuffix() {
-        return PREFS_SUFFIX;
     }
 
     @Override
@@ -83,6 +77,14 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
+    protected void normalizeElement(Coupon element) {
+        Image icon = element.icon;
+        if (icon == null) return;
+        element.setIconSet(icon.toImageSet());
+    }
+
+
+    @Override
     public String getReactionPluginName() {
         return PLUGIN_NAME;
     }
@@ -95,7 +97,7 @@ public class CouponReaction extends CoreReaction {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                    formatLinks(coupon);
+                    normalizeElement(coupon);
                     notifyCoupon(coupon, recipe);
                 }
 
@@ -105,7 +107,7 @@ public class CouponReaction extends CoreReaction {
                 }
             });
         } else {
-            formatLinks(coupon);
+            normalizeElement(coupon);
             notifyCoupon(coupon, recipe);
         }
 
@@ -127,7 +129,7 @@ public class CouponReaction extends CoreReaction {
                         @Override
                         public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                             Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                            formatLinks(coupon);
+                            normalizeElement(coupon);
                             nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
                         }
 
@@ -138,7 +140,7 @@ public class CouponReaction extends CoreReaction {
                     },
                     new Random().nextInt(1000));
         } else {
-            formatLinks(coupon);
+            normalizeElement(coupon);
             nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
     }
@@ -149,7 +151,7 @@ public class CouponReaction extends CoreReaction {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                        formatLinks(coupon);
+                        normalizeElement(coupon);
                         nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
                     }
 
@@ -167,7 +169,7 @@ public class CouponReaction extends CoreReaction {
             JSONObject toParse = new JSONObject(reactionBundleString);
             Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, toParse, Coupon.class);
             if (coupon == null || coupon.claims == null || !coupon.anyClaim()) return false;
-            formatLinks(coupon);
+            normalizeElement(coupon);
             nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
             return true;
         } catch (JSONException e) {
@@ -211,7 +213,7 @@ public class CouponReaction extends CoreReaction {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Copuns downloaded: " + response.toString());
                     List<Coupon> coupons = NearJsonAPIUtils.parseList(morpheus, response, Coupon.class);
-                    formatLinks(coupons);
+                    normalizeList(coupons);
                     listener.onCouponsDownloaded(coupons);
                 }
 
@@ -230,16 +232,17 @@ public class CouponReaction extends CoreReaction {
         NearLog.d(TAG, "Not implemented");
     }
 
-
-    private void formatLinks(List<Coupon> notifications) {
-        for (Coupon notification : notifications) {
-            formatLinks(notification);
-        }
+    @Override
+    protected String getRefreshUrl() {
+        return null;
     }
 
-    private void formatLinks(Coupon notification) {
-        Image icon = notification.icon;
-        if (icon == null) return;
-        notification.setIconSet(icon.toImageSet());
+
+    public static CouponReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        return new CouponReaction(
+                context.getSharedPreferences("never_used", Context.MODE_PRIVATE),
+                new NearAsyncHttpClient(context),
+                nearNotifier,
+                globalConfig);
     }
 }

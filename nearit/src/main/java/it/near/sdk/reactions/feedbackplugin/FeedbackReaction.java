@@ -1,18 +1,16 @@
 package it.near.sdk.reactions.feedbackplugin;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 
-import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -21,6 +19,7 @@ import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.ContentFetchListener;
@@ -34,10 +33,10 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
 
-public class FeedbackReaction extends CoreReaction {
+public class FeedbackReaction extends CoreReaction<Feedback> {
 
     public static final String PLUGIN_NAME = "feedbacks";
-    private static final String PREFS_SUFFIX = "NearFeedbackNot";
+    private static final String PREFS_NAME = "NearFeedbackNot";
     private static final String ASK_FEEDBACK_ACTION_NAME = "ask_feedback";
     private static final String FEEDBACKS_NOTIFICATION_RESOURCE = "feedbacks";
     private static final String TAG = "FeedbackReaction";
@@ -47,45 +46,9 @@ public class FeedbackReaction extends CoreReaction {
 
     private List<Feedback> feedbackList;
 
-    public FeedbackReaction(Context mContext, NearNotifier nearNotifier, GlobalConfig globalConfig) {
-        super(mContext, nearNotifier);
+    public FeedbackReaction(SharedPreferences sp, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        super(sp, httpClient, nearNotifier, Feedback.class);
         this.globalConfig = globalConfig;
-    }
-
-    @Override
-    public void refreshConfig() {
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE).build();
-
-        try {
-            httpClient.nearGet(url.toString(), new JsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, response.toString());
-                    feedbackList = NearJsonAPIUtils.parseList(morpheus, response, Feedback.class);
-                    persistList(TAG, feedbackList);
-                }
-
-                @Override
-                public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                    NearLog.d(TAG, "Error: " + statusCode);
-                    try {
-                        feedbackList = loadList();
-                    } catch (JSONException e) {
-                        NearLog.d(TAG, "Data format error");
-                    }
-                }
-            });
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
-        }
-    }
-
-    private ArrayList<Feedback> loadList() throws JSONException {
-        String cachedString = loadCachedString(TAG);
-        return gson.fromJson(cachedString, new TypeToken<Collection<Feedback>>() {
-        }.getType());
     }
 
     @Override
@@ -160,7 +123,7 @@ public class FeedbackReaction extends CoreReaction {
             return;
         }
         try {
-            String answerBody = event.toJsonAPI(globalConfig);
+            String answerBody = event.toJsonAPI(globalConfig.getProfileId());
             NearLog.d(TAG, "Answer" + answerBody);
             Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                     .appendPath(PLUGIN_NAME)
@@ -168,7 +131,7 @@ public class FeedbackReaction extends CoreReaction {
                     .appendPath(event.getFeedbackId())
                     .appendPath(ANSWERS_RESOURCE).build();
             try {
-                httpClient.post(mContext, url.toString(), answerBody, new NearJsonHttpResponseHandler() {
+                httpClient.nearPost(url.toString(), answerBody, new NearJsonHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                         NearLog.d(TAG, "Feedback sent successfully");
@@ -187,6 +150,11 @@ public class FeedbackReaction extends CoreReaction {
         } catch (JSONException e) {
             handler.onFail(422, "request was malformed");
         }
+    }
+
+    @Override
+    protected void normalizeElement(Feedback element) {
+        // left intentionally empty
     }
 
     @Override
@@ -221,8 +189,11 @@ public class FeedbackReaction extends CoreReaction {
     }
 
     @Override
-    public String getPrefSuffix() {
-        return PREFS_SUFFIX;
+    protected String getRefreshUrl() {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(PLUGIN_NAME)
+                .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE).build();
+        return url.toString();
     }
 
     @Override
@@ -242,5 +213,14 @@ public class FeedbackReaction extends CoreReaction {
         List<String> supportedActions = new ArrayList<String>();
         supportedActions.add(ASK_FEEDBACK_ACTION_NAME);
         return supportedActions;
+    }
+
+    public static FeedbackReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        return new FeedbackReaction(
+                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE),
+                new NearAsyncHttpClient(context),
+                nearNotifier,
+                globalConfig
+        );
     }
 }
