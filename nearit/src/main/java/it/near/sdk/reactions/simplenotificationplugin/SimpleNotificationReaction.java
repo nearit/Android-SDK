@@ -2,6 +2,8 @@ package it.near.sdk.reactions.simplenotificationplugin;
 
 import android.content.Context;
 
+import com.loopj.android.http.AsyncHttpResponseHandler;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -95,5 +97,10 @@ public class SimpleNotificationReaction extends CoreReaction {
     @Override
     protected String getResTypeName() {
         return RES_NAME;
+    }
+
+    @Override
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+        responseHandler.onFailure(405, null, null, null);
     }
 }

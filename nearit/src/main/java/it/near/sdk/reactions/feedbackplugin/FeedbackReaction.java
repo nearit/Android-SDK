@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -96,7 +97,8 @@ public class FeedbackReaction extends CoreReaction {
         return PLUGIN_NAME;
     }
 
-    private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    @Override
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_NAME)
                 .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
@@ -138,7 +140,8 @@ public class FeedbackReaction extends CoreReaction {
             public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 NearLog.d(TAG, "Couldn't fetch content");
             }
-        });
+        },
+        new Random().nextInt(1000));
     }
 
     @Override

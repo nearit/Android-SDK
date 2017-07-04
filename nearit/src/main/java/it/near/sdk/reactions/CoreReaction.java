@@ -2,10 +2,11 @@ package it.near.sdk.reactions;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.os.Parcelable;
 
-
 import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,8 @@ import java.util.Map;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.models.Recipe;
 
 /**
  * Superclass for NearIT core-content reactions. Adds jsonAPI parsing, simple caching.
@@ -140,4 +141,22 @@ public abstract class CoreReaction extends Reaction {
      * @return the name of the resource handled by the plugin.
      */
     protected abstract String getResTypeName();
+
+    /**
+     * Download a single request.
+     *
+     */
+    protected abstract void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler);
+
+
+    public void requestSingleReaction(final String bundleId, final AsyncHttpResponseHandler responseHandler, int i) {
+        NearLog.e("PUSH WAIT", "I'm waiting " + i + " millis");
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                requestSingleReaction(bundleId, responseHandler);
+            }
+        }, i);
+    }
 }

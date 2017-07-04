@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -161,7 +162,7 @@ public class ContentReaction extends CoreReaction {
             public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 NearLog.d(TAG, "couldn't fetch content for push recipe");
             }
-        });
+        }, new Random().nextInt(1000));
     }
 
     @Override
@@ -178,7 +179,8 @@ public class ContentReaction extends CoreReaction {
         }
     }
 
-    private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    @Override
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)

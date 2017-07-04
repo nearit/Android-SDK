@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -175,7 +176,8 @@ public class CustomJSONReaction extends CoreReaction {
             public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 NearLog.d(TAG, "Couldn't fetch content");
             }
-        });
+        },
+        new Random().nextInt(1000));
     }
 
     @Override
