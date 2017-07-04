@@ -32,9 +32,6 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
 
-/**
- * @author cattaneostefano.
- */
 public class CustomJSONReaction extends CoreReaction {
 
     public static final String PLUGIN_NAME = "json-sender";
@@ -81,7 +78,7 @@ public class CustomJSONReaction extends CoreReaction {
                 .appendPath(JSON_CONTENT_RES)
                 .appendQueryParameter("filter[app_id]", appId).build();
         try {
-            httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
@@ -92,9 +89,6 @@ public class CustomJSONReaction extends CoreReaction {
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error: " + statusCode);
-                    if (statusCode == 0) {
-                        NearLog.d(TAG, throwable.toString());
-                    }
                     try {
                         jsonList = loadList();
                     } catch (JSONException e) {
@@ -201,7 +195,7 @@ public class CustomJSONReaction extends CoreReaction {
                 .appendPath(JSON_CONTENT_RES)
                 .appendPath(bundleId).build();
         try {
-            httpClient.get(mContext, url.toString(), responseHandler);
+            httpClient.nearGet(url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }

@@ -34,14 +34,10 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
 
-/**
- * Created by cattaneostefano on 11/10/2016.
- */
-
 public class FeedbackReaction extends CoreReaction {
 
     public static final String PLUGIN_NAME = "feedbacks";
-    public static final String PREFS_SUFFIX = "NearFeedbackNot";
+    private static final String PREFS_SUFFIX = "NearFeedbackNot";
     private static final String ASK_FEEDBACK_ACTION_NAME = "ask_feedback";
     private static final String FEEDBACKS_NOTIFICATION_RESOURCE = "feedbacks";
     private static final String TAG = "FeedbackReaction";
@@ -63,7 +59,7 @@ public class FeedbackReaction extends CoreReaction {
                 .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE).build();
 
         try {
-            httpClient.get(mContext, url.toString(), new JsonHttpResponseHandler() {
+            httpClient.nearGet(url.toString(), new JsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
@@ -104,7 +100,7 @@ public class FeedbackReaction extends CoreReaction {
                 .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
                 .appendPath(bundleId).build();
         try {
-            httpClient.get(mContext, url.toString(), responseHandler);
+            httpClient.nearGet(url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }
