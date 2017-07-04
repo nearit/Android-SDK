@@ -3,23 +3,23 @@ package it.near.sdk.reactions.contentplugin;
 import android.content.Context;
 import android.net.Uri;
 
-
-import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.contentplugin.model.Audio;
@@ -27,14 +27,14 @@ import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.contentplugin.model.Image;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.contentplugin.model.Upload;
-import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
 
-public class ContentReaction extends CoreReaction {
+public class ContentReaction extends CoreReaction<Content> {
     // ---------- content notification plugin ----------
     public static final String PLUGIN_NAME = "content-notification";
     private static final String INCLUDE_RESOURCES = "images,audio,upload";
@@ -42,16 +42,10 @@ public class ContentReaction extends CoreReaction {
     private static final String CONTENT_NOTIFICATION_RESOURCE = "contents";
     private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
     private static final String TAG = "ContentReaction";
-    private static final String PREFS_SUFFIX = "NearContentNot";
-    private List<Content> contentList;
+    private static final String PREFS_NAME = "NearContentNot";
 
-    public ContentReaction(Context context, NearNotifier nearNotifier) {
-        super(context, nearNotifier);
-    }
-
-    @Override
-    protected String getResTypeName() {
-        return CONTENT_NOTIFICATION_RESOURCE;
+    public ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
+        super(cacher, httpClient, nearNotifier, Content.class);
     }
 
     @Override
@@ -65,14 +59,14 @@ public class ContentReaction extends CoreReaction {
 
     @Override
     protected void getContent(String reactionBundleId, Recipe recipe, final ContentFetchListener listener) {
-        if (contentList == null) {
+        if (reactionList == null) {
             try {
-                contentList = loadList();
+                reactionList = cacher.loadList();
             } catch (JSONException e) {
                 NearLog.d(TAG, "Data format error");
             }
         }
-        for (Content cn : safe(contentList)) {
+        for (Content cn : safe(reactionList)) {
             if (cn.getId().equals(reactionBundleId)) {
                 listener.onContentFetched(cn, true);
                 return;
@@ -82,7 +76,7 @@ public class ContentReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                formatLinks(content);
+                normalizeElement(content);
                 listener.onContentFetched(content, false);
             }
 
@@ -93,37 +87,15 @@ public class ContentReaction extends CoreReaction {
         });
     }
 
-    public void refreshConfig() {
+    @Override
+    protected String getRefreshUrl() {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                 .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
-        try {
-            httpClient.get(mContext, url.toString(), new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, response.toString());
-                    contentList = NearJsonAPIUtils.parseList(morpheus, response, Content.class);
-                    formatLinks(contentList);
-                    persistList(TAG, contentList);
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "Error: " + statusCode);
-                    try {
-                        contentList = loadList();
-                    } catch (JSONException e) {
-                        NearLog.d(TAG, "Data format error");
-                    }
-                }
-
-            });
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
-        }
-
+        return url.toString();
     }
+
 
     @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
@@ -132,7 +104,7 @@ public class ContentReaction extends CoreReaction {
             requestSingleReaction(reactionBundle.getId(), new NearJsonHttpResponseHandler() {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                    formatLinks(content);
+                    normalizeElement(content);
                     nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
                 }
 
@@ -140,7 +112,7 @@ public class ContentReaction extends CoreReaction {
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "couldn't fetch content for push recipe");
                 }
-            });
+            }, new Random().nextInt(1000));
         } else {
             nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
@@ -153,7 +125,7 @@ public class ContentReaction extends CoreReaction {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                formatLinks(content);
+                normalizeElement(content);
                 nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
             }
 
@@ -161,7 +133,7 @@ public class ContentReaction extends CoreReaction {
             public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                 NearLog.d(TAG, "couldn't fetch content for push recipe");
             }
-        });
+        }, new Random().nextInt(1000));
     }
 
     @Override
@@ -170,7 +142,7 @@ public class ContentReaction extends CoreReaction {
             JSONObject toParse = new JSONObject(reactionBundleString);
             Content content = NearJsonAPIUtils.parseElement(morpheus, toParse, Content.class);
             if (content == null) return false;
-            formatLinks(content);
+            normalizeElement(content);
             nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
             return true;
         } catch (JSONException e) {
@@ -178,48 +150,33 @@ public class ContentReaction extends CoreReaction {
         }
     }
 
-    private void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    @Override
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(CONTENT_NOTIFICATION_PATH)
                 .appendPath(CONTENT_NOTIFICATION_RESOURCE)
                 .appendPath(bundleId)
                 .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
         try {
-            httpClient.get(mContext, url.toString(), responseHandler);
+            httpClient.nearGet(url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }
     }
 
-    private ArrayList<Content> loadList() throws JSONException {
-        String cachedString = loadCachedString(TAG);
-        return gson.fromJson(cachedString, new TypeToken<Collection<Content>>() {
-        }.getType());
-    }
-
-    private void formatLinks(List<Content> notifications) {
-        for (Content notification : notifications) {
-            formatLinks(notification);
-        }
-    }
-
-    private void formatLinks(Content notification) {
-        List<Image> images = notification.images;
+    @Override
+    protected void normalizeElement(Content element) {
+        List<Image> images = element.images;
         List<ImageSet> imageSets = new ArrayList<>();
         for (Image image : images) {
             imageSets.add(image.toImageSet());
         }
-        notification.setImages_links(imageSets);
+        element.setImages_links(imageSets);
     }
 
     @Override
     public String getReactionPluginName() {
         return PLUGIN_NAME;
-    }
-
-    @Override
-    public String getPrefSuffix() {
-        return PREFS_SUFFIX;
     }
 
     @Override
@@ -232,11 +189,10 @@ public class ContentReaction extends CoreReaction {
         return map;
     }
 
-    @Override
-    public List<String> buildActions() {
-        List<String> supportedActions = new ArrayList<>();
-        supportedActions.add(SHOW_CONTENT_ACTION_NAME);
-        return supportedActions;
+    public static ContentReaction obtain(Context context, NearNotifier nearNotifier) {
+        return new ContentReaction(
+                new Cacher<Content>(context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
+                new NearAsyncHttpClient(context),
+                nearNotifier);
     }
-
 }

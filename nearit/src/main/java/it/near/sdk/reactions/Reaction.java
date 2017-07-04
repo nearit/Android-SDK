@@ -1,43 +1,22 @@
 package it.near.sdk.reactions;
 
-import android.content.Context;
-
-import java.util.List;
-
-import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 
 /**
  * Superclass for plugins of type "reaction". Subclass to add the support of new "What" types and handle requests to fire contents,
  * from within the devices and form push notifications.
  *
- * @author cattaneostefano
  */
 public abstract class Reaction {
-    /**
-     * List of supported plugin actions. Still unused.
-     */
-    protected List<String> supportedActions = null;
-    /**
-     * App context.
-     */
-    protected Context mContext;
     /**
      * Notifier of content to the app.
      */
     protected NearNotifier nearNotifier;
 
-    public Reaction(Context mContext, NearNotifier nearNotifier) {
-        this.mContext = mContext;
+    public Reaction(NearNotifier nearNotifier) {
         this.nearNotifier = nearNotifier;
-    }
-
-    public List<String> getSupportedActions() {
-        if (supportedActions == null) {
-            supportedActions = buildActions();
-        }
-        return supportedActions;
     }
 
     /**
@@ -51,11 +30,6 @@ public abstract class Reaction {
         }
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe);
     }
-
-    /**
-     * Build supported actions
-     */
-    public abstract List<String> buildActions();
 
     /**
      * Refresh configuration from the server. Consider caching the results so you can support offline mode.

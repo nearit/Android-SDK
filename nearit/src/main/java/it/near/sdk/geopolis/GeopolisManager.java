@@ -135,7 +135,7 @@ public class GeopolisManager {
                 .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, "**.children")
                 .build();
         try {
-            httpClient.get(application, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());

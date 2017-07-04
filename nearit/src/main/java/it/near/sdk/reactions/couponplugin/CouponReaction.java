@@ -10,16 +10,18 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
+import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.contentplugin.model.Image;
@@ -30,13 +32,10 @@ import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
-/**
- * @author cattaneostefano.
- */
-public class CouponReaction extends CoreReaction {
+
+public class CouponReaction extends CoreReaction<Coupon> {
 
     public static final String PLUGIN_NAME = "coupon-blaster";
-    private static final String PREFS_SUFFIX = "NearCoupon";
     private static final String COUPONS_RES = "coupons";
     private static final String CLAIMS_RES = "claims";
     private static final String SHOW_COUPON_ACTION_NAME = "show_coupon";
@@ -45,14 +44,9 @@ public class CouponReaction extends CoreReaction {
 
     private final GlobalConfig globalConfig;
 
-    public CouponReaction(Context mContext, NearNotifier nearNotifier, GlobalConfig globalConfig) {
-        super(mContext, nearNotifier);
+    public CouponReaction(Cacher<Coupon> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        super(cacher, httpClient, nearNotifier, Coupon.class);
         this.globalConfig = globalConfig;
-    }
-
-    @Override
-    public String getPrefSuffix() {
-        return PREFS_SUFFIX;
     }
 
     @Override
@@ -65,21 +59,17 @@ public class CouponReaction extends CoreReaction {
     }
 
     @Override
-    protected String getResTypeName() {
-        return COUPONS_RES;
-    }
-
-    @Override
-    public List<String> buildActions() {
-        List<String> supportedActions = new ArrayList<String>();
-        supportedActions.add(SHOW_COUPON_ACTION_NAME);
-        return supportedActions;
-    }
-
-    @Override
     public void refreshConfig() {
         // TODO download stuff
     }
+
+    @Override
+    protected void normalizeElement(Coupon element) {
+        Image icon = element.icon;
+        if (icon == null) return;
+        element.setIconSet(icon.toImageSet());
+    }
+
 
     @Override
     public String getReactionPluginName() {
@@ -90,11 +80,11 @@ public class CouponReaction extends CoreReaction {
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
         Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {
-            requestSingleResource(reaction_bundle.getId(), new NearJsonHttpResponseHandler() {
+            requestSingleReaction(reaction_bundle.getId(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                    formatLinks(coupon);
+                    normalizeElement(coupon);
                     notifyCoupon(coupon, recipe);
                 }
 
@@ -104,7 +94,7 @@ public class CouponReaction extends CoreReaction {
                 }
             });
         } else {
-            formatLinks(coupon);
+            normalizeElement(coupon);
             notifyCoupon(coupon, recipe);
         }
 
@@ -122,40 +112,42 @@ public class CouponReaction extends CoreReaction {
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
         Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {
-            requestSingleResource(reaction_bundle.getId(), new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                    formatLinks(coupon);
-                    nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-                }
+            requestSingleReaction(reaction_bundle.getId(), new NearJsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
+                            normalizeElement(coupon);
+                            nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+                        }
 
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "couldn't fetch content for push recipe");
-                }
-            });
+                        @Override
+                        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                            NearLog.d(TAG, "couldn't fetch content for push recipe");
+                        }
+                    },
+                    new Random().nextInt(1000));
         } else {
-            formatLinks(coupon);
+            normalizeElement(coupon);
             nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
     }
 
     @Override
     public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
-        requestSingleResource(reactionBundleId, new NearJsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                formatLinks(coupon);
-                nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
-            }
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
+                        normalizeElement(coupon);
+                        nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
+                    }
 
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                NearLog.d(TAG, "couldn't fetch content for push recipe");
-            }
-        });
+                    @Override
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                        NearLog.d(TAG, "couldn't fetch content for push recipe");
+                    }
+                },
+                new Random().nextInt(1000));
     }
 
     @Override
@@ -163,8 +155,8 @@ public class CouponReaction extends CoreReaction {
         try {
             JSONObject toParse = new JSONObject(reactionBundleString);
             Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, toParse, Coupon.class);
-            if (coupon == null || !coupon.anyClaim()) return false;
-            formatLinks(coupon);
+            if (coupon == null || coupon.claims == null || !coupon.anyClaim()) return false;
+            normalizeElement(coupon);
             nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
             return true;
         } catch (JSONException e) {
@@ -172,8 +164,8 @@ public class CouponReaction extends CoreReaction {
         }
     }
 
-
-    private void requestSingleResource(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    @Override
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         String profileId = globalConfig.getProfileId();
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)
@@ -182,7 +174,7 @@ public class CouponReaction extends CoreReaction {
                 .appendQueryParameter("filter[claims.profile_id]", profileId)
                 .appendQueryParameter("include", "claims,icon").build();
         try {
-            httpClient.get(mContext, url.toString(), responseHandler);
+            httpClient.nearGet(url.toString(), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }
@@ -203,12 +195,12 @@ public class CouponReaction extends CoreReaction {
         String output = url.toString();
         NearLog.d(TAG, output);
         try {
-            httpClient.get(context, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Copuns downloaded: " + response.toString());
                     List<Coupon> coupons = NearJsonAPIUtils.parseList(morpheus, response, Coupon.class);
-                    formatLinks(coupons);
+                    normalizeList(coupons);
                     listener.onCouponsDownloaded(coupons);
                 }
 
@@ -227,16 +219,18 @@ public class CouponReaction extends CoreReaction {
         NearLog.d(TAG, "Not implemented");
     }
 
-
-    private void formatLinks(List<Coupon> notifications) {
-        for (Coupon notification : notifications) {
-            formatLinks(notification);
-        }
+    @Override
+    protected String getRefreshUrl() {
+        return null;
     }
 
-    private void formatLinks(Coupon notification) {
-        Image icon = notification.icon;
-        if (icon == null) return;
-        notification.setIconSet(icon.toImageSet());
+
+    public static CouponReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        return new CouponReaction(
+                new Cacher<Coupon>(
+                        context.getSharedPreferences("never_used", Context.MODE_PRIVATE)),
+                new NearAsyncHttpClient(context),
+                nearNotifier,
+                globalConfig);
     }
 }

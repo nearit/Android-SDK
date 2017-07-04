@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
+import it.near.sdk.recipes.models.Recipe;
+
 public class SimpleNotification implements Parcelable {
 
     private String notificationMessage;
@@ -56,5 +58,13 @@ public class SimpleNotification implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(notificationMessage);
         dest.writeString(notificationTitle);
+    }
+
+    public static SimpleNotification fromNotificationText(String notificationText) {
+        return new SimpleNotification(notificationText, null);
+    }
+
+    public static SimpleNotification fromRecipe(Recipe recipe) {
+        return new SimpleNotification(recipe.getNotificationBody(), recipe.getNotificationTitle());
     }
 }
