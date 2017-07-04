@@ -68,10 +68,10 @@ public class GeopolisManager {
     private final SharedPreferences sp;
     private final GeopolisTrackingsManager geopolisTrackingsManager;
 
-    private AltBeaconMonitor altBeaconMonitor;
-    private NodesManager nodesManager;
+    private final AltBeaconMonitor altBeaconMonitor;
+    private final NodesManager nodesManager;
 
-    private NearAsyncHttpClient httpClient;
+    private final NearAsyncHttpClient httpClient;
 
     public GeopolisManager(Application application, RecipeEvaluator recipeEvaluator, GlobalConfig globalConfig, TrackManager trackManager) {
         this.application = application;
@@ -177,7 +177,7 @@ public class GeopolisManager {
         geofenceMonitor.stopGFRadar();
     }
 
-    BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
+    final BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
         public static final String TAG = "RegionEventReceiver";
 
         @Override
@@ -237,7 +237,7 @@ public class GeopolisManager {
                 }
     }
 
-    private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             NearLog.d(TAG, "reset intent received");

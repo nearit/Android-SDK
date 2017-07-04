@@ -145,7 +145,7 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     }
 
 
-    public void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)
                 .appendPath(JSON_CONTENT_RES)

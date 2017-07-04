@@ -54,8 +54,8 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private final NodesManager nodesManager;
     private final Application mApplication;
     private RegionBootstrap regionBootstrap;
-    private String prefsNameSuffix = "AltMonitor";
-    private SharedPreferences sp;
+    private final String prefsNameSuffix = "AltMonitor";
+    private final SharedPreferences sp;
     private List<Region> regions;
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 

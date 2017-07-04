@@ -128,7 +128,6 @@ public abstract class CoreReaction<T> extends Reaction {
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
      *
-     * @return
      */
     protected abstract HashMap<String, Class> getModelHashMap();
 

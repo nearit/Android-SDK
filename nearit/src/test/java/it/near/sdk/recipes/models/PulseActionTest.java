@@ -10,7 +10,7 @@ import static org.hamcrest.core.Is.is;
 
 public class PulseActionTest {
 
-    PulseAction pulseAction;
+    private PulseAction pulseAction;
 
     @Before
     public void setUp() throws Exception {

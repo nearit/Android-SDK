@@ -22,8 +22,8 @@ public interface Events {
     GeoEvent RANGE_NEAR = new GeoEvent(RANGING_NEAR_ACTION, RANGING_TAGS_NEAR);
 
     class GeoEvent {
-        public String event;
-        public String fallback;
+        public final String event;
+        public final String fallback;
 
         GeoEvent(String event, String fallback) {
             this.event = event;

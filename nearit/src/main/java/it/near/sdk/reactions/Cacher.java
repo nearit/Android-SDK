@@ -28,14 +28,14 @@ public class Cacher<T> {
     }
 
     public List<T> loadList() throws JSONException {
-        String cachedString = loadCachedString(KEY_LIST);
+        String cachedString = loadCachedString();
         return gson.fromJson(cachedString, new TypeToken<Collection<T>>() {
         }.getType());
     }
 
 
-    private String loadCachedString(String key) {
-        return sp.getString(key, "");
+    private String loadCachedString() {
+        return sp.getString(Cacher.KEY_LIST, "");
     }
 
 }

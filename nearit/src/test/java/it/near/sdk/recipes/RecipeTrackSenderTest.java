@@ -37,7 +37,7 @@ public class RecipeTrackSenderTest {
     private static final String DUMMY_PROFILE_ID = "dummy_profile_id";
     private static final String DUMMY_INSTALLATION_ID = "dummy_installation_id";
     private static final String DUMMY_APP_ID = "dummy_app_id";
-    public static final long DUMMY_LONG_TIMESTAMP = 100L;
+    private static final long DUMMY_LONG_TIMESTAMP = 100L;
 
     private RecipeTrackSender recipeTrackSender;
 

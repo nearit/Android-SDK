@@ -14,7 +14,7 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(AndroidJUnit4.class)
 public class FormatDecoderTest {
 
-    FormatDecoder formatDecoder;
+    private FormatDecoder formatDecoder;
 
     @Before
     public void setUp() throws Exception {

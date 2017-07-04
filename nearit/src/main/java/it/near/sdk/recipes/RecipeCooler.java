@@ -16,7 +16,7 @@ import it.near.sdk.utils.CurrentTime;
 
 import static it.near.sdk.utils.NearUtils.checkNotNull;
 
-public class RecipeCooler {
+class RecipeCooler {
 
     private static final String RECIPE_COOLER_PREFS_NAME = "NearRecipeCoolerPrefsName";
     static final String LOG_MAP = "LOG_MAP";
@@ -30,7 +30,7 @@ public class RecipeCooler {
     private Map<String, Long> mRecipeLogMap;
     private Long mLatestLogEntry;
 
-    public RecipeCooler(@NonNull SharedPreferences sharedPreferences, @NonNull CurrentTime currentTime) {
+    RecipeCooler(@NonNull SharedPreferences sharedPreferences, @NonNull CurrentTime currentTime) {
         this.sharedPreferences = checkNotNull(sharedPreferences);
         this.currentTime = checkNotNull(currentTime);
     }
@@ -85,7 +85,7 @@ public class RecipeCooler {
      *
      * @return the timestamp for the last recipe shown event.
      */
-    public Long getLatestLogEntry() {
+    Long getLatestLogEntry() {
         if (mLatestLogEntry == null) {
             mLatestLogEntry = loadLatestEntry();
         }
@@ -97,7 +97,7 @@ public class RecipeCooler {
      *
      * @return the map of timestamps.
      */
-    public Map<String, Long> getRecipeLogMap() {
+    Map<String, Long> getRecipeLogMap() {
         if (mRecipeLogMap == null) {
             mRecipeLogMap = loadMap();
         }
@@ -109,7 +109,7 @@ public class RecipeCooler {
      *
      * @param recipeId the recipe identifier.
      */
-    public void markRecipeAsShown(String recipeId) {
+    void markRecipeAsShown(String recipeId) {
         Long timeStamp = currentTime.currentTimeStampSeconds();
         getRecipeLogMap().put(recipeId, timeStamp);
         saveMap(mRecipeLogMap);

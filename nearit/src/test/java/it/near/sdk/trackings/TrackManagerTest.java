@@ -44,7 +44,7 @@ public class TrackManagerTest {
     @Mock
     ApplicationVisibility mockApplicationVisibility;
 
-    TrackManager trackManager;
+    private TrackManager trackManager;
 
     @Before
     public void setUp() {
