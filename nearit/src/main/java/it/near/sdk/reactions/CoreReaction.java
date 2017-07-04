@@ -3,16 +3,21 @@ package it.near.sdk.reactions;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Parcelable;
 
 import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cz.msebera.android.httpclient.Header;
 import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.recipes.NearNotifier;
@@ -149,13 +154,23 @@ public abstract class CoreReaction extends Reaction {
     protected abstract void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler);
 
 
-    public void requestSingleReaction(final String bundleId, final AsyncHttpResponseHandler responseHandler, int i) {
+    public void requestSingleReaction(final String bundleId, final NearJsonHttpResponseHandler responseHandler, int i) {
         NearLog.e("PUSH WAIT", "I'm waiting " + i + " millis");
-        final Handler handler = new Handler();
+        final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                requestSingleReaction(bundleId, responseHandler);
+                requestSingleReaction(bundleId, new NearJsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        responseHandler.onSuccess(statusCode, headers, response);
+                    }
+
+                    @Override
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                        responseHandler.onFailureUnique(statusCode, headers, throwable, responseString);
+                    }
+                });
             }
         }, i);
     }
