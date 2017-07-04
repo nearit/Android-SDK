@@ -124,19 +124,19 @@ public class CouponReaction extends CoreReaction {
         Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {
             requestSingleReaction(reaction_bundle.getId(), new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                    formatLinks(coupon);
-                    nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-                }
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
+                            formatLinks(coupon);
+                            nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+                        }
 
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "couldn't fetch content for push recipe");
-                }
-            },
-            new Random().nextInt(1000));
+                        @Override
+                        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                            NearLog.d(TAG, "couldn't fetch content for push recipe");
+                        }
+                    },
+                    new Random().nextInt(1000));
         } else {
             formatLinks(coupon);
             nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
@@ -146,18 +146,19 @@ public class CouponReaction extends CoreReaction {
     @Override
     public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
         requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                formatLinks(coupon);
-                nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
-            }
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
+                        formatLinks(coupon);
+                        nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
+                    }
 
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                NearLog.d(TAG, "couldn't fetch content for push recipe");
-            }
-        });
+                    @Override
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                        NearLog.d(TAG, "couldn't fetch content for push recipe");
+                    }
+                },
+                new Random().nextInt(1000));
     }
 
     @Override
@@ -165,7 +166,7 @@ public class CouponReaction extends CoreReaction {
         try {
             JSONObject toParse = new JSONObject(reactionBundleString);
             Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, toParse, Coupon.class);
-            if (coupon == null || !coupon.anyClaim()) return false;
+            if (coupon == null || coupon.claims == null || !coupon.anyClaim()) return false;
             formatLinks(coupon);
             nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
             return true;

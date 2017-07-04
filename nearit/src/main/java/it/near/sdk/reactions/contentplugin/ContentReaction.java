@@ -141,7 +141,7 @@ public class ContentReaction extends CoreReaction {
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "couldn't fetch content for push recipe");
                 }
-            });
+            }, new Random().nextInt(1000));
         } else {
             nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
