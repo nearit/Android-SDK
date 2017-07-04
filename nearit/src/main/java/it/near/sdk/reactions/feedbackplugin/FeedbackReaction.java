@@ -1,7 +1,6 @@
 package it.near.sdk.reactions.feedbackplugin;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -10,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -22,6 +20,7 @@ import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
@@ -46,8 +45,8 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
 
     private List<Feedback> feedbackList;
 
-    public FeedbackReaction(SharedPreferences sp, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
-        super(sp, httpClient, nearNotifier, Feedback.class);
+    public FeedbackReaction(Cacher<Feedback> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        super(cacher, httpClient, nearNotifier, Feedback.class);
         this.globalConfig = globalConfig;
     }
 
@@ -161,7 +160,7 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
     protected void getContent(String reaction_bundle, final Recipe recipe, final ContentFetchListener listener) {
         if (feedbackList == null) {
             try {
-                feedbackList = loadList();
+                feedbackList = cacher.loadList();
             } catch (JSONException e) {
                 NearLog.d(TAG, "Data format error");
             }
@@ -208,16 +207,10 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
         return FEEDBACKS_NOTIFICATION_RESOURCE;
     }
 
-    @Override
-    public List<String> buildActions() {
-        List<String> supportedActions = new ArrayList<String>();
-        supportedActions.add(ASK_FEEDBACK_ACTION_NAME);
-        return supportedActions;
-    }
-
     public static FeedbackReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         return new FeedbackReaction(
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE),
+                new Cacher<Feedback>(
+                        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
                 nearNotifier,
                 globalConfig

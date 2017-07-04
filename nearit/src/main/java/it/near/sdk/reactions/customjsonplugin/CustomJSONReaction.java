@@ -1,7 +1,6 @@
 package it.near.sdk.reactions.customjsonplugin;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -9,7 +8,6 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -20,6 +18,7 @@ import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
@@ -40,8 +39,8 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     private static final String PLUGIN_ROOT_PATH = "json-sender";
     private List<CustomJSON> jsonList;
 
-    public CustomJSONReaction(SharedPreferences sp, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
-        super(sp, httpClient, nearNotifier, CustomJSON.class);
+    public CustomJSONReaction(Cacher<CustomJSON> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
+        super(cacher, httpClient, nearNotifier, CustomJSON.class);
     }
 
     @Override
@@ -54,13 +53,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     @Override
     protected String getResTypeName() {
         return JSON_CONTENT_RES;
-    }
-
-    @Override
-    public List<String> buildActions() {
-        List<String> supportedActions = new ArrayList<>();
-        supportedActions.add(SHOW_JSON_ACTION);
-        return supportedActions;
     }
 
     @Override
@@ -86,7 +78,7 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     protected void getContent(String reaction_bundle, Recipe recipe, final ContentFetchListener listener) {
         if (jsonList == null) {
             try {
-                jsonList = loadList();
+                jsonList = cacher.loadList();
             } catch (JSONException e) {
                 NearLog.d(TAG, "Data format error");
             }
@@ -172,7 +164,8 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
 
     public static CustomJSONReaction obtain(Context context, NearNotifier nearNotifier) {
         return new CustomJSONReaction(
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE),
+                new Cacher<CustomJSON>(
+                        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
                 nearNotifier
         );

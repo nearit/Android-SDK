@@ -1,8 +1,5 @@
 package it.near.sdk.reactions.simplenotificationplugin;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import it.near.sdk.reactions.Reaction;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.NearNotifier;
@@ -15,13 +12,6 @@ public class SimpleNotificationReaction extends Reaction {
 
     public SimpleNotificationReaction(NearNotifier nearNotifier) {
         super(nearNotifier);
-    }
-
-    @Override
-    public List<String> buildActions() {
-        List<String> supportedActions = new ArrayList<String>();
-        supportedActions.add(SHOW_SIMPLE_NOTIFICATION_ACTION_NAME);
-        return supportedActions;
     }
 
     @Override

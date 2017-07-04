@@ -25,13 +25,6 @@ public abstract class Reaction {
         this.nearNotifier = nearNotifier;
     }
 
-    public List<String> getSupportedActions() {
-        if (supportedActions == null) {
-            supportedActions = buildActions();
-        }
-        return supportedActions;
-    }
-
     /**
      * Method called by the recipe manager to trigger a reaction.
      *
@@ -43,11 +36,6 @@ public abstract class Reaction {
         }
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe);
     }
-
-    /**
-     * Build supported actions
-     */
-    public abstract List<String> buildActions();
 
     /**
      * Refresh configuration from the server. Consider caching the results so you can support offline mode.

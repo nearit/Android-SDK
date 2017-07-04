@@ -1,18 +1,14 @@
 package it.near.sdk.reactions;
 
-import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,30 +30,25 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  */
 public abstract class CoreReaction<T> extends Reaction {
     private static final String TAG = "CoreReaction";
-    protected static final String KEY_LIST = "list";
     /**
      * Gson object to serialize and de-serialize the cache.
      */
-    protected static Gson gson = null;
-    private SharedPreferences sp;
-    private SharedPreferences.Editor editor;
-    protected NearAsyncHttpClient httpClient;
-    protected List<T> reactionList;
+    protected final NearAsyncHttpClient httpClient;
+    protected final Cacher<T> cacher;
     protected final Class<T> type;
+    protected List<T> reactionList;
 
     /**
      * Morpheur object for JsonAPI parsing.
      */
     protected Morpheus morpheus;
 
-    public CoreReaction(SharedPreferences sharedPreferences, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Class<T> type) {
+    public CoreReaction(Cacher<T> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Class<T> type) {
         super(nearNotifier);
         // static GSON object for de/serialization of objects to/from JSON
-        this.sp = sharedPreferences;
-        this.editor = sp.edit();
+        this.cacher = cacher;
         this.type = type;
         this.httpClient = httpClient;
-        gson = new Gson();
         setUpMorpheus();
         refreshConfig();
     }
@@ -84,14 +75,14 @@ public abstract class CoreReaction<T> extends Reaction {
                     NearLog.d(TAG, response.toString());
                     reactionList = NearJsonAPIUtils.parseList(morpheus, response, type);
                     normalizeList(reactionList);
-                    persistList(reactionList);
+                    cacher.persistList(reactionList);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error: " + statusCode);
                     try {
-                        reactionList = loadList();
+                        reactionList = cacher.loadList();
                     } catch (JSONException e) {
                         NearLog.d(TAG, "Data format error");
                     }
@@ -100,23 +91,6 @@ public abstract class CoreReaction<T> extends Reaction {
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
         }
-    }
-
-    /**
-     * Utility to persist lists in the SharedPreferences.
-     *
-     * @param list
-     */
-    protected void persistList(List list) {
-        String persistedString = gson.toJson(list);
-        editor.putString(KEY_LIST, persistedString);
-        editor.apply();
-    }
-
-    protected List<T> loadList() throws JSONException {
-        String cachedString = loadCachedString(KEY_LIST);
-        return gson.fromJson(cachedString, new TypeToken<Collection<T>>() {
-        }.getType());
     }
 
     protected void normalizeList(List<T> reactionList) {
@@ -150,16 +124,7 @@ public abstract class CoreReaction<T> extends Reaction {
 
     protected abstract String getRefreshUrl();
 
-    /**
-     * Returns a String stored in SharedPreferences.
-     * It was not possible to write a generic method already returning a list because of Java type erasure
-     *
-     * @param key
-     * @return
-     */
-    protected String loadCachedString(String key) {
-        return sp.getString(key, "");
-    }
+
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
      *

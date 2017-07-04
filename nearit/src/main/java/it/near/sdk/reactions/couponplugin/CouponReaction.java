@@ -1,7 +1,6 @@
 package it.near.sdk.reactions.couponplugin;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -11,7 +10,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -23,6 +21,7 @@ import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.contentplugin.model.Image;
@@ -45,8 +44,8 @@ public class CouponReaction extends CoreReaction<Coupon> {
 
     private final GlobalConfig globalConfig;
 
-    public CouponReaction(SharedPreferences sp, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
-        super(sp, httpClient, nearNotifier, Coupon.class);
+    public CouponReaction(Cacher<Coupon> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+        super(cacher, httpClient, nearNotifier, Coupon.class);
         this.globalConfig = globalConfig;
     }
 
@@ -62,13 +61,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
     @Override
     protected String getResTypeName() {
         return COUPONS_RES;
-    }
-
-    @Override
-    public List<String> buildActions() {
-        List<String> supportedActions = new ArrayList<String>();
-        supportedActions.add(SHOW_COUPON_ACTION_NAME);
-        return supportedActions;
     }
 
     @Override
@@ -240,7 +232,8 @@ public class CouponReaction extends CoreReaction<Coupon> {
 
     public static CouponReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         return new CouponReaction(
-                context.getSharedPreferences("never_used", Context.MODE_PRIVATE),
+                new Cacher<Coupon>(
+                        context.getSharedPreferences("never_used", Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
                 nearNotifier,
                 globalConfig);

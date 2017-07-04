@@ -1,7 +1,6 @@
 package it.near.sdk.reactions.contentplugin;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 
 import com.loopj.android.http.AsyncHttpResponseHandler;
@@ -20,6 +19,7 @@ import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.contentplugin.model.Audio;
@@ -44,8 +44,8 @@ public class ContentReaction extends CoreReaction<Content> {
     private static final String TAG = "ContentReaction";
     private static final String PREFS_NAME = "NearContentNot";
 
-    public ContentReaction(SharedPreferences sp, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
-        super(sp, httpClient, nearNotifier, Content.class);
+    public ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
+        super(cacher, httpClient, nearNotifier, Content.class);
     }
 
     @Override
@@ -66,7 +66,7 @@ public class ContentReaction extends CoreReaction<Content> {
     protected void getContent(String reactionBundleId, Recipe recipe, final ContentFetchListener listener) {
         if (reactionList == null) {
             try {
-                reactionList = loadList();
+                reactionList = cacher.loadList();
             } catch (JSONException e) {
                 NearLog.d(TAG, "Data format error");
             }
@@ -194,16 +194,9 @@ public class ContentReaction extends CoreReaction<Content> {
         return map;
     }
 
-    @Override
-    public List<String> buildActions() {
-        List<String> supportedActions = new ArrayList<>();
-        supportedActions.add(SHOW_CONTENT_ACTION_NAME);
-        return supportedActions;
-    }
-
     public static ContentReaction obtain(Context context, NearNotifier nearNotifier) {
         return new ContentReaction(
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE),
+                new Cacher<Content>(context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
                 nearNotifier);
     }
