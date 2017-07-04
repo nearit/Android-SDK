@@ -332,15 +332,16 @@ public class RecipesManager implements RecipeEvaluator {
         }
     }
 
-    private void filterAndNotify(List<Recipe> matchingRecipes) {
+    private boolean filterAndNotify(List<Recipe> matchingRecipes) {
         recipeValidationFilter.filterRecipes(matchingRecipes);
-        if (matchingRecipes.isEmpty()) return;
+        if (matchingRecipes.isEmpty()) return false;
         Recipe winnerRecipe = matchingRecipes.get(0);
         if (winnerRecipe.isEvaluatedOnline()) {
             evaluateRecipe(winnerRecipe.getId());
         } else {
             gotRecipe(winnerRecipe);
         }
+        return true;
     }
 
     @Override
@@ -359,8 +360,7 @@ public class RecipesManager implements RecipeEvaluator {
 
         if (matchingRecipes.isEmpty()) return false;
 
-        filterAndNotify(matchingRecipes);
-        return true;
+        return filterAndNotify(matchingRecipes);
     }
 
 
@@ -381,8 +381,7 @@ public class RecipesManager implements RecipeEvaluator {
 
         if (matchingRecipes.isEmpty()) return false;
 
-        filterAndNotify(matchingRecipes);
-        return true;
+        return filterAndNotify(matchingRecipes);
     }
 
     @Override
