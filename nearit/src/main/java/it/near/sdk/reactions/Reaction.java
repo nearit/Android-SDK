@@ -1,7 +1,5 @@
 package it.near.sdk.reactions;
 
-import java.util.List;
-
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
@@ -12,10 +10,6 @@ import it.near.sdk.recipes.models.Recipe;
  *
  */
 public abstract class Reaction {
-    /**
-     * List of supported plugin actions. Still unused.
-     */
-    protected List<String> supportedActions = null;
     /**
      * Notifier of content to the app.
      */

@@ -202,11 +202,6 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
         return map;
     }
 
-    @Override
-    protected String getResTypeName() {
-        return FEEDBACKS_NOTIFICATION_RESOURCE;
-    }
-
     public static FeedbackReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         return new FeedbackReaction(
                 new Cacher<Feedback>(

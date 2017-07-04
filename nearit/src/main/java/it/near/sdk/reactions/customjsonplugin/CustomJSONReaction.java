@@ -51,11 +51,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     }
 
     @Override
-    protected String getResTypeName() {
-        return JSON_CONTENT_RES;
-    }
-
-    @Override
     protected void normalizeElement(CustomJSON element) {
         // left intentionally empty
     }

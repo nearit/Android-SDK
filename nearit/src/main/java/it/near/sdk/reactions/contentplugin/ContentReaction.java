@@ -49,11 +49,6 @@ public class ContentReaction extends CoreReaction<Content> {
     }
 
     @Override
-    protected String getResTypeName() {
-        return CONTENT_NOTIFICATION_RESOURCE;
-    }
-
-    @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch (reaction_action) {
             case SHOW_CONTENT_ACTION_NAME:

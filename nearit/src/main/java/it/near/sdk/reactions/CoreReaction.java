@@ -133,13 +133,6 @@ public abstract class CoreReaction<T> extends Reaction {
     protected abstract HashMap<String, Class> getModelHashMap();
 
     /**
-     * Return the resource type.
-     *
-     * @return the name of the resource handled by the plugin.
-     */
-    protected abstract String getResTypeName();
-
-    /**
      * Download a single request.
      */
     protected abstract void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler);

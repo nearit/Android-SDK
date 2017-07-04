@@ -59,11 +59,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
     }
 
     @Override
-    protected String getResTypeName() {
-        return COUPONS_RES;
-    }
-
-    @Override
     public void refreshConfig() {
         // TODO download stuff
     }
