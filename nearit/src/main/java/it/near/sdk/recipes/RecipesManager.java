@@ -5,14 +5,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,7 +50,6 @@ public class RecipesManager implements RecipeEvaluator {
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private final NearAsyncHttpClient httpClient;
-    private final SharedPreferences sp;
     private final GlobalConfig globalConfig;
     private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final RecipeTrackSender recipeTrackSender;
@@ -65,14 +60,12 @@ public class RecipesManager implements RecipeEvaluator {
                           GlobalConfig globalConfig,
                           RecipeValidationFilter recipeValidationFilter,
                           EvaluationBodyBuilder evaluationBodyBuilder,
-                          SharedPreferences sp,
                           RecipeTrackSender recipeTrackSender,
                           Cacher<Recipe> listCacher) {
         this.httpClient = httpClient;
         this.globalConfig = globalConfig;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.recipeValidationFilter = recipeValidationFilter;
-        this.sp = sp;
         this.recipeTrackSender = recipeTrackSender;
         this.listCacher = listCacher;
 
@@ -167,7 +160,7 @@ public class RecipesManager implements RecipeEvaluator {
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
-                        recipes = loadChachedList();
+                        recipes = listCacher.loadList();
                     } catch (JSONException e) {
                         NearLog.d(TAG, "Recipe format error");
                     }
@@ -177,21 +170,6 @@ public class RecipesManager implements RecipeEvaluator {
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             listener.onRecipesRefreshFail();
         }
-    }
-
-    private void pefrsistList(List<Recipe> recipes) {
-        Gson gson = new Gson();
-        String listStringified = gson.toJson(recipes);
-        sp.edit()
-                .putString(TAG, listStringified)
-                .apply();
-    }
-
-    private List<Recipe> loadChachedList() throws JSONException {
-        Gson gson = new Gson();
-        Type collectionType = new TypeToken<List<Recipe>>() {
-        }.getType();
-        return gson.<ArrayList<Recipe>>fromJson(sp.getString(TAG, ""), collectionType);
     }
 
     /**

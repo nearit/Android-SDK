@@ -133,7 +133,6 @@ public class NearItManager {
                 globalConfig,
                 recipeValidationFilter,
                 evaluationBodyBuilder,
-                RecipesManager.getSharedPreferences(application),
                 recipeTrackSender,
                 new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
         RecipesManager.setInstance(recipesManager);
