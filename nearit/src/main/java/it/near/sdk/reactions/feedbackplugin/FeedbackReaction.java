@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
@@ -42,8 +41,6 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
     private static final String ANSWERS_RESOURCE = "answers";
 
     private final GlobalConfig globalConfig;
-
-    private List<Feedback> feedbackList;
 
     public FeedbackReaction(Cacher<Feedback> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         super(cacher, httpClient, nearNotifier, Feedback.class);
@@ -158,14 +155,14 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
 
     @Override
     protected void getContent(String reaction_bundle, final Recipe recipe, final ContentFetchListener listener) {
-        if (feedbackList == null) {
+        if (reactionList == null) {
             try {
-                feedbackList = cacher.loadList();
+                reactionList = cacher.loadList();
             } catch (JSONException e) {
                 NearLog.d(TAG, "Data format error");
             }
         }
-        for (Feedback fb : safe(feedbackList)) {
+        for (Feedback fb : safe(reactionList)) {
             if (fb.getId().equals(reaction_bundle)) {
                 fb.setRecipeId(recipe.getId());
                 listener.onContentFetched(fb, true);
