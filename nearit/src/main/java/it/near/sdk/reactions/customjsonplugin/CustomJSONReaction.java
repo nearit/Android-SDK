@@ -9,7 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
@@ -37,7 +36,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     private static final String JSON_CONTENT_RES = "json_contents";
     private static final String TAG = "CustomJSONReaction";
     private static final String PLUGIN_ROOT_PATH = "json-sender";
-    private List<CustomJSON> jsonList;
 
     public CustomJSONReaction(Cacher<CustomJSON> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
         super(cacher, httpClient, nearNotifier, CustomJSON.class);
@@ -71,14 +69,14 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
 
     @Override
     protected void getContent(String reaction_bundle, Recipe recipe, final ContentFetchListener listener) {
-        if (jsonList == null) {
+        if (reactionList == null) {
             try {
-                jsonList = cacher.loadList();
+                reactionList = cacher.loadList();
             } catch (JSONException e) {
                 NearLog.d(TAG, "Data format error");
             }
         }
-        for (CustomJSON json : safe(jsonList)) {
+        for (CustomJSON json : safe(reactionList)) {
             if (json.getId().equals(reaction_bundle)) {
                 listener.onContentFetched(json, true);
                 return;
