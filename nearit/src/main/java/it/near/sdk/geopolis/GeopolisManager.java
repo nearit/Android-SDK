@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.utils.CurrentTime;
 
 /**
  * Manages a beacon forest, the plugin for monitoring regions structured in a tree.
@@ -90,7 +92,8 @@ public class GeopolisManager {
 
         this.geopolisTrackingsManager = new GeopolisTrackingsManager(
                 trackManager,
-                globalConfig
+                globalConfig,
+                new CurrentTime()
         );
 
         registerProximityReceiver();
@@ -225,7 +228,11 @@ public class GeopolisManager {
 
     private void trackAndFirePulse(Node node, String event) {
         if (node != null && node.identifier != null) {
-            geopolisTrackingsManager.trackEvent(node.identifier, event);
+            try {
+                geopolisTrackingsManager.trackEvent(node.identifier, event);
+            } catch (JSONException e) {
+
+            }
             firePulse(event, node.identifier);
         }
     }
