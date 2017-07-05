@@ -229,7 +229,7 @@ public class GeopolisManager {
     private void trackAndFirePulse(Node node, Events.GeoEvent event) {
         if (node != null && node.identifier != null) {
             try {
-                geopolisTrackingsManager.trackEvent(node.identifier, event);
+                geopolisTrackingsManager.trackEvent(node.identifier, event.event);
             } catch (JSONException e) {
 
             }
