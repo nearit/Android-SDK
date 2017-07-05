@@ -25,6 +25,7 @@ import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
 import it.near.sdk.reactions.couponplugin.CouponListener;
@@ -133,7 +134,8 @@ public class NearItManager {
                 recipeValidationFilter,
                 evaluationBodyBuilder,
                 RecipesManager.getSharedPreferences(application),
-                recipeTrackSender);
+                recipeTrackSender,
+                new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
         RecipesManager.setInstance(recipesManager);
 
         GlobalState.getInstance(application).setRecipesManager(recipesManager);

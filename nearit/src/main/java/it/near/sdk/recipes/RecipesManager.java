@@ -25,6 +25,7 @@ import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Reaction;
 import it.near.sdk.recipes.models.OperationAction;
 import it.near.sdk.recipes.models.PulseAction;
@@ -58,22 +59,25 @@ public class RecipesManager implements RecipeEvaluator {
     private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final RecipeTrackSender recipeTrackSender;
     private final RecipeValidationFilter recipeValidationFilter;
+    private final Cacher<Recipe> listCacher;
 
     public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
                           RecipeValidationFilter recipeValidationFilter,
                           EvaluationBodyBuilder evaluationBodyBuilder,
                           SharedPreferences sp,
-                          RecipeTrackSender recipeTrackSender) {
+                          RecipeTrackSender recipeTrackSender,
+                          Cacher<Recipe> listCacher) {
         this.httpClient = httpClient;
         this.globalConfig = globalConfig;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.recipeValidationFilter = recipeValidationFilter;
         this.sp = sp;
         this.recipeTrackSender = recipeTrackSender;
+        this.listCacher = listCacher;
 
         try {
-            recipes = loadChachedList();
+            recipes = listCacher.loadList();
         } catch (JSONException e) {
             NearLog.d(TAG, "Recipes format error");
         }
@@ -155,7 +159,7 @@ public class RecipesManager implements RecipeEvaluator {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Got recipes: " + response.toString());
                     recipes = NearJsonAPIUtils.parseList(morpheus, response, Recipe.class);
-                    persistList(recipes);
+                    listCacher.persistList(recipes);
                     listener.onRecipesRefresh();
                 }
 
@@ -175,7 +179,7 @@ public class RecipesManager implements RecipeEvaluator {
         }
     }
 
-    private void persistList(List<Recipe> recipes) {
+    private void pefrsistList(List<Recipe> recipes) {
         Gson gson = new Gson();
         String listStringified = gson.toJson(recipes);
         sp.edit()
@@ -346,11 +350,18 @@ public class RecipesManager implements RecipeEvaluator {
 
     @Override
     public boolean handlePulseLocally(String plugin_name, String plugin_action, String plugin_bundle) {
+        if (plugin_name == null || plugin_action == null || plugin_bundle == null) return false;
+
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
         for (Recipe recipe : recipes) {
-            // TODO check for null pulse bundle
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.getPulse_bundle() == null ||
+                    recipe.getPulse_bundle().getId() == null)
+                continue;
             if (recipe.getPulse_plugin_id().equals(plugin_name) &&
                     recipe.getPulse_action().getId().equals(plugin_action) &&
                     recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
@@ -367,11 +378,19 @@ public class RecipesManager implements RecipeEvaluator {
 
     @Override
     public boolean handlePulseTags(String plugin_name, String plugin_action, List<String> plugin_tags) {
+        if (plugin_name == null || plugin_action == null || plugin_tags == null || plugin_tags.isEmpty())
+            return false;
+
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
         for (Recipe recipe : recipes) {
-            // TODO check for null pulse bundle
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.tags == null ||
+                    recipe.tags.isEmpty())
+                continue;
             if (recipe.getPulse_plugin_id().equals(plugin_name) &&
                     recipe.getPulse_action().getId().equals(plugin_action) &&
                     plugin_tags.containsAll(recipe.tags)) {
