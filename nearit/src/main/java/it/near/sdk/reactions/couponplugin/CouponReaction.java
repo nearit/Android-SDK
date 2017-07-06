@@ -3,8 +3,6 @@ package it.near.sdk.reactions.couponplugin;
 import android.content.Context;
 import android.net.Uri;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +48,28 @@ public class CouponReaction extends CoreReaction<Coupon> {
     }
 
     @Override
+    public String getReactionPluginName() {
+        return PLUGIN_NAME;
+    }
+
+    @Override
+    protected String getRefreshUrl() {
+        return null;
+    }
+
+    @Override
+    protected String getSingleReactionUrl(String bundleId) {
+        String profileId = globalConfig.getProfileId();
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(PLUGIN_ROOT_PATH)
+                .appendPath(COUPONS_RES)
+                .appendPath(bundleId)
+                .appendQueryParameter("filter[claims.profile_id]", profileId)
+                .appendQueryParameter("include", "claims,icon").build();
+        return url.toString();
+    }
+
+    @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
         map.put(CLAIMS_RES, Claim.class);
@@ -60,7 +80,7 @@ public class CouponReaction extends CoreReaction<Coupon> {
 
     @Override
     public void refreshConfig() {
-        // TODO download stuff
+        // intentionally left blank
     }
 
     @Override
@@ -68,12 +88,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
         Image icon = element.icon;
         if (icon == null) return;
         element.setIconSet(icon.toImageSet());
-    }
-
-
-    @Override
-    public String getReactionPluginName() {
-        return PLUGIN_NAME;
     }
 
     @Override
@@ -164,23 +178,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
         }
     }
 
-    @Override
-    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
-        String profileId = globalConfig.getProfileId();
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_ROOT_PATH)
-                .appendPath(COUPONS_RES)
-                .appendPath(bundleId)
-                .appendQueryParameter("filter[claims.profile_id]", profileId)
-                .appendQueryParameter("include", "claims,icon").build();
-        try {
-            httpClient.nearGet(url.toString(), responseHandler);
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
-        }
-
-    }
-
     public void getCoupons(Context context, final CouponListener listener) throws UnsupportedEncodingException, MalformedURLException {
         String profile_id = globalConfig.getProfileId();
         if (profile_id == null) {
@@ -217,11 +214,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
     @Override
     protected void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener) {
         NearLog.d(TAG, "Not implemented");
-    }
-
-    @Override
-    protected String getRefreshUrl() {
-        return null;
     }
 
 

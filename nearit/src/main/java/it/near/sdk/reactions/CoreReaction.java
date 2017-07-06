@@ -64,7 +64,6 @@ public abstract class CoreReaction<T> extends Reaction {
         }
     }
 
-
     @Override
     public void refreshConfig() {
         String url = getRefreshUrl();
@@ -124,6 +123,8 @@ public abstract class CoreReaction<T> extends Reaction {
 
     protected abstract String getRefreshUrl();
 
+    protected abstract String getSingleReactionUrl(String bundleId);
+
 
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
@@ -134,8 +135,13 @@ public abstract class CoreReaction<T> extends Reaction {
     /**
      * Download a single request.
      */
-    protected abstract void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler);
-
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+        try {
+            httpClient.nearGet(getSingleReactionUrl(bundleId), responseHandler);
+        } catch (AuthenticationException e) {
+            NearLog.d(TAG, "Auth error");
+        }
+    }
 
     protected void requestSingleReaction(final String bundleId, final NearJsonHttpResponseHandler responseHandler, int i) {
         final Handler handler = new Handler(Looper.getMainLooper());

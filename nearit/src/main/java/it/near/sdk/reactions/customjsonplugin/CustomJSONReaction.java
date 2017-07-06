@@ -3,8 +3,6 @@ package it.near.sdk.reactions.customjsonplugin;
 import android.content.Context;
 import android.net.Uri;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,7 +10,6 @@ import java.util.HashMap;
 import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
@@ -55,16 +52,28 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
         return url.toString();
     }
 
-    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    @Override
+    protected String getSingleReactionUrl(String bundleId) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_ROOT_PATH)
                 .appendPath(JSON_CONTENT_RES)
                 .appendPath(bundleId).build();
-        try {
-            httpClient.nearGet(url.toString(), responseHandler);
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
+        return url.toString();
+    }
+
+    @Override
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
+        switch (reaction_action) {
+            case SHOW_JSON_ACTION:
+                showContent(reaction_bundle.getId(), recipe);
+                break;
         }
+    }
+
+    @Override
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
+        CustomJSON customJSON = (CustomJSON) reactionBundle;
+        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
     }
 
     @Override
@@ -77,15 +86,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     @Override
     protected void normalizeElement(CustomJSON element) {
         // left intentionally empty
-    }
-
-    @Override
-    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action) {
-            case SHOW_JSON_ACTION:
-                showContent(reaction_bundle.getId(), recipe);
-                break;
-        }
     }
 
     @Override
@@ -115,12 +115,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
                 listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
             }
         });
-    }
-
-    @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
-        CustomJSON customJSON = (CustomJSON) reactionBundle;
-        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
     }
 
     @Override

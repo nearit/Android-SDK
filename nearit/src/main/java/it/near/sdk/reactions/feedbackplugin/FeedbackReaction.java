@@ -3,8 +3,6 @@ package it.near.sdk.reactions.feedbackplugin;
 import android.content.Context;
 import android.net.Uri;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,16 +59,12 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
     }
 
     @Override
-    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+    protected String getSingleReactionUrl(String bundleId) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_NAME)
                 .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE)
                 .appendPath(bundleId).build();
-        try {
-            httpClient.nearGet(url.toString(), responseHandler);
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
-        }
+        return url.toString();
     }
 
     @Override

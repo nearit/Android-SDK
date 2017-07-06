@@ -3,8 +3,6 @@ package it.near.sdk.reactions.contentplugin;
 import android.content.Context;
 import android.net.Uri;
 
-import com.loopj.android.http.AsyncHttpResponseHandler;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +12,6 @@ import java.util.List;
 import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
@@ -49,12 +46,58 @@ public class ContentReaction extends CoreReaction<Content> {
     }
 
     @Override
+    public String getReactionPluginName() {
+        return PLUGIN_NAME;
+    }
+
+    @Override
+    protected String getRefreshUrl() {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(CONTENT_NOTIFICATION_PATH)
+                .appendPath(CONTENT_NOTIFICATION_RESOURCE)
+                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
+        return url.toString();
+    }
+
+    @Override
+    protected String getSingleReactionUrl(String bundleId) {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(CONTENT_NOTIFICATION_PATH)
+                .appendPath(CONTENT_NOTIFICATION_RESOURCE)
+                .appendPath(bundleId)
+                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
+        return url.toString();
+    }
+
+    @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
         switch (reaction_action) {
             case SHOW_CONTENT_ACTION_NAME:
                 showContent(reaction_bundle.getId(), recipe);
                 break;
         }
+    }
+
+    @Override
+    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
+        Content content = (Content) reactionBundle;
+        if (content.hasContentToInclude()) {
+            requestSingleReaction(reactionBundle.getId(), new NearJsonHttpResponseHandler() {
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
+                    normalizeElement(content);
+                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+                }
+
+                @Override
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                    NearLog.d(TAG, "couldn't fetch content for push recipe");
+                }
+            }, new Random().nextInt(1000));
+        } else {
+            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+        }
+
     }
 
     @Override
@@ -85,38 +128,6 @@ public class ContentReaction extends CoreReaction<Content> {
                 listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
             }
         });
-    }
-
-    @Override
-    protected String getRefreshUrl() {
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(CONTENT_NOTIFICATION_PATH)
-                .appendPath(CONTENT_NOTIFICATION_RESOURCE)
-                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
-        return url.toString();
-    }
-
-
-    @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
-        Content content = (Content) reactionBundle;
-        if (content.hasContentToInclude()) {
-            requestSingleReaction(reactionBundle.getId(), new NearJsonHttpResponseHandler() {
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                    normalizeElement(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "couldn't fetch content for push recipe");
-                }
-            }, new Random().nextInt(1000));
-        } else {
-            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-        }
-
     }
 
     @Override
@@ -151,20 +162,6 @@ public class ContentReaction extends CoreReaction<Content> {
     }
 
     @Override
-    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(CONTENT_NOTIFICATION_PATH)
-                .appendPath(CONTENT_NOTIFICATION_RESOURCE)
-                .appendPath(bundleId)
-                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, INCLUDE_RESOURCES).build();
-        try {
-            httpClient.nearGet(url.toString(), responseHandler);
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
-        }
-    }
-
-    @Override
     protected void normalizeElement(Content element) {
         List<Image> images = element.images;
         List<ImageSet> imageSets = new ArrayList<>();
@@ -172,11 +169,6 @@ public class ContentReaction extends CoreReaction<Content> {
             imageSets.add(image.toImageSet());
         }
         element.setImages_links(imageSets);
-    }
-
-    @Override
-    public String getReactionPluginName() {
-        return PLUGIN_NAME;
     }
 
     @Override
