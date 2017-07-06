@@ -71,7 +71,7 @@ public class RecipesManager implements RecipeEvaluator {
 
         try {
             recipes = listCacher.loadList();
-        } catch (JSONException e) {
+        } catch (Exception e) {
             NearLog.d(TAG, "Recipes format error");
         }
         setUpMorpheusParser();
@@ -161,7 +161,7 @@ public class RecipesManager implements RecipeEvaluator {
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
                         recipes = listCacher.loadList();
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         NearLog.d(TAG, "Recipe format error");
                     }
                     listener.onRecipesRefreshFail();
@@ -351,7 +351,6 @@ public class RecipesManager implements RecipeEvaluator {
 
         return filterAndNotify(matchingRecipes);
     }
-
 
 
     @Override
