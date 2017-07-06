@@ -53,6 +53,14 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
     }
 
     @Override
+    protected String getRefreshUrl() {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(PLUGIN_NAME)
+                .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE).build();
+        return url.toString();
+    }
+
+    @Override
     protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
         Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
                 .appendPath(PLUGIN_NAME)
@@ -182,14 +190,6 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
                 listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
             }
         });
-    }
-
-    @Override
-    protected String getRefreshUrl() {
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(FEEDBACKS_NOTIFICATION_RESOURCE).build();
-        return url.toString();
     }
 
     @Override

@@ -42,6 +42,32 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     }
 
     @Override
+    public String getReactionPluginName() {
+        return PLUGIN_NAME;
+    }
+
+    @Override
+    protected String getRefreshUrl() {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(PLUGIN_ROOT_PATH)
+                .appendPath(JSON_CONTENT_RES)
+                .build();
+        return url.toString();
+    }
+
+    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
+        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                .appendPath(PLUGIN_ROOT_PATH)
+                .appendPath(JSON_CONTENT_RES)
+                .appendPath(bundleId).build();
+        try {
+            httpClient.nearGet(url.toString(), responseHandler);
+        } catch (AuthenticationException e) {
+            NearLog.d(TAG, "Auth error");
+        }
+    }
+
+    @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
         map.put(JSON_CONTENT_RES, CustomJSON.class);
@@ -51,11 +77,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     @Override
     protected void normalizeElement(CustomJSON element) {
         // left intentionally empty
-    }
-
-    @Override
-    public String getReactionPluginName() {
-        return PLUGIN_NAME;
     }
 
     @Override
@@ -97,15 +118,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     }
 
     @Override
-    protected String getRefreshUrl() {
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_ROOT_PATH)
-                .appendPath(JSON_CONTENT_RES)
-                .build();
-        return url.toString();
-    }
-
-    @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
         CustomJSON customJSON = (CustomJSON) reactionBundle;
         nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
@@ -128,6 +140,7 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
                 new Random().nextInt(1000));
     }
 
+
     @Override
     public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
         try {
@@ -139,19 +152,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
         } catch (JSONException e) {
             e.printStackTrace();
             return false;
-        }
-    }
-
-
-    protected void requestSingleReaction(String bundleId, AsyncHttpResponseHandler responseHandler) {
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_ROOT_PATH)
-                .appendPath(JSON_CONTENT_RES)
-                .appendPath(bundleId).build();
-        try {
-            httpClient.nearGet(url.toString(), responseHandler);
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
         }
     }
 
