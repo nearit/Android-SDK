@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.MalformedJsonException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -74,7 +75,7 @@ private final RecipeValidationFilter recipeValidationFilter;
 
         try {
             recipes = loadChachedList();
-        } catch (JSONException e) {
+        } catch (Exception e) {
             NearLog.d(TAG, "Recipes format error");
         }
         setUpMorpheusParser();
@@ -164,7 +165,7 @@ private final RecipeValidationFilter recipeValidationFilter;
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
                         recipes = loadChachedList();
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         NearLog.d(TAG, "Recipe format error");
                     }
                     listener.onRecipesRefreshFail();
@@ -183,7 +184,7 @@ private final RecipeValidationFilter recipeValidationFilter;
                 .apply();
     }
 
-    private List<Recipe> loadChachedList() throws JSONException {
+    private List<Recipe> loadChachedList() throws JSONException, MalformedJsonException {
         Gson gson = new Gson();
         Type collectionType = new TypeToken<List<Recipe>>() {
         }.getType();
