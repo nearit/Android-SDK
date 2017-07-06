@@ -108,6 +108,8 @@ public class EvaluationBodyBuilderTest {
 
     @Test
     public void whenOperatingInVariuousTimezones_utcOffsetIsCorrectlyBuilt() throws JSONException {
+        // TODO test the dst additional offset
+
         when(mockCurrentTime.currentCalendar()).thenReturn(Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30")));
         assertThat(
                 extractUtcOffsetFrom(evaluationBodyBuilder.buildEvaluateBody()),

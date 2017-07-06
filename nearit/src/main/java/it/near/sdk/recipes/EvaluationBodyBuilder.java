@@ -75,7 +75,7 @@ public class EvaluationBodyBuilder {
 
     private String buildUtcOffset() {
         Calendar currentCalendar = currentTime.currentCalendar();
-        int offsetInMillis = currentCalendar.getTimeZone().getRawOffset();
+        int offsetInMillis = currentCalendar.getTimeZone().getOffset(currentTime.currentTimestamp());
         String offset = String.format(Locale.US, "%02d:%02d", Math.abs(offsetInMillis / 3600000), Math.abs((offsetInMillis / 60000) % 60));
         offset = (offsetInMillis >= 0 ? "+" : "-") + offset;
         return offset;

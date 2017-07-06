@@ -161,6 +161,7 @@ public class RecipesManager implements RecipeEvaluator {
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
                         recipes = listCacher.loadList();
+
                     } catch (Exception e) {
                         NearLog.d(TAG, "Recipe format error");
                     }
@@ -171,7 +172,7 @@ public class RecipesManager implements RecipeEvaluator {
             listener.onRecipesRefreshFail();
         }
     }
-
+    
     /**
      * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
      *
