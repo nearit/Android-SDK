@@ -22,7 +22,6 @@ import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
@@ -79,13 +78,6 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
     @Override
     protected void normalizeElement(Feedback element) {
         // left intentionally empty
-    }
-
-    @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
-        Feedback feedback = (Feedback) reaction_bundle;
-        feedback.setRecipeId(recipe.getId());
-        nearNotifier.deliverBackgroundPushReaction(feedback, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
     }
 
     @Override

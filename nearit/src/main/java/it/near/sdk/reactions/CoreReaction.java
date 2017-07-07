@@ -30,7 +30,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  *
  * @author cattaneostefano.
  */
-public abstract class CoreReaction<T extends Parcelable> extends Reaction {
+public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
     private static final String TAG = "CoreReaction";
     /**
      * Gson object to serialize and de-serialize the cache.
@@ -41,7 +41,7 @@ public abstract class CoreReaction<T extends Parcelable> extends Reaction {
     protected List<T> reactionList;
 
     /**
-     * Morpheur object for JsonAPI parsing.
+     * Morpheus object for JsonAPI parsing.
      */
     protected Morpheus morpheus;
 
@@ -172,6 +172,31 @@ public abstract class CoreReaction<T extends Parcelable> extends Reaction {
                 NearLog.d(TAG, "Couldn't fetch content");
             }
         }, new Random().nextInt(1000));
+    }
+
+    @Override
+    public void handlePushReaction(final Recipe recipe, String push_id, ReactionBundle reactionBundle) {
+        T element = (T)reactionBundle;
+        if (element.hasContentToInclude()) {
+            requestSingleReaction(element.getId(), new NearJsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    T element = NearJsonAPIUtils.parseElement(morpheus, response, type);
+                    injectRecipeId(element, recipe.getId());
+                    normalizeElement(element);
+                    nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+                }
+
+                @Override
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                    NearLog.d(TAG, "couldn't fetch content for push recipe");
+                }
+            });
+        } else {
+            injectRecipeId(element, recipe.getId());
+            normalizeElement(element);
+            nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+        }
     }
 
     protected void requestSingleReaction(final String bundleId, final NearJsonHttpResponseHandler responseHandler, int i) {

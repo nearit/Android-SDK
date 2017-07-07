@@ -40,7 +40,7 @@ public class ReactionTest {
         ReactionAction dummyReactionAction = new ReactionAction();
         String dummyReactionActionId = "action_id";
         dummyReactionAction.setId(dummyReactionActionId);
-        ReactionBundle dummyReactionBundle = new ReactionBundle();
+        ReactionBundle dummyReactionBundle = mock(ReactionBundle.class);
         Recipe recipe = new Recipe();
         recipe.reaction_plugin_id = "wrong_plugin_name";
         recipe.reaction_action = dummyReactionAction;

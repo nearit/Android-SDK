@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import it.near.sdk.communication.Constants;
@@ -25,7 +24,6 @@ import it.near.sdk.reactions.contentplugin.model.Image;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.contentplugin.model.Upload;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
@@ -87,28 +85,6 @@ public class ContentReaction extends CoreReaction<Content> {
             imageSets.add(image.toImageSet());
         }
         element.setImages_links(imageSets);
-    }
-
-    @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
-        Content content = (Content) reactionBundle;
-        if (content.hasContentToInclude()) {
-            requestSingleReaction(reactionBundle.getId(), new NearJsonHttpResponseHandler() {
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                    normalizeElement(content);
-                    nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "couldn't fetch content for push recipe");
-                }
-            }, new Random().nextInt(1000));
-        } else {
-            nearNotifier.deliverBackgroundPushReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-        }
-
     }
 
     @Override

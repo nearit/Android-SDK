@@ -175,6 +175,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         }
     }
 
+    @Override
     public boolean hasContentToInclude() {
         return icon != null;
     }

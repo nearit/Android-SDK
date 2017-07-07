@@ -80,6 +80,7 @@ public class Content extends ReactionBundle implements Parcelable {
         upload = in.readParcelable(Upload.class.getClassLoader());
     }
 
+    @Override
     public boolean hasContentToInclude() {
         return audio != null ||
                 (images != null && images.size() > 0) ||

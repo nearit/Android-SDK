@@ -10,7 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -130,30 +129,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
             nearNotifier.deliverForegroundReaction(coupon, recipe);
         } else {
             nearNotifier.deliverBackgroundReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-        }
-    }
-
-    @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
-        Coupon coupon = (Coupon) reaction_bundle;
-        if (coupon.hasContentToInclude()) {
-            requestSingleReaction(reaction_bundle.getId(), new NearJsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                            normalizeElement(coupon);
-                            nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-                        }
-
-                        @Override
-                        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                            NearLog.d(TAG, "couldn't fetch content for push recipe");
-                        }
-                    },
-                    new Random().nextInt(1000));
-        } else {
-            normalizeElement(coupon);
-            nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
     }
 

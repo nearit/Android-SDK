@@ -18,7 +18,6 @@ import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
@@ -73,12 +72,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     @Override
     protected void normalizeElement(CustomJSON element) {
         // left intentionally empty
-    }
-
-    @Override
-    public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
-        CustomJSON customJSON = (CustomJSON) reactionBundle;
-        nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
     }
 
     @Override
