@@ -3,7 +3,6 @@ package it.near.sdk.operation;
 import android.content.Context;
 import android.net.Uri;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,13 +13,13 @@ import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.GlobalConfig;
-import it.near.sdk.GlobalState;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -105,7 +104,9 @@ public class NearItUserProfile {
                         GlobalConfig.getInstance(context).setProfileId(profileId);
                         // update the installation with the profile id
                         NearInstallation.registerInstallation(context);
-                        GlobalState.getInstance(context).getRecipesManager().refreshConfig();
+                        RecipesManager rm = RecipesManager.getInstance();
+                        if (rm != null) rm.refreshConfig();
+
                         listener.onProfileCreated(true, profileId);
                     } catch (JSONException e) {
                         listener.onProfileCreationError("unknown server format");
@@ -178,7 +179,8 @@ public class NearItUserProfile {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
-                    GlobalState.getInstance(context).getRecipesManager().refreshConfig();
+                    RecipesManager rm = RecipesManager.getInstance();
+                    if (rm != null) rm.refreshConfig();
                     listener.onDataCreated();
                 }
 
@@ -243,7 +245,8 @@ public class NearItUserProfile {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
-                    GlobalState.getInstance(context).getRecipesManager().refreshConfig();
+                    RecipesManager rm = RecipesManager.getInstance();
+                    if (rm != null) rm.refreshConfig();
                     listener.onDataCreated();
                 }
 
