@@ -30,7 +30,7 @@ public class Recipe extends Resource {
     public String pulse_plugin_id;
     @Relationship("pulse_bundle")
     public PulseBundle pulse_bundle;
-    @SerializedName("tags")
+    @SerializedName("pulse_bundle_tags")
     public List<String> tags;
     @Relationship("pulse_action")
     public PulseAction pulse_action;
