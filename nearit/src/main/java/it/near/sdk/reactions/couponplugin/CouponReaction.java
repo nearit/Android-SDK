@@ -76,6 +76,18 @@ public class CouponReaction extends CoreReaction<Coupon> {
     }
 
     @Override
+    protected void injectRecipeId(Coupon element, String recipeId) {
+        // left intentionally blank
+    }
+
+    @Override
+    protected void normalizeElement(Coupon element) {
+        Image icon = element.icon;
+        if (icon == null) return;
+        element.setIconSet(icon.toImageSet());
+    }
+
+    @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
         Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {
@@ -113,13 +125,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
         // intentionally left blank
     }
 
-    @Override
-    protected void normalizeElement(Coupon element) {
-        Image icon = element.icon;
-        if (icon == null) return;
-        element.setIconSet(icon.toImageSet());
-    }
-
     private void notifyCoupon(Coupon coupon, Recipe recipe) {
         if (recipe.isForegroundRecipe()) {
             nearNotifier.deliverForegroundReaction(coupon, recipe);
@@ -150,24 +155,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
             normalizeElement(coupon);
             nearNotifier.deliverBackgroundPushReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
         }
-    }
-
-    @Override
-    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
-        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                        normalizeElement(coupon);
-                        nearNotifier.deliverBackgroundPushReaction(coupon, recipeId, notificationText, getReactionPluginName());
-                    }
-
-                    @Override
-                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        NearLog.d(TAG, "couldn't fetch content for push recipe");
-                    }
-                },
-                new Random().nextInt(1000));
     }
 
     @Override

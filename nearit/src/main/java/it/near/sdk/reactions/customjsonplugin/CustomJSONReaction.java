@@ -7,7 +7,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import it.near.sdk.communication.Constants;
@@ -67,6 +66,16 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     }
 
     @Override
+    protected void injectRecipeId(CustomJSON element, String recipeId) {
+        // left intentionally blank
+    }
+
+    @Override
+    protected void normalizeElement(CustomJSON element) {
+        // left intentionally empty
+    }
+
+    @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
         CustomJSON customJSON = (CustomJSON) reactionBundle;
         nearNotifier.deliverBackgroundPushReaction(customJSON, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
@@ -77,11 +86,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
         HashMap<String, Class> map = new HashMap<>();
         map.put(JSON_CONTENT_RES, CustomJSON.class);
         return map;
-    }
-
-    @Override
-    protected void normalizeElement(CustomJSON element) {
-        // left intentionally empty
     }
 
     @Override
@@ -111,23 +115,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
                 listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
             }
         });
-    }
-
-    @Override
-    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
-        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
-                        nearNotifier.deliverBackgroundPushReaction(json, recipeId, notificationText, getReactionPluginName());
-                    }
-
-                    @Override
-                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        NearLog.d(TAG, "Couldn't fetch content");
-                    }
-                },
-                new Random().nextInt(1000));
     }
 
 

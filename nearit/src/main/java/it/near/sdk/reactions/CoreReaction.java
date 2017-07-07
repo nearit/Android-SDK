@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -29,7 +30,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  *
  * @author cattaneostefano.
  */
-public abstract class CoreReaction<T> extends Reaction {
+public abstract class CoreReaction<T extends Parcelable> extends Reaction {
     private static final String TAG = "CoreReaction";
     /**
      * Gson object to serialize and de-serialize the cache.
@@ -128,6 +129,7 @@ public abstract class CoreReaction<T> extends Reaction {
 
     protected abstract String getDefaultShowAction();
 
+    protected abstract void injectRecipeId(T element, String recipeId);
 
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
@@ -151,6 +153,25 @@ public abstract class CoreReaction<T> extends Reaction {
         if (reaction_action.equals(getDefaultShowAction())){
             showContent(reaction_bundle.getId(), recipe);
         }
+    }
+
+    @Override
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler(){
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                super.onSuccess(statusCode, headers, response);
+                T element = NearJsonAPIUtils.parseElement(morpheus, response, type);
+                injectRecipeId(element, recipeId);
+                normalizeElement(element);
+                nearNotifier.deliverBackgroundPushReaction(element, recipeId, notificationText, getReactionPluginName());
+            }
+
+            @Override
+            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                NearLog.d(TAG, "Couldn't fetch content");
+            }
+        }, new Random().nextInt(1000));
     }
 
     protected void requestSingleReaction(final String bundleId, final NearJsonHttpResponseHandler responseHandler, int i) {

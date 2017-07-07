@@ -75,6 +75,21 @@ public class ContentReaction extends CoreReaction<Content> {
     }
 
     @Override
+    protected void injectRecipeId(Content element, String recipeId) {
+        // left intentionally blank
+    }
+
+    @Override
+    protected void normalizeElement(Content element) {
+        List<Image> images = element.images;
+        List<ImageSet> imageSets = new ArrayList<>();
+        for (Image image : images) {
+            imageSets.add(image.toImageSet());
+        }
+        element.setImages_links(imageSets);
+    }
+
+    @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reactionBundle) {
         Content content = (Content) reactionBundle;
         if (content.hasContentToInclude()) {
@@ -127,23 +142,6 @@ public class ContentReaction extends CoreReaction<Content> {
     }
 
     @Override
-    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
-        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                normalizeElement(content);
-                nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                NearLog.d(TAG, "couldn't fetch content for push recipe");
-            }
-        }, new Random().nextInt(1000));
-    }
-
-    @Override
     public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
         try {
             JSONObject toParse = new JSONObject(reactionBundleString);
@@ -155,16 +153,6 @@ public class ContentReaction extends CoreReaction<Content> {
         } catch (JSONException e) {
             return false;
         }
-    }
-
-    @Override
-    protected void normalizeElement(Content element) {
-        List<Image> images = element.images;
-        List<ImageSet> imageSets = new ArrayList<>();
-        for (Image image : images) {
-            imageSets.add(image.toImageSet());
-        }
-        element.setImages_links(imageSets);
     }
 
     @Override

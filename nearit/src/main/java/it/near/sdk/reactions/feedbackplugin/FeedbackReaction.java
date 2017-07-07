@@ -8,7 +8,6 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -73,28 +72,20 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
     }
 
     @Override
+    protected void injectRecipeId(Feedback element, String recipeId) {
+        element.setRecipeId(recipeId);
+    }
+
+    @Override
+    protected void normalizeElement(Feedback element) {
+        // left intentionally empty
+    }
+
+    @Override
     public void handlePushReaction(final Recipe recipe, final String push_id, ReactionBundle reaction_bundle) {
         Feedback feedback = (Feedback) reaction_bundle;
         feedback.setRecipeId(recipe.getId());
         nearNotifier.deliverBackgroundPushReaction(feedback, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
-    }
-
-    @Override
-    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
-        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Feedback fb = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
-                fb.setRecipeId(recipeId);
-                nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getReactionPluginName());
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                NearLog.d(TAG, "Couldn't fetch content");
-            }
-        },
-        new Random().nextInt(1000));
     }
 
     @Override
@@ -144,11 +135,6 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
         } catch (JSONException e) {
             handler.onFail(422, "request was malformed");
         }
-    }
-
-    @Override
-    protected void normalizeElement(Feedback element) {
-        // left intentionally empty
     }
 
     @Override
