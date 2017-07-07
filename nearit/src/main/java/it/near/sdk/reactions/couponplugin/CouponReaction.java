@@ -70,6 +70,12 @@ public class CouponReaction extends CoreReaction<Coupon> {
     }
 
     @Override
+    protected String getDefaultShowAction() {
+        // This should not be called
+        return null;
+    }
+
+    @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
         Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {

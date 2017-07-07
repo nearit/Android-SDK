@@ -37,11 +37,11 @@ public class ContentReaction extends CoreReaction<Content> {
     private static final String INCLUDE_RESOURCES = "images,audio,upload";
     private static final String CONTENT_NOTIFICATION_PATH = "content-notification";
     private static final String CONTENT_NOTIFICATION_RESOURCE = "contents";
-    private static final String SHOW_CONTENT_ACTION_NAME = "show_content";
+    private static final String SHOW_CONTENT_ACTION = "show_content";
     private static final String TAG = "ContentReaction";
     private static final String PREFS_NAME = "NearContentNot";
 
-    public ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
+    ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
         super(cacher, httpClient, nearNotifier, Content.class);
     }
 
@@ -70,12 +70,8 @@ public class ContentReaction extends CoreReaction<Content> {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action) {
-            case SHOW_CONTENT_ACTION_NAME:
-                showContent(reaction_bundle.getId(), recipe);
-                break;
-        }
+    protected String getDefaultShowAction() {
+        return SHOW_CONTENT_ACTION;
     }
 
     @Override

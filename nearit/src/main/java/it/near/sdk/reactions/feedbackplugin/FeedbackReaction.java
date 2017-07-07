@@ -40,7 +40,7 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
 
     private final GlobalConfig globalConfig;
 
-    public FeedbackReaction(Cacher<Feedback> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
+    FeedbackReaction(Cacher<Feedback> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         super(cacher, httpClient, nearNotifier, Feedback.class);
         this.globalConfig = globalConfig;
     }
@@ -68,12 +68,8 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action) {
-            case ASK_FEEDBACK_ACTION_NAME:
-                showContent(reaction_bundle.getId(), recipe);
-                break;
-        }
+    protected String getDefaultShowAction() {
+        return ASK_FEEDBACK_ACTION_NAME;
     }
 
     @Override

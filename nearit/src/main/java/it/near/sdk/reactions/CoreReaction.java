@@ -20,6 +20,7 @@ import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
@@ -125,6 +126,8 @@ public abstract class CoreReaction<T> extends Reaction {
 
     protected abstract String getSingleReactionUrl(String bundleId);
 
+    protected abstract String getDefaultShowAction();
+
 
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
@@ -140,6 +143,13 @@ public abstract class CoreReaction<T> extends Reaction {
             httpClient.nearGet(getSingleReactionUrl(bundleId), responseHandler);
         } catch (AuthenticationException e) {
             NearLog.d(TAG, "Auth error");
+        }
+    }
+
+    @Override
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
+        if (reaction_action.equals(getDefaultShowAction())){
+            showContent(reaction_bundle.getId(), recipe);
         }
     }
 

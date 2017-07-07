@@ -34,7 +34,7 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     private static final String TAG = "CustomJSONReaction";
     private static final String PLUGIN_ROOT_PATH = "json-sender";
 
-    public CustomJSONReaction(Cacher<CustomJSON> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
+    CustomJSONReaction(Cacher<CustomJSON> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
         super(cacher, httpClient, nearNotifier, CustomJSON.class);
     }
 
@@ -62,12 +62,8 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        switch (reaction_action) {
-            case SHOW_JSON_ACTION:
-                showContent(reaction_bundle.getId(), recipe);
-                break;
-        }
+    protected String getDefaultShowAction() {
+        return SHOW_JSON_ACTION;
     }
 
     @Override
