@@ -70,27 +70,6 @@ public class CouponReaction extends CoreReaction<Coupon> {
     }
 
     @Override
-    protected HashMap<String, Class> getModelHashMap() {
-        HashMap<String, Class> map = new HashMap<>();
-        map.put(CLAIMS_RES, Claim.class);
-        map.put(COUPONS_RES, Coupon.class);
-        map.put("images", Image.class);
-        return map;
-    }
-
-    @Override
-    public void refreshConfig() {
-        // intentionally left blank
-    }
-
-    @Override
-    protected void normalizeElement(Coupon element) {
-        Image icon = element.icon;
-        if (icon == null) return;
-        element.setIconSet(icon.toImageSet());
-    }
-
-    @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
         Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {
@@ -112,6 +91,27 @@ public class CouponReaction extends CoreReaction<Coupon> {
             notifyCoupon(coupon, recipe);
         }
 
+    }
+
+    @Override
+    protected HashMap<String, Class> getModelHashMap() {
+        HashMap<String, Class> map = new HashMap<>();
+        map.put(CLAIMS_RES, Claim.class);
+        map.put(COUPONS_RES, Coupon.class);
+        map.put("images", Image.class);
+        return map;
+    }
+
+    @Override
+    public void refreshConfig() {
+        // intentionally left blank
+    }
+
+    @Override
+    protected void normalizeElement(Coupon element) {
+        Image icon = element.icon;
+        if (icon == null) return;
+        element.setIconSet(icon.toImageSet());
     }
 
     private void notifyCoupon(Coupon coupon, Recipe recipe) {
