@@ -80,20 +80,6 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
         // left intentionally empty
     }
 
-    @Override
-    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
-        try {
-            JSONObject toParse = new JSONObject(reactionBundleString);
-            Feedback fb = NearJsonAPIUtils.parseElement(morpheus, toParse, Feedback.class);
-            if (fb == null) return false;
-            fb.setRecipeId(recipeId);
-            nearNotifier.deliverBackgroundPushReaction(fb, recipeId, notificationText, getReactionPluginName());
-            return true;
-        } catch (JSONException e) {
-            return false;
-        }
-    }
-
     public void sendEvent(FeedbackEvent event, final NearITEventHandler handler) {
         if (event.getRating() < 1 || event.getRating() > 5) {
             handler.onFail(422, "Rating must be between 1 and 5");

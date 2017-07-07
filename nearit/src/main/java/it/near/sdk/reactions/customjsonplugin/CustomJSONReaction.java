@@ -110,21 +110,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
         });
     }
 
-
-    @Override
-    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
-        try {
-            JSONObject toParse = new JSONObject(reactionBundleString);
-            CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, toParse, CustomJSON.class);
-            if (json == null) return false;
-            nearNotifier.deliverBackgroundPushReaction(json, recipeId, notificationText, getReactionPluginName());
-            return true;
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
     public static CustomJSONReaction obtain(Context context, NearNotifier nearNotifier) {
         return new CustomJSONReaction(
                 new Cacher<CustomJSON>(

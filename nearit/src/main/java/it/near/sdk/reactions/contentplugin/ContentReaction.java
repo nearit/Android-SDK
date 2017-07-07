@@ -118,20 +118,6 @@ public class ContentReaction extends CoreReaction<Content> {
     }
 
     @Override
-    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
-        try {
-            JSONObject toParse = new JSONObject(reactionBundleString);
-            Content content = NearJsonAPIUtils.parseElement(morpheus, toParse, Content.class);
-            if (content == null) return false;
-            normalizeElement(content);
-            nearNotifier.deliverBackgroundPushReaction(content, recipeId, notificationText, getReactionPluginName());
-            return true;
-        } catch (JSONException e) {
-            return false;
-        }
-    }
-
-    @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
         map.put("contents", Content.class);

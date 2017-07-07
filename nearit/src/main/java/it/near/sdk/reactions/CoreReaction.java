@@ -199,6 +199,21 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
         }
     }
 
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            T element = NearJsonAPIUtils.parseElement(morpheus, toParse, type);
+            if (element == null) return false;
+            injectRecipeId(element, recipeId);
+            normalizeElement(element);
+            nearNotifier.deliverBackgroundPushReaction(element, recipeId, notificationText, getReactionPluginName());
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
     protected void requestSingleReaction(final String bundleId, final NearJsonHttpResponseHandler responseHandler, int i) {
         final Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(new Runnable() {
