@@ -17,15 +17,10 @@ import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.Cacher;
-import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.models.Recipe;
-import it.near.sdk.utils.NearJsonAPIUtils;
-
-import static it.near.sdk.utils.NearUtils.safe;
 
 public class FeedbackReaction extends CoreReaction<Feedback> {
 
@@ -113,37 +108,6 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
         } catch (JSONException e) {
             handler.onFail(422, "request was malformed");
         }
-    }
-
-    @Override
-    protected void getContent(String reaction_bundle, final Recipe recipe, final ContentFetchListener listener) {
-        if (reactionList == null) {
-            try {
-                reactionList = cacher.loadList();
-            } catch (JSONException e) {
-                NearLog.d(TAG, "Data format error");
-            }
-        }
-        for (Feedback fb : safe(reactionList)) {
-            if (fb.getId().equals(reaction_bundle)) {
-                fb.setRecipeId(recipe.getId());
-                listener.onContentFetched(fb, true);
-                return;
-            }
-        }
-        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Feedback fb = NearJsonAPIUtils.parseElement(morpheus, response, Feedback.class);
-                fb.setRecipeId(recipe.getId());
-                listener.onContentFetched(fb, false);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
-            }
-        });
     }
 
     @Override

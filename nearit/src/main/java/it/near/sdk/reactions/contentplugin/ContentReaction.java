@@ -3,20 +3,13 @@ package it.near.sdk.reactions.contentplugin;
 import android.content.Context;
 import android.net.Uri;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import cz.msebera.android.httpclient.Header;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
-import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.Cacher;
-import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.contentplugin.model.Audio;
 import it.near.sdk.reactions.contentplugin.model.Content;
@@ -24,10 +17,6 @@ import it.near.sdk.reactions.contentplugin.model.Image;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.contentplugin.model.Upload;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.models.Recipe;
-import it.near.sdk.utils.NearJsonAPIUtils;
-
-import static it.near.sdk.utils.NearUtils.safe;
 
 public class ContentReaction extends CoreReaction<Content> {
     // ---------- content notification plugin ----------
@@ -85,36 +74,6 @@ public class ContentReaction extends CoreReaction<Content> {
             imageSets.add(image.toImageSet());
         }
         element.setImages_links(imageSets);
-    }
-
-    @Override
-    protected void getContent(String reactionBundleId, Recipe recipe, final ContentFetchListener listener) {
-        if (reactionList == null) {
-            try {
-                reactionList = cacher.loadList();
-            } catch (JSONException e) {
-                NearLog.d(TAG, "Data format error");
-            }
-        }
-        for (Content cn : safe(reactionList)) {
-            if (cn.getId().equals(reactionBundleId)) {
-                listener.onContentFetched(cn, true);
-                return;
-            }
-        }
-        requestSingleReaction(reactionBundleId, new NearJsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Content content = NearJsonAPIUtils.parseElement(morpheus, response, Content.class);
-                normalizeElement(content);
-                listener.onContentFetched(content, false);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
-            }
-        });
     }
 
     @Override

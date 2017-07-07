@@ -3,25 +3,14 @@ package it.near.sdk.reactions.customjsonplugin;
 import android.content.Context;
 import android.net.Uri;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 
-import cz.msebera.android.httpclient.Header;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
-import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.Cacher;
-import it.near.sdk.reactions.ContentFetchListener;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.models.Recipe;
-import it.near.sdk.utils.NearJsonAPIUtils;
-
-import static it.near.sdk.utils.NearUtils.safe;
 
 public class CustomJSONReaction extends CoreReaction<CustomJSON> {
 
@@ -79,35 +68,6 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
         HashMap<String, Class> map = new HashMap<>();
         map.put(JSON_CONTENT_RES, CustomJSON.class);
         return map;
-    }
-
-    @Override
-    protected void getContent(String reaction_bundle, Recipe recipe, final ContentFetchListener listener) {
-        if (reactionList == null) {
-            try {
-                reactionList = cacher.loadList();
-            } catch (JSONException e) {
-                NearLog.d(TAG, "Data format error");
-            }
-        }
-        for (CustomJSON json : safe(reactionList)) {
-            if (json.getId().equals(reaction_bundle)) {
-                listener.onContentFetched(json, true);
-                return;
-            }
-        }
-        requestSingleReaction(reaction_bundle, new NearJsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                CustomJSON json = NearJsonAPIUtils.parseElement(morpheus, response, CustomJSON.class);
-                listener.onContentFetched(json, false);
-            }
-
-            @Override
-            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                listener.onContentFetchError("Error: " + statusCode + " : " + responseString);
-            }
-        });
     }
 
     public static CustomJSONReaction obtain(Context context, NearNotifier nearNotifier) {

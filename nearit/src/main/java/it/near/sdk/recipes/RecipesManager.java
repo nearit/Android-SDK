@@ -217,10 +217,7 @@ public class RecipesManager implements RecipeEvaluator {
 
     /**
      * Process a recipe from the reaction triple. Used for getting a content from a push
-     *
-     * @param reactionPlugin
-     * @param reactionAction
-     * @param reactionBundleId
+
      */
     public void processRecipe(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleId) {
         Reaction reaction = reactions.get(reactionPlugin);

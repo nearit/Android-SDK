@@ -88,19 +88,17 @@ public class CouponReaction extends CoreReaction<Coupon> {
 
     @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
-        Coupon coupon = (Coupon) reaction_bundle;
+        final Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {
-            requestSingleReaction(reaction_bundle.getId(), new NearJsonHttpResponseHandler() {
+            downloadSingleReaction(reaction_bundle.getId(), new ContentFetchListener<Coupon>() {
                 @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Coupon coupon = NearJsonAPIUtils.parseElement(morpheus, response, Coupon.class);
-                    normalizeElement(coupon);
+                public void onContentFetched(Coupon content, boolean cached) {
                     notifyCoupon(coupon, recipe);
                 }
 
                 @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "couldn't fetch content for push recipe");
+                public void onContentFetchError(String error) {
+                    NearLog.d(TAG, "Error: " + error);
                 }
             });
         } else {
