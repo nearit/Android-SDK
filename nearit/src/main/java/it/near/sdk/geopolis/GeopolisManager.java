@@ -230,8 +230,7 @@ public class GeopolisManager {
         if (node != null && node.identifier != null) {
             try {
                 geopolisTrackingsManager.trackEvent(node.identifier, event.event);
-            } catch (JSONException e) {
-
+            } catch (JSONException ignored) {
             }
             firePulse(event, node.tags, node.identifier);
         }
