@@ -91,6 +91,7 @@ public class NearItManager {
     private CustomJSONReaction customJSON;
     private FeedbackReaction feedback;
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
+    private NearInstallation nearInstallation;
     private Application application;
 
     @NonNull
@@ -197,6 +198,8 @@ public class NearItManager {
 
         feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
+
+        nearInstallation = new NearInstallation(application);
     }
 
     @NonNull
@@ -206,6 +209,10 @@ public class NearItManager {
                 new TrackSender(new NearAsyncHttpClient(application)),
                 new TrackCache(TrackCache.getSharedPreferences(application)),
                 new ApplicationVisibility());
+    }
+
+    public void initLifecycleMethods(Application application) {
+        geopolis.initLifecycle(application);
     }
 
     /**
@@ -270,10 +277,6 @@ public class NearItManager {
         simpleNotification.refreshConfig();
         customJSON.refreshConfig();
         feedback.refreshConfig();
-    }
-
-    public void initLifecycleMethods(Application application) {
-        geopolis.initLifecycle(application);
     }
 
     private NearNotifier nearNotifier = new NearNotifier() {
@@ -382,6 +385,10 @@ public class NearItManager {
         } catch (JSONException e) {
             NearLog.d(TAG, "invalid tracking body");
         }
+    }
+
+    public void updateInstallation() {
+        nearInstallation.registerInstallation();
     }
 
 }

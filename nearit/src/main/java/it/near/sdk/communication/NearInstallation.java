@@ -39,6 +39,16 @@ public class NearInstallation {
 
     private static NearInstallationRequestQueue requestQueue;
 
+    private Context context;
+
+    public NearInstallation(Context context) {
+        this.context = context;
+    }
+
+    public void registerInstallation() {
+        registerInstallation(context);
+    }
+
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
      * or a PUT if an installationId is already present.
