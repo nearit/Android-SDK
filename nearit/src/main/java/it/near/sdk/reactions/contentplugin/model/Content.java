@@ -11,9 +11,6 @@ import java.util.List;
 import it.near.sdk.morpheusnear.annotations.Relationship;
 import it.near.sdk.recipes.models.ReactionBundle;
 
-/**
- * @author cattaneostefano
- */
 public class Content extends ReactionBundle implements Parcelable {
     @SerializedName("content")
     public String contentString;
@@ -80,6 +77,7 @@ public class Content extends ReactionBundle implements Parcelable {
         upload = in.readParcelable(Upload.class.getClassLoader());
     }
 
+    @Override
     public boolean hasContentToInclude() {
         return audio != null ||
                 (images != null && images.size() > 0) ||

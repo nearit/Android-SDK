@@ -23,10 +23,10 @@ import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.geopolis.beacons.AltBeaconMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceMonitor;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
-import it.near.sdk.logging.NearLog;
 import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
-import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.logging.NearLog;
+import it.near.sdk.recipes.RecipeEvaluator;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.utils.CurrentTime;
 
@@ -65,20 +65,20 @@ public class GeopolisManager {
     public static final String NODE_ID = "identifier";
 
     private final Application application;
-    private final RecipesManager recipesManager;
+    private final RecipeEvaluator recipeEvaluator;
     private final GeoFenceMonitor geofenceMonitor;
     private final GlobalConfig globalConfig;
     private final SharedPreferences sp;
     private final GeopolisTrackingsManager geopolisTrackingsManager;
 
-    private AltBeaconMonitor altBeaconMonitor;
-    private NodesManager nodesManager;
+    private final AltBeaconMonitor altBeaconMonitor;
+    private final NodesManager nodesManager;
 
-    private NearAsyncHttpClient httpClient;
+    private final NearAsyncHttpClient httpClient;
 
-    public GeopolisManager(Application application, RecipesManager recipesManager, GlobalConfig globalConfig, TrackManager trackManager) {
+    public GeopolisManager(Application application, RecipeEvaluator recipeEvaluator, GlobalConfig globalConfig, TrackManager trackManager) {
         this.application = application;
-        this.recipesManager = recipesManager;
+        this.recipeEvaluator = recipeEvaluator;
         this.globalConfig = globalConfig;
 
         SharedPreferences nodesManagerSP = NodesManager.getSharedPreferences(application);
@@ -139,7 +139,7 @@ public class GeopolisManager {
                 .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, "**.children")
                 .build();
         try {
-            httpClient.get(application, url.toString(), new NearJsonHttpResponseHandler() {
+            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
@@ -181,7 +181,7 @@ public class GeopolisManager {
         geofenceMonitor.stopGFRadar();
     }
 
-    BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
+    final BroadcastReceiver regionEventsReceiver = new BroadcastReceiver() {
         public static final String TAG = "RegionEventReceiver";
 
         @Override
@@ -214,7 +214,7 @@ public class GeopolisManager {
                     trackAndFirePulse(node, Events.LEAVE_REGION);
                     break;
                 case GF_RANGE_FAR_SUFFIX:
-                    trackAndFirePulse(node, Events.RANGE_FAR);
+                    // trackAndFirePulse(node, Events.RANGE_FAR);
                     break;
                 case GF_RANGE_NEAR_SUFFIX:
                     trackAndFirePulse(node, Events.RANGE_NEAR);
@@ -226,23 +226,25 @@ public class GeopolisManager {
         }
     };
 
-    private void trackAndFirePulse(Node node, String event) {
+    private void trackAndFirePulse(Node node, Events.GeoEvent event) {
         if (node != null && node.identifier != null) {
             try {
-                geopolisTrackingsManager.trackEvent(node.identifier, event);
-            } catch (JSONException e) {
-
+                geopolisTrackingsManager.trackEvent(node.identifier, event.event);
+            } catch (JSONException ignored) {
             }
-            firePulse(event, node.identifier);
+            firePulse(event, node.tags, node.identifier);
         }
     }
 
-    private void firePulse(String pulseAction, String pulseBundle) {
+    private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle) {
         NearLog.d(TAG, "firePulse!");
-        recipesManager.gotPulse(PLUGIN_NAME, pulseAction, pulseBundle);
+        if (!recipeEvaluator.handlePulseLocally(PLUGIN_NAME, event.event, pulseBundle) &&
+                !recipeEvaluator.handlePulseTags(PLUGIN_NAME, event.fallback, tags)) {
+                    recipeEvaluator.handlePulseOnline(PLUGIN_NAME, event.event, pulseBundle);
+                }
     }
 
-    private BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             NearLog.d(TAG, "reset intent received");

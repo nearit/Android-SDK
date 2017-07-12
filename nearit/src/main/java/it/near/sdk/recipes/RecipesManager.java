@@ -5,15 +5,10 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.MalformedJsonException;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +21,7 @@ import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Reaction;
 import it.near.sdk.recipes.models.OperationAction;
 import it.near.sdk.recipes.models.PulseAction;
@@ -41,7 +37,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  *
  * @author cattaneostefano
  */
-public class RecipesManager {
+public class RecipesManager implements RecipeEvaluator {
 
     private static final String TAG = "RecipesManager";
     private static final String NEAR_RECIPES_PREFS_NAME = "NearRecipes";
@@ -54,27 +50,27 @@ public class RecipesManager {
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private final NearAsyncHttpClient httpClient;
-    private final SharedPreferences sp;
     private final GlobalConfig globalConfig;
     private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final RecipeTrackSender recipeTrackSender;
-private final RecipeValidationFilter recipeValidationFilter;
+    private final RecipeValidationFilter recipeValidationFilter;
+    private final Cacher<Recipe> listCacher;
 
     public RecipesManager(NearAsyncHttpClient httpClient,
                           GlobalConfig globalConfig,
                           RecipeValidationFilter recipeValidationFilter,
                           EvaluationBodyBuilder evaluationBodyBuilder,
-                          SharedPreferences sp,
-                          RecipeTrackSender recipeTrackSender) {
+                          RecipeTrackSender recipeTrackSender,
+                          Cacher<Recipe> listCacher) {
         this.httpClient = httpClient;
         this.globalConfig = globalConfig;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.recipeValidationFilter = recipeValidationFilter;
-        this.sp = sp;
         this.recipeTrackSender = recipeTrackSender;
+        this.listCacher = listCacher;
 
         try {
-            recipes = loadChachedList();
+            recipes = listCacher.loadList();
         } catch (Exception e) {
             NearLog.d(TAG, "Recipes format error");
         }
@@ -156,7 +152,7 @@ private final RecipeValidationFilter recipeValidationFilter;
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Got recipes: " + response.toString());
                     recipes = NearJsonAPIUtils.parseList(morpheus, response, Recipe.class);
-                    persistList(recipes);
+                    listCacher.persistList(recipes);
                     listener.onRecipesRefresh();
                 }
 
@@ -164,7 +160,8 @@ private final RecipeValidationFilter recipeValidationFilter;
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
-                        recipes = loadChachedList();
+                        recipes = listCacher.loadList();
+
                     } catch (Exception e) {
                         NearLog.d(TAG, "Recipe format error");
                     }
@@ -175,59 +172,7 @@ private final RecipeValidationFilter recipeValidationFilter;
             listener.onRecipesRefreshFail();
         }
     }
-
-    private void persistList(List<Recipe> recipes) {
-        Gson gson = new Gson();
-        String listStringified = gson.toJson(recipes);
-        sp.edit()
-                .putString(TAG, listStringified)
-                .apply();
-    }
-
-    private List<Recipe> loadChachedList() throws JSONException, MalformedJsonException {
-        Gson gson = new Gson();
-        Type collectionType = new TypeToken<List<Recipe>>() {
-        }.getType();
-        return gson.<ArrayList<Recipe>>fromJson(sp.getString(TAG, ""), collectionType);
-    }
-
-    /**
-     * Tries to trigger a recipe, stating the plugin, action and bundle of the pulse.
-     * If nothing matches, nothing happens.
-     *
-     * @param pulse_plugin the plugin of the pulse.
-     * @param pulse_action the action of the pulse.
-     * @param pulse_bundle the bundle of the pulse.
-     */
-    public void gotPulse(String pulse_plugin, String pulse_action, String pulse_bundle) {
-        List<Recipe> matchingRecipes = new ArrayList<>();
-        if (recipes == null) return;
-        // Find the recipes that matches the pulse
-        for (Recipe recipe : recipes) {
-            // TODO check for null pulse bundle
-            if (recipe.getPulse_plugin_id().equals(pulse_plugin) &&
-                    recipe.getPulse_action().getId().equals(pulse_action) &&
-                    recipe.getPulse_bundle().getId().equals(pulse_bundle)) {
-                matchingRecipes.add(recipe);
-            }
-        }
-
-        recipeValidationFilter.filterRecipes(matchingRecipes);
-
-        if (matchingRecipes.isEmpty()) {
-            // if no recipe is found the the online fallback
-            onlinePulseEvaluation(pulse_plugin, pulse_action, pulse_bundle);
-        } else {
-            // take the first recipe and run with it
-            Recipe winnerRecipe = matchingRecipes.get(0);
-            if (winnerRecipe.isEvaluatedOnline()) {
-                evaluateRecipe(winnerRecipe.getId());
-            } else {
-                gotRecipe(winnerRecipe);
-            }
-        }
-    }
-
+    
     /**
      * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
      *
@@ -272,10 +217,7 @@ private final RecipeValidationFilter recipeValidationFilter;
 
     /**
      * Process a recipe from the reaction triple. Used for getting a content from a push
-     *
-     * @param reactionPlugin
-     * @param reactionAction
-     * @param reactionBundleId
+
      */
     public void processRecipe(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleId) {
         Reaction reaction = reactions.get(reactionPlugin);
@@ -370,6 +312,77 @@ private final RecipeValidationFilter recipeValidationFilter;
         }
     }
 
+    private boolean filterAndNotify(List<Recipe> matchingRecipes) {
+        recipeValidationFilter.filterRecipes(matchingRecipes);
+        if (matchingRecipes.isEmpty()) return false;
+        Recipe winnerRecipe = matchingRecipes.get(0);
+        if (winnerRecipe.isEvaluatedOnline()) {
+            evaluateRecipe(winnerRecipe.getId());
+        } else {
+            gotRecipe(winnerRecipe);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean handlePulseLocally(String plugin_name, String plugin_action, String plugin_bundle) {
+        if (plugin_name == null || plugin_action == null || plugin_bundle == null) return false;
+
+        List<Recipe> matchingRecipes = new ArrayList<>();
+        if (recipes == null) return false;
+        // Find the recipes that matches the pulse
+        for (Recipe recipe : recipes) {
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.getPulse_bundle() == null ||
+                    recipe.getPulse_bundle().getId() == null)
+                continue;
+            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                    recipe.getPulse_action().getId().equals(plugin_action) &&
+                    recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
+                matchingRecipes.add(recipe);
+            }
+        }
+
+        if (matchingRecipes.isEmpty()) return false;
+
+        return filterAndNotify(matchingRecipes);
+    }
+
+
+    @Override
+    public boolean handlePulseTags(String plugin_name, String plugin_action, List<String> plugin_tags) {
+        if (plugin_name == null || plugin_action == null || plugin_tags == null || plugin_tags.isEmpty())
+            return false;
+
+        List<Recipe> matchingRecipes = new ArrayList<>();
+        if (recipes == null) return false;
+        // Find the recipes that matches the pulse
+        for (Recipe recipe : recipes) {
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.tags == null ||
+                    recipe.tags.isEmpty())
+                continue;
+            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                    recipe.getPulse_action().getId().equals(plugin_action) &&
+                    plugin_tags.containsAll(recipe.tags)) {
+                matchingRecipes.add(recipe);
+            }
+        }
+
+        if (matchingRecipes.isEmpty()) return false;
+
+        return filterAndNotify(matchingRecipes);
+    }
+
+    @Override
+    public void handlePulseOnline(String plugin_name, String plugin_action, String plugin_bundle) {
+        onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+    }
+
     /**
      * Sends tracking on a recipe.
      * Those two statuses are natively supported:
@@ -387,5 +400,4 @@ private final RecipeValidationFilter recipeValidationFilter;
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(NEAR_RECIPES_PREFS_NAME, Context.MODE_PRIVATE);
     }
-
 }

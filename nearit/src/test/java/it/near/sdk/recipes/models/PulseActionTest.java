@@ -10,7 +10,7 @@ import static org.hamcrest.core.Is.is;
 
 public class PulseActionTest {
 
-    PulseAction pulseAction;
+    private PulseAction pulseAction;
 
     @Before
     public void setUp() throws Exception {
@@ -19,23 +19,21 @@ public class PulseActionTest {
 
     @Test
     public void rangeEventsAreConsidered_foreground() {
-        pulseAction.setId(Events.RANGE_FAR);
+        pulseAction.setId(Events.RANGE_IMMEDIATE.event);
         assertThat(pulseAction.isForeground(), is(true));
-        pulseAction.setId(Events.RANGE_IMMEDIATE);
-        assertThat(pulseAction.isForeground(), is(true));
-        pulseAction.setId(Events.RANGE_NEAR);
+        pulseAction.setId(Events.RANGE_NEAR.event);
         assertThat(pulseAction.isForeground(), is(true));
     }
 
     @Test
     public void nonRangeEventsAreConsidered_nonForeground() {
-        pulseAction.setId(Events.ENTER_PLACE);
+        pulseAction.setId(Events.ENTER_PLACE.event);
         assertThat(pulseAction.isForeground(), is(false));
-        pulseAction.setId(Events.ENTER_REGION);
+        pulseAction.setId(Events.ENTER_REGION.event);
         assertThat(pulseAction.isForeground(), is(false));
-        pulseAction.setId(Events.LEAVE_PLACE);
+        pulseAction.setId(Events.LEAVE_PLACE.event);
         assertThat(pulseAction.isForeground(), is(false));
-        pulseAction.setId(Events.LEAVE_REGION);
+        pulseAction.setId(Events.LEAVE_REGION.event);
         assertThat(pulseAction.isForeground(), is(false));
     }
 

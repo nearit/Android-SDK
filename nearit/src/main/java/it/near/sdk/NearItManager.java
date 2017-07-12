@@ -25,6 +25,7 @@ import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
 import it.near.sdk.reactions.couponplugin.CouponListener;
@@ -132,27 +133,25 @@ public class NearItManager {
                 globalConfig,
                 recipeValidationFilter,
                 evaluationBodyBuilder,
-                RecipesManager.getSharedPreferences(application),
-                recipeTrackSender);
+                recipeTrackSender,
+                new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
         RecipesManager.setInstance(recipesManager);
-
-        GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
         geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
-        contentNotification = new ContentReaction(application, nearNotifier);
+        contentNotification = ContentReaction.obtain(application, nearNotifier);
         recipesManager.addReaction(contentNotification);
 
-        simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
+        simpleNotification = new SimpleNotificationReaction(nearNotifier);
         recipesManager.addReaction(simpleNotification);
 
-        couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
+        couponReaction = CouponReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
 
-        customJSON = new CustomJSONReaction(application, nearNotifier);
+        customJSON = CustomJSONReaction.obtain(application, nearNotifier);
         recipesManager.addReaction(customJSON);
 
-        feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
+        feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
     }
 
