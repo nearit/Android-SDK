@@ -91,7 +91,7 @@ public class NearItManager {
     private CustomJSONReaction customJSON;
     private FeedbackReaction feedback;
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
-    private NearInstallation nearInstallation;
+    public NearInstallation nearInstallation;
     private Application application;
 
     @NonNull

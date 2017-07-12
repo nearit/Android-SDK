@@ -14,12 +14,12 @@ import java.util.Map;
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.NearItManager;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
@@ -41,8 +41,9 @@ public class NearItUserProfile {
      * @param profileId the profileId string.
      */
     public static void setProfileId(Context context, String profileId) {
-        GlobalConfig.getInstance(context).setProfileId(profileId);
-        NearInstallation.registerInstallation(context);
+        NearItManager nearItManager = NearItManager.getInstance(context);
+        nearItManager.globalConfig.setProfileId(profileId);
+        nearItManager.nearInstallation.registerInstallation();
     }
 
     /**
@@ -52,7 +53,7 @@ public class NearItUserProfile {
      * @return the cached profileId.
      */
     public static String getProfileId(Context context) {
-        return GlobalConfig.getInstance(context).getProfileId();
+        return NearItManager.getInstance(context).globalConfig.getProfileId();
     }
 
     /**
@@ -61,8 +62,9 @@ public class NearItUserProfile {
      * @param context the application context.
      */
     public static void resetProfileId(Context context) {
-        GlobalConfig.getInstance(context).setProfileId(null);
-        NearInstallation.registerInstallation(context);
+        NearItManager nearItManager = NearItManager.getInstance(context);
+        nearItManager.globalConfig.setProfileId(null);
+        nearItManager.nearInstallation.registerInstallation();
     }
 
     /**
@@ -72,7 +74,9 @@ public class NearItUserProfile {
      * @param listener interface for success or failure on profile creation.
      */
     public static void createNewProfile(final Context context, final ProfileCreationListener listener) {
-        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        final NearItManager nearItManager = NearItManager.getInstance(context);
+        final GlobalConfig globalConfig = nearItManager.globalConfig;
+        String profileId = globalConfig.getProfileId();
         if (profileId != null) {
             // profile already created
             NearInstallation.registerInstallation(context);
@@ -82,7 +86,7 @@ public class NearItUserProfile {
 
         String requestBody = null;
         try {
-            requestBody = buildProfileCreationRequestBody(context);
+            requestBody = buildProfileCreationRequestBody(globalConfig);
         } catch (JSONException e) {
             listener.onProfileCreationError("Can't compute request body");
             return;
@@ -101,11 +105,10 @@ public class NearItUserProfile {
                     String profileId = null;
                     try {
                         profileId = response.getJSONObject("data").getString("id");
-                        GlobalConfig.getInstance(context).setProfileId(profileId);
+                        globalConfig.setProfileId(profileId);
                         // update the installation with the profile id
-                        NearInstallation.registerInstallation(context);
-                        RecipesManager rm = RecipesManager.getInstance();
-                        if (rm != null) rm.refreshConfig();
+                        nearItManager.nearInstallation.registerInstallation();
+                        nearItManager.getRecipesManager().refreshConfig();
 
                         listener.onProfileCreated(true, profileId);
                     } catch (JSONException e) {
@@ -125,8 +128,8 @@ public class NearItUserProfile {
         }
     }
 
-    private static String buildProfileCreationRequestBody(Context context) throws JSONException {
-        String appId = GlobalConfig.getInstance(context).getAppId();
+    private static String buildProfileCreationRequestBody(GlobalConfig globalConfig) throws JSONException {
+        String appId = globalConfig.getAppId();
         HashMap<String, Object> map = new HashMap<>();
         map.put("app_id", appId);
         return NearJsonAPIUtils.toJsonAPI("profiles", map);
@@ -141,7 +144,8 @@ public class NearItUserProfile {
      * @param listener interface for success or failure on property creation.
      */
     public static void setUserData(final Context context, String key, String value, final UserDataNotifier listener) {
-        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        final NearItManager nearItManager = NearItManager.getInstance(context);
+        String profileId = nearItManager.globalConfig.getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
             NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
@@ -179,8 +183,7 @@ public class NearItUserProfile {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
-                    RecipesManager rm = RecipesManager.getInstance();
-                    if (rm != null) rm.refreshConfig();
+                    nearItManager.getRecipesManager().refreshConfig();
                     listener.onDataCreated();
                 }
 
@@ -202,7 +205,7 @@ public class NearItUserProfile {
      * @param listener  interface for success or failure on properties creation.
      */
     public static void setBatchUserData(final Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener) {
-        String profileId = GlobalConfig.getInstance(context).getProfileId();
+        String profileId = NearItManager.getInstance(context).globalConfig.getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
             NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
@@ -245,8 +248,7 @@ public class NearItUserProfile {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
-                    RecipesManager rm = RecipesManager.getInstance();
-                    if (rm != null) rm.refreshConfig();
+                    NearItManager.getInstance(context).getRecipesManager().refreshConfig();
                     listener.onDataCreated();
                 }
 
