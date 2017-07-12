@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.json.JSONException;
@@ -68,6 +69,16 @@ import it.near.sdk.utils.NearUtils;
  */
 public class NearItManager {
 
+    private static final String NEAR_IT_API_KEY_HOLDER = "nearit_key_holder";
+    private static final String NEARIT_API_KEY = "nearit_key";
+    @Nullable
+    protected static volatile NearItManager sInstance = null;
+
+    /**
+     * Private lock object for singleton initialization protecting against denial-of-service attack.
+     */
+    private static final Object SINGLETON_LOCK = new Object();
+
     private static final String TAG = "NearItManager";
     public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
     public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
@@ -82,13 +93,33 @@ public class NearItManager {
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
     private Application application;
 
+    @NonNull
+    public static NearItManager setup(@NonNull Application application, @NonNull String apiKey) {
+        saveApiKey(application, apiKey);
+        return getInstance(application);
+    }
+
+    @NonNull
+    public static NearItManager getInstance(@NonNull Context context) {
+        NearItManager instance = sInstance;
+        if (sInstance == null) {
+            synchronized (SINGLETON_LOCK) {
+                instance = sInstance;
+                if (instance == null) {
+                    sInstance = instance = new NearItManager(context);
+                }
+            }
+        }
+        return instance;
+    }
+
     /**
      * Default constructor.
      *
      * @param context the context
-     * @param apiKey  the apiKey string
      */
-    public NearItManager(Context context, String apiKey) {
+    protected NearItManager(Context context) {
+        String apiKey = readApiKey(context);
         this.application = (Application) context.getApplicationContext();
 
         this.globalConfig = GlobalConfig.getInstance(application);
@@ -113,6 +144,18 @@ public class NearItManager {
                 NearInstallation.registerInstallation(application);
             }
         });
+    }
+
+    private static void saveApiKey(Context context, String apiKey) {
+        context.getSharedPreferences(NEAR_IT_API_KEY_HOLDER, Context.MODE_PRIVATE).edit().putString(NEARIT_API_KEY, apiKey).commit();
+    }
+
+    private String readApiKey(Context context) {
+        String apiKey = context.getSharedPreferences(NEAR_IT_API_KEY_HOLDER, Context.MODE_PRIVATE).getString(NEARIT_API_KEY, null);
+        if (apiKey == null) {
+            NearLog.e(TAG, "The NearIT SDK was not instantiated correctly");
+        }
+        return apiKey;
     }
 
     private void plugInSetup(Application application, GlobalConfig globalConfig) {

@@ -6,20 +6,15 @@ import it.near.sdk.NearItManager;
 
 public class MyApplication extends Application {
 
-    private static NearItManager nearItManager;
-
     @Override
     public void onCreate() {
         super.onCreate();
 
-        nearItManager = new NearItManager(this, getString(R.string.near_api_key));
-        nearItManager.initLifecycleMethods(this);
+        NearItManager.setup(this, getString(R.string.near_api_key))
+                .initLifecycleMethods(this);
 
-        nearItManager.setProximityNotificationIcon(R.drawable.common_full_open_on_phone);
-        nearItManager.setPushNotificationIcon(R.drawable.googleg_disabled_color_18);
+        NearItManager.getInstance(this).setProximityNotificationIcon(R.drawable.common_full_open_on_phone);
+        NearItManager.getInstance(this).setPushNotificationIcon(R.drawable.googleg_disabled_color_18);
     }
 
-    public static NearItManager getNearItManager() {
-        return nearItManager;
-    }
 }

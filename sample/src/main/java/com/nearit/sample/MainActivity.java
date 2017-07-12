@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             }
         });
 
-        MyApplication.getNearItManager().addProximityListener(this);
+        NearItManager.getInstance(this).addProximityListener(this);
     }
 
     @Override
@@ -49,14 +50,14 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEAR_PERMISSION_REQUEST &&
                 resultCode == Activity.RESULT_OK) {
-            MyApplication.getNearItManager().startRadar();
+            NearItManager.getInstance(this).startRadar();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MyApplication.getNearItManager().removeProximityListener(this);
+        NearItManager.getInstance(this).removeProximityListener(this);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             // we got a NearIT intent
 
             // track it as engaged, since we tapped on it
-            MyApplication.getNearItManager().sendTracking(
+            NearItManager.getInstance(this).sendTracking(
                     intent.getStringExtra(NearItIntentConstants.RECIPE_ID),
                     Recipe.ENGAGED_STATUS
             );

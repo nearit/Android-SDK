@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -24,7 +25,7 @@ public class ForegroundActivity extends AppCompatActivity implements ProximityLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_foreground);
 
-        MyApplication.getNearItManager().addProximityListener(this);
+        NearItManager.getInstance(this).addProximityListener(this);
 
     }
 
