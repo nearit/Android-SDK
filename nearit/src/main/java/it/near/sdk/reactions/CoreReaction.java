@@ -1,53 +1,56 @@
 package it.near.sdk.reactions;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.Parcelable;
+import android.os.Handler;
+import android.os.Looper;
 
-
-import com.google.gson.Gson;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.communication.NearAsyncHttpClient;
+import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.models.ReactionBundle;
+import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.utils.NearJsonAPIUtils;
+
+import static it.near.sdk.utils.NearUtils.safe;
 
 /**
  * Superclass for NearIT core-content reactions. Adds jsonAPI parsing, simple caching.
  *
  * @author cattaneostefano.
  */
-public abstract class CoreReaction extends Reaction {
+public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
     private static final String TAG = "CoreReaction";
     /**
      * Gson object to serialize and de-serialize the cache.
      */
-    protected static Gson gson = null;
-    private SharedPreferences sp;
-    private SharedPreferences.Editor editor;
-    protected NearAsyncHttpClient httpClient;
+    protected final NearAsyncHttpClient httpClient;
+    protected final Cacher<T> cacher;
+    protected final Class<T> type;
+    protected List<T> reactionList;
+
     /**
-     * Cache prefix based on app package name.
-     */
-    protected static String PACK_NAME;
-    /**
-     * Morpheur object for JsonAPI parsing.
+     * Morpheus object for JsonAPI parsing.
      */
     protected Morpheus morpheus;
 
-    public CoreReaction(Context mContext, NearNotifier nearNotifier) {
-        super(mContext, nearNotifier);
+    public CoreReaction(Cacher<T> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Class<T> type) {
+        super(nearNotifier);
         // static GSON object for de/serialization of objects to/from JSON
-        gson = new Gson();
-        PACK_NAME = mContext.getApplicationContext().getPackageName();
+        this.cacher = cacher;
+        this.type = type;
+        this.httpClient = httpClient;
         setUpMorpheus();
-        initSharedPreferences(getPrefSuffix());
-        httpClient = new NearAsyncHttpClient(mContext);
         refreshConfig();
     }
 
@@ -62,35 +65,46 @@ public abstract class CoreReaction extends Reaction {
         }
     }
 
-    /**
-     * Initialize SharedPreferences.
-     * The preference name is formed by our plugin name and the package name of the app, to avoid conflicts.
-     *
-     * @param prefsNameSuffix suffix for shared parameters
-     */
-    private void initSharedPreferences(String prefsNameSuffix) {
-        String PREFS_NAME = PACK_NAME + prefsNameSuffix;
-        sp = mContext.getSharedPreferences(PREFS_NAME, 0);
-        editor = sp.edit();
+    @Override
+    public void refreshConfig() {
+        String url = getRefreshUrl();
+        try {
+            httpClient.nearGet(url, new NearJsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    NearLog.d(TAG, response.toString());
+                    reactionList = NearJsonAPIUtils.parseList(morpheus, response, type);
+                    normalizeList(reactionList);
+                    cacher.persistList(reactionList);
+                }
+
+                @Override
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                    NearLog.d(TAG, "Error: " + statusCode);
+                    try {
+                        reactionList = cacher.loadList();
+                    } catch (JSONException e) {
+                        NearLog.d(TAG, "Data format error");
+                    }
+                }
+            });
+        } catch (AuthenticationException e) {
+            NearLog.d(TAG, "Auth error");
+        }
     }
 
-    /**
-     * Utility to persist lists in the SharedPreferences.
-     *
-     * @param key
-     * @param list
-     */
-    protected void persistList(String key, List list) {
-        String persistedString = gson.toJson(list);
-        NearLog.d(key, "Persist: " + persistedString);
-        editor.putString(key, persistedString);
-        editor.apply();
+    protected void normalizeList(List<T> reactionList) {
+        for (T element : reactionList) {
+            normalizeElement(element);
+        }
     }
 
-    protected void showContent(String reaction_bundle, final Recipe recipe) {
-        getContent(reaction_bundle, recipe, new ContentFetchListener() {
+    protected abstract void normalizeElement(T element);
+
+    private void showContent(String reaction_bundle, final Recipe recipe) {
+        getContent(reaction_bundle, recipe, new ContentFetchListener<ReactionBundle>() {
             @Override
-            public void onContentFetched(Parcelable content, boolean cached) {
+            public void onContentFetched(ReactionBundle content, boolean cached) {
                 if (content == null) return;
                 if (recipe.isForegroundRecipe()) {
                     nearNotifier.deliverForegroundReaction(content, recipe);
@@ -106,38 +120,140 @@ public abstract class CoreReaction extends Reaction {
         });
     }
 
-    protected abstract void getContent(String reaction_bundle, Recipe recipe, ContentFetchListener listener);
+    protected void getContent(String reaction_bundle_id, final Recipe recipe, final ContentFetchListener<ReactionBundle> listener) {
+        if (reactionList == null) {
+            try {
+                reactionList = cacher.loadList();
+            } catch (JSONException e) {
+                NearLog.d(TAG, "Data format error");
+            }
+        }
+        for (T element : safe(reactionList)) {
+            if (element.getId().equals(reaction_bundle_id)) {
+                injectRecipeId(element, recipe.getId());
+                listener.onContentFetched(element, true);
+                return;
+            }
+        }
+        downloadSingleReaction(reaction_bundle_id, new ContentFetchListener<T>() {
+            @Override
+            public void onContentFetched(T element, boolean cached) {
+                injectRecipeId(element, recipe.getId());
+                listener.onContentFetched(element, false);
+            }
 
-    /**
-     * Returns a String stored in SharedPreferences.
-     * It was not possible to write a generic method already returning a list because of Java type erasure
-     *
-     * @param key
-     * @return
-     */
-    protected String loadCachedString(String key) {
-        return sp.getString(key, "");
+            @Override
+            public void onContentFetchError(String error) {
+                listener.onContentFetchError(error);
+            }
+        });
     }
 
-    /**
-     * Return the suffix for the local cache of this specific plugin. This string will be prefixxed by the app package name to avoid collision
-     * with other nearit-powered apps.
-     *
-     * @return the cache suffix. Use a suffix unique for the plugin.
-     */
-    public abstract String getPrefSuffix();
+    protected abstract String getRefreshUrl();
+
+    protected abstract String getSingleReactionUrl(String bundleId);
+
+    protected abstract String getDefaultShowAction();
+
+    protected abstract void injectRecipeId(T element, String recipeId);
 
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
      *
-     * @return
      */
     protected abstract HashMap<String, Class> getModelHashMap();
 
     /**
-     * Return the resource type.
-     *
-     * @return the name of the resource handled by the plugin.
+     * Download a single request.
      */
-    protected abstract String getResTypeName();
+    protected void downloadSingleReaction(String bundleId, final ContentFetchListener<T> contentFetchListener) {
+        try {
+            httpClient.nearGet(getSingleReactionUrl(bundleId), new NearJsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    T element = NearJsonAPIUtils.parseElement(morpheus, response, type);
+                    normalizeElement(element);
+                    contentFetchListener.onContentFetched(element, false);
+                }
+
+                @Override
+                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                    contentFetchListener.onContentFetchError("Couldn't fetch reaction");
+                }
+            });
+        } catch (AuthenticationException e) {
+            NearLog.d(TAG, "Auth error");
+        }
+    }
+
+    @Override
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
+        if (reaction_action.equals(getDefaultShowAction())){
+            showContent(reaction_bundle.getId(), recipe);
+        }
+    }
+
+    @Override
+    public void handlePushReaction(final String recipeId, final String notificationText, String reactionAction, String reactionBundleId) {
+        downloadSingleReaction(reactionBundleId, new ContentFetchListener<T>() {
+            @Override
+            public void onContentFetched(T element, boolean cached) {
+                injectRecipeId(element, recipeId);
+                nearNotifier.deliverBackgroundPushReaction(element, recipeId, notificationText, getReactionPluginName());
+            }
+
+            @Override
+            public void onContentFetchError(String error) {
+                NearLog.d(TAG, "Couldn't fetch content");
+            }
+        }, new Random().nextInt(1000));
+    }
+
+    @Override
+    public void handlePushReaction(final Recipe recipe, String push_id, ReactionBundle reactionBundle) {
+        T element = (T)reactionBundle;
+        if (element.hasContentToInclude()) {
+            downloadSingleReaction(element.getId(), new ContentFetchListener<T>() {
+                @Override
+                public void onContentFetched(T element, boolean cached) {
+                    injectRecipeId(element, recipe.getId());
+                    nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(),  getReactionPluginName());
+                }
+
+                @Override
+                public void onContentFetchError(String error) {
+                    NearLog.d(TAG, "Error: " + error);
+                }
+            });
+        } else {
+            injectRecipeId(element, recipe.getId());
+            normalizeElement(element);
+            nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+        }
+    }
+
+    @Override
+    public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
+        try {
+            JSONObject toParse = new JSONObject(reactionBundleString);
+            T element = NearJsonAPIUtils.parseElement(morpheus, toParse, type);
+            if (element == null) return false;
+            injectRecipeId(element, recipeId);
+            normalizeElement(element);
+            nearNotifier.deliverBackgroundPushReaction(element, recipeId, notificationText, getReactionPluginName());
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
+    private void downloadSingleReaction(final String bundleId, final ContentFetchListener<T> listener, int i) {
+        final Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                downloadSingleReaction(bundleId, listener);
+            }
+        }, i);
+    }
 }

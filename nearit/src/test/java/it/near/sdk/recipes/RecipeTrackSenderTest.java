@@ -37,14 +37,14 @@ public class RecipeTrackSenderTest {
     private static final String DUMMY_PROFILE_ID = "dummy_profile_id";
     private static final String DUMMY_INSTALLATION_ID = "dummy_installation_id";
     private static final String DUMMY_APP_ID = "dummy_app_id";
-    public static final long DUMMY_LONG_TIMESTAMP = 100L;
+    private static final long DUMMY_LONG_TIMESTAMP = 100L;
 
     private RecipeTrackSender recipeTrackSender;
 
     @Mock
     private GlobalConfig mockGlobalConfig;
     @Mock
-    private RecipeCooler mockRecipeCooler;
+    private RecipesHistory mockRecipeHistory;
     @Mock
     private TrackManager mockTrackManager;
     @Mock
@@ -56,7 +56,7 @@ public class RecipeTrackSenderTest {
         when(mockGlobalConfig.getProfileId()).thenReturn(DUMMY_PROFILE_ID);
         when(mockGlobalConfig.getInstallationId()).thenReturn(DUMMY_INSTALLATION_ID);
         when(mockGlobalConfig.getAppId()).thenReturn(DUMMY_APP_ID);
-        recipeTrackSender = new RecipeTrackSender(mockGlobalConfig, mockRecipeCooler, mockTrackManager, mockCurrentTime);
+        recipeTrackSender = new RecipeTrackSender(mockGlobalConfig, mockRecipeHistory, mockTrackManager, mockCurrentTime);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class RecipeTrackSenderTest {
         String dummyRecipeId = "dummy_recipe_id";
         recipeTrackSender.sendTracking(dummyRecipeId, Recipe.NOTIFIED_STATUS);
 
-        verify(mockRecipeCooler, atLeastOnce()).markRecipeAsShown(dummyRecipeId);
+        verify(mockRecipeHistory, atLeastOnce()).markRecipeAsShown(dummyRecipeId);
 
         ArgumentCaptor<TrackRequest> argumentCaptor = ArgumentCaptor.forClass(TrackRequest.class);
         verify(mockTrackManager, atLeastOnce()).sendTracking(argumentCaptor.capture());
@@ -90,7 +90,7 @@ public class RecipeTrackSenderTest {
         String dummyRecipeId = "dummy_recipe_id";
         recipeTrackSender.sendTracking(dummyRecipeId, Recipe.ENGAGED_STATUS);
 
-        verify(mockRecipeCooler, never()).markRecipeAsShown(dummyRecipeId);
+        verify(mockRecipeHistory, never()).markRecipeAsShown(dummyRecipeId);
 
         ArgumentCaptor<TrackRequest> argumentCaptor = ArgumentCaptor.forClass(TrackRequest.class);
         verify(mockTrackManager, atLeastOnce()).sendTracking(argumentCaptor.capture());
@@ -114,15 +114,15 @@ public class RecipeTrackSenderTest {
     @Test
     public void whenTrackingIsMissingRecipeOrStatus_nothingHappens() throws JSONException {
         recipeTrackSender.sendTracking("r", null);
-        verify(mockRecipeCooler, never()).markRecipeAsShown(anyString());
+        verify(mockRecipeHistory, never()).markRecipeAsShown(anyString());
         verify(mockTrackManager, never()).sendTracking(any(TrackRequest.class));
 
         recipeTrackSender.sendTracking(null, "r");
-        verify(mockRecipeCooler, never()).markRecipeAsShown(anyString());
+        verify(mockRecipeHistory, never()).markRecipeAsShown(anyString());
         verify(mockTrackManager, never()).sendTracking(any(TrackRequest.class));
 
         recipeTrackSender.sendTracking(null, null);
-        verify(mockRecipeCooler, never()).markRecipeAsShown(anyString());
+        verify(mockRecipeHistory, never()).markRecipeAsShown(anyString());
         verify(mockTrackManager, never()).sendTracking(any(TrackRequest.class));
     }
 

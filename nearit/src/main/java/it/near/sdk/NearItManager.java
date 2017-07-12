@@ -14,6 +14,7 @@ import org.json.JSONException;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -24,6 +25,7 @@ import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
+import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
 import it.near.sdk.reactions.couponplugin.CouponListener;
@@ -35,11 +37,15 @@ import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction
 import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
-import it.near.sdk.recipes.RecipeCooler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipeTrackSender;
+import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.validation.AdvScheduleValidator;
+import it.near.sdk.recipes.validation.CooldownValidator;
+import it.near.sdk.recipes.validation.RecipeValidationFilter;
+import it.near.sdk.recipes.validation.Validator;
 import it.near.sdk.trackings.TrackCache;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackSender;
@@ -110,40 +116,42 @@ public class NearItManager {
     }
 
     private void plugInSetup(Application application, GlobalConfig globalConfig) {
-        RecipeCooler recipeCooler = new RecipeCooler(
-                RecipeCooler.getSharedPreferences(application),
+        RecipesHistory recipesHistory = new RecipesHistory(
+                RecipesHistory.getSharedPreferences(application),
                 new CurrentTime()
         );
-        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(recipeCooler, globalConfig);
+        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
         TrackManager trackManager = getTrackManager(application);
-        RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipeCooler, trackManager, new CurrentTime());
+        List<Validator> validators = new ArrayList<>();
+        validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
+        validators.add(new AdvScheduleValidator(new CurrentTime()));
+        RecipeValidationFilter recipeValidationFilter = new RecipeValidationFilter(validators);
 
+        RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipesHistory, trackManager, new CurrentTime());
         recipesManager = new RecipesManager(
                 new NearAsyncHttpClient(application),
                 globalConfig,
-                recipeCooler,
+                recipeValidationFilter,
                 evaluationBodyBuilder,
-                RecipesManager.getSharedPreferences(application),
-                recipeTrackSender);
+                recipeTrackSender,
+                new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
         RecipesManager.setInstance(recipesManager);
-
-        GlobalState.getInstance(application).setRecipesManager(recipesManager);
 
         geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
-        contentNotification = new ContentReaction(application, nearNotifier);
+        contentNotification = ContentReaction.obtain(application, nearNotifier);
         recipesManager.addReaction(contentNotification);
 
-        simpleNotification = new SimpleNotificationReaction(application, nearNotifier);
+        simpleNotification = new SimpleNotificationReaction(nearNotifier);
         recipesManager.addReaction(simpleNotification);
 
-        couponReaction = new CouponReaction(application, nearNotifier, globalConfig);
+        couponReaction = CouponReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
 
-        customJSON = new CustomJSONReaction(application, nearNotifier);
+        customJSON = CustomJSONReaction.obtain(application, nearNotifier);
         recipesManager.addReaction(customJSON);
 
-        feedback = new FeedbackReaction(application, nearNotifier, globalConfig);
+        feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
     }
 

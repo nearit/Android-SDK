@@ -103,7 +103,8 @@ public class NearAsyncHttpClient {
                 new BasicHeader(Constants.Headers.accessToken, "bearer " + GlobalConfig.getInstance(context).getApiKey()),
                 new BasicHeader(Constants.Headers.contentType, Constants.Headers.jsonApiHeader),
                 new BasicHeader(Constants.Headers.accept, Constants.Headers.jsonApiHeader),
-                new BasicHeader(Constants.Headers.version_header_key, String.valueOf(it.near.sdk.BuildConfig.API_VERSION))
+                new BasicHeader(Constants.Headers.version_header_key, String.valueOf(it.near.sdk.BuildConfig.API_VERSION)),
+                new BasicHeader(Constants.Headers.near_version_header_key, String.valueOf(it.near.sdk.BuildConfig.NEAR_API_VERSION))
         };
     }
 

@@ -42,9 +42,9 @@ public class PushProcessorTest {
     @Mock
     FormatDecoder mockFormatDecoder;
 
-    PushProcessor pushProcessor;
+    private PushProcessor pushProcessor;
 
-    Map pushMap;
+    private Map pushMap;
     private String dummyRecipeId;
     private String dummyReactionName;
     private String dummyReactionAction;

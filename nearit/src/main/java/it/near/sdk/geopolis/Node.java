@@ -15,6 +15,9 @@ public class Node extends Resource {
     @SerializedName("identifier")
     public String identifier;
 
+    @SerializedName("tags")
+    public List<String> tags;
+
     @Relationship("parent")
     public Node parent;
 

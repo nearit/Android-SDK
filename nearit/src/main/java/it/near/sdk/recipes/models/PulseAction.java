@@ -11,8 +11,7 @@ public class PulseAction extends Resource {
     }
 
     public boolean isForeground(){
-        return getId().equals(Events.RANGE_FAR) ||
-                getId().equals(Events.RANGE_NEAR) ||
-                getId().equals(Events.RANGE_IMMEDIATE);
+        return  getId().equals(Events.RANGE_NEAR.event) ||
+                getId().equals(Events.RANGE_IMMEDIATE.event);
     }
 }

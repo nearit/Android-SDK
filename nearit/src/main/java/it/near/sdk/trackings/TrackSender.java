@@ -22,7 +22,7 @@ public class TrackSender {
         this.httpClient = httpClient;
     }
 
-    public void sendTrack(TrackRequest request, final RequestListener listener) {
+    void sendTrack(TrackRequest request, final RequestListener listener) {
         try {
             send(request, listener);
         } catch (AuthenticationException e) {

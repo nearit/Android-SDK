@@ -48,7 +48,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     private PendingIntent mGeofencePendingIntent;
     private GoogleApiClient mGoogleApiClient;
     private List<GeoFenceNode> mNearGeoList;
-    private SharedPreferences sp;
     private List<Geofence> mPendingGeofences = new ArrayList<>();
 
     @Override
@@ -150,7 +149,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
      */
     private List<String> loadIds() {
         Gson gson = new Gson();
-        sp = getSharedPreferences(getSharedPrefName(this), 0);
+        SharedPreferences sp = getSharedPreferences(getSharedPrefName(this), 0);
         String jsonText = sp.getString(LIST_IDS, null);
         return gson.fromJson(jsonText, new TypeToken<List<String>>() {
         }.getType());

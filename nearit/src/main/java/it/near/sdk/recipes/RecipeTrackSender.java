@@ -27,18 +27,19 @@ public class RecipeTrackSender {
     static final String TRACKING_EVENT = "event";
     static final String TRACKING_TRACKED_AT = "tracked_at";
     static final String TRACKINGS_TYPE = "trackings";
+    private static final String TRACK_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
     private final GlobalConfig globalConfig;
-    private final RecipeCooler recipeCooler;
+    private final RecipesHistory recipesHistory;
     private final TrackManager trackManager;
     private final CurrentTime currentTime;
 
     public RecipeTrackSender(GlobalConfig globalConfig,
-                             RecipeCooler recipeCooler,
+                             RecipesHistory recipesHistory,
                              TrackManager trackManager,
                              CurrentTime currentTime) {
         this.globalConfig = checkNotNull(globalConfig);
-        this.recipeCooler = checkNotNull(recipeCooler);
+        this.recipesHistory = checkNotNull(recipesHistory);
         this.trackManager = checkNotNull(trackManager);
         this.currentTime = checkNotNull(currentTime);
     }
@@ -48,7 +49,7 @@ public class RecipeTrackSender {
                 trackingEvent == null) return;
 
         if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
-            recipeCooler.markRecipeAsShown(recipeId);
+            recipesHistory.markRecipeAsShown(recipeId);
         }
 
         String trackingBody = buildTrackingBody(
@@ -68,7 +69,7 @@ public class RecipeTrackSender {
                 installationId == null) {
             throw new JSONException("missing data");
         }
-        DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
+        DateFormat sdf = new SimpleDateFormat(TRACK_DATE_FORMAT, Locale.US);
         Date now = new Date(currentTime.currentTimestamp());
         String formattedDate = sdf.format(now);
         HashMap<String, Object> attributes = new HashMap<>();

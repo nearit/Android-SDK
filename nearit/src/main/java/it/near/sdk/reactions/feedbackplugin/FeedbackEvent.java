@@ -4,7 +4,6 @@ import org.json.JSONException;
 
 import java.util.HashMap;
 
-import it.near.sdk.GlobalConfig;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -78,8 +77,7 @@ public class FeedbackEvent extends Event {
         return PLUGIN_NAME;
     }
 
-    public String toJsonAPI(GlobalConfig config) throws JSONException {
-        String profileId = config.getProfileId();
+    public String toJsonAPI(String profileId) throws JSONException {
         HashMap<String, Object> attributeMap = new HashMap<>();
         if (profileId == null ||
                 rating == -1 ||

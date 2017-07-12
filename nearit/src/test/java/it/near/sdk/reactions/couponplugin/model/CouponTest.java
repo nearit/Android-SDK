@@ -1,4 +1,4 @@
-package it.near.sdk.reactions.couponplugin;
+package it.near.sdk.reactions.couponplugin.model;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,7 +7,7 @@ import org.junit.runners.JUnit4;
 
 import java.util.Date;
 
-import it.near.sdk.reactions.couponplugin.model.Coupon;
+import it.near.sdk.reactions.contentplugin.model.Image;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertNull;
@@ -22,7 +22,7 @@ public class CouponTest {
     public void setUp() {
         coupon = new Coupon();
     }
-    
+
     public void testDateParser() {
         String dateString = "2017-02-15T23:59:59.999Z";
         Date actual = coupon.toDate(dateString);
@@ -42,5 +42,16 @@ public class CouponTest {
     public void testDateParserWithNullValue() {
         Date actual = coupon.toDate(null);
         assertNull(actual);
+    }
+
+    @Test
+    public void shouldNotHaveContentToInclude() {
+        assertThat(coupon.hasContentToInclude(), is(false));
+    }
+
+    @Test
+    public void couponWithIcon_shouldHaveContentToInclude() {
+        coupon.icon = new Image();
+        assertThat(coupon.hasContentToInclude(), is(true));
     }
 }
