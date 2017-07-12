@@ -17,7 +17,6 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
-import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -43,7 +42,7 @@ public class NearItUserProfile {
     public static void setProfileId(Context context, String profileId) {
         NearItManager nearItManager = NearItManager.getInstance(context);
         nearItManager.globalConfig.setProfileId(profileId);
-        nearItManager.nearInstallation.registerInstallation();
+        nearItManager.nearInstallation.refreshInstallation();
     }
 
     /**
@@ -64,7 +63,7 @@ public class NearItUserProfile {
     public static void resetProfileId(Context context) {
         NearItManager nearItManager = NearItManager.getInstance(context);
         nearItManager.globalConfig.setProfileId(null);
-        nearItManager.nearInstallation.registerInstallation();
+        nearItManager.nearInstallation.refreshInstallation();
     }
 
     /**
@@ -79,7 +78,7 @@ public class NearItUserProfile {
         String profileId = globalConfig.getProfileId();
         if (profileId != null) {
             // profile already created
-            NearInstallation.registerInstallation(context);
+            nearItManager.nearInstallation.refreshInstallation();
             listener.onProfileCreated(false, profileId);
             return;
         }
@@ -107,7 +106,7 @@ public class NearItUserProfile {
                         profileId = response.getJSONObject("data").getString("id");
                         globalConfig.setProfileId(profileId);
                         // update the installation with the profile id
-                        nearItManager.nearInstallation.registerInstallation();
+                        nearItManager.nearInstallation.refreshInstallation();
                         nearItManager.getRecipesManager().refreshConfig();
 
                         listener.onProfileCreated(true, profileId);

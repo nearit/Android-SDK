@@ -45,7 +45,7 @@ public class NearInstallation {
         this.context = context;
     }
 
-    public void registerInstallation() {
+    public void refreshInstallation() {
         registerInstallation(context);
     }
 

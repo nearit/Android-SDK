@@ -35,6 +35,6 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
         // Add custom implementation, as needed.
         NearItManager nearItManager = NearItManager.getInstance(getApplicationContext());
         nearItManager.globalConfig.setDeviceToken(token);
-        nearItManager.nearInstallation.registerInstallation();
+        nearItManager.nearInstallation.refreshInstallation();
     }
 }

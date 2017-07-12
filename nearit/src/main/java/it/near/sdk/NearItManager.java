@@ -72,7 +72,7 @@ public class NearItManager {
     private static final String NEAR_IT_API_KEY_HOLDER = "nearit_key_holder";
     private static final String NEARIT_API_KEY = "nearit_key";
     @Nullable
-    protected static volatile NearItManager sInstance = null;
+    private volatile static NearItManager sInstance = null;
 
     /**
      * Private lock object for singleton initialization protecting against denial-of-service attack.
@@ -97,21 +97,21 @@ public class NearItManager {
     @NonNull
     public static NearItManager setup(@NonNull Application application, @NonNull String apiKey) {
         saveApiKey(application, apiKey);
-        return getInstance(application);
+        NearItManager nearItManager = getInstance(application);
+        nearItManager.firstRun();
+        return nearItManager;
     }
 
     @NonNull
     public static NearItManager getInstance(@NonNull Context context) {
-        NearItManager instance = sInstance;
         if (sInstance == null) {
-            synchronized (SINGLETON_LOCK) {
-                instance = sInstance;
-                if (instance == null) {
-                    sInstance = instance = new NearItManager(context);
+            synchronized(SINGLETON_LOCK) {
+                if (sInstance == null) {
+                    sInstance = new NearItManager(context);
                 }
             }
         }
-        return instance;
+        return sInstance;
     }
 
     /**
@@ -129,8 +129,12 @@ public class NearItManager {
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
-        plugInSetup(application, globalConfig);
+        nearInstallation = new NearInstallation(application);
 
+        plugInSetup(application, globalConfig);
+    }
+
+    private void firstRun() {
         NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
@@ -143,16 +147,16 @@ public class NearItManager {
                 NearLog.d(TAG, "Error creating profile. Profile not present");
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
-                NearInstallation.registerInstallation(application);
+                nearInstallation.refreshInstallation();
             }
         });
     }
 
     private static void saveApiKey(Context context, String apiKey) {
-        context.getSharedPreferences(NEAR_IT_API_KEY_HOLDER, Context.MODE_PRIVATE).edit().putString(NEARIT_API_KEY, apiKey).commit();
+        context.getSharedPreferences(NEAR_IT_API_KEY_HOLDER, Context.MODE_PRIVATE).edit().putString(NEARIT_API_KEY, apiKey).apply();
     }
 
-    private String readApiKey(Context context) {
+    public static String readApiKey(Context context) {
         String apiKey = context.getSharedPreferences(NEAR_IT_API_KEY_HOLDER, Context.MODE_PRIVATE).getString(NEARIT_API_KEY, null);
         if (apiKey == null) {
             NearLog.e(TAG, "The NearIT SDK was not instantiated correctly");
@@ -199,7 +203,6 @@ public class NearItManager {
         feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
 
-        nearInstallation = new NearInstallation(application);
     }
 
     @NonNull
@@ -388,7 +391,7 @@ public class NearItManager {
     }
 
     public void updateInstallation() {
-        nearInstallation.registerInstallation();
+        nearInstallation.refreshInstallation();
     }
 
 }

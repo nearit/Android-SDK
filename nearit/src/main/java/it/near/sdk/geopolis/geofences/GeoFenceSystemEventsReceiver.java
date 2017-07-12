@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.location.LocationManager;
 
-import it.near.sdk.communication.NearInstallation;
+import it.near.sdk.NearItManager;
 import it.near.sdk.logging.NearLog;
 
 /**
@@ -36,7 +36,7 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
             sendResetIntent(context, anyLocationProv);
         }
 
-        NearInstallation.registerInstallation(context);
+        NearItManager.getInstance(context).nearInstallation.refreshInstallation();
     }
 
     /**
