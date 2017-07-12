@@ -15,19 +15,19 @@ import it.near.sdk.logging.NearLog;
 public class GlobalConfig {
 
     public static final int DEFAULT_EMPTY_NOTIFICATION = 0;
-    private final String KEY_PROXIMITY_ICON = "proximity_icon_key";
-    private final String KEY_PUSH_ICON = "push_icon_key";
+    static final String KEY_PROXIMITY_ICON = "proximity_icon_key";
+    static final String KEY_PUSH_ICON = "push_icon_key";
 
     // ---------- Value string and string keys ----------
-    private final String APIKEY = "apikey";
+    static final String APIKEY = "apikey";
     private String apiKey;
-    private final String APPID = "appid";
+    static final String APPID = "appid";
     private String appId;
-    private final String DEVICETOKEN = "devicetoken";
+    static final String DEVICETOKEN = "devicetoken";
     private String deviceToken;
-    private static final String INSTALLATIONID = "installationid";
+    static final String INSTALLATIONID = "installationid";
     private String installationId;
-    private static final String PROFILE_ID = "profileId";
+    static final String PROFILE_ID = "profileId";
     private String profileId;
     private int proximityNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
     private int pushNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
@@ -41,7 +41,7 @@ public class GlobalConfig {
         this.editor = sp.edit();
     }
 
-    public static SharedPreferences buildSharedPreferences(Context context) {
+    static SharedPreferences buildSharedPreferences(Context context) {
         return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
@@ -66,12 +66,15 @@ public class GlobalConfig {
 
     public void setPushNotificationIcon(int imgRes) {
         pushNotificationIconRes = imgRes;
-        editor.putInt(KEY_PUSH_ICON, imgRes);
+        editor.putInt(KEY_PUSH_ICON, imgRes).apply();
     }
 
     public String getApiKey() throws AuthenticationException {
         if (apiKey == null) {
             apiKey = getLocalString(APIKEY);
+            if (apiKey == null) {
+                throw new AuthenticationException();
+            }
         }
         return apiKey;
     }
