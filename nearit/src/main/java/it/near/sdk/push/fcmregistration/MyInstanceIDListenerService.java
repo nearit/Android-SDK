@@ -3,8 +3,7 @@ package it.near.sdk.push.fcmregistration;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-import it.near.sdk.communication.NearInstallation;
-import it.near.sdk.GlobalConfig;
+import it.near.sdk.NearItManager;
 import it.near.sdk.logging.NearLog;
 
 /**
@@ -34,7 +33,8 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
-        GlobalConfig.getInstance(this.getApplicationContext()).setDeviceToken(token);
-        NearInstallation.registerInstallation(this.getApplicationContext());
+        NearItManager nearItManager = NearItManager.getInstance(getApplicationContext());
+        nearItManager.globalConfig.setDeviceToken(token);
+        nearItManager.nearInstallation.registerInstallation();
     }
 }
