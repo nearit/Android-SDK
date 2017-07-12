@@ -18,8 +18,6 @@ public class GlobalConfig {
     private final String KEY_PROXIMITY_ICON = "proximity_icon_key";
     private final String KEY_PUSH_ICON = "push_icon_key";
 
-    private static GlobalConfig mInstance = null;
-    private Context mContext;
     // ---------- Value string and string keys ----------
     private final String APIKEY = "apikey";
     private String apiKey;
@@ -34,25 +32,17 @@ public class GlobalConfig {
     private int proximityNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
     private int pushNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
     // ---------- suffix for sharedpreferences ----------
-    private String PREFS_NAME = "NearConfig";
+    private static final String PREFS_NAME = "NearConfig";
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
-    public GlobalConfig(Context mContext) {
-        this.mContext = mContext;
-        setUpSharedPreferences();
+    public GlobalConfig(SharedPreferences sp) {
+        this.sp = sp;
+        this.editor = sp.edit();
     }
 
-    private void setUpSharedPreferences() {
-        sp = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editor = sp.edit();
-    }
-
-    public static GlobalConfig getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new GlobalConfig(context);
-        }
-        return mInstance;
+    public static SharedPreferences buildSharedPreferences(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
     public int getProximityNotificationIcon() {

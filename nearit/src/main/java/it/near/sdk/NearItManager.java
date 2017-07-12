@@ -82,7 +82,7 @@ public class NearItManager {
     private static final String TAG = "NearItManager";
     public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
     public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
-    private final GlobalConfig globalConfig;
+    public final GlobalConfig globalConfig;
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
@@ -122,7 +122,8 @@ public class NearItManager {
         String apiKey = readApiKey(context);
         this.application = (Application) context.getApplicationContext();
 
-        this.globalConfig = GlobalConfig.getInstance(application);
+        this.globalConfig = new GlobalConfig(
+                GlobalConfig.buildSharedPreferences(application));
 
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
