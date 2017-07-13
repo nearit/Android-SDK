@@ -24,8 +24,7 @@ public class ContentReaction extends CoreReaction<Content> {
     private static final String INCLUDE_RESOURCES = "images,audio,upload";
     private static final String CONTENT_NOTIFICATION_PATH = "content-notification";
     private static final String CONTENT_NOTIFICATION_RESOURCE = "contents";
-    private static final String SHOW_CONTENT_ACTION = "show_content";
-    private static final String TAG = "ContentReaction";
+    static final String SHOW_CONTENT_ACTION = "show_content";
     private static final String PREFS_NAME = "NearContentNot";
 
     ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
