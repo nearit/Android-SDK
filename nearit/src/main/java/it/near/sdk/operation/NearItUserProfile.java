@@ -110,7 +110,7 @@ public class NearItUserProfile {
         }
     }
 
-    private static String buildProfileCreationRequestBody(GlobalConfig globalConfig) throws JSONException {
+    private String buildProfileCreationRequestBody(GlobalConfig globalConfig) throws JSONException {
         String appId = globalConfig.getAppId();
         HashMap<String, Object> map = new HashMap<>();
         map.put("app_id", appId);
@@ -224,9 +224,8 @@ public class NearItUserProfile {
                 .appendPath(profileId)
                 .appendPath(DATA_POINTS_RES_TYPE).build();
 
-        // TODO not tested
         try {
-            NearAsyncHttpClient.post(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
