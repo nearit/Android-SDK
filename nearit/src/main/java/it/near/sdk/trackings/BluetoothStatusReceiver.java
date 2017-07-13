@@ -19,10 +19,10 @@ public class BluetoothStatusReceiver extends BroadcastReceiver {
         if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
             if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
                 NearLog.d(TAG, "BT turned off");
-                nearItManager.nearInstallation.refreshInstallation();
+                nearItManager.updateInstallation();
             } else if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON) {
                 NearLog.d(TAG, "BT turned on");
-                nearItManager.nearInstallation.refreshInstallation();
+                nearItManager.updateInstallation();
             }
         }
     }

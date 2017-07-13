@@ -14,7 +14,6 @@ import org.json.JSONException;
 import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.NearItManager;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
@@ -38,15 +37,14 @@ public class NearInstallation {
     private static final String PROFILE_ID = "profile_id";
 
     private static NearInstallationRequestQueue requestQueue;
-
     private Context context;
 
-    public NearInstallation(Context context) {
-        this.context = context;
-    }
+    private final GlobalConfig globalConfig;
 
-    public void refreshInstallation() {
-        registerInstallation(context);
+    public NearInstallation(Context context, NearAsyncHttpClient httpClient, GlobalConfig globalConfig) {
+        this.context = context;
+        this.globalConfig = globalConfig;
+        requestQueue = new NearInstallationRequestQueue(httpClient, globalConfig);
     }
 
     /**
@@ -54,40 +52,21 @@ public class NearInstallation {
      * or a PUT if an installationId is already present.
      * The installationId is a back-end concept and does not correspond with the device token.
      *
-     * @param context the app context
      */
-    public static void registerInstallation(final Context context) {
-        GlobalConfig globalConfig = NearItManager.getInstance(context).globalConfig;
+    public void refreshInstallation() {
         // get the local installation id
         String installationId = globalConfig.getInstallationId();
         try {
             // build a JSON api request body with or without the id, depending whether the installID is null or not
             String installBody = getInstallationBody(context, globalConfig, installationId);
             // with the same criteria, we decide the type of request to do
-            getRequestQueue(context).registerInstallation(installBody);
+            requestQueue.registerInstallation(installBody);
         } catch (JSONException e) {
             NearLog.d(TAG, "Unable to send installation data");
         }
     }
 
-    private static NearInstallationRequestQueue getRequestQueue(Context context) {
-        if (requestQueue == null) {
-            GlobalConfig globalConfig = NearItManager.getInstance(context).globalConfig;
-            NearAsyncHttpClient httpClient = new NearAsyncHttpClient(context);
-            requestQueue = new NearInstallationRequestQueue(httpClient, globalConfig);
-        }
-        return requestQueue;
-    }
-
-    /**
-     * Return a JSONapi formatted installation object with the proper attributes.
-     *
-     * @param context the app context.
-     * @param globalConfig
-     *@param id      installation id. It can be null and in that case will not be set.  @return The JSONapi string of the installation object.
-     * @throws JSONException
-     */
-    private static String getInstallationBody(Context context, GlobalConfig globalConfig, String id) throws JSONException {
+    private String getInstallationBody(Context context, GlobalConfig globalConfig, String id) throws JSONException {
         HashMap<String, Object> attributeMap = new HashMap<>();
         // Set platform to "android"
         attributeMap.put(PLATFORM, ANDROID);

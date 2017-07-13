@@ -91,7 +91,7 @@ public class NearItManager {
     private CustomJSONReaction customJSON;
     private FeedbackReaction feedback;
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
-    public NearInstallation nearInstallation;
+    private NearInstallation nearInstallation;
     private Application application;
 
     @NonNull
@@ -129,7 +129,7 @@ public class NearItManager {
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
-        nearInstallation = new NearInstallation(application);
+        nearInstallation = new NearInstallation(application, new NearAsyncHttpClient(application), globalConfig);
 
         plugInSetup(application, globalConfig);
     }
@@ -147,7 +147,7 @@ public class NearItManager {
                 NearLog.d(TAG, "Error creating profile. Profile not present");
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
-                nearInstallation.refreshInstallation();
+                updateInstallation();
             }
         });
     }

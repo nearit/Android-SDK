@@ -42,7 +42,7 @@ public class NearItUserProfile {
     public static void setProfileId(Context context, String profileId) {
         NearItManager nearItManager = NearItManager.getInstance(context);
         nearItManager.globalConfig.setProfileId(profileId);
-        nearItManager.nearInstallation.refreshInstallation();
+        nearItManager.updateInstallation();
     }
 
     /**
@@ -63,7 +63,7 @@ public class NearItUserProfile {
     public static void resetProfileId(Context context) {
         NearItManager nearItManager = NearItManager.getInstance(context);
         nearItManager.globalConfig.setProfileId(null);
-        nearItManager.nearInstallation.refreshInstallation();
+        nearItManager.updateInstallation();
     }
 
     /**
@@ -78,7 +78,7 @@ public class NearItUserProfile {
         String profileId = globalConfig.getProfileId();
         if (profileId != null) {
             // profile already created
-            nearItManager.nearInstallation.refreshInstallation();
+            nearItManager.updateInstallation();
             listener.onProfileCreated(false, profileId);
             return;
         }
@@ -106,7 +106,7 @@ public class NearItUserProfile {
                         profileId = response.getJSONObject("data").getString("id");
                         globalConfig.setProfileId(profileId);
                         // update the installation with the profile id
-                        nearItManager.nearInstallation.refreshInstallation();
+                        nearItManager.updateInstallation();
                         nearItManager.getRecipesManager().refreshConfig();
 
                         listener.onProfileCreated(true, profileId);
