@@ -4,6 +4,7 @@ package it.near.sdk.push;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import it.near.sdk.NearItManager;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.utils.FormatDecoder;
@@ -48,7 +49,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
     }
 
     private RecipesManager getRecipesManager() {
-        return RecipesManager.getInstance();
+        return NearItManager.getInstance(this).getRecipesManager();
     }
     // [END receive_message]
 

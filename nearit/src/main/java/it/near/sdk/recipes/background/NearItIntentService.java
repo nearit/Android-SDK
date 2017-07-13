@@ -77,7 +77,7 @@ public class NearItIntentService extends IntentService {
     protected void sendNotifiedTracking(@NonNull Intent intent) {
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
-            RecipesManager recipesManager = RecipesManager.getInstance();
+            RecipesManager recipesManager = NearItManager.getInstance(this).getRecipesManager();
             if (recipesManager != null) {
                 recipesManager.sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
             }

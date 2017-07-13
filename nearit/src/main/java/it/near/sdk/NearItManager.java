@@ -173,7 +173,6 @@ public class NearItManager {
                 evaluationBodyBuilder,
                 recipeTrackSender,
                 new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
-        RecipesManager.setInstance(recipesManager);
 
         geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
