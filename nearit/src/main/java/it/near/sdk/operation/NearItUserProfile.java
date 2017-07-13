@@ -33,37 +33,20 @@ public class NearItUserProfile {
     private static final String DATA_POINTS_RES_TYPE = "data_points";
     private static final String TAG = "NearItUserProfile";
 
-    /**
-     * Set the profileId of the user using this app installation. This string usually comes from the authentication service for the app.
-     *
-     * @param context   the application context.
-     * @param profileId the profileId string.
-     */
-    public static void setProfileId(Context context, String profileId) {
-        NearItManager nearItManager = NearItManager.getInstance(context);
-        nearItManager.globalConfig.setProfileId(profileId);
-        nearItManager.updateInstallation();
+    private final GlobalConfig globalConfig;
+    private final NearAsyncHttpClient httpClient;
+
+    public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
+        this.globalConfig = globalConfig;
+        this.httpClient = httpClient;
     }
 
-    /**
-     * Get the cached profileId. Might be null.
-     *
-     * @param context the application context.
-     * @return the cached profileId.
-     */
-    public static String getProfileId(Context context) {
-        return NearItManager.getInstance(context).globalConfig.getProfileId();
+    public void setProfileId(String profileId) {
+        globalConfig.setProfileId(profileId);
     }
 
-    /**
-     * Reset the profileId. After this is called, the get will return null.
-     *
-     * @param context the application context.
-     */
-    public static void resetProfileId(Context context) {
-        NearItManager nearItManager = NearItManager.getInstance(context);
-        nearItManager.globalConfig.setProfileId(null);
-        nearItManager.updateInstallation();
+    public String getProfileId() {
+        return globalConfig.getProfileId();
     }
 
     /**
@@ -72,7 +55,7 @@ public class NearItUserProfile {
      * @param context  the application context.
      * @param listener interface for success or failure on profile creation.
      */
-    public static void createNewProfile(final Context context, final ProfileCreationListener listener) {
+    public void createNewProfile(final Context context, final ProfileCreationListener listener) {
         final NearItManager nearItManager = NearItManager.getInstance(context);
         final GlobalConfig globalConfig = nearItManager.globalConfig;
         String profileId = globalConfig.getProfileId();
@@ -96,7 +79,7 @@ public class NearItUserProfile {
                 .appendPath(PROFILE_RES_TYPE).build();
 
         try {
-            NearAsyncHttpClient.post(context, url.toString(), requestBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "got profile: " + response.toString());
@@ -142,12 +125,12 @@ public class NearItUserProfile {
      * @param value    the value of the data field for the current user.
      * @param listener interface for success or failure on property creation.
      */
-    public static void setUserData(final Context context, String key, String value, final UserDataNotifier listener) {
+    public void setUserData(final Context context, String key, String value, final UserDataNotifier listener) {
         final NearItManager nearItManager = NearItManager.getInstance(context);
         String profileId = nearItManager.globalConfig.getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
-            NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
+            createNewProfile(context, new ProfileCreationListener() {
                 @Override
                 public void onProfileCreated(boolean created, String profileId) {
                     // TODO replay method call?
@@ -178,7 +161,7 @@ public class NearItUserProfile {
                 .appendPath(DATA_POINTS_RES_TYPE).build();
         //TODO not tested
         try {
-            NearAsyncHttpClient.post(context, url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+            httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
@@ -203,11 +186,11 @@ public class NearItUserProfile {
      * @param valuesMap map fo key values profile data.
      * @param listener  interface for success or failure on properties creation.
      */
-    public static void setBatchUserData(final Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener) {
+    public void setBatchUserData(final Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener) {
         String profileId = NearItManager.getInstance(context).globalConfig.getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
-            NearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
+            createNewProfile(context, new ProfileCreationListener() {
                 @Override
                 public void onProfileCreated(boolean created, String profileId) {
 

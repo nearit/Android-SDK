@@ -92,6 +92,7 @@ public class NearItManager {
     private FeedbackReaction feedback;
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
     private NearInstallation nearInstallation;
+    private NearItUserProfile nearItUserProfile;
     private Application application;
 
     @NonNull
@@ -130,12 +131,13 @@ public class NearItManager {
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
         nearInstallation = new NearInstallation(application, new NearAsyncHttpClient(application), globalConfig);
+        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(application));
 
         plugInSetup(application, globalConfig);
     }
 
     private void firstRun() {
-        NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
+        nearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
                 NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
@@ -235,6 +237,15 @@ public class NearItManager {
      */
     public static boolean verifyBluetooth(Context context) throws RuntimeException {
         return BeaconManager.getInstanceForApplication(context.getApplicationContext()).checkAvailability();
+    }
+
+    public void setProfileId(String profileId) {
+        nearItUserProfile.setProfileId(profileId);
+        updateInstallation();
+    }
+
+    public void resetProfileId() {
+        setProfileId(null);
     }
 
     /**
