@@ -90,29 +90,29 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     @Override
-    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId) {
+    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a notification with content", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId) {
+    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a coupon", Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(notification.getSerial()).create().show();
     }
 
     @Override
-    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId) {
+    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a custom json", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId) {
+    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a simple notification", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId) {
+    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a feedback request", Toast.LENGTH_SHORT).show();
     }
 
