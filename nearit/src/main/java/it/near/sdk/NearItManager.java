@@ -50,6 +50,7 @@ import it.near.sdk.recipes.validation.Validator;
 import it.near.sdk.trackings.TrackCache;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackSender;
+import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.ApplicationVisibility;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearUtils;
@@ -69,8 +70,6 @@ import it.near.sdk.utils.NearUtils;
  */
 public class NearItManager {
 
-    private static final String NEAR_IT_API_KEY_HOLDER = "nearit_key_holder";
-    private static final String NEARIT_API_KEY = "nearit_key";
     @Nullable
     private volatile static NearItManager sInstance = null;
 
@@ -97,7 +96,7 @@ public class NearItManager {
 
     @NonNull
     public static NearItManager setup(@NonNull Application application, @NonNull String apiKey) {
-        saveApiKey(application, apiKey);
+        ApiKeyConfig.saveApiKey(application, apiKey);
         NearItManager nearItManager = getInstance(application);
         nearItManager.firstRun();
         return nearItManager;
@@ -121,7 +120,7 @@ public class NearItManager {
      * @param context the context
      */
     protected NearItManager(Context context) {
-        String apiKey = readApiKey(context);
+        String apiKey = ApiKeyConfig.readApiKey(context);
         this.application = (Application) context.getApplicationContext();
 
         this.globalConfig = new GlobalConfig(
@@ -152,18 +151,6 @@ public class NearItManager {
                 updateInstallation();
             }
         });
-    }
-
-    private static void saveApiKey(Context context, String apiKey) {
-        context.getSharedPreferences(NEAR_IT_API_KEY_HOLDER, Context.MODE_PRIVATE).edit().putString(NEARIT_API_KEY, apiKey).apply();
-    }
-
-    public static String readApiKey(Context context) {
-        String apiKey = context.getSharedPreferences(NEAR_IT_API_KEY_HOLDER, Context.MODE_PRIVATE).getString(NEARIT_API_KEY, null);
-        if (apiKey == null) {
-            NearLog.e(TAG, "The NearIT SDK was not instantiated correctly");
-        }
-        return apiKey;
     }
 
     private void plugInSetup(Application application, GlobalConfig globalConfig) {

@@ -18,8 +18,8 @@ import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.message.BasicHeader;
-import it.near.sdk.NearItManager;
 import it.near.sdk.R;
+import it.near.sdk.utils.ApiKeyConfig;
 
 /**
  * @author cattaneostefano.
@@ -99,7 +99,7 @@ public class NearAsyncHttpClient {
     }
 
     private static Header[] getHeaders(Context context) throws AuthenticationException {
-        String apiKey = NearItManager.readApiKey(context);
+        String apiKey = ApiKeyConfig.readApiKey(context);
         return new Header[]{
                 new BasicHeader(Constants.Headers.accessToken, "bearer " + apiKey),
                 new BasicHeader(Constants.Headers.contentType, Constants.Headers.jsonApiHeader),
