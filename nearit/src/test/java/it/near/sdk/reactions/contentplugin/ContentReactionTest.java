@@ -6,10 +6,12 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import it.near.sdk.reactions.BaseReactionTest;
+import it.near.sdk.reactions.contentplugin.model.Content;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ContentReactionTest extends BaseReactionTest<ContentReaction> {
@@ -43,6 +45,13 @@ public class ContentReactionTest extends BaseReactionTest<ContentReaction> {
     public void defaultShowActionShouldBeReturned() {
         assertThat(reaction.getDefaultShowAction(),
                 is(ContentReaction.SHOW_CONTENT_ACTION));
+    }
+
+    @Test
+    public void injectRecipeIdDoesNothing() {
+        Content content = mock(Content.class);
+        reaction.injectRecipeId(content, "recipe_id");
+        verifyZeroInteractions(content);
     }
 
 }
