@@ -35,27 +35,27 @@ public class MyCustomIntentService extends NearItIntentService implements CoreCo
     }
 
     @Override
-    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId) {
+    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage) {
         Log.d(TAG, "gotContentNotification");
     }
 
     @Override
-    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId) {
+    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage) {
         Log.d(TAG, "gotCouponNotification");
     }
 
     @Override
-    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId) {
+    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage) {
         Log.d(TAG, "gotCustomJsonNotification");
     }
 
     @Override
-    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId) {
+    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage) {
         Log.d(TAG, "gotSimpleNotification");
     }
 
     @Override
-    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId) {
+    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage) {
         Log.d(TAG, "gotFeedbackNotification");
     }
 }

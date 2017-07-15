@@ -17,13 +17,13 @@ import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
  */
 public interface CoreContentsListener {
 
-    void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId);
+    void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage);
 
-    void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId);
+    void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage);
 
-    void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId);
+    void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage);
 
-    void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId);
+    void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage);
 
-    void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId);
+    void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage);
 }
