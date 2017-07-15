@@ -26,8 +26,8 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
 
     public static final String PLUGIN_NAME = "feedbacks";
     private static final String PREFS_NAME = "NearFeedbackNot";
-    private static final String ASK_FEEDBACK_ACTION_NAME = "ask_feedback";
-    private static final String FEEDBACKS_NOTIFICATION_RESOURCE = "feedbacks";
+    static final String ASK_FEEDBACK_ACTION_NAME = "ask_feedback";
+    static final String FEEDBACKS_NOTIFICATION_RESOURCE = "feedbacks";
     private static final String TAG = "FeedbackReaction";
     private static final String ANSWERS_RESOURCE = "answers";
 
