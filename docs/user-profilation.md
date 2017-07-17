@@ -6,7 +6,7 @@ NearIT creates an anonymous profile for every user of your app. You can choose t
 
 We automatically create an anonymous profile for every installation of the app. You can check that a profile was created by checking the existance of a profile ID.
 ```java
-String profileId = NearItManager.getInstance(context).nearItUserProfile.getProfileId(context);
+String profileId = NearItManager.getInstance(context).getProfileId(context);
 ```
 If the result is null, it means that no profile is associated with the app installation (probably due to a network error).
 
@@ -28,7 +28,7 @@ Calling this method multiple times will NOT create multiple profiles.
 
 After the profile is created set user data:
 ```java
-NearItManager.getInstance(context).nearItUserProfile.setUserData(context, "name", "John", new UserDataNotifier() {
+NearItManager.getInstance(context).setUserData("name", "John", new UserDataNotifier() {
     @Override
     public void onDataCreated() {
         // data was set/created                                                
@@ -47,7 +47,7 @@ HashMap<String, String> userDataMap = new HashMap<>();
 userDataMap.put("name", "John");
 userDataMap.put("age", "23");           // set everything as String
 userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
-NearItManager.getInstance(context).nearItUserProfile.setBatchUserData(context, userDataMap, new UserDataNotifier() {
+NearItManager.getInstance(context).setBatchUserData(userDataMap, new UserDataNotifier() {
             @Override
             public void onDataCreated() {
                 // data was set/created 
@@ -65,7 +65,7 @@ If you want to reset your profile use this method:
 ```java
 NearItManager.getInstance(context).resetProfileId()
 ```
-Further calls to NearItUserProfile.getProfileId(context) will return null.
+Further calls to *getProfileId(context)* will return null.
 A creation of a new profile after the reset will create a profile with no user data.
 
 ## Link NearIT profiles with an external User Database

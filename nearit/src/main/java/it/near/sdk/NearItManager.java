@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.near.sdk.communication.NearAsyncHttpClient;
@@ -26,6 +27,7 @@ import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
+import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
@@ -232,6 +234,19 @@ public class NearItManager {
 
     public void resetProfileId() {
         setProfileId(null);
+    }
+
+    @Nullable
+    public String getProfileId() {
+        return nearItUserProfile.getProfileId();
+    }
+
+    public void setUserData(String key, String value, UserDataNotifier listener) {
+        nearItUserProfile.setUserData(application, key, value, listener);
+    }
+
+    public void setBatchUserData(Map<String, String> valuesMap, UserDataNotifier listener) {
+        nearItUserProfile.setBatchUserData(application, valuesMap, listener);
     }
 
     /**

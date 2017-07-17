@@ -2,6 +2,7 @@ package it.near.sdk.operation;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +46,7 @@ public class NearItUserProfile {
         globalConfig.setProfileId(profileId);
     }
 
+    @Nullable
     public String getProfileId() {
         return globalConfig.getProfileId();
     }
@@ -186,7 +188,7 @@ public class NearItUserProfile {
      * @param valuesMap map fo key values profile data.
      * @param listener  interface for success or failure on properties creation.
      */
-    public void setBatchUserData(final Context context, HashMap<String, String> valuesMap, final UserDataNotifier listener) {
+    public void setBatchUserData(final Context context, Map<String, String> valuesMap, final UserDataNotifier listener) {
         String profileId = NearItManager.getInstance(context).globalConfig.getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
