@@ -48,10 +48,14 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
  @Override
     public void onCreate() {
         super.onCreate();
-        nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
-        // calling this method on the Application onCreate is MANDATORY
-        nearItManager.initLifecycleMethods(this);
+        NearItManager.setup(this, "NEARIT API KEY")
+                        .initLifecycleMethods(this);
+        // calling this method on the Application onCreate is absolutely MANDATORY
     }
+```
+and then in your app, you can access the NearItManager instance with 
+```java
+    NearItManager.getInstance(context)
 ```
 
 ## Integration guide
