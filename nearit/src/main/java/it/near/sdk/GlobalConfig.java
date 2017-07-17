@@ -2,6 +2,7 @@ package it.near.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -121,6 +122,7 @@ public class GlobalConfig {
         setLocalString(INSTALLATIONID, installationId);
     }
 
+    @Nullable
     public String getProfileId() {
         if (profileId == null) {
             profileId = getLocalString(PROFILE_ID);
@@ -137,6 +139,7 @@ public class GlobalConfig {
         editor.putString(name, value).apply();
     }
 
+    @Nullable
     private String getLocalString(String name) {
         return sp.getString(name, null);
     }
