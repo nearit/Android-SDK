@@ -27,6 +27,7 @@ import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
+import it.near.sdk.operation.ProfileUpdateListener;
 import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
@@ -70,7 +71,7 @@ import it.near.sdk.utils.NearUtils;
  * }
  * </pre>
  */
-public class NearItManager {
+public class NearItManager implements ProfileUpdateListener {
 
     @Nullable
     private volatile static NearItManager sInstance = null;
@@ -138,6 +139,7 @@ public class NearItManager {
     }
 
     private void firstRun() {
+        nearItUserProfile.setProfileUpdateListener(this);
         nearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
@@ -406,4 +408,9 @@ public class NearItManager {
         nearInstallation.refreshInstallation();
     }
 
+    @Override
+    public void onProfileUpdated() {
+        nearInstallation.refreshInstallation();
+        refreshConfigs();
+    }
 }

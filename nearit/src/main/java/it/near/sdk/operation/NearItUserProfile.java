@@ -36,14 +36,26 @@ public class NearItUserProfile {
 
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
+    private ProfileUpdateListener profileUpdateListener;
 
     public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
         this.globalConfig = globalConfig;
         this.httpClient = httpClient;
     }
 
+    public void setProfileUpdateListener(ProfileUpdateListener profileUpdateListener) {
+        this.profileUpdateListener = profileUpdateListener;
+    }
+
     public void setProfileId(String profileId) {
         globalConfig.setProfileId(profileId);
+        notifyListener();
+    }
+
+    private void notifyListener() {
+        if (profileUpdateListener != null) {
+            profileUpdateListener.onProfileUpdated();
+        }
     }
 
     @Nullable
