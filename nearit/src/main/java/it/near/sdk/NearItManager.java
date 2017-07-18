@@ -95,7 +95,7 @@ public class NearItManager implements ProfileUpdateListener {
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
     private NearInstallation nearInstallation;
     private NearItUserProfile nearItUserProfile;
-    private Application application;
+    private Context context;
 
     @NonNull
     public static NearItManager setup(@NonNull Application application, @NonNull String apiKey) {
@@ -124,23 +124,23 @@ public class NearItManager implements ProfileUpdateListener {
      */
     protected NearItManager(Context context) {
         String apiKey = ApiKeyConfig.readApiKey(context);
-        this.application = (Application) context.getApplicationContext();
+        this.context = context.getApplicationContext();
 
         this.globalConfig = new GlobalConfig(
-                GlobalConfig.buildSharedPreferences(application));
+                GlobalConfig.buildSharedPreferences(context));
 
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
-        nearInstallation = new NearInstallation(application, new NearAsyncHttpClient(application), globalConfig);
-        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(application));
+        nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context), globalConfig);
+        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context));
 
-        plugInSetup(application, globalConfig);
+        plugInSetup(context, globalConfig);
     }
 
     private void firstRun() {
         nearItUserProfile.setProfileUpdateListener(this);
-        nearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
+        nearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
                 NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
@@ -157,7 +157,7 @@ public class NearItManager implements ProfileUpdateListener {
         });
     }
 
-    private void plugInSetup(Application application, GlobalConfig globalConfig) {
+    private void plugInSetup(Context application, GlobalConfig globalConfig) {
         RecipesHistory recipesHistory = new RecipesHistory(
                 RecipesHistory.getSharedPreferences(application),
                 new CurrentTime()
@@ -198,7 +198,7 @@ public class NearItManager implements ProfileUpdateListener {
     }
 
     @NonNull
-    private TrackManager getTrackManager(Application application) {
+    private TrackManager getTrackManager(Context application) {
         return new TrackManager(
                 (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE),
                 new TrackSender(new NearAsyncHttpClient(application)),
@@ -244,11 +244,11 @@ public class NearItManager implements ProfileUpdateListener {
     }
 
     public void setUserData(String key, String value, UserDataNotifier listener) {
-        nearItUserProfile.setUserData(application, key, value, listener);
+        nearItUserProfile.setUserData(context, key, value, listener);
     }
 
     public void setBatchUserData(Map<String, String> valuesMap, UserDataNotifier listener) {
-        nearItUserProfile.setBatchUserData(application, valuesMap, listener);
+        nearItUserProfile.setBatchUserData(context, valuesMap, listener);
     }
 
     /**
@@ -327,7 +327,7 @@ public class NearItManager implements ProfileUpdateListener {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
         Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin);
-        application.sendOrderedBroadcast(resultIntent, null);
+        context.sendOrderedBroadcast(resultIntent, null);
     }
 
     public boolean sendEvent(Event event) {
@@ -366,7 +366,7 @@ public class NearItManager implements ProfileUpdateListener {
      */
     public void getCoupons(CouponListener listener) {
         try {
-            couponReaction.getCoupons(application, listener);
+            couponReaction.getCoupons(context, listener);
         } catch (UnsupportedEncodingException | MalformedURLException e) {
             listener.onCouponDownloadError("Error");
         }
