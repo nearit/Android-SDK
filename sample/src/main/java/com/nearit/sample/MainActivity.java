@@ -19,7 +19,6 @@ import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
-
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
@@ -30,6 +29,11 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
     private static final String TAG = "MainActivity";
     private static final int NEAR_PERMISSION_REQUEST = 1000;
+    /**
+     * This field key must be mapped on the CMS
+     */
+    private static final String KEY_FOR_AGE_FIELD = "age";
+
     Button button, setAgeButtom;
     EditText ageEditText;
 
@@ -44,22 +48,13 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
                 startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
             }
         });
+        
         ageEditText = (EditText) findViewById(R.id.ageEditText);
         setAgeButtom = (Button) findViewById(R.id.ageSetButton);
         setAgeButtom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NearItUserProfile.setUserData(MainActivity.this, "age", (ageEditText.getText().toString()), new UserDataNotifier() {
-                    @Override
-                    public void onDataCreated() {
-
-                    }
-
-                    @Override
-                    public void onDataNotSetError(String error) {
-
-                    }
-                });
+                profileMyUser();
             }
         });
 
@@ -104,6 +99,20 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
             NearUtils.parseCoreContents(intent, this);
         }
+    }
+
+    private void profileMyUser() {
+        NearItUserProfile.setUserData(this, KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
+            @Override
+            public void onDataCreated() {
+
+            }
+
+            @Override
+            public void onDataNotSetError(String error) {
+
+            }
+        });
     }
 
     @Override
