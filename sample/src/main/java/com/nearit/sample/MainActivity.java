@@ -105,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         NearItUserProfile.setUserData(this, KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
             @Override
             public void onDataCreated() {
-
+                Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
             }
 
             @Override
