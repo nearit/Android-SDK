@@ -105,6 +105,9 @@ public class NearItManager implements ProfileUpdateListener {
         return nearItManager;
     }
 
+    /**
+     * Double check pattern for getter. In your app, you should NEVER call this 
+     */
     @NonNull
     public static NearItManager getInstance(@NonNull Context context) {
         if (sInstance == null) {
@@ -117,11 +120,6 @@ public class NearItManager implements ProfileUpdateListener {
         return sInstance;
     }
 
-    /**
-     * Default constructor.
-     *
-     * @param context the context
-     */
     protected NearItManager(Context context) {
         String apiKey = ApiKeyConfig.readApiKey(context);
         this.context = context.getApplicationContext();
