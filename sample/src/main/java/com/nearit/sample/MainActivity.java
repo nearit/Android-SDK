@@ -34,21 +34,21 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
      */
     private static final String KEY_FOR_AGE_FIELD = "age";
 
-    Button button, setAgeButtom;
+    Button requestPermissionButton, setAgeButtom;
     EditText ageEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        requestPermissionButton = (Button) findViewById(R.id.button);
+        requestPermissionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
             }
         });
-        
+
         ageEditText = (EditText) findViewById(R.id.ageEditText);
         setAgeButtom = (Button) findViewById(R.id.ageSetButton);
         setAgeButtom.setOnClickListener(new View.OnClickListener() {
