@@ -13,4 +13,20 @@
         android:layout_centerInParent="true"
         android:text="Start radar" />
 
+    <EditText
+        android:id="@+id/ageEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:layout_below="@id/button" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ageSetButton"
+        android:layout_below="@id/ageEditText"
+        android:layout_centerHorizontal="true"
+        android:text="Set Age"/>
+
+
 </RelativeLayout>

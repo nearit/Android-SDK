@@ -9,9 +9,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
+import it.near.sdk.operation.NearItUserProfile;
+import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
@@ -27,7 +30,8 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
     private static final String TAG = "MainActivity";
     private static final int NEAR_PERMISSION_REQUEST = 1000;
-    Button button;
+    Button button, setAgeButtom;
+    EditText ageEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +42,24 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             @Override
             public void onClick(View view) {
                 startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
+            }
+        });
+        ageEditText = (EditText) findViewById(R.id.ageEditText);
+        setAgeButtom = (Button) findViewById(R.id.ageSetButton);
+        setAgeButtom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NearItUserProfile.setUserData(MainActivity.this, "age", (ageEditText.getText().toString()), new UserDataNotifier() {
+                    @Override
+                    public void onDataCreated() {
+
+                    }
+
+                    @Override
+                    public void onDataNotSetError(String error) {
+
+                    }
+                });
             }
         });
 
