@@ -55,7 +55,7 @@ Background recipes track themselves as notified. To track the tap event, use thi
 ```java
 nearItManager.getRecipesManager().sendTracking(recipeId, Recipe.ENGAGED_STATUS);
 ```
-You should be able to catch the event inside the activity that is started after interacting with the notification.
+You should be able to catch the event inside the activity that is started after interacting with the notification. If your using our notification building IntentService, that activity is your launcher activity.
 
 Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
 ```java

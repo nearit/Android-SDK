@@ -44,6 +44,7 @@ To enable our built-in background system notifications for both location and pus
     </intent-filter>
 </receiver>
 ```
+On the notification tap, your launcher activity will start.
 To learn how to deal with in-app content once the user taps on the notification, see this [section](handle-content.md).
 You can use your own receiver for custom notification handling. See this [section](custom-bkg-notification.md).
 
