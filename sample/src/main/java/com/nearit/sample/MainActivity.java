@@ -9,15 +9,17 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
+import it.near.sdk.operation.NearItUserProfile;
+import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
-
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
@@ -28,21 +30,37 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
     private static final String TAG = "MainActivity";
     private static final int NEAR_PERMISSION_REQUEST = 1000;
-    Button button;
+    /**
+     * This field key must be mapped on the CMS
+     */
+    private static final String KEY_FOR_AGE_FIELD = "age";
+
+    Button requestPermissionButton, setAgeButtom;
+    EditText ageEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
+        requestPermissionButton = (Button) findViewById(R.id.button);
+        requestPermissionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
             }
         });
 
+        ageEditText = (EditText) findViewById(R.id.ageEditText);
+        setAgeButtom = (Button) findViewById(R.id.ageSetButton);
+        setAgeButtom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                profileMyUser();
+            }
+        });
+
         NearItManager.getInstance(this).addProximityListener(this);
+
     }
 
     @Override
@@ -83,6 +101,20 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
             NearUtils.parseCoreContents(intent, this);
         }
+    }
+
+    private void profileMyUser() {
+        NearItManager.getInstance(this).setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
+            @Override
+            public void onDataCreated() {
+                Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onDataNotSetError(String error) {
+
+            }
+        });
     }
 
     @Override
