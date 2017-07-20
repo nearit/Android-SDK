@@ -41,20 +41,19 @@ dependencies {
 }
 ```
 
-In the *onCreate* method of your Application class, initialize a *NearItManager* object, passing the API key as a String.
+You *MUST* initialize the library in the *onCreate* method, passing the API key as a String.
 
 ```java
- @Override
-    public void onCreate() {
-        super.onCreate();
+@Override
+public void onCreate() {
+    super.onCreate();
 
-        NearItManager.setup(this, "NEARIT API KEY")
-                        .initLifecycleMethods(this);
-        // calling this method on the Application onCreate is absolutely MANDATORY
-    }
+    NearItManager.setup(this, "NEARIT API KEY")
+                 .initLifecycleMethods(this);
+    // calling this method on the Application onCreate is absolutely MANDATORY
+}
 ```
-
-Calling this method in the application onCreate callback is MANDATORY. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to trigger the *nearItManager* creation and *initLifecycleMethods* call.
+Calling this method in the application onCreate callback is *MANDATORY*. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to initialize the library and call *initLifecycleMethods*.
 In your app, you can access the NearItManager instance with 
 ```java
     NearItManager.getInstance(context)
