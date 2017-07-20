@@ -257,7 +257,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
      */
     public void stopGeofencing(List<String> idsToremove) {
         if (idsToremove == null || idsToremove.size() == 0) return;
-        if (!mGoogleApiClient.isConnected()) return;
+        if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) return;
 
         LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, idsToremove)
                 .setResultCallback(this);
