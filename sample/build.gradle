@@ -24,7 +24,7 @@ android {
         config {
         }
     }
-    compileSdkVersion 26
+    compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.nearit.sample"
