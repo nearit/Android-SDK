@@ -36,7 +36,7 @@ public class NearInstallation {
     private static final String TAG = "NearInstallation";
     private static final String PROFILE_ID = "profile_id";
 
-    private static NearInstallationRequestQueue requestQueue;
+    private NearInstallationRequestQueue requestQueue;
     private Context context;
 
     private final GlobalConfig globalConfig;
