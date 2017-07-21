@@ -24,12 +24,12 @@ android {
         config {
         }
     }
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
     defaultConfig {
         applicationId "com.nearit.sample"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -57,8 +57,7 @@ dependencies {
 
     // compile 'it.near.sdk:nearit:2.1.27'
     compile project(':nearit')
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.google.firebase:firebase-core:10.0.1'
+    compile 'com.android.support:appcompat-v7:24.2.1'
     
     testCompile 'junit:junit:4.12'
 }
