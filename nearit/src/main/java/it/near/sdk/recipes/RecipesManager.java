@@ -3,7 +3,6 @@ package it.near.sdk.recipes;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -76,15 +75,6 @@ public class RecipesManager implements RecipeEvaluator {
         }
         setUpMorpheusParser();
         refreshConfig();
-    }
-
-    public static void setInstance(RecipesManager instance) {
-        RecipesManager.instance = instance;
-    }
-
-    @Nullable
-    public static RecipesManager getInstance() {
-        return instance;
     }
 
     /**

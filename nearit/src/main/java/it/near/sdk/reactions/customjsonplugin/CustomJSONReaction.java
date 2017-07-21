@@ -16,8 +16,8 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
 
     public static final String PLUGIN_NAME = "json-sender";
     private static final String PREFS_NAME = "NearJSON";
-    private static final String SHOW_JSON_ACTION = "deliver_json";
-    private static final String JSON_CONTENT_RES = "json_contents";
+    static final String SHOW_JSON_ACTION = "deliver_json";
+    static final String JSON_CONTENT_RES = "json_contents";
     private static final String TAG = "CustomJSONReaction";
     private static final String PLUGIN_ROOT_PATH = "json-sender";
 

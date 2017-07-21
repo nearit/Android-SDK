@@ -37,22 +37,27 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.1.30'
+    compile 'it.near.sdk:nearit:2.1.31'
 }
 ```
 
-In the *onCreate* method of your Application class, initialize a *NearItManager* object, passing the API key as a String.
+You *MUST* initialize the library in the *onCreate* method, passing the API key as a String.
 
 ```java
- @Override
-    public void onCreate() {
-        super.onCreate();
-        nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
-        // calling this method in the Application onCreate is MANDATORY
-        nearItManager.initLifecycleMethods(this);
-    }
+@Override
+public void onCreate() {
+    super.onCreate();
+
+    NearItManager.init(this, "NEARIT API KEY");
+    // calling this method on the Application onCreate is absolutely MANDATORY
+}
 ```
-Calling this method in the application onCreate callback is MANDATORY. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to trigger the *nearItManager* creation and *initLifecycleMethods* call.
+Calling this method in the application onCreate callback is *MANDATORY*. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to initialize the library and call *initLifecycleMethods*.
+In your app, you can access the NearItManager instance with 
+```java
+    NearItManager.getInstance(context)
+```
+
 
 ## Integration guide
 

@@ -12,8 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
-import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -58,7 +58,8 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             }
         });
 
-        MyApplication.getNearItManager().addProximityListener(this);
+        NearItManager.getInstance(this).addProximityListener(this);
+
     }
 
     @Override
@@ -66,14 +67,14 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEAR_PERMISSION_REQUEST &&
                 resultCode == Activity.RESULT_OK) {
-            MyApplication.getNearItManager().startRadar();
+            NearItManager.getInstance(this).startRadar();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        MyApplication.getNearItManager().removeProximityListener(this);
+        NearItManager.getInstance(this).removeProximityListener(this);
     }
 
     @Override
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             // we got a NearIT intent
 
             // track it as engaged, since we tapped on it
-            MyApplication.getNearItManager().sendTracking(
+            NearItManager.getInstance(this).sendTracking(
                     intent.getStringExtra(NearItIntentConstants.RECIPE_ID),
                     Recipe.ENGAGED_STATUS
             );
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     private void profileMyUser() {
-        NearItUserProfile.setUserData(this, KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
+        NearItManager.getInstance(this).setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
             @Override
             public void onDataCreated() {
                 Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
@@ -121,29 +122,29 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     @Override
-    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId) {
+    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a notification with content", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId) {
+    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a coupon", Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(notification.getSerial()).create().show();
     }
 
     @Override
-    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId) {
+    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a custom json", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId) {
+    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a simple notification", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId) {
+    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage) {
         Toast.makeText(this, "You received a feedback request", Toast.LENGTH_SHORT).show();
     }
 

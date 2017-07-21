@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -24,7 +25,7 @@ public class ForegroundActivity extends AppCompatActivity implements ProximityLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_foreground);
 
-        MyApplication.getNearItManager().addProximityListener(this);
+        NearItManager.getInstance(this).addProximityListener(this);
 
     }
 
@@ -37,29 +38,28 @@ public class ForegroundActivity extends AppCompatActivity implements ProximityLi
 
     }
 
-
     @Override
-    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId) {
+    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage) {
 
     }
 
     @Override
-    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId) {
+    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage) {
 
     }
 
     @Override
-    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId) {
+    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage) {
 
     }
 
     @Override
-    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId) {
+    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage) {
 
     }
 
     @Override
-    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId) {
+    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage) {
 
     }
 }

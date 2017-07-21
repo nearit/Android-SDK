@@ -14,11 +14,11 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 public class FeedbackEvent extends Event {
     public static final String PLUGIN_NAME = "FeedbackEvent";
-    private static final String RATING = "rating";
-    private static final String RECIPE_ID = "recipe_id";
-    private static final String COMMENT = "comment";
-    private static final String PROFILE_ID = "profile_id";
-    private static final String RES_TYPE = "answers";
+    static final String RATING = "rating";
+    static final String RECIPE_ID = "recipe_id";
+    static final String COMMENT = "comment";
+    static final String PROFILE_ID = "profile_id";
+    static final String RES_TYPE = "answers";
 
     private String feedbackId;
     private int rating = -1;

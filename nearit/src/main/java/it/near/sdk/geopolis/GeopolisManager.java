@@ -64,7 +64,7 @@ public class GeopolisManager {
     public static final String GF_RANGE_IMMEDIATE_SUFFIX = "RANGE_IMMEDIATE";
     public static final String NODE_ID = "identifier";
 
-    private final Application application;
+    private final Context context;
     private final RecipeEvaluator recipeEvaluator;
     private final GeoFenceMonitor geofenceMonitor;
     private final GlobalConfig globalConfig;
@@ -76,19 +76,19 @@ public class GeopolisManager {
 
     private final NearAsyncHttpClient httpClient;
 
-    public GeopolisManager(Application application, RecipeEvaluator recipeEvaluator, GlobalConfig globalConfig, TrackManager trackManager) {
-        this.application = application;
+    public GeopolisManager(Context context, RecipeEvaluator recipeEvaluator, GlobalConfig globalConfig, TrackManager trackManager) {
+        this.context = context;
         this.recipeEvaluator = recipeEvaluator;
         this.globalConfig = globalConfig;
 
-        SharedPreferences nodesManagerSP = NodesManager.getSharedPreferences(application);
+        SharedPreferences nodesManagerSP = NodesManager.getSharedPreferences(context);
         this.nodesManager = new NodesManager(nodesManagerSP);
 
-        this.altBeaconMonitor = new AltBeaconMonitor(application, nodesManager);
-        if (isRadarStarted(application)) {
+        this.altBeaconMonitor = new AltBeaconMonitor(context, nodesManager);
+        if (isRadarStarted(context)) {
             altBeaconMonitor.startRadar();
         }
-        this.geofenceMonitor = new GeoFenceMonitor(application);
+        this.geofenceMonitor = new GeoFenceMonitor(context);
 
         this.geopolisTrackingsManager = new GeopolisTrackingsManager(
                 trackManager,
@@ -99,17 +99,17 @@ public class GeopolisManager {
         registerProximityReceiver();
         registerResetReceiver();
 
-        String PACK_NAME = this.application.getApplicationContext().getPackageName();
+        String PACK_NAME = this.context.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
-        sp = this.application.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        sp = this.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        httpClient = new NearAsyncHttpClient(application);
+        httpClient = new NearAsyncHttpClient(context);
         refreshConfig();
     }
 
     private void registerProximityReceiver() {
         IntentFilter regionFilter = new IntentFilter();
-        String packageName = application.getPackageName();
+        String packageName = context.getPackageName();
         regionFilter.addAction(packageName + "." + GF_ENTRY_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_EXIT_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + BT_ENTRY_ACTION_SUFFIX);
@@ -117,14 +117,14 @@ public class GeopolisManager {
         regionFilter.addAction(packageName + "." + GF_RANGE_FAR_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_RANGE_NEAR_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_RANGE_IMMEDIATE_SUFFIX);
-        application.registerReceiver(regionEventsReceiver, regionFilter);
+        context.registerReceiver(regionEventsReceiver, regionFilter);
     }
 
     private void registerResetReceiver() {
         IntentFilter resetFilter = new IntentFilter();
-        String packageName = application.getPackageName();
+        String packageName = context.getPackageName();
         resetFilter.addAction(packageName + "." + GeoFenceSystemEventsReceiver.RESET_MONITOR_ACTION_SUFFIX);
-        application.registerReceiver(resetEventReceiver, resetFilter);
+        context.registerReceiver(resetEventReceiver, resetFilter);
     }
 
     /**
@@ -167,7 +167,7 @@ public class GeopolisManager {
     }
 
     public void startRadar() {
-        if (isRadarStarted(application)) return;
+        if (isRadarStarted(context)) return;
         setRadarState(true);
         List<Node> nodes = nodesManager.getNodes();
         // altBeaconMonitor.setUpMonitor(nodes);
@@ -189,7 +189,7 @@ public class GeopolisManager {
             NearLog.d(TAG, "receiverEvent");
             if (!intent.hasExtra(NODE_ID)) return;
             // trim the package name
-            String packageName = application.getPackageName();
+            String packageName = GeopolisManager.this.context.getPackageName();
             String action = intent.getAction().replace(packageName + ".", "");
             Node node = nodesManager.nodeFromId(intent.getStringExtra(NODE_ID));
             if (node == null) return;

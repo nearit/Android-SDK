@@ -9,18 +9,19 @@ env:
     - ADB_INSTALL_TIMEOUT=10
 android:
   components:
-  - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
-  - build-tools-25.0.2
-  - platform-tools
-  - android-25
-  - extra-google-m2repository
-  - extra-android-m2repository
-  - sys-img-armeabi-v7a-android-21
+    - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
+    - build-tools-25.0.2
+    - platform-tools
+    - android-25
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-21
+  licenses:
+    - 'android-sdk-preview-license-52d11cd2'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 before_install:
   - export TZ=Australia/Canberra
-  - mkdir "$ANDROID_HOME/licenses" || true
-  - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
-  - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
 script:
   - ./gradlew clean check connectedCheck
 before_script:

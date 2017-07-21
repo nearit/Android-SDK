@@ -36,45 +36,37 @@ public class NearInstallation {
     private static final String TAG = "NearInstallation";
     private static final String PROFILE_ID = "profile_id";
 
-    private static NearInstallationRequestQueue requestQueue;
+    private NearInstallationRequestQueue requestQueue;
+    private Context context;
+
+    private final GlobalConfig globalConfig;
+
+    public NearInstallation(Context context, NearAsyncHttpClient httpClient, GlobalConfig globalConfig) {
+        this.context = context;
+        this.globalConfig = globalConfig;
+        requestQueue = new NearInstallationRequestQueue(httpClient, globalConfig);
+    }
 
     /**
      * Registers a new installation to the server. It uses a POST request if an installationId is not present (new installation),
      * or a PUT if an installationId is already present.
      * The installationId is a back-end concept and does not correspond with the device token.
      *
-     * @param context the app context
      */
-    public static void registerInstallation(final Context context) {
+    public void refreshInstallation() {
         // get the local installation id
-        String installationId = GlobalConfig.getInstance(context).getInstallationId();
+        String installationId = globalConfig.getInstallationId();
         try {
             // build a JSON api request body with or without the id, depending whether the installID is null or not
-            String installBody = getInstallationBody(context, installationId);
+            String installBody = getInstallationBody(context, globalConfig, installationId);
             // with the same criteria, we decide the type of request to do
-            getRequestQueue(context).registerInstallation(installBody);
+            requestQueue.registerInstallation(installBody);
         } catch (JSONException e) {
             NearLog.d(TAG, "Unable to send installation data");
         }
     }
 
-    private static NearInstallationRequestQueue getRequestQueue(Context context) {
-        if (requestQueue == null) {
-            NearAsyncHttpClient httpClient = new NearAsyncHttpClient(context);
-            requestQueue = new NearInstallationRequestQueue(httpClient, GlobalConfig.getInstance(context));
-        }
-        return requestQueue;
-    }
-
-    /**
-     * Return a JSONapi formatted installation object with the proper attributes.
-     *
-     * @param context the app context.
-     * @param id      installation id. It can be null and in that case will not be set.
-     * @return The JSONapi string of the installation object.
-     * @throws JSONException
-     */
-    private static String getInstallationBody(Context context, String id) throws JSONException {
+    private String getInstallationBody(Context context, GlobalConfig globalConfig, String id) throws JSONException {
         HashMap<String, Object> attributeMap = new HashMap<>();
         // Set platform to "android"
         attributeMap.put(PLATFORM, ANDROID);
@@ -83,11 +75,11 @@ public class NearInstallation {
         // set SDK version
         attributeMap.put(SDK_VERSION, it.near.sdk.BuildConfig.VERSION_NAME);
         // Set device token (for GCM)
-        attributeMap.put(DEVICE_IDENTIFIER, getDeviceToken(context));
+        attributeMap.put(DEVICE_IDENTIFIER, getDeviceToken(globalConfig));
         // Set app ID (as defined by our APIs)
-        attributeMap.put(APP_ID, GlobalConfig.getInstance(context).getAppId());
+        attributeMap.put(APP_ID, globalConfig.getAppId());
         // Set the profile if I have it.
-        attributeMap.put(PROFILE_ID, GlobalConfig.getInstance(context).getProfileId());
+        attributeMap.put(PROFILE_ID, globalConfig.getProfileId());
         // Set bluetooth availability
         attributeMap.put(BLUETOOTH, getBluetoothStatus());
         // Set location permission
@@ -112,14 +104,14 @@ public class NearInstallation {
         return false;
     }
 
-    private static String getDeviceToken(Context context) {
-        String token = GlobalConfig.getInstance(context).getDeviceToken();
+    private static String getDeviceToken(GlobalConfig globalConfig) {
+        String token = globalConfig.getDeviceToken();
         if (token == null) {
             try {
                 String firebaseToken = FirebaseInstanceId.getInstance().getToken();
                 if (firebaseToken != null) {
                     token = firebaseToken;
-                    GlobalConfig.getInstance(context).setDeviceToken(token);
+                    globalConfig.setDeviceToken(token);
                 }
             } catch (IllegalStateException e) {
                 NearLog.e(TAG, "We can't get your firebase instance. Near push notification might not work");

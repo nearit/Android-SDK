@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-
 import org.json.JSONException;
 
 import java.util.Calendar;
@@ -14,8 +13,8 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearNotification;
 
@@ -78,7 +77,7 @@ public class NearItIntentService extends IntentService {
     protected void sendNotifiedTracking(@NonNull Intent intent) {
         String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
         try {
-            RecipesManager recipesManager = RecipesManager.getInstance();
+            RecipesManager recipesManager = NearItManager.getInstance(this).getRecipesManager();
             if (recipesManager != null) {
                 recipesManager.sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
             }
@@ -88,16 +87,17 @@ public class NearItIntentService extends IntentService {
     }
 
     private int imgResFromIntent(@NonNull Intent intent) {
+        GlobalConfig globalConfig = NearItManager.getInstance(this).globalConfig;
         if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)) {
-            return fetchPushNotification();
+            return fetchPushNotification(globalConfig);
         } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)) {
-            return fetchProximityNotification();
+            return fetchProximityNotification(globalConfig);
         } else
-            return fetchProximityNotification();
+            return fetchProximityNotification(globalConfig);
     }
 
-    private int fetchProximityNotification() {
-        int imgRes = GlobalConfig.getInstance(this).getProximityNotificationIcon();
+    private int fetchProximityNotification(GlobalConfig globalConfig) {
+        int imgRes = globalConfig.getProximityNotificationIcon();
         if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
             return imgRes;
         } else {
@@ -105,8 +105,8 @@ public class NearItIntentService extends IntentService {
         }
     }
 
-    private int fetchPushNotification() {
-        int imgRes = GlobalConfig.getInstance(this).getPushNotificationIcon();
+    private int fetchPushNotification(GlobalConfig globalConfig) {
+        int imgRes = globalConfig.getPushNotificationIcon();
         if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
             return imgRes;
         } else {

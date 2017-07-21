@@ -3,11 +3,11 @@ package it.near.sdk;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import org.altbeacon.beacon.BeaconManager;
 import org.json.JSONException;
@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.near.sdk.communication.NearAsyncHttpClient;
@@ -25,6 +26,8 @@ import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
+import it.near.sdk.operation.ProfileUpdateListener;
+import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
@@ -46,10 +49,8 @@ import it.near.sdk.recipes.validation.AdvScheduleValidator;
 import it.near.sdk.recipes.validation.CooldownValidator;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.recipes.validation.Validator;
-import it.near.sdk.trackings.TrackCache;
 import it.near.sdk.trackings.TrackManager;
-import it.near.sdk.trackings.TrackSender;
-import it.near.sdk.utils.ApplicationVisibility;
+import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearUtils;
 
@@ -66,12 +67,20 @@ import it.near.sdk.utils.NearUtils;
  * }
  * </pre>
  */
-public class NearItManager {
+public class NearItManager implements ProfileUpdateListener {
+
+    @Nullable
+    private volatile static NearItManager sInstance = null;
+
+    /**
+     * Private lock object for singleton initialization protecting against denial-of-service attack.
+     */
+    private static final Object SINGLETON_LOCK = new Object();
 
     private static final String TAG = "NearItManager";
     public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
     public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
-    private final GlobalConfig globalConfig;
+    public final GlobalConfig globalConfig;
     private GeopolisManager geopolis;
     private RecipesManager recipesManager;
     private ContentReaction contentNotification;
@@ -80,25 +89,62 @@ public class NearItManager {
     private CustomJSONReaction customJSON;
     private FeedbackReaction feedback;
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
-    private Application application;
+    private NearInstallation nearInstallation;
+    private NearItUserProfile nearItUserProfile;
+    private Context context;
+
 
     /**
-     * Default constructor.
-     *
-     * @param context the context
-     * @param apiKey  the apiKey string
+     * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
      */
-    public NearItManager(Context context, String apiKey) {
-        this.application = (Application) context.getApplicationContext();
+    @NonNull
+    public static NearItManager init(@NonNull Application application, @NonNull String apiKey) {
+        // store api key
+        ApiKeyConfig.saveApiKey(application, apiKey);
+        // build instance
+        NearItManager nearItManager = getInstance(application);
+        // init lifecycle method
+        nearItManager.initLifecycleMethods(application);
+        // first run: this is executed only after the setup.
+        // usually to inject the nearit manager instance in object that needs it, it couldn't been done inside the nearItManager constructor.
+        nearItManager.firstRun();
+        return nearItManager;
+    }
 
-        this.globalConfig = GlobalConfig.getInstance(application);
+    /**
+     * Double check pattern for getter.
+     */
+    @NonNull
+    public static NearItManager getInstance(@NonNull Context context) {
+        if (sInstance == null) {
+            synchronized(SINGLETON_LOCK) {
+                if (sInstance == null) {
+                    sInstance = new NearItManager(context);
+                }
+            }
+        }
+        return sInstance;
+    }
+
+    protected NearItManager(Context context) {
+        String apiKey = ApiKeyConfig.readApiKey(context);
+        this.context = context.getApplicationContext();
+
+        this.globalConfig = new GlobalConfig(
+                GlobalConfig.buildSharedPreferences(context));
 
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
-        plugInSetup(application, globalConfig);
+        nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context), globalConfig);
+        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context));
 
-        NearItUserProfile.createNewProfile(application, new ProfileCreationListener() {
+        plugInSetup(context, globalConfig);
+    }
+
+    private void firstRun() {
+        nearItUserProfile.setProfileUpdateListener(this);
+        nearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
                 NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
@@ -110,18 +156,18 @@ public class NearItManager {
                 NearLog.d(TAG, "Error creating profile. Profile not present");
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
-                NearInstallation.registerInstallation(application);
+                updateInstallation();
             }
         });
     }
 
-    private void plugInSetup(Application application, GlobalConfig globalConfig) {
+    private void plugInSetup(Context application, GlobalConfig globalConfig) {
         RecipesHistory recipesHistory = new RecipesHistory(
                 RecipesHistory.getSharedPreferences(application),
                 new CurrentTime()
         );
         EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
-        TrackManager trackManager = getTrackManager(application);
+        TrackManager trackManager = TrackManager.obtain(application);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
         validators.add(new AdvScheduleValidator(new CurrentTime()));
@@ -135,7 +181,6 @@ public class NearItManager {
                 evaluationBodyBuilder,
                 recipeTrackSender,
                 new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
-        RecipesManager.setInstance(recipesManager);
 
         geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
@@ -153,15 +198,11 @@ public class NearItManager {
 
         feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
+
     }
 
-    @NonNull
-    private TrackManager getTrackManager(Application application) {
-        return new TrackManager(
-                (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE),
-                new TrackSender(new NearAsyncHttpClient(application)),
-                new TrackCache(TrackCache.getSharedPreferences(application)),
-                new ApplicationVisibility());
+    private void initLifecycleMethods(Application application) {
+        geopolis.initLifecycle(application);
     }
 
     /**
@@ -181,6 +222,28 @@ public class NearItManager {
      */
     public static boolean verifyBluetooth(Context context) throws RuntimeException {
         return BeaconManager.getInstanceForApplication(context.getApplicationContext()).checkAvailability();
+    }
+
+    public void setProfileId(String profileId) {
+        nearItUserProfile.setProfileId(profileId);
+        updateInstallation();
+    }
+
+    public void resetProfileId() {
+        setProfileId(null);
+    }
+
+    @Nullable
+    public String getProfileId() {
+        return nearItUserProfile.getProfileId();
+    }
+
+    public void setUserData(String key, String value, UserDataNotifier listener) {
+        nearItUserProfile.setUserData(context, key, value, listener);
+    }
+
+    public void setBatchUserData(Map<String, String> valuesMap, UserDataNotifier listener) {
+        nearItUserProfile.setBatchUserData(context, valuesMap, listener);
     }
 
     /**
@@ -228,10 +291,6 @@ public class NearItManager {
         feedback.refreshConfig();
     }
 
-    public void initLifecycleMethods(Application application) {
-        geopolis.initLifecycle(application);
-    }
-
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
         public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
@@ -263,7 +322,7 @@ public class NearItManager {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
         Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin);
-        application.sendOrderedBroadcast(resultIntent, null);
+        context.sendOrderedBroadcast(resultIntent, null);
     }
 
     public boolean sendEvent(Event event) {
@@ -302,7 +361,7 @@ public class NearItManager {
      */
     public void getCoupons(CouponListener listener) {
         try {
-            couponReaction.getCoupons(application, listener);
+            couponReaction.getCoupons(context, listener);
         } catch (UnsupportedEncodingException | MalformedURLException e) {
             listener.onCouponDownloadError("Error");
         }
@@ -340,4 +399,13 @@ public class NearItManager {
         }
     }
 
+    public void updateInstallation() {
+        nearInstallation.refreshInstallation();
+    }
+
+    @Override
+    public void onProfileUpdated() {
+        nearInstallation.refreshInstallation();
+        refreshConfigs();
+    }
 }

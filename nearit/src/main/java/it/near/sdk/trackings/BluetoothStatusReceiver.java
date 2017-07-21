@@ -6,7 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 
 
-import it.near.sdk.communication.NearInstallation;
+import it.near.sdk.NearItManager;
 import it.near.sdk.logging.NearLog;
 
 public class BluetoothStatusReceiver extends BroadcastReceiver {
@@ -15,13 +15,14 @@ public class BluetoothStatusReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        NearItManager nearItManager = NearItManager.getInstance(context);
         if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
             if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
                 NearLog.d(TAG, "BT turned off");
-                NearInstallation.registerInstallation(context);
+                nearItManager.updateInstallation();
             } else if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_ON) {
                 NearLog.d(TAG, "BT turned on");
-                NearInstallation.registerInstallation(context);
+                nearItManager.updateInstallation();
             }
         }
     }

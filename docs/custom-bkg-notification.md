@@ -46,15 +46,17 @@ protected void onHandleIntent(Intent intent) {
   To notify it to the user with a system notification, call 
   super.sendSimpleNotification(intent);
   this method also sends the proper tracking information to our servers.
+  
+  
   If you want to completely customize the user experience, you should implement your logic here.
-  You may use this method:
+  You may want to use this method:
   NearUtils.parseCoreContents(intent, coreContentListener); // to get casted content in the listener callback methods
 
   IMPORTANT
   If you are overriding the default notification mechanism, remember to track the recipe as notified with:
   String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
   try {
-      nearItManager.getRecipesManager().sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
+      NearItManager.getInstance(this).sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
   } catch (JSONException e) {
       
   }

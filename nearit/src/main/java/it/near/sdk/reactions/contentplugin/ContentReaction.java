@@ -24,9 +24,12 @@ public class ContentReaction extends CoreReaction<Content> {
     private static final String INCLUDE_RESOURCES = "images,audio,upload";
     private static final String CONTENT_NOTIFICATION_PATH = "content-notification";
     private static final String CONTENT_NOTIFICATION_RESOURCE = "contents";
-    private static final String SHOW_CONTENT_ACTION = "show_content";
-    private static final String TAG = "ContentReaction";
+    static final String SHOW_CONTENT_ACTION = "show_content";
     private static final String PREFS_NAME = "NearContentNot";
+    public static final String RES_CONTENTS = "contents";
+    public static final String RES_IMAGES = "images";
+    public static final String RES_AUDIOS = "audios";
+    public static final String RES_UPLOADS = "uploads";
 
     ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
         super(cacher, httpClient, nearNotifier, Content.class);
@@ -79,10 +82,10 @@ public class ContentReaction extends CoreReaction<Content> {
     @Override
     protected HashMap<String, Class> getModelHashMap() {
         HashMap<String, Class> map = new HashMap<>();
-        map.put("contents", Content.class);
-        map.put("images", Image.class);
-        map.put("audios", Audio.class);
-        map.put("uploads", Upload.class);
+        map.put(RES_CONTENTS, Content.class);
+        map.put(RES_IMAGES, Image.class);
+        map.put(RES_AUDIOS, Audio.class);
+        map.put(RES_UPLOADS, Upload.class);
         return map;
     }
 

@@ -8,6 +8,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.novoda:build-properties-plugin:1.2.1'
+        classpath 'de.mobilej.unmock:UnMockPlugin:0.6.2'
     }
 }
 
@@ -19,6 +20,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.novoda.build-properties'
+apply plugin: 'de.mobilej.unmock'
 
 /*
  * Gets the version name from the latest Git tag
@@ -142,6 +144,10 @@ task injectVersionsInMarkdowns(type: Copy){
         filter{ it.replaceAll('@@playServicesNumber@@', playServicesVersion)}
     }
     into 'docs'
+}
+
+unMock {
+    keep "android.net.Uri"
 }
 
 dependencies {

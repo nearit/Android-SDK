@@ -2,6 +2,7 @@ package it.near.sdk;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -15,44 +16,34 @@ import it.near.sdk.logging.NearLog;
 public class GlobalConfig {
 
     public static final int DEFAULT_EMPTY_NOTIFICATION = 0;
-    private final String KEY_PROXIMITY_ICON = "proximity_icon_key";
-    private final String KEY_PUSH_ICON = "push_icon_key";
+    static final String KEY_PROXIMITY_ICON = "proximity_icon_key";
+    static final String KEY_PUSH_ICON = "push_icon_key";
 
-    private static GlobalConfig mInstance = null;
-    private Context mContext;
     // ---------- Value string and string keys ----------
-    private final String APIKEY = "apikey";
+    static final String APIKEY = "apikey";
     private String apiKey;
-    private final String APPID = "appid";
+    static final String APPID = "appid";
     private String appId;
-    private final String DEVICETOKEN = "devicetoken";
+    static final String DEVICETOKEN = "devicetoken";
     private String deviceToken;
-    private static final String INSTALLATIONID = "installationid";
+    static final String INSTALLATIONID = "installationid";
     private String installationId;
-    private static final String PROFILE_ID = "profileId";
+    static final String PROFILE_ID = "profileId";
     private String profileId;
     private int proximityNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
     private int pushNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
     // ---------- suffix for sharedpreferences ----------
-    private String PREFS_NAME = "NearConfig";
+    private static final String PREFS_NAME = "NearConfig";
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
-    public GlobalConfig(Context mContext) {
-        this.mContext = mContext;
-        setUpSharedPreferences();
+    public GlobalConfig(SharedPreferences sp) {
+        this.sp = sp;
+        this.editor = sp.edit();
     }
 
-    private void setUpSharedPreferences() {
-        sp = mContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        editor = sp.edit();
-    }
-
-    public static GlobalConfig getInstance(Context context) {
-        if (mInstance == null) {
-            mInstance = new GlobalConfig(context);
-        }
-        return mInstance;
+    static SharedPreferences buildSharedPreferences(Context context) {
+        return context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
     public int getProximityNotificationIcon() {
@@ -76,12 +67,15 @@ public class GlobalConfig {
 
     public void setPushNotificationIcon(int imgRes) {
         pushNotificationIconRes = imgRes;
-        editor.putInt(KEY_PUSH_ICON, imgRes);
+        editor.putInt(KEY_PUSH_ICON, imgRes).apply();
     }
 
     public String getApiKey() throws AuthenticationException {
         if (apiKey == null) {
             apiKey = getLocalString(APIKEY);
+            if (apiKey == null) {
+                throw new AuthenticationException();
+            }
         }
         return apiKey;
     }
@@ -128,6 +122,7 @@ public class GlobalConfig {
         setLocalString(INSTALLATIONID, installationId);
     }
 
+    @Nullable
     public String getProfileId() {
         if (profileId == null) {
             profileId = getLocalString(PROFILE_ID);
@@ -144,6 +139,7 @@ public class GlobalConfig {
         editor.putString(name, value).apply();
     }
 
+    @Nullable
     private String getLocalString(String name) {
         return sp.getString(name, null);
     }

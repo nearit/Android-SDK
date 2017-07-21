@@ -52,30 +52,30 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     private final BeaconManager beaconManager;
     private final NodesManager nodesManager;
-    private final Application mApplication;
+    private final Context context;
     private RegionBootstrap regionBootstrap;
     private final String prefsNameSuffix = "AltMonitor";
     private final SharedPreferences sp;
     private List<Region> regions;
     private Map<Region, BeaconDynamicRadar> rangingRadars;
 
-    public AltBeaconMonitor(Application application, NodesManager nodesManager) {
+    public AltBeaconMonitor(Context context, NodesManager nodesManager) {
         NearLog.d(TAG, "Altbeacon started");
-        this.mApplication = application;
+        this.context = context;
         this.nodesManager = nodesManager;
         this.rangingRadars = new HashMap<>();
         this.regions = new ArrayList<>();
 
-        beaconManager = BeaconManager.getInstanceForApplication(application.getApplicationContext());
+        beaconManager = BeaconManager.getInstanceForApplication(context);
         beaconManager.getBeaconParsers().clear();
         // set beacon layout for iBeacons
         beaconManager.getBeaconParsers().add(new BeaconParser().
                 setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         BeaconManager.setDebug(false);
 
-        String PACK_NAME = application.getApplicationContext().getPackageName();
+        String PACK_NAME = context.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + prefsNameSuffix;
-        sp = application.getSharedPreferences(PREFS_NAME, 0);
+        sp = context.getSharedPreferences(PREFS_NAME, 0);
 
         addAltRegions(loadRegions());
     }
@@ -234,17 +234,17 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     @Override
     public Context getApplicationContext() {
-        return mApplication.getApplicationContext();
+        return context.getApplicationContext();
     }
 
     @Override
     public void unbindService(ServiceConnection serviceConnection) {
-        mApplication.unbindService(serviceConnection);
+        context.unbindService(serviceConnection);
     }
 
     @Override
     public boolean bindService(Intent intent, ServiceConnection serviceConnection, int i) {
-        return mApplication.bindService(intent, serviceConnection, i);
+        return context.bindService(intent, serviceConnection, i);
     }
 
     private void resetRanging() {
@@ -304,10 +304,10 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private void notifyEventOnBeaconRegion(Region region, String eventActionSuffix) {
         NearLog.d(TAG, "Region event: " + eventActionSuffix + " on region: " + region.toString());
         Intent intent = new Intent();
-        String packageName = mApplication.getPackageName();
+        String packageName = context.getPackageName();
         intent.setAction(packageName + "." + eventActionSuffix);
         intent.putExtra(GeopolisManager.NODE_ID, region.getUniqueId());
-        mApplication.sendBroadcast(intent);
+        context.sendBroadcast(intent);
     }
 
     @Override
@@ -363,7 +363,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         beaconManager.setBackgroundMode(false);
         // we exit when the region is already ranged, to avoid duplicating regions
         if (beaconManager.getRangedRegions().contains(region)) return;
-        rangingRadars.put(region, new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region)));
+        rangingRadars.put(region, new BeaconDynamicRadar(context, rangingBeaconsFor(region)));
         beaconManager.startRangingBeaconsInRegion(region);
     }
 
@@ -392,7 +392,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
         BeaconDynamicRadar radar = rangingRadars.get(region);
         if (radar == null) {
-            radar = new BeaconDynamicRadar(mApplication, rangingBeaconsFor(region));
+            radar = new BeaconDynamicRadar(context, rangingBeaconsFor(region));
             rangingRadars.put(region, radar);
         }
         radar.beaconsDiscovered((List<Beacon>) collection);

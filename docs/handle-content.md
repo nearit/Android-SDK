@@ -19,9 +19,9 @@ To receive foreground content (e.g. ranging recipes) set a proximity listener wi
 ```java
 {
     ...
-    nearItManager.addProximityListener(this);
+    NearItManager.getInstance(context).addProximityListener(this);
     // remember to remove the listener when the object is being destroyed with 
-    // nearItManager.removeProximityListener(this);
+    // NearItManager.getInstance(context).removeProximityListener(this);
     ...
 }
 
@@ -53,15 +53,15 @@ NearIT analytics on recipes are built from trackings describing the status of us
 
 Background recipes track themselves as notified. To track the tap event, use this method:
 ```java
-nearItManager.getRecipesManager().sendTracking(recipeId, Recipe.ENGAGED_STATUS);
+NearItManager.getInstance(context).sendTracking(recipeId, Recipe.ENGAGED_STATUS);
 ```
 You should be able to catch the event inside the activity that is started after interacting with the notification. If your using our notification building IntentService, that activity is your launcher activity.
 
 Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
 ```java
-nearItManager.getRecipesManager().sendTracking(recipe.getId(), Recipe.NOTIFIED_STATUS);
+NearItManager.getInstance(context).sendTracking(recipe.getId(), Recipe.NOTIFIED_STATUS);
 // and
-nearItManager.getRecipesManager().sendTracking(recipe.getId(), Recipe.ENGAGED_STATUS);
+NearItManager.getInstance(context).sendTracking(recipe.getId(), Recipe.ENGAGED_STATUS);
 ```
 The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
 
@@ -86,11 +86,11 @@ For each callback method of the *coreContentListener* you will receive a differe
 To give a feedback call this method:
 ```java
 // rating must be an integer between 1 and 5, and you can set a comment string.
-nearItManager.sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
+NearItManager.getInstance(context).sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
 // if you don't hold the feedback object use this constructor
-nearItManager.sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
+NearItManager.getInstance(context).sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
 // the sendEvent method is available in 2 variants: with or without explicit callback handler. Example:
-nearItManager.sendEvent(new FeedbackEvent(...), responseHandler);
+NearItManager.getInstance(context).sendEvent(new FeedbackEvent(...), responseHandler);
 ```
     
 - `Coupon` with the following getters:
@@ -116,7 +116,7 @@ nearItManager.sendEvent(new FeedbackEvent(...), responseHandler);
 We handle the complete emission and redemption coupon cycle in our platform, and we deliver a coupon content only when a coupon is emitted (you will not be notified of recipes when a profile has already received the coupon, even if the coupon is still valid).
 You can ask the library to fetch the list of all the user current coupons with the method:
 ```java
-nearItManager.getCoupons(new CouponListener() {
+NearItManager.getInstance(context).getCoupons(new CouponListener() {
             @Override
             public void onCouponsDownloaded(List<Coupon> list) {
 
