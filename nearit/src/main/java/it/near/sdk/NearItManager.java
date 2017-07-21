@@ -3,7 +3,6 @@ package it.near.sdk;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
@@ -50,11 +49,8 @@ import it.near.sdk.recipes.validation.AdvScheduleValidator;
 import it.near.sdk.recipes.validation.CooldownValidator;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.recipes.validation.Validator;
-import it.near.sdk.trackings.TrackCache;
 import it.near.sdk.trackings.TrackManager;
-import it.near.sdk.trackings.TrackSender;
 import it.near.sdk.utils.ApiKeyConfig;
-import it.near.sdk.utils.ApplicationVisibility;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearUtils;
 
@@ -97,16 +93,26 @@ public class NearItManager implements ProfileUpdateListener {
     private NearItUserProfile nearItUserProfile;
     private Context context;
 
+
+    /**
+     * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
+     */
     @NonNull
-    public static NearItManager setup(@NonNull Application application, @NonNull String apiKey) {
+    public static NearItManager init(@NonNull Application application, @NonNull String apiKey) {
+        // store api key
         ApiKeyConfig.saveApiKey(application, apiKey);
+        // build instance
         NearItManager nearItManager = getInstance(application);
+        // init lifecycle method
+        nearItManager.initLifecycleMethods(application);
+        // first run: this is executed only after the setup.
+        // usually to inject the nearit manager instance in object that needs it, it couldn't been done inside the nearItManager constructor.
         nearItManager.firstRun();
         return nearItManager;
     }
 
     /**
-     * Double check pattern for getter. In your app, you should NEVER call this 
+     * Double check pattern for getter.
      */
     @NonNull
     public static NearItManager getInstance(@NonNull Context context) {
@@ -161,7 +167,7 @@ public class NearItManager implements ProfileUpdateListener {
                 new CurrentTime()
         );
         EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
-        TrackManager trackManager = getTrackManager(application);
+        TrackManager trackManager = TrackManager.obtain(application);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
         validators.add(new AdvScheduleValidator(new CurrentTime()));
@@ -195,16 +201,7 @@ public class NearItManager implements ProfileUpdateListener {
 
     }
 
-    @NonNull
-    private TrackManager getTrackManager(Context application) {
-        return new TrackManager(
-                (ConnectivityManager) application.getSystemService(Context.CONNECTIVITY_SERVICE),
-                new TrackSender(new NearAsyncHttpClient(application)),
-                new TrackCache(TrackCache.getSharedPreferences(application)),
-                new ApplicationVisibility());
-    }
-
-    public void initLifecycleMethods(Application application) {
+    private void initLifecycleMethods(Application application) {
         geopolis.initLifecycle(application);
     }
 

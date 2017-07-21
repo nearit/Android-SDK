@@ -1,8 +1,10 @@
 package it.near.sdk.trackings;
 
+import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.utils.AppVisibilityDetector;
 import it.near.sdk.utils.ApplicationVisibility;
 
@@ -69,5 +71,13 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
         NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
         return activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
+    }
+
+    public static TrackManager obtain(Context context) {
+        return new TrackManager(
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE),
+                new TrackSender(new NearAsyncHttpClient(context)),
+                new TrackCache(TrackCache.getSharedPreferences(context)),
+                new ApplicationVisibility());
     }
 }

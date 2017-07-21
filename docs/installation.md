@@ -18,8 +18,7 @@ In the *onCreate* method of your Application class, initialize a *NearItManager*
 @Override
 public void onCreate() {
   super.onCreate();
-  NearItManager.setup(this, "NEARIT API KEY")
-               .initLifecycleMethods(this);
+  NearItManager.init(this, "NEARIT API KEY");
   // calling this method on the Application onCreate is absolutely MANDATORY
 }
 ```
