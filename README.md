@@ -37,7 +37,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.1.29'
+    compile 'it.near.sdk:nearit:2.1.30'
 }
 ```
 
@@ -48,8 +48,7 @@ You *MUST* initialize the library in the *onCreate* method, passing the API key 
 public void onCreate() {
     super.onCreate();
 
-    NearItManager.setup(this, "NEARIT API KEY")
-                 .initLifecycleMethods(this);
+    NearItManager.init(this, "NEARIT API KEY");
     // calling this method on the Application onCreate is absolutely MANDATORY
 }
 ```
