@@ -301,7 +301,7 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     private boolean filterAndNotify(List<Recipe> matchingRecipes) {
-        recipeValidationFilter.filterRecipes(matchingRecipes);
+        matchingRecipes = recipeValidationFilter.filterRecipes(matchingRecipes);
         if (matchingRecipes.isEmpty()) return false;
         Recipe winnerRecipe = matchingRecipes.get(0);
         if (winnerRecipe.isEvaluatedOnline()) {
