@@ -43,8 +43,6 @@ public class RecipesManager implements RecipeEvaluator {
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
 
-    private static RecipesManager instance;
-
     private Morpheus morpheus;
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
