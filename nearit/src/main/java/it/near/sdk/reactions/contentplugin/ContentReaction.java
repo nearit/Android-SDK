@@ -74,7 +74,11 @@ public class ContentReaction extends CoreReaction<Content> {
         List<Image> images = element.images;
         List<ImageSet> imageSets = new ArrayList<>();
         for (Image image : images) {
-            imageSets.add(image.toImageSet());
+            try {
+                imageSets.add(image.toImageSet());
+            } catch (Image.MissingImageException ignored) {
+
+            }
         }
         element.setImages_links(imageSets);
     }

@@ -37,11 +37,11 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.1.31'
+    compile 'it.near.sdk:nearit:2.1.32'
 }
 ```
 
-You *MUST* initialize the library in the *onCreate* method, passing the API key as a String.
+You **MUST** initialize the library in the *onCreate* method, passing the API key as a String.
 
 ```java
 @Override
@@ -52,7 +52,7 @@ public void onCreate() {
     // calling this method on the Application onCreate is absolutely MANDATORY
 }
 ```
-Calling this method in the application onCreate callback is *MANDATORY*. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to initialize the library and call *initLifecycleMethods*.
+Calling this method in the application onCreate callback is **MANDATORY**. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to initialize the library.
 In your app, you can access the NearItManager instance with 
 ```java
     NearItManager.getInstance(context)
