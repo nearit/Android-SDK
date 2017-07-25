@@ -64,7 +64,7 @@ def getLatestVersionName = {
     }
 }
 
-def playServicesVersion = '10.2.0'
+def playServicesVersion = '11.0.2'
 
 allprojects{
     version = "${getVersionName()}"
