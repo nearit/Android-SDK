@@ -83,7 +83,11 @@ public class CouponReaction extends CoreReaction<Coupon> {
     protected void normalizeElement(Coupon element) {
         Image icon = element.icon;
         if (icon == null) return;
-        element.setIconSet(icon.toImageSet());
+        try {
+            element.setIconSet(icon.toImageSet());
+        } catch (Image.MissingImageException ignored) {
+
+        }
     }
 
     @Override
