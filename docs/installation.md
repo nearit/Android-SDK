@@ -22,10 +22,14 @@ public void onCreate() {
   // calling this method on the Application onCreate is absolutely MANDATORY
 }
 ```
-
 You can find the API key on [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
+Calling this method in the application onCreate callback is **MANDATORY**. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to initialize the library.
+In your app, you can access the NearItManager instance with 
+```java
+NearItManager.getInstance(context)
+```
 
-The constructor for `NearItManager` will try to sync the recipes with our servers. If you need to sync the recipes configuration more often than you call the constructor, call this method:
+The initialization process for `NearItManager` will try to sync the recipes with our servers. If you need to sync the recipes configuration more often than you call the constructor, call this method:
 
 ```java
 NearItManager.getInstance(context).refreshConfigs();
