@@ -7,24 +7,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -49,11 +48,15 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     private GoogleApiClient mGoogleApiClient;
     private List<GeoFenceNode> mNearGeoList;
     private List<Geofence> mPendingGeofences = new ArrayList<>();
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private GeofencingClient geofencingClient;
 
     @Override
     public void onCreate() {
         super.onCreate();
         NearLog.d(TAG, "onCreate()");
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        geofencingClient = LocationServices.getGeofencingClient(this);
     }
 
     @Override
@@ -77,7 +80,22 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     }
 
     private void pingSingleLocation() {
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        fusedLocationProviderClient.getLastLocation()
+                .addOnSuccessListener(new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            NearLog.d(TAG, "onLocationChanged");
+                            NearLog.d(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
+                        }
+                    }
+                });
+
+        /*LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_COARSE);
         criteria.setPowerRequirement(Criteria.POWER_LOW);
@@ -112,7 +130,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             public void onProviderDisabled(String s) {
                 NearLog.d(TAG, "onProviderDisabled");
             }
-        }, null);
+        }, null);*/
     }
 
     @Override
@@ -135,9 +153,9 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
      */
     private void startGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
                 .build();
         mGoogleApiClient.connect();
     }
@@ -259,8 +277,13 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         if (idsToremove == null || idsToremove.size() == 0) return;
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) return;
 
-        LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, idsToremove)
-                .setResultCallback(this);
+        geofencingClient.removeGeofences(idsToremove)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        NearLog.d(TAG, "Geofences removed");
+                    }
+                });
     }
 
     /**
@@ -287,12 +310,16 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             return;
         }
         NearLog.d(TAG, "startGeofencing");
-        LocationServices.GeofencingApi.addGeofences(
-                mGoogleApiClient,
+        geofencingClient.addGeofences(
                 request,
                 getGeofencePendingIntent()
-        ).setResultCallback(this);
-        pingSingleLocation();
+        ).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                NearLog.d(TAG, "Geofences added");
+                pingSingleLocation();
+            }
+        });
     }
 
 
