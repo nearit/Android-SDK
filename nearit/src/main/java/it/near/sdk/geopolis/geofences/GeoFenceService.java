@@ -162,21 +162,18 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     /**
      * Load geofence request ids from disk.
-     *
-     * @return
      */
     private List<String> loadIds() {
         Gson gson = new Gson();
         SharedPreferences sp = getSharedPreferences(getSharedPrefName(this), 0);
         String jsonText = sp.getString(LIST_IDS, null);
+        // TODO not catching the unchecked exception is dangerous
         return gson.fromJson(jsonText, new TypeToken<List<String>>() {
         }.getType());
     }
 
     /**
      * Overwrite geofence request ids.
-     *
-     * @param ids
      */
     private void saveIds(List<String> ids) {
         Gson gson = new Gson();
@@ -186,8 +183,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     /**
      * Reset the listened geofence request ids.
-     *
-     * @param context
      */
     public static void resetIds(Context context) {
         SharedPreferences.Editor edit = context.getSharedPreferences(getSharedPrefName(context), 0).edit();
