@@ -24,7 +24,7 @@ android {
         config {
         }
     }
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.nearit.sample"
@@ -55,7 +55,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    // compile 'it.near.sdk:nearit:2.1.30'
+    // compile 'it.near.sdk:nearit:2.1.32'
     compile project(':nearit')
     compile 'com.android.support:appcompat-v7:24.2.1'
     
