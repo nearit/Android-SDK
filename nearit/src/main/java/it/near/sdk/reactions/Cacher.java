@@ -3,6 +3,7 @@ package it.near.sdk.reactions;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
@@ -29,10 +30,13 @@ public class Cacher<T> {
 
     public List<T> loadList() throws JSONException {
         String cachedString = loadCachedString();
-        return gson.fromJson(cachedString, new TypeToken<Collection<T>>() {
-        }.getType());
+        try {
+            return gson.fromJson(cachedString, new TypeToken<Collection<T>>() {
+            }.getType());
+        } catch (JsonSyntaxException e) {
+            throw new JSONException("old format");
+        }
     }
-
 
     private String loadCachedString() {
         return sp.getString(Cacher.KEY_LIST, "");

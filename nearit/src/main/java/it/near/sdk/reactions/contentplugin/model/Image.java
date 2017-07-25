@@ -11,6 +11,7 @@ import it.near.sdk.morpheusnear.Resource;
  * @author cattaneostefano
  */
 public class Image extends Resource {
+
     @SerializedName("image")
     public HashMap<String, Object> imageMap;
 
@@ -29,9 +30,8 @@ public class Image extends Resource {
     }
 
     public class MissingImageException extends Exception {
-        public MissingImageException() {
+        MissingImageException() {
             super("missing data");
         }
     }
-
 }
