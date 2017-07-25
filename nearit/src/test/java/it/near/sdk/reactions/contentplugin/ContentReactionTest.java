@@ -73,7 +73,7 @@ public class ContentReactionTest extends BaseReactionTest<ContentReaction> {
     }
 
     @Test
-    public void normalizeElementShouldNormalizeImages() {
+    public void normalizeElementShouldNormalizeImages() throws Image.MissingImageException {
         Content content = new Content();
         content.images = new ArrayList<>();
 

@@ -2,6 +2,7 @@ package it.near.sdk.reactions.contentplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 /**
  * @author cattaneostefano
@@ -38,6 +39,7 @@ public class ImageSet implements Parcelable {
         this.fullSize = fullSize;
     }
 
+    @Nullable
     public String getSmallSize() {
         return smallSize;
     }

@@ -1,9 +1,9 @@
 package it.near.sdk.reactions.contentplugin.model;
 
 import com.google.gson.annotations.SerializedName;
-import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import it.near.sdk.morpheusnear.Resource;
 
@@ -17,11 +17,21 @@ public class Image extends Resource {
     public Image() {
     }
 
-    public ImageSet toImageSet() {
+    public ImageSet toImageSet() throws MissingImageException {
+        if (imageMap == null) throw new MissingImageException();
         ImageSet imageSet = new ImageSet();
+        if (!imageMap.containsKey("url")) throw new MissingImageException();
         imageSet.setFullSize((String) imageMap.get("url"));
-        imageSet.setSmallSize(((LinkedTreeMap<String, Object>) imageMap.get("square_300")).get("url").toString());
+        if (imageMap.containsKey("square_300") && ((Map<String, Object>) imageMap.get("square_300")).containsKey("url")) {
+            imageSet.setSmallSize(((Map<String, Object>) imageMap.get("square_300")).get("url").toString());
+        }
         return imageSet;
+    }
+
+    public class MissingImageException extends Exception {
+        public MissingImageException() {
+            super("missing data");
+        }
     }
 
 }
