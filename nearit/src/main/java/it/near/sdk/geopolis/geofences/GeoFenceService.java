@@ -41,12 +41,10 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     private static final String TAG = "GeoFenceService";
     private static final String PREF_SUFFIX = "NearGeo";
-    private static final String GEO_LIST = "GeofenceList";
     private static final String LIST_IDS = "list_ids";
     public static final String GEOFENCES = "geofences";
     private PendingIntent mGeofencePendingIntent;
     private GoogleApiClient mGoogleApiClient;
-    private List<GeoFenceNode> mNearGeoList;
     private List<Geofence> mPendingGeofences = new ArrayList<>();
     private FusedLocationProviderClient fusedLocationProviderClient;
     private GeofencingClient geofencingClient;
@@ -315,6 +313,8 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                 pingSingleLocation();
             }
         });
+        // TODO maybe remove this
+        pingSingleLocation();
     }
 
 
