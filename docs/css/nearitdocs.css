@@ -21,9 +21,11 @@ a.icon-home {
 
 
 /* change nav header color to nearit color */
-.wy-side-nav-search {background-color:#9F92FF !important}
+.wy-side-nav-search {background-color:#333333 !important}
 /* also for the mobile version */
-.wy-nav-top {background: #A69FFF !important}
+.wy-nav-top {background: #333333 !important}
+/*entire drawer color*/
+.wy-nav-side {background: #222222 !important}
 
 .wy-side-nav-search #rtd-search-form {margin-left: 10px;margin-right: 10px;margin-bottom: 2px;}
 
