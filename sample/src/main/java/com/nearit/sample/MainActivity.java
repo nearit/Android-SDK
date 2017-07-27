@@ -20,6 +20,7 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
+import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearItIntentConstants;
@@ -34,18 +35,25 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
      */
     private static final String KEY_FOR_AGE_FIELD = "age";
 
-    Button requestPermissionButton, setAgeButtom;
+    Button requestPermissionButton, setAgeButtom, refreshRecipesButton;
     EditText ageEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPermissionButton = (Button) findViewById(R.id.button);
+        requestPermissionButton = (Button) findViewById(R.id.permission_button);
         requestPermissionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
+            }
+        });
+        refreshRecipesButton = (Button) findViewById(R.id.refresh_button);
+        refreshRecipesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refreshNearRecipes();
             }
         });
 
@@ -60,6 +68,20 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
         NearItManager.getInstance(this).addProximityListener(this);
 
+    }
+
+    private void refreshNearRecipes() {
+        NearItManager.getInstance(this).refreshConfigs(new RecipeRefreshListener() {
+            @Override
+            public void onRecipesRefresh() {
+                Toast.makeText(MainActivity.this, "Recipes refreshed", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onRecipesRefreshFail() {
+                Toast.makeText(MainActivity.this, "Could not refresh recipes", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

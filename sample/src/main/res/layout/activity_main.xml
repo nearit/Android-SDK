@@ -8,24 +8,32 @@
     tools:context="com.nearit.sample.MainActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/permission_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:text="Start radar" />
 
+    <Button
+        android:id="@+id/refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_below="@+id/permission_button"
+        android:text="Refresh recipes"/>
+
     <EditText
         android:id="@+id/ageEditText"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/button"
+        android:layout_below="@+id/refresh_button"
         android:inputType="number" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/ageSetButton"
-        android:layout_below="@+id/button"
+        android:layout_below="@+id/refresh_button"
         android:layout_toRightOf="@id/ageEditText"
         android:text="Set Age"/>
 

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import it.near.sdk.morpheusnear.annotations.Relationship;
 import it.near.sdk.reactions.contentplugin.model.Image;
@@ -168,6 +169,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     public Date toDate(String toParse) {
         if (toParse == null) return null;
         DateFormat df1 = new SimpleDateFormat(COUPON_DATE_PATTERN, Locale.US);
+        df1.setTimeZone(TimeZone.getTimeZone("UTC"));
         try {
             return df1.parse(toParse);
         } catch (ParseException e) {
