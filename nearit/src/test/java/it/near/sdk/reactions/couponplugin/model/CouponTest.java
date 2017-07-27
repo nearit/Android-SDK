@@ -23,10 +23,17 @@ public class CouponTest {
         coupon = new Coupon();
     }
 
+    @Test
     public void testDateParser() {
         String dateString = "2017-02-15T23:59:59.999Z";
         Date actual = coupon.toDate(dateString);
-        long expected = 1487199599999L;
+        long expected = 1487203199999L;
+        assert actual != null;
+        assertThat(actual.getTime(), is(expected));
+
+        String otherDateString = "2017-07-26T13:00:00.000Z";
+        actual = coupon.toDate(otherDateString);
+        expected = 1501074000000L;
         assert actual != null;
         assertThat(actual.getTime(), is(expected));
     }
