@@ -30,6 +30,12 @@ public class CouponTest {
         long expected = 1487203199999L;
         assert actual != null;
         assertThat(actual.getTime(), is(expected));
+
+        String otherDateString = "2017-07-26T13:00:00.000Z";
+        actual = coupon.toDate(otherDateString);
+        expected = 1501074000000L;
+        assert actual != null;
+        assertThat(actual.getTime(), is(expected));
     }
 
     @Test
