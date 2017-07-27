@@ -236,6 +236,9 @@ public class RecipesManager implements RecipeEvaluator {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
                     if (recipe != null) {
+                        // add recipe to cache
+                        recipes.add(recipe);
+                        listCacher.persistList(recipes);
                         gotRecipe(recipe);
                     }
                 }
