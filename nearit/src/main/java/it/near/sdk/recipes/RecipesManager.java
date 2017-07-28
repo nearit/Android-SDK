@@ -322,18 +322,23 @@ public class RecipesManager implements RecipeEvaluator {
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
-        for (Recipe recipe : recipes) {
-            if (recipe.getPulse_plugin_id() == null ||
-                    recipe.getPulse_action() == null ||
-                    recipe.getPulse_action().getId() == null ||
-                    recipe.getPulse_bundle() == null ||
-                    recipe.getPulse_bundle().getId() == null)
-                continue;
-            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                    recipe.getPulse_action().getId().equals(plugin_action) &&
-                    recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
-                matchingRecipes.add(recipe);
+        try {
+            for (Recipe recipe : recipes) {
+                if (recipe.getPulse_plugin_id() == null ||
+                        recipe.getPulse_action() == null ||
+                        recipe.getPulse_action().getId() == null ||
+                        recipe.getPulse_bundle() == null ||
+                        recipe.getPulse_bundle().getId() == null)
+                    continue;
+                if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                        recipe.getPulse_action().getId().equals(plugin_action) &&
+                        recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
+                    matchingRecipes.add(recipe);
+                }
             }
+        } catch (ClassCastException exception) {
+            recipes = null;
+            return false;
         }
 
         if (matchingRecipes.isEmpty()) return false;
@@ -350,18 +355,23 @@ public class RecipesManager implements RecipeEvaluator {
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
-        for (Recipe recipe : recipes) {
-            if (recipe.getPulse_plugin_id() == null ||
-                    recipe.getPulse_action() == null ||
-                    recipe.getPulse_action().getId() == null ||
-                    recipe.tags == null ||
-                    recipe.tags.isEmpty())
-                continue;
-            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                    recipe.getPulse_action().getId().equals(plugin_action) &&
-                    plugin_tags.containsAll(recipe.tags)) {
-                matchingRecipes.add(recipe);
+        try {
+            for (Recipe recipe : recipes) {
+                if (recipe.getPulse_plugin_id() == null ||
+                        recipe.getPulse_action() == null ||
+                        recipe.getPulse_action().getId() == null ||
+                        recipe.tags == null ||
+                        recipe.tags.isEmpty())
+                    continue;
+                if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                        recipe.getPulse_action().getId().equals(plugin_action) &&
+                        plugin_tags.containsAll(recipe.tags)) {
+                    matchingRecipes.add(recipe);
+                }
             }
+        } catch (ClassCastException exception) {
+            recipes = null;
+            return false;
         }
 
         if (matchingRecipes.isEmpty()) return false;
