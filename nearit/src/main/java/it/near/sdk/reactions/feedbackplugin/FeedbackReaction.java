@@ -3,11 +3,15 @@ package it.near.sdk.reactions.feedbackplugin;
 import android.content.Context;
 import android.net.Uri;
 
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -33,8 +37,8 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
 
     private final GlobalConfig globalConfig;
 
-    FeedbackReaction(Cacher<Feedback> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
-        super(cacher, httpClient, nearNotifier, Feedback.class);
+    FeedbackReaction(Cacher<Feedback> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig, Type cacheType) {
+        super(cacher, httpClient, nearNotifier, Feedback.class, cacheType);
         this.globalConfig = globalConfig;
     }
 
@@ -123,7 +127,8 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
                         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
                 nearNotifier,
-                globalConfig
+                globalConfig,
+                new TypeToken<List<Feedback>>() {}.getType()
         );
     }
 }

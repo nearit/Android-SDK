@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,7 +69,7 @@ public class RecipesManager implements RecipeEvaluator {
         this.listCacher = listCacher;
 
         try {
-            recipes = listCacher.loadList();
+            recipes = loadChachedList();
         } catch (Exception e) {
             NearLog.d(TAG, "Recipes format error");
         }
@@ -148,7 +150,7 @@ public class RecipesManager implements RecipeEvaluator {
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
-                        recipes = listCacher.loadList();
+                        recipes = loadChachedList();
 
                     } catch (Exception e) {
                         NearLog.d(TAG, "Recipe format error");
@@ -159,6 +161,10 @@ public class RecipesManager implements RecipeEvaluator {
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             listener.onRecipesRefreshFail();
         }
+    }
+
+    private List<Recipe> loadChachedList() throws JSONException {
+        return listCacher.loadList(new TypeToken<List<Recipe>>() {}.getType());
     }
     
     /**
