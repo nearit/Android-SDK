@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -43,8 +45,6 @@ public class RecipesManager implements RecipeEvaluator {
     private static final String PROCESS_PATH = "process";
     private static final String EVALUATE = "evaluate";
 
-    private static RecipesManager instance;
-
     private Morpheus morpheus;
     private List<Recipe> recipes = new ArrayList<>();
     private HashMap<String, Reaction> reactions = new HashMap<>();
@@ -69,7 +69,7 @@ public class RecipesManager implements RecipeEvaluator {
         this.listCacher = listCacher;
 
         try {
-            recipes = listCacher.loadList();
+            recipes = loadChachedList();
         } catch (Exception e) {
             NearLog.d(TAG, "Recipes format error");
         }
@@ -150,7 +150,7 @@ public class RecipesManager implements RecipeEvaluator {
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
                     try {
-                        recipes = listCacher.loadList();
+                        recipes = loadChachedList();
 
                     } catch (Exception e) {
                         NearLog.d(TAG, "Recipe format error");
@@ -161,6 +161,10 @@ public class RecipesManager implements RecipeEvaluator {
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             listener.onRecipesRefreshFail();
         }
+    }
+
+    private List<Recipe> loadChachedList() throws JSONException {
+        return listCacher.loadList(new TypeToken<List<Recipe>>() {}.getType());
     }
     
     /**
@@ -238,6 +242,9 @@ public class RecipesManager implements RecipeEvaluator {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
                     if (recipe != null) {
+                        // add recipe to cache
+                        recipes.add(recipe);
+                        listCacher.persistList(recipes);
                         gotRecipe(recipe);
                     }
                 }
@@ -303,7 +310,7 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     private boolean filterAndNotify(List<Recipe> matchingRecipes) {
-        recipeValidationFilter.filterRecipes(matchingRecipes);
+        matchingRecipes = recipeValidationFilter.filterRecipes(matchingRecipes);
         if (matchingRecipes.isEmpty()) return false;
         Recipe winnerRecipe = matchingRecipes.get(0);
         if (winnerRecipe.isEvaluatedOnline()) {

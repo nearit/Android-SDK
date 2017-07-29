@@ -47,7 +47,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private static final String TAG = "AltBeaconMonitor";
     private static final long BACKGROUND_BETWEEN_SCAN_PERIODS = 30000;
     private static final long BACKGROUND_SCAN_PERIOD = 1500;
-    private static final long FOREGROUND_SCAN_PERIOD = 1000;
+    private static final long FOREGROUND_SCAN_PERIOD = 1100;
     private static final long REGION_EXIT_PERIOD = 30000;
 
     private final BeaconManager beaconManager;

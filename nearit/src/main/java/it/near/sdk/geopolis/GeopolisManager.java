@@ -59,6 +59,7 @@ public class GeopolisManager {
     public static final String GF_EXIT_ACTION_SUFFIX = "REGION_EXIT";
     public static final String BT_ENTRY_ACTION_SUFFIX = "BT_REGION_ENTRY";
     public static final String BT_EXIT_ACTION_SUFFIX = "BT_REGION_EXIT";
+    @Deprecated
     public static final String GF_RANGE_FAR_SUFFIX = "RANGE_FAR";
     public static final String GF_RANGE_NEAR_SUFFIX = "RANGE_NEAR";
     public static final String GF_RANGE_IMMEDIATE_SUFFIX = "RANGE_IMMEDIATE";
@@ -114,7 +115,6 @@ public class GeopolisManager {
         regionFilter.addAction(packageName + "." + GF_EXIT_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + BT_ENTRY_ACTION_SUFFIX);
         regionFilter.addAction(packageName + "." + BT_EXIT_ACTION_SUFFIX);
-        regionFilter.addAction(packageName + "." + GF_RANGE_FAR_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_RANGE_NEAR_SUFFIX);
         regionFilter.addAction(packageName + "." + GF_RANGE_IMMEDIATE_SUFFIX);
         context.registerReceiver(regionEventsReceiver, regionFilter);
@@ -205,16 +205,12 @@ public class GeopolisManager {
                     trackAndFirePulse(node, Events.LEAVE_PLACE);
                     geofenceMonitor.setUpMonitor(GeoFenceMonitor.geofencesOnExit(nodesManager.getNodes(), node));
                     altBeaconMonitor.removeRegions(node.children);
-
                     break;
                 case BT_ENTRY_ACTION_SUFFIX:
                     trackAndFirePulse(node, Events.ENTER_REGION);
                     break;
                 case BT_EXIT_ACTION_SUFFIX:
                     trackAndFirePulse(node, Events.LEAVE_REGION);
-                    break;
-                case GF_RANGE_FAR_SUFFIX:
-                    // trackAndFirePulse(node, Events.RANGE_FAR);
                     break;
                 case GF_RANGE_NEAR_SUFFIX:
                     trackAndFirePulse(node, Events.RANGE_NEAR);

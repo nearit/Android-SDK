@@ -17,7 +17,7 @@ public class RecipeValidationFilter {
         this.validators = checkNotNull(validators);
     }
 
-    public void filterRecipes(@NonNull List<Recipe> recipes) {
+    public List<Recipe> filterRecipes(@NonNull List<Recipe> recipes) {
         List<Recipe> retain = new ArrayList<>(recipes.size());
         for (Recipe recipe : recipes) {
             if (checkValidityOf(recipe)) {
@@ -26,6 +26,7 @@ public class RecipeValidationFilter {
         }
         recipes.clear();
         recipes.addAll(retain);
+        return recipes;
     }
 
     private boolean checkValidityOf(Recipe recipe) {

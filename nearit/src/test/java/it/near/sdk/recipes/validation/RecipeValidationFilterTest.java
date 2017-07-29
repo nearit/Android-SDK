@@ -47,7 +47,7 @@ public class RecipeValidationFilterTest {
     @Test
     public void whenNoRecipesArePassed_noneReturns() {
         List<Recipe> recipes = Collections.emptyList();
-        recipeValidationFilter.filterRecipes(recipes);
+        recipes = recipeValidationFilter.filterRecipes(recipes);
         assertThat(recipes, hasSize(0));
     }
 
@@ -61,7 +61,7 @@ public class RecipeValidationFilterTest {
                 new Recipe(),
                 new Recipe()
         );
-        recipeValidationFilter.filterRecipes(recipes);
+        recipes = recipeValidationFilter.filterRecipes(recipes);
         assertThat(recipes, hasSize(3));
     }
 
@@ -75,7 +75,7 @@ public class RecipeValidationFilterTest {
                 new Recipe(),
                 new Recipe()
         );
-        recipeValidationFilter.filterRecipes(recipes);
+        recipes = recipeValidationFilter.filterRecipes(recipes);
         assertThat(recipes, hasSize(0));
     }
 
@@ -88,7 +88,7 @@ public class RecipeValidationFilterTest {
         when(secondValidator.validate(any(Recipe.class))).thenReturn(true);
         when(thirdValidator.validate(any(Recipe.class))).thenReturn(true);
         List<Recipe> recipes = Lists.newArrayList(shouldFailRecipeForFirstValidator, shouldPassRecipe);
-        recipeValidationFilter.filterRecipes(recipes);
+        recipes = recipeValidationFilter.filterRecipes(recipes);
         assertThat(recipes, hasSize(1));
         assertThat(recipes, hasItem(shouldPassRecipe));
         assertThat(recipes, not(hasItem(shouldFailRecipeForFirstValidator)));
@@ -103,7 +103,7 @@ public class RecipeValidationFilterTest {
                 new Recipe(),
                 new Recipe()
         );
-        recipeValidationFilter.filterRecipes(recipes);
+        recipes = recipeValidationFilter.filterRecipes(recipes);
         assertThat(recipes, hasSize(3));
     }
 }
