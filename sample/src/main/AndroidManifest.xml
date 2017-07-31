@@ -41,6 +41,7 @@
         <activity
             android:name=".PermissionsActivity"
             android:theme="@style/NearDialogTheme" />
+        <!-- There's need to add the special theme to avoid a smelly UI transition -->
 
     </application>
 
