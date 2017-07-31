@@ -13,10 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.View;
 import android.view.Window;
-import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -37,7 +34,6 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
     private static final int LOCATION_SETTINGS_CODE = 5000;
     public static final int PERMISSION_REQUEST_FINE_LOCATION = 6000;
 
-    private Button enableBtn;
     private boolean permissionGiven = false;
 
     public static Intent createIntent(Context context) {
@@ -48,23 +44,12 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.activity_permissions);
 
-        enableBtn = (Button) findViewById(R.id.ask_permissions);
-        enableBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!permissionGiven) {
-                    askPermissions();
-                } else {
-                    setResult(Activity.RESULT_OK);
-                    finish();
-                }
-            }
-        });
-
-        if (allPermissionGranted()) {
-            onPermissionsReady();
+        if (!permissionGiven) {
+            askPermissions();
+        } else {
+            setResult(Activity.RESULT_OK);
+            finish();
         }
     }
 
@@ -132,7 +117,7 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
                     && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 openLocationSettings();
             } else {
-
+                finish();
             }
         }
     }
@@ -143,11 +128,15 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
         if (requestCode == LOCATION_SETTINGS_CODE) {
             if (resultCode == Activity.RESULT_OK) {
                 openBluetoothSettings();
+            } else {
+                finish();
             }
         } else if (requestCode == BLUETOOTH_SETTINGS_CODE) {
             //Nothing to do
             if (resultCode == Activity.RESULT_OK) {
                 onPermissionsReady();
+            } else {
+                finish();
             }
         }
     }
@@ -183,7 +172,7 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
                         }
                         break;
                     case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-
+                        finish();
                         break;
                 }
             }
@@ -197,7 +186,6 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, BLUETOOTH_SETTINGS_CODE);
         } else {
-            Log.d(TAG, "All permission available");
             onPermissionsReady();
         }
 
@@ -206,8 +194,8 @@ public class PermissionsActivity extends AppCompatActivity implements GoogleApiC
     private void onPermissionsReady() {
         // You have all the right permissions to start the NearIT radar
         permissionGiven = true;
-        enableBtn.setText("You are set to go!");
-        enableBtn.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
+        setResult(Activity.RESULT_OK);
+        finish();
     }
 
     @Override
