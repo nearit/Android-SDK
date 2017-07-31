@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -21,6 +22,7 @@ import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_APP_ID;
 import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_COOLDOWN;
 import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_CORE;
 import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_INSTALLATION_ID;
+import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_LANG;
 import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_LAST_NOTIFIED_AT;
 import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_PROFILE_ID;
 import static it.near.sdk.recipes.EvaluationBodyBuilder.KEY_RECIPES_NOTIFIED_AT;
@@ -55,6 +57,7 @@ public class EvaluationBodyBuilderTest {
         when(mockGlobalConfig.getInstallationId()).thenReturn(MOCKED_INSTALLATION_ID);
         when(mockGlobalConfig.getProfileId()).thenReturn(MOCKED_PROFILE_ID);
         when(mockCurrentTime.currentCalendar()).thenReturn(Calendar.getInstance(TimeZone.getTimeZone("GMT+5:30")));
+        Locale.setDefault(new Locale("es", "ES"));
         evaluationBodyBuilder = new EvaluationBodyBuilder(mockGlobalConfig, mockRecipeHistory, mockCurrentTime);
     }
 
@@ -72,6 +75,7 @@ public class EvaluationBodyBuilderTest {
         assertThat((String) actualObj.get(KEY_INSTALLATION_ID), is(MOCKED_INSTALLATION_ID));
         assertThat((String) actualObj.get(KEY_APP_ID), is(MOCKED_APP_ID));
         assertThat((String) actualObj.get(KEY_UTC_OFFSET), is("+05:30"));
+        assertThat((String) actualObj.get(KEY_LANG), is("es-ES"));
         assertThat(actualObj = actualObj.getJSONObject(KEY_COOLDOWN), is(notNullValue()));
         assertThat(Long.valueOf((Integer) actualObj.get(KEY_LAST_NOTIFIED_AT)), is(0L));
         assertThat(actualObj.getJSONObject(KEY_RECIPES_NOTIFIED_AT).length(), is(0));

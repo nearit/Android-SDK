@@ -11,6 +11,7 @@ import java.util.Locale;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearJsonAPIUtils;
+import it.near.sdk.utils.NearUtils;
 
 import static it.near.sdk.utils.NearUtils.checkNotNull;
 
@@ -25,6 +26,7 @@ public class EvaluationBodyBuilder {
     static final String KEY_INSTALLATION_ID = "installation_id";
     static final String KEY_APP_ID = "app_id";
     static final String KEY_UTC_OFFSET = "utc_offset";
+    static final String KEY_LANG = "lang";
     static final String KEY_COOLDOWN = "cooldown";
     static final String KEY_LAST_NOTIFIED_AT = "last_notified_at";
     static final String KEY_RECIPES_NOTIFIED_AT = "recipes_notified_at";
@@ -66,6 +68,7 @@ public class EvaluationBodyBuilder {
         coreObj.put(KEY_INSTALLATION_ID, globalConfig.getInstallationId());
         coreObj.put(KEY_APP_ID, globalConfig.getAppId());
         coreObj.put(KEY_UTC_OFFSET, buildUtcOffset());
+        coreObj.put(KEY_LANG, NearUtils.toBcp47Language(Locale.getDefault()));
         if (recipesHistory != null) {
             coreObj.put(KEY_COOLDOWN, buildCooldownBlock());
         }
