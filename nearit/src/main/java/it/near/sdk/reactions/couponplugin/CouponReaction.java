@@ -3,10 +3,13 @@ package it.near.sdk.reactions.couponplugin;
 import android.content.Context;
 import android.net.Uri;
 
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.List;
@@ -41,8 +44,8 @@ public class CouponReaction extends CoreReaction<Coupon> {
 
     private final GlobalConfig globalConfig;
 
-    public CouponReaction(Cacher<Coupon> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig) {
-        super(cacher, httpClient, nearNotifier, Coupon.class);
+    public CouponReaction(Cacher<Coupon> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, GlobalConfig globalConfig, Type cacheType) {
+        super(cacher, httpClient, nearNotifier, Coupon.class, cacheType);
         this.globalConfig = globalConfig;
     }
 
@@ -193,6 +196,7 @@ public class CouponReaction extends CoreReaction<Coupon> {
                         context.getSharedPreferences("never_used", Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
                 nearNotifier,
-                globalConfig);
+                globalConfig,
+                new TypeToken<List<Coupon>>() {}.getType());
     }
 }

@@ -6,6 +6,7 @@ import android.os.Looper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,18 +39,20 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
     protected final Cacher<T> cacher;
     protected final Class<T> type;
     protected List<T> reactionList;
+    protected Type cacheType;
 
     /**
      * Morpheus object for JsonAPI parsing.
      */
     protected Morpheus morpheus;
 
-    public CoreReaction(Cacher<T> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Class<T> type) {
+    public CoreReaction(Cacher<T> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Class<T> type, Type cacheType) {
         super(nearNotifier);
         // static GSON object for de/serialization of objects to/from JSON
         this.cacher = cacher;
         this.type = type;
         this.httpClient = httpClient;
+        this.cacheType = cacheType;
         setUpMorpheus();
         refreshConfig();
     }
@@ -82,7 +85,7 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error: " + statusCode);
                     try {
-                        reactionList = cacher.loadList();
+                        reactionList = cacher.loadList(cacheType);
                     } catch (JSONException e) {
                         NearLog.d(TAG, "Data format error");
                     }
@@ -123,7 +126,7 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
     protected void getContent(String reaction_bundle_id, final Recipe recipe, final ContentFetchListener<ReactionBundle> listener) {
         if (reactionList == null) {
             try {
-                reactionList = cacher.loadList();
+                reactionList = cacher.loadList(cacheType);
             } catch (JSONException e) {
                 NearLog.d(TAG, "Data format error");
             }
@@ -159,7 +162,6 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
 
     /**
      * Returns the list of POJOs and the jsonAPI resource type string for this plugin.
-     *
      */
     protected abstract HashMap<String, Class> getModelHashMap();
 
@@ -188,7 +190,7 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
 
     @Override
     protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
-        if (reaction_action.equals(getDefaultShowAction())){
+        if (reaction_action.equals(getDefaultShowAction())) {
             showContent(reaction_bundle.getId(), recipe);
         }
     }
@@ -211,13 +213,13 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
 
     @Override
     public void handlePushReaction(final Recipe recipe, String push_id, ReactionBundle reactionBundle) {
-        T element = (T)reactionBundle;
+        T element = (T) reactionBundle;
         if (element.hasContentToInclude()) {
             downloadSingleReaction(element.getId(), new ContentFetchListener<T>() {
                 @Override
                 public void onContentFetched(T element, boolean cached) {
                     injectRecipeId(element, recipe.getId());
-                    nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(),  getReactionPluginName());
+                    nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
                 }
 
                 @Override

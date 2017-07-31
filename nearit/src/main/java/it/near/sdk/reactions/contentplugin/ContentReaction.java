@@ -3,6 +3,9 @@ package it.near.sdk.reactions.contentplugin;
 import android.content.Context;
 import android.net.Uri;
 
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,8 +34,8 @@ public class ContentReaction extends CoreReaction<Content> {
     public static final String RES_AUDIOS = "audios";
     public static final String RES_UPLOADS = "uploads";
 
-    ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
-        super(cacher, httpClient, nearNotifier, Content.class);
+    ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Type cacheType) {
+        super(cacher, httpClient, nearNotifier, Content.class, cacheType);
     }
 
     @Override
@@ -97,6 +100,7 @@ public class ContentReaction extends CoreReaction<Content> {
         return new ContentReaction(
                 new Cacher<Content>(context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
-                nearNotifier);
+                nearNotifier,
+                new TypeToken<List<Content>>() {}.getType());
     }
 }

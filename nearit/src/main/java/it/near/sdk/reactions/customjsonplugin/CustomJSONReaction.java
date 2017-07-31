@@ -3,7 +3,11 @@ package it.near.sdk.reactions.customjsonplugin;
 import android.content.Context;
 import android.net.Uri;
 
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
@@ -21,8 +25,8 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
     private static final String TAG = "CustomJSONReaction";
     private static final String PLUGIN_ROOT_PATH = "json-sender";
 
-    CustomJSONReaction(Cacher<CustomJSON> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier) {
-        super(cacher, httpClient, nearNotifier, CustomJSON.class);
+    CustomJSONReaction(Cacher<CustomJSON> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Type cacheType) {
+        super(cacher, httpClient, nearNotifier, CustomJSON.class, cacheType);
     }
 
     @Override
@@ -75,7 +79,8 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
                 new Cacher<CustomJSON>(
                         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
                 new NearAsyncHttpClient(context),
-                nearNotifier
+                nearNotifier,
+                new TypeToken<List<CustomJSON>>() {}.getType()
         );
     }
 }
