@@ -32,6 +32,8 @@ public class Constants {
         String version_header_key = "X-API-Version";
 
         String near_version_header_key = "X-Near-Version";
+
+        String acceptLanguage = "Accept-Language";
     }
 
     // -------------------- PATHS --------------------------
