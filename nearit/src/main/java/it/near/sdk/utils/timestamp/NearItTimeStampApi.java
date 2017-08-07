@@ -61,4 +61,10 @@ public class NearItTimeStampApi {
         void onSuccess(List<CacheTimestamp> timestamps);
         void onError(String message);
     }
+
+    public static Morpheus buildMorpheus() {
+        Morpheus morpheus = new Morpheus();
+        morpheus.getFactory().getDeserializer().registerResourceClass("timestamps", CacheTimestamp.class);
+        return morpheus;
+    }
 }
