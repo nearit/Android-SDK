@@ -85,7 +85,7 @@ public class RecipeRepository {
     }
 
     private long getCacheTimestamp() {
-        sp.getLong(TIMESTAMP, 0L);
+        return sp.getLong(TIMESTAMP, 0L);
     }
 
     private void setOnlineEvaluationPreference(boolean enabled) {
