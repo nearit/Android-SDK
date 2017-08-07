@@ -115,6 +115,10 @@ public class NearJsonAPIUtils {
      * @return list of objects.
      */
     public static <T> List<T> parseList(Morpheus morpheus, JSONObject json, Class<T> clazz) {
+        return parseListAndMeta(morpheus, json, clazz).list;
+    }
+
+    public static <T> ListMetaBundle<T> parseListAndMeta(Morpheus morpheus, JSONObject json, Class<T> clazz) {
         JsonApiObject jsonApiObject = null;
         try {
             jsonApiObject = morpheus.parse(json);
@@ -122,14 +126,23 @@ public class NearJsonAPIUtils {
             NearLog.d(TAG, "Parsing error");
         }
 
+        ListMetaBundle<T> listMetaBundle = new ListMetaBundle<>();
         List<T> returnList = new ArrayList<T>();
-        if (jsonApiObject == null ||
-                jsonApiObject.getResources() == null) return returnList;
-
-        for (Resource r : jsonApiObject.getResources()) {
-            returnList.add((T) r);
+        Map<String, Object> meta = new HashMap<>();
+        if (jsonApiObject == null) {
+            listMetaBundle.list = returnList;
+            listMetaBundle.meta = meta;
+            return listMetaBundle;
+        } else {
+            listMetaBundle.meta = jsonApiObject.getMeta();
+            if (jsonApiObject.getResources() != null) {
+                for (Resource r : jsonApiObject.getResources()) {
+                    returnList.add((T) r);
+                }
+            }
+            listMetaBundle.list = returnList;
+            return listMetaBundle;
         }
-        return returnList;
     }
 
     /**
@@ -150,4 +163,5 @@ public class NearJsonAPIUtils {
         }
         return (T) jsonApiObject.getResource();
     }
+
 }
