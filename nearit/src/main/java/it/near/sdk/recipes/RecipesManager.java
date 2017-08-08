@@ -1,10 +1,5 @@
 package it.near.sdk.recipes;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONException;
 
 import java.util.ArrayList;
@@ -12,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Reaction;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
@@ -25,23 +19,19 @@ import it.near.sdk.recipes.validation.RecipeValidationFilter;
 public class RecipesManager implements RecipeEvaluator {
 
     private static final String TAG = "RecipesManager";
-    private static final String NEAR_RECIPES_PREFS_NAME = "NearRecipes";
 
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private final RecipeTrackSender recipeTrackSender;
     private final RecipeValidationFilter recipeValidationFilter;
-    private final Cacher<Recipe> listCacher;
     private final RecipeRepository recipeRepository;
     private final RecipesApi recipesApi;
 
     public RecipesManager(RecipeValidationFilter recipeValidationFilter,
                           RecipeTrackSender recipeTrackSender,
-                          Cacher<Recipe> listCacher,
                           RecipeRepository recipeRepository,
                           RecipesApi recipesApi) {
         this.recipeValidationFilter = recipeValidationFilter;
         this.recipeTrackSender = recipeTrackSender;
-        this.listCacher = listCacher;
         this.recipeRepository = recipeRepository;
         this.recipesApi = recipesApi;
 
@@ -115,10 +105,6 @@ public class RecipesManager implements RecipeEvaluator {
         });
     }
 
-    private List<Recipe> loadChachedList() throws JSONException {
-        return listCacher.loadList(new TypeToken<List<Recipe>>() {}.getType());
-    }
-    
     /**
      * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
      *
@@ -152,7 +138,6 @@ public class RecipesManager implements RecipeEvaluator {
 
     /**
      * Process a recipe from the reaction triple. Used for getting a content from a push
-
      */
     public void processRecipe(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleId) {
         Reaction reaction = reactions.get(reactionPlugin);
@@ -160,6 +145,10 @@ public class RecipesManager implements RecipeEvaluator {
         reaction.handlePushReaction(recipeId, notificationText, reactionAction, reactionBundleId);
     }
 
+    /**
+     * Handle a push recipe that contained the actual reaction bundle, encoded in the payload
+     * @return whether the content was properly consumed by the reaction plugin
+     */
     public boolean processReactionBundle(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleString) {
         Reaction reaction = reactions.get(reactionPlugin);
         if (reaction == null) return false;
@@ -183,7 +172,6 @@ public class RecipesManager implements RecipeEvaluator {
 
     /**
      * Online evaluation of a recipe.
-     *
      * @param recipeId recipe identifier.
      */
     public void evaluateRecipe(String recipeId) {
@@ -220,28 +208,24 @@ public class RecipesManager implements RecipeEvaluator {
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
-        try {
-            for (Recipe recipe : recipes) {
-                if (recipe.getPulse_plugin_id() == null ||
-                        recipe.getPulse_action() == null ||
-                        recipe.getPulse_action().getId() == null ||
-                        recipe.getPulse_bundle() == null ||
-                        recipe.getPulse_bundle().getId() == null)
-                    continue;
-                if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                        recipe.getPulse_action().getId().equals(plugin_action) &&
-                        recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
-                    matchingRecipes.add(recipe);
-                }
+        for (Recipe recipe : recipes) {
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.getPulse_bundle() == null ||
+                    recipe.getPulse_bundle().getId() == null)
+                continue;
+            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                    recipe.getPulse_action().getId().equals(plugin_action) &&
+                    recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
+                matchingRecipes.add(recipe);
             }
-        } catch (ClassCastException exception) {
-            recipes = null;
-            return false;
         }
 
         if (matchingRecipes.isEmpty()) return false;
 
         return filterAndNotify(matchingRecipes);
+
     }
 
 
@@ -254,23 +238,19 @@ public class RecipesManager implements RecipeEvaluator {
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
-        try {
-            for (Recipe recipe : recipes) {
-                if (recipe.getPulse_plugin_id() == null ||
-                        recipe.getPulse_action() == null ||
-                        recipe.getPulse_action().getId() == null ||
-                        recipe.tags == null ||
-                        recipe.tags.isEmpty())
-                    continue;
-                if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                        recipe.getPulse_action().getId().equals(plugin_action) &&
-                        plugin_tags.containsAll(recipe.tags)) {
-                    matchingRecipes.add(recipe);
-                }
+
+        for (Recipe recipe : recipes) {
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.tags == null ||
+                    recipe.tags.isEmpty())
+                continue;
+            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
+                    recipe.getPulse_action().getId().equals(plugin_action) &&
+                    plugin_tags.containsAll(recipe.tags)) {
+                matchingRecipes.add(recipe);
             }
-        } catch (ClassCastException exception) {
-            recipes = null;
-            return false;
         }
 
         if (matchingRecipes.isEmpty()) return false;
@@ -297,7 +277,4 @@ public class RecipesManager implements RecipeEvaluator {
         recipeTrackSender.sendTracking(recipeId, trackingEvent);
     }
 
-    public static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences(NEAR_RECIPES_PREFS_NAME, Context.MODE_PRIVATE);
-    }
 }

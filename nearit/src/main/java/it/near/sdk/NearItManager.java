@@ -199,7 +199,6 @@ public class NearItManager implements ProfileUpdateListener {
         recipesManager = new RecipesManager(
                 recipeValidationFilter,
                 recipeTrackSender,
-                new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)),
                 recipeRepository,
                 recipesApi);
 
