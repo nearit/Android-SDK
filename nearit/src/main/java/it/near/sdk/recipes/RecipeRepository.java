@@ -7,7 +7,6 @@ import com.google.gson.reflect.TypeToken;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,10 +19,12 @@ import it.near.sdk.utils.timestamp.NearTimestampChecker;
 public class RecipeRepository {
 
     private static final String TAG = "RecipeRepository";
-    private static final String ONLINE_EV = "online_evaluation";
-    private static final String TIMESTAMP = "timestamp";
-    private static final String NEAR_RECIPES_REPO_PREFS_NAME = "NearITRecipeSP";
-    private List<Recipe> recipes = new ArrayList<>();
+    static final String ONLINE_EV = "online_evaluation";
+    static final String TIMESTAMP = "timestamp";
+    static final String NEAR_RECIPES_REPO_PREFS_NAME = "NearITRecipeSP";
+    static final long TIMESTAMP_DEF_VALUE = 0L;
+    static final boolean ONLINE_EV_DEFAULT = true;
+    private List<Recipe> recipes;
 
     private final NearTimestampChecker nearTimestampChecker;
     private final Cacher<Recipe> cache;
@@ -55,12 +56,18 @@ public class RecipeRepository {
     }
 
     public void addRecipe(Recipe recipe) {
+        List<Recipe> recipes = getLocalRecipes();
         recipes.add(recipe);
         cache.persistList(recipes);
+        this.recipes = recipes;
     }
 
     public void syncRecipes(final RecipesListener listener) {
         long timestamp = getCacheTimestamp();
+        if (timestamp == TIMESTAMP_DEF_VALUE) {
+            refreshRecipes(listener);
+            return;
+        }
         nearTimestampChecker.checkRecipeTimeStamp(timestamp, new NearTimestampChecker.SyncCheckListener() {
             @Override
             public void syncNeeded() {
@@ -69,7 +76,7 @@ public class RecipeRepository {
 
             @Override
             public void syncNotNeeded() {
-                listener.onGotRecipes(recipes, getOnlineEv());
+                listener.onGotRecipes(getLocalRecipes(), getOnlineEv(), false);
             }
         });
     }
@@ -83,12 +90,12 @@ public class RecipeRepository {
                 cache.persistList(recipes);
 
                 setOnlineEv(online_evaluation_fallback);
-                listener.onGotRecipes(recipes, online_evaluation_fallback);
+                listener.onGotRecipes(recipes, online_evaluation_fallback, true);
             }
 
             @Override
             public void onRecipeProcessError() {
-                listener.onRecipesError();
+                listener.onGotRecipes(getLocalRecipes(), getOnlineEv(), false);
             }
         });
     }
@@ -98,7 +105,7 @@ public class RecipeRepository {
     }
 
     private long getCacheTimestamp() {
-        return sp.getLong(TIMESTAMP, 0L);
+        return sp.getLong(TIMESTAMP, TIMESTAMP_DEF_VALUE);
     }
 
     private void setOnlineEv(boolean online_ev) {
@@ -106,7 +113,7 @@ public class RecipeRepository {
     }
 
     private boolean getOnlineEv() {
-        return sp.getBoolean(ONLINE_EV, true);
+        return sp.getBoolean(ONLINE_EV, ONLINE_EV_DEFAULT);
     }
 
     private List<Recipe> loadCachedList() throws JSONException {
@@ -118,8 +125,7 @@ public class RecipeRepository {
     }
 
     public interface RecipesListener {
-        void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback);
-        void onRecipesError();
+        void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged);
     }
 
 }

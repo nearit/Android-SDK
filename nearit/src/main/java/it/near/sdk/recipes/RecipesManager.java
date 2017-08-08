@@ -96,13 +96,8 @@ public class RecipesManager implements RecipeEvaluator {
     public void syncConfig(final RecipeRefreshListener listener) {
         recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
             @Override
-            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback) {
+            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                 listener.onRecipesRefresh();
-            }
-
-            @Override
-            public void onRecipesError() {
-                listener.onRecipesRefreshFail();
             }
         });
     }
@@ -114,13 +109,8 @@ public class RecipesManager implements RecipeEvaluator {
     public void refreshConfig(final RecipeRefreshListener listener) {
         recipeRepository.refreshRecipes(new RecipeRepository.RecipesListener() {
             @Override
-            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback) {
+            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                 listener.onRecipesRefresh();
-            }
-
-            @Override
-            public void onRecipesError() {
-                listener.onRecipesRefreshFail();
             }
         });
     }
