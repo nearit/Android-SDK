@@ -37,7 +37,6 @@ import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
 import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
 import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
 import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
-import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.RecipeRefreshListener;
@@ -152,7 +151,11 @@ public class NearItManager implements ProfileUpdateListener {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
                 NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
-                refreshConfigs();
+                if (created) {
+                    recipesManager.refreshConfig();
+                } else {
+                    recipesManager.syncConfig();
+                }
             }
 
             @Override
@@ -161,39 +164,34 @@ public class NearItManager implements ProfileUpdateListener {
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
                 updateInstallation();
+                recipesManager.syncConfig();
             }
         });
     }
 
-    private void plugInSetup(Context application, GlobalConfig globalConfig) {
+    private void plugInSetup(Context context, GlobalConfig globalConfig) {
         RecipesHistory recipesHistory = new RecipesHistory(
-                RecipesHistory.getSharedPreferences(application),
+                RecipesHistory.getSharedPreferences(context),
                 new CurrentTime()
         );
-        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
-        TrackManager trackManager = TrackManager.obtain(application);
+        TrackManager trackManager = TrackManager.obtain(context);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
         validators.add(new AdvScheduleValidator(new CurrentTime()));
         RecipeValidationFilter recipeValidationFilter = new RecipeValidationFilter(validators);
 
-        RecipesApi recipesApi = new RecipesApi(
-                new NearAsyncHttpClient(context),
-                RecipesApi.buildMorpheus(),
-                evaluationBodyBuilder,
-                globalConfig
-        );
+        RecipesApi recipesApi = RecipesApi.obtain(context, recipesHistory, globalConfig);
         NearItTimeStampApi nearItTimeStampApi = new NearItTimeStampApi(
-                new NearAsyncHttpClient(context),
+                new NearAsyncHttpClient(this.context),
                 NearItTimeStampApi.buildMorpheus(),
                 globalConfig);
         NearTimestampChecker nearTimestampChecker = new NearTimestampChecker(nearItTimeStampApi);
         RecipeRepository recipeRepository = new RecipeRepository(
                 nearTimestampChecker,
-                new Cacher<Recipe>(RecipeRepository.getSharedPreferences(context)),
+                new Cacher<Recipe>(RecipeRepository.getSharedPreferences(this.context)),
                 recipesApi,
                 new CurrentTime(),
-                RecipeRepository.getSharedPreferences(context)
+                RecipeRepository.getSharedPreferences(this.context)
                 );
         RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipesHistory, trackManager, new CurrentTime());
         recipesManager = new RecipesManager(
@@ -202,21 +200,21 @@ public class NearItManager implements ProfileUpdateListener {
                 recipeRepository,
                 recipesApi);
 
-        geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
+        geopolis = new GeopolisManager(context, recipesManager, globalConfig, trackManager);
 
-        contentNotification = ContentReaction.obtain(application, nearNotifier);
+        contentNotification = ContentReaction.obtain(context, nearNotifier);
         recipesManager.addReaction(contentNotification);
 
         simpleNotification = new SimpleNotificationReaction(nearNotifier);
         recipesManager.addReaction(simpleNotification);
 
-        couponReaction = CouponReaction.obtain(application, nearNotifier, globalConfig);
+        couponReaction = CouponReaction.obtain(context, nearNotifier, globalConfig);
         recipesManager.addReaction(couponReaction);
 
-        customJSON = CustomJSONReaction.obtain(application, nearNotifier);
+        customJSON = CustomJSONReaction.obtain(context, nearNotifier);
         recipesManager.addReaction(customJSON);
 
-        feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
+        feedback = FeedbackReaction.obtain(context, nearNotifier, globalConfig);
         recipesManager.addReaction(feedback);
 
     }
@@ -303,7 +301,7 @@ public class NearItManager implements ProfileUpdateListener {
      * Force the refresh of all SDK configurations. The listener will be notified with the recipes refresh outcome.
      */
     public void refreshConfigs(RecipeRefreshListener listener) {
-        recipesManager.refreshConfig(listener);
+        recipesManager.syncConfig(listener);
         geopolis.refreshConfig();
         contentNotification.refreshConfig();
         simpleNotification.refreshConfig();

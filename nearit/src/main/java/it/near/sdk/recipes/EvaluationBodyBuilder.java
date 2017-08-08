@@ -87,4 +87,8 @@ public class EvaluationBodyBuilder {
         block.put(KEY_RECIPES_NOTIFIED_AT, recipesHistory.getRecipeLogMap());
         return block;
     }
+
+    public static EvaluationBodyBuilder obtain(GlobalConfig globalConfig, RecipesHistory recipesHistory) {
+        return new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
+    }
 }
