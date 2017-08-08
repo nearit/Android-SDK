@@ -51,8 +51,6 @@ public class NearTimestampChecker {
         return false;
     }
 
-    // public static NearTimestampChecker create();
-
     public interface SyncCheckListener {
         void syncNeeded();
         void syncNotNeeded();

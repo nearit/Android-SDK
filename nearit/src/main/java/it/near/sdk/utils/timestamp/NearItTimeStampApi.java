@@ -16,7 +16,7 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 
 public class NearItTimeStampApi {
 
-    private static final String TIMESTAMP_PATH = "timestamp";
+    private static final String TIMESTAMP_PATH = "timestamps";
 
     private final NearAsyncHttpClient httpClient;
     private final Morpheus morpheus;
@@ -36,7 +36,7 @@ public class NearItTimeStampApi {
 
         Uri url = Uri.parse(TIMESTAMP_PATH)
                 .buildUpon()
-                .appendEncodedPath(globalConfig.getAppId())
+                .appendPath(globalConfig.getAppId())
                 .build();
 
         try {

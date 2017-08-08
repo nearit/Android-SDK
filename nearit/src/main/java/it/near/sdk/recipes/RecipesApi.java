@@ -1,5 +1,6 @@
 package it.near.sdk.recipes;
 
+import android.content.Context;
 import android.net.Uri;
 
 import org.json.JSONException;
@@ -122,7 +123,7 @@ public class RecipesApi {
 
     public void evaluateRecipe(String recipeId, final SingleRecipeListener listener) {
         NearLog.d(TAG, "Evaluating recipe: " + recipeId);
-        if (recipeId == null){
+        if (recipeId == null) {
             listener.onRecipeFetchError("no recipe id set");
             return;
         }
@@ -225,13 +226,25 @@ public class RecipesApi {
         return morpheus;
     }
 
+    public static RecipesApi obtain(Context context, RecipesHistory recipesHistory, GlobalConfig globalConfig) {
+        EvaluationBodyBuilder evaluationBodyBuilder = EvaluationBodyBuilder.obtain(globalConfig, recipesHistory);
+        return new RecipesApi(
+                new NearAsyncHttpClient(context),
+                RecipesApi.buildMorpheus(),
+                evaluationBodyBuilder,
+                globalConfig
+        );
+    }
+
     public interface RecipesListener {
         void onRecipeProcessSuccess(List<Recipe> recipes, boolean online_evaluation_fallback);
+
         void onRecipeProcessError();
     }
 
     public interface SingleRecipeListener {
         void onRecipeFetchSuccess(Recipe recipe);
+
         void onRecipeFetchError(String error);
     }
 }

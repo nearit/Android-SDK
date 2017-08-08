@@ -34,8 +34,6 @@ public class RecipesManager implements RecipeEvaluator {
         this.recipeTrackSender = recipeTrackSender;
         this.recipeRepository = recipeRepository;
         this.recipesApi = recipesApi;
-
-        syncConfig();
     }
 
     public void addReaction(Reaction reaction) {
