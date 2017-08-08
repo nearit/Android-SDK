@@ -69,6 +69,24 @@ public class NearTimestampCheckerTest {
     }
 
     @Test
+    public void whenRemoteDataIsNewerThanCache_cacheIsCold() {
+        mockNetworkRequestSuccess(
+                buildTimestampsFor(1000L, 1000L)
+        );
+        nearTimestampChecker.checkRecipeTimeStamp(0L, mockSyncCheckListener);
+        verify(mockSyncCheckListener, times(1)).syncNeeded();
+        nearTimestampChecker.checkRecipeTimeStamp(999L, mockSyncCheckListener);
+        verify(mockSyncCheckListener, times(2)).syncNeeded();
+
+        nearTimestampChecker.checkGeopolisTimeStamp(0L, mockSyncCheckListener);
+        verify(mockSyncCheckListener, times(3)).syncNeeded();
+        nearTimestampChecker.checkGeopolisTimeStamp(999L, mockSyncCheckListener);
+        verify(mockSyncCheckListener, times(4)).syncNeeded();
+
+        verify(mockSyncCheckListener, never()).syncNotNeeded();
+    }
+
+    @Test
     public void whenRemoteDataTimestampIsUnavailable_cacheIsCold() {
         CacheTimestamp geopolisCTS = new CacheTimestamp();
         geopolisCTS.what = GEOPOLIS;

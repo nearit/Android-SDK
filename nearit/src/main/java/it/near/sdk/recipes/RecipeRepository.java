@@ -7,12 +7,13 @@ import com.google.gson.reflect.TypeToken;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.timestamp.NearTimestampChecker;
 
 public class RecipeRepository {
@@ -24,20 +25,19 @@ public class RecipeRepository {
 
     private final NearTimestampChecker nearTimestampChecker;
     private final Cacher<Recipe> cache;
-    private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final RecipesApi recipesApi;
+    private final CurrentTime currentTime;
     private final SharedPreferences sp;
 
     public RecipeRepository(NearTimestampChecker nearTimestampChecker,
                             Cacher<Recipe> cache,
-                            Morpheus morpheus,
-                            EvaluationBodyBuilder evaluationBodyBuilder,
                             RecipesApi recipesApi,
+                            CurrentTime currentTime,
                             SharedPreferences sp) {
         this.nearTimestampChecker = nearTimestampChecker;
         this.cache = cache;
-        this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.recipesApi = recipesApi;
+        this.currentTime = currentTime;
         this.sp = sp;
 
         try {
@@ -45,6 +45,11 @@ public class RecipeRepository {
         } catch (Exception e) {
             NearLog.d(TAG, "Recipes format error");
         }
+    }
+
+    public List<Recipe> getLocalRecipes() {
+        if (recipes == null) return recipes;
+        else return Collections.emptyList();
     }
 
     public void syncRecipes(final RecipesListener listener) {
@@ -57,7 +62,7 @@ public class RecipeRepository {
 
             @Override
             public void syncNotNeeded() {
-                listener.onGotRecipes(recipes);
+                listener.onGotRecipes(recipes, getOnlineEv());
             }
         });
     }
@@ -66,10 +71,12 @@ public class RecipeRepository {
         recipesApi.processRecipes(new RecipesApi.RecipesListener() {
             @Override
             public void onRecipeProcessSuccess(List<Recipe> remote_recipes, boolean online_evaluation_fallback) {
-                setOnlineEvaluationPreference(online_evaluation_fallback);
                 recipes = remote_recipes;
+                setCacheTimestamp(currentTime.currentTimeStampSeconds());
                 cache.persistList(recipes);
-                listener.onGotRecipes(recipes);
+
+                setOnlineEv(online_evaluation_fallback);
+                listener.onGotRecipes(recipes, online_evaluation_fallback);
             }
 
             @Override
@@ -79,7 +86,6 @@ public class RecipeRepository {
         });
     }
 
-
     private void setCacheTimestamp(long timestamp) {
         sp.edit().putLong(TIMESTAMP, timestamp).commit();
     }
@@ -88,11 +94,11 @@ public class RecipeRepository {
         return sp.getLong(TIMESTAMP, 0L);
     }
 
-    private void setOnlineEvaluationPreference(boolean enabled) {
-        sp.edit().putBoolean(ONLINE_EV, enabled).commit();
+    private void setOnlineEv(boolean online_ev) {
+        sp.edit().putBoolean(ONLINE_EV, online_ev).commit();
     }
 
-    private boolean getOnlineEvaluationPref() {
+    private boolean getOnlineEv() {
         return sp.getBoolean(ONLINE_EV, true);
     }
 
@@ -101,7 +107,7 @@ public class RecipeRepository {
     }
 
     public interface RecipesListener {
-        void onGotRecipes(List<Recipe> recipes);
+        void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback);
         void onRecipesError();
     }
 
