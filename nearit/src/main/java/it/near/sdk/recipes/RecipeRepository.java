@@ -1,5 +1,6 @@
 package it.near.sdk.recipes;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.google.gson.reflect.TypeToken;
@@ -21,6 +22,7 @@ public class RecipeRepository {
     private static final String TAG = "RecipeRepository";
     private static final String ONLINE_EV = "online_evaluation";
     private static final String TIMESTAMP = "timestamp";
+    private static final String NEAR_RECIPES_REPO_PREFS_NAME = "NearITRecipeSP";
     private List<Recipe> recipes = new ArrayList<>();
 
     private final NearTimestampChecker nearTimestampChecker;
@@ -48,8 +50,13 @@ public class RecipeRepository {
     }
 
     public List<Recipe> getLocalRecipes() {
-        if (recipes == null) return recipes;
+        if (recipes != null) return recipes;
         else return Collections.emptyList();
+    }
+
+    public void addRecipe(Recipe recipe) {
+        recipes.add(recipe);
+        cache.persistList(recipes);
     }
 
     public void syncRecipes(final RecipesListener listener) {
@@ -104,6 +111,10 @@ public class RecipeRepository {
 
     private List<Recipe> loadCachedList() throws JSONException {
         return cache.loadList(new TypeToken<List<Recipe>>() {}.getType());
+    }
+
+    public static SharedPreferences getSharedPreferences(Context context) {
+        return context.getSharedPreferences(NEAR_RECIPES_REPO_PREFS_NAME, Context.MODE_PRIVATE);
     }
 
     public interface RecipesListener {

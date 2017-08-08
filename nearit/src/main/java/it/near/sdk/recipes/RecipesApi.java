@@ -16,6 +16,11 @@ import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
+import it.near.sdk.recipes.models.OperationAction;
+import it.near.sdk.recipes.models.PulseAction;
+import it.near.sdk.recipes.models.PulseBundle;
+import it.near.sdk.recipes.models.ReactionAction;
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.ListMetaBundle;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -207,6 +212,17 @@ public class RecipesApi {
             NearLog.d(TAG, "Shouldn't be here");
             listener.onRecipeFetchError("Shouldn't be here");
         }
+    }
+
+    public static Morpheus buildMorpheus() {
+        Morpheus morpheus = new Morpheus();
+        morpheus.getFactory().getDeserializer().registerResourceClass("recipes", Recipe.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_actions", PulseAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("operation_actions", OperationAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_actions", ReactionAction.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_bundles", PulseBundle.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
+        return morpheus;
     }
 
     public interface RecipesListener {

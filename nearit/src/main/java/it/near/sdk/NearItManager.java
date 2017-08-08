@@ -41,7 +41,9 @@ import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.RecipeRefreshListener;
+import it.near.sdk.recipes.RecipeRepository;
 import it.near.sdk.recipes.RecipeTrackSender;
+import it.near.sdk.recipes.RecipesApi;
 import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
@@ -53,6 +55,8 @@ import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearUtils;
+import it.near.sdk.utils.timestamp.NearItTimeStampApi;
+import it.near.sdk.utils.timestamp.NearTimestampChecker;
 
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
@@ -173,14 +177,31 @@ public class NearItManager implements ProfileUpdateListener {
         validators.add(new AdvScheduleValidator(new CurrentTime()));
         RecipeValidationFilter recipeValidationFilter = new RecipeValidationFilter(validators);
 
+        RecipesApi recipesApi = new RecipesApi(
+                new NearAsyncHttpClient(context),
+                RecipesApi.buildMorpheus(),
+                evaluationBodyBuilder,
+                globalConfig
+        );
+        NearItTimeStampApi nearItTimeStampApi = new NearItTimeStampApi(
+                new NearAsyncHttpClient(context),
+                NearItTimeStampApi.buildMorpheus(),
+                globalConfig);
+        NearTimestampChecker nearTimestampChecker = new NearTimestampChecker(nearItTimeStampApi);
+        RecipeRepository recipeRepository = new RecipeRepository(
+                nearTimestampChecker,
+                new Cacher<Recipe>(RecipeRepository.getSharedPreferences(context)),
+                recipesApi,
+                new CurrentTime(),
+                RecipeRepository.getSharedPreferences(context)
+                );
         RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipesHistory, trackManager, new CurrentTime());
         recipesManager = new RecipesManager(
-                new NearAsyncHttpClient(application),
-                globalConfig,
                 recipeValidationFilter,
-                evaluationBodyBuilder,
                 recipeTrackSender,
-                new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
+                new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)),
+                recipeRepository,
+                recipesApi);
 
         geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
 
