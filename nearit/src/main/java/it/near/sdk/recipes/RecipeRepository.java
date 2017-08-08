@@ -50,19 +50,19 @@ public class RecipeRepository {
         }
     }
 
-    public List<Recipe> getLocalRecipes() {
+    List<Recipe> getLocalRecipes() {
         if (recipes != null) return recipes;
         else return Collections.emptyList();
     }
 
-    public void addRecipe(Recipe recipe) {
+    void addRecipe(Recipe recipe) {
         List<Recipe> recipes = getLocalRecipes();
         recipes.add(recipe);
         cache.persistList(recipes);
         this.recipes = recipes;
     }
 
-    public void syncRecipes(final RecipesListener listener) {
+    void syncRecipes(final RecipesListener listener) {
         long timestamp = getCacheTimestamp();
         if (timestamp == TIMESTAMP_DEF_VALUE) {
             refreshRecipes(listener);
@@ -81,7 +81,7 @@ public class RecipeRepository {
         });
     }
 
-    public void refreshRecipes(final RecipesListener listener) {
+    void refreshRecipes(final RecipesListener listener) {
         recipesApi.processRecipes(new RecipesApi.RecipesListener() {
             @Override
             public void onRecipeProcessSuccess(List<Recipe> remote_recipes, boolean online_evaluation_fallback) {
@@ -124,7 +124,7 @@ public class RecipeRepository {
         return context.getSharedPreferences(NEAR_RECIPES_REPO_PREFS_NAME, Context.MODE_PRIVATE);
     }
 
-    public interface RecipesListener {
+    interface RecipesListener {
         void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged);
     }
 
