@@ -79,7 +79,13 @@ public class AttributeMapper {
         for (int i = 0; jsonArray.length() > i; i++) {
           Object obj = null;
           try {
-            obj = new Gson().fromJson(jsonArray.get(i).toString(), fieldArgClass);
+            if (jsonArray.get(i) instanceof String) {
+              // if we are parsing an array of string we don't ask Gson to parse them
+              // because if they have spaces, it will crash the attribute mapping (even if an array of strings with spaces is a valid json)
+              obj = jsonArray.get(i);
+            } else {
+              obj = new Gson().fromJson(jsonArray.get(i).toString(), fieldArgClass);
+            }
           } catch (JSONException e) {
             Logger.debug("JSONArray does not contain index " + i + ".");
           }

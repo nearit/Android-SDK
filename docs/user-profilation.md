@@ -8,23 +8,7 @@ We automatically create an anonymous profile for every installation of the app. 
 ```java
 String profileId = NearItManager.getInstance(context).getProfileId(context);
 ```
-If the result is null, it means that no profile is associated with the app installation (probably due to a network error).
-
-To explicitly register a new user in our platform call the method:
-```java
-NearItManager.getInstance(context).nearItUserProfile.createNewProfile(this, new ProfileCreationListener() {
-            @Override
-            public void onProfileCreated(boolean created, String profileId) {
-                // see the created boolean to know if the profile was freshly created or was already created 
-            }
-
-            @Override
-            public void onProfileCreationError(String error) {
-                
-            }
-        });
-```
-Calling this method multiple times will NOT create multiple profiles.
+If the result is null, it means that no profile is associated with the app installation (probably due to a network error). The SDK will re-try to create a profile at every start, and every time a new user data is set.
 
 After the profile is created set user data:
 ```java
