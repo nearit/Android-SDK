@@ -212,7 +212,7 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, String push_id, ReactionBundle reactionBundle) {
+    public void handlePushReaction(final Recipe recipe, ReactionBundle reactionBundle) {
         T element = (T) reactionBundle;
         if (element.hasContentToInclude()) {
             downloadSingleReaction(element.getId(), new ContentFetchListener<T>() {

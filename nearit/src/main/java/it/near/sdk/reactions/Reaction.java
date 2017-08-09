@@ -55,10 +55,9 @@ public abstract class Reaction {
      * of a push based recipe, it's highly unlikely that the recipe information will be cached.
      *
      * @param recipe          the recipe object.
-     * @param push_id         the id of the push notification.
      * @param reaction_bundle the reaction bundle.
      */
-    public abstract void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle);
+    public abstract void handlePushReaction(Recipe recipe, ReactionBundle reaction_bundle);
 
     /**
      * Handle a reaction from a push notification. This will fetch the reactionBundle if is not cached.
