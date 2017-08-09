@@ -125,6 +125,10 @@ public class RecipeRepository {
         return context.getSharedPreferences(NEAR_RECIPES_REPO_PREFS_NAME, Context.MODE_PRIVATE);
     }
 
+    public boolean shouldEvaluateOnline() {
+        return getOnlineEv();
+    }
+
     interface RecipesListener {
         void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged);
     }

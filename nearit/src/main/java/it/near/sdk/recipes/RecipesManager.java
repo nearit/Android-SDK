@@ -24,7 +24,6 @@ public class RecipesManager implements RecipeEvaluator {
     private final RecipeRepository recipeRepository;
     private final RecipesApi recipesApi;
     private final RecipeReactionHandler recipeReactionHandler;
-    private boolean online_eval = true;
 
     public RecipesManager(RecipeValidationFilter recipeValidationFilter,
                           RecipeTrackSender recipeTrackSender,
@@ -85,7 +84,6 @@ public class RecipesManager implements RecipeEvaluator {
             @Override
             public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                 listener.onRecipesRefresh();
-                RecipesManager.this.online_eval = online_evaluation_fallback;
             }
         });
     }
@@ -98,7 +96,6 @@ public class RecipesManager implements RecipeEvaluator {
             @Override
             public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                 listener.onRecipesRefresh();
-                RecipesManager.this.online_eval = online_evaluation_fallback;
             }
         });
     }
@@ -189,7 +186,6 @@ public class RecipesManager implements RecipeEvaluator {
 
     }
 
-
     private boolean handlePulseTags(TriggerRequest triggerRequest) {
         if (triggerRequest == null ||
                 triggerRequest.plugin_name == null ||
@@ -223,7 +219,7 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     private void handlePulseOnline(final TriggerRequest triggerRequest) {
-        if (online_eval) {
+        if (recipeRepository.shouldEvaluateOnline()) {
             onlinePulseEvaluation(triggerRequest);
         } else {
             recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
