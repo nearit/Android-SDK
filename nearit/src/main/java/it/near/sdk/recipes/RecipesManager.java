@@ -25,6 +25,7 @@ public class RecipesManager implements RecipeEvaluator {
     private final RecipeValidationFilter recipeValidationFilter;
     private final RecipeRepository recipeRepository;
     private final RecipesApi recipesApi;
+    private boolean online_eval = false;
 
     public RecipesManager(RecipeValidationFilter recipeValidationFilter,
                           RecipeTrackSender recipeTrackSender,
@@ -79,18 +80,6 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     /**
-     * Sync the recipe configuration, only if the cache is cold.
-     */
-    public void syncConfig(final RecipeRefreshListener listener) {
-        recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
-            @Override
-            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
-                listener.onRecipesRefresh();
-            }
-        });
-    }
-
-    /**
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      * Plus a listener will be notified of the refresh process.
      */
@@ -99,6 +88,20 @@ public class RecipesManager implements RecipeEvaluator {
             @Override
             public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                 listener.onRecipesRefresh();
+                RecipesManager.this.online_eval = online_evaluation_fallback;
+            }
+        });
+    }
+
+    /**
+     * Sync the recipe configuration, only if the cache is cold.
+     */
+    public void syncConfig(final RecipeRefreshListener listener) {
+        recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
+            @Override
+            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                listener.onRecipesRefresh();
+                RecipesManager.this.online_eval = online_evaluation_fallback;
             }
         });
     }
@@ -110,7 +113,9 @@ public class RecipesManager implements RecipeEvaluator {
      */
     public void gotRecipe(Recipe recipe) {
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
-        reaction.handleReaction(recipe);
+        if (reaction != null) {
+            reaction.handleReaction(recipe);
+        }
     }
 
     /**
@@ -124,7 +129,7 @@ public class RecipesManager implements RecipeEvaluator {
             public void onRecipeFetchSuccess(Recipe recipe) {
                 String reactionPluginName = recipe.getReaction_plugin_id();
                 Reaction reaction = reactions.get(reactionPluginName);
-                reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle());
+                reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
             }
 
             @Override
@@ -257,8 +262,23 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     @Override
-    public void handlePulseOnline(String plugin_name, String plugin_action, String plugin_bundle) {
-        onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+    public void handlePulseOnline(final String plugin_name, final String plugin_action, final String plugin_bundle, final List<String> tags) {
+        if (online_eval) {
+            onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+        } else {
+            recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
+                @Override
+                public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                    if (dataChanged) {
+                        boolean found = handlePulseLocally(plugin_name, plugin_action, plugin_bundle) ||
+                                handlePulseTags(plugin_name, plugin_action, tags);
+                        if (!found && online_evaluation_fallback) {
+                            onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     /**

@@ -236,7 +236,7 @@ public class GeopolisManager {
         NearLog.d(TAG, "firePulse!");
         if (!recipeEvaluator.handlePulseLocally(PLUGIN_NAME, event.event, pulseBundle) &&
                 !recipeEvaluator.handlePulseTags(PLUGIN_NAME, event.fallback, tags)) {
-                    recipeEvaluator.handlePulseOnline(PLUGIN_NAME, event.event, pulseBundle);
+                    recipeEvaluator.handlePulseOnline(PLUGIN_NAME, event.event, pulseBundle, tags);
                 }
     }
 
