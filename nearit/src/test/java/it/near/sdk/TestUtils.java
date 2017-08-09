@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
+import it.near.sdk.logging.NearLogger;
+
 public class TestUtils {
 
     public static JSONObject readJsonFile(Class clazz, String fileName) throws Exception {
@@ -21,5 +23,59 @@ public class TestUtils {
             result.write(buffer, 0, length);
         }
         return result.toString("UTF-8");
+    }
+
+    public static NearLogger emptyLogger() {
+        return new NearLogger() {
+            @Override
+            public void v(String tag, String msg) {
+
+            }
+
+            @Override
+            public void v(String tag, String msg, Throwable tr) {
+
+            }
+
+            @Override
+            public void d(String tag, String msg) {
+
+            }
+
+            @Override
+            public void d(String tag, String msg, Throwable tr) {
+
+            }
+
+            @Override
+            public void i(String tag, String msg) {
+
+            }
+
+            @Override
+            public void i(String tag, String msg, Throwable tr) {
+
+            }
+
+            @Override
+            public void w(String tag, String msg) {
+
+            }
+
+            @Override
+            public void w(String tag, String msg, Throwable tr) {
+
+            }
+
+            @Override
+            public void e(String tag, String msg) {
+
+            }
+
+            @Override
+            public void e(String tag, String msg, Throwable tr) {
+
+            }
+        };
     }
 }

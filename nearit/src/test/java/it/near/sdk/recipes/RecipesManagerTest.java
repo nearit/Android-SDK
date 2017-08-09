@@ -1,6 +1,8 @@
 package it.near.sdk.recipes;
 
+import org.json.JSONException;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -11,6 +13,8 @@ import org.mockito.stubbing.Answer;
 
 import java.util.List;
 
+import it.near.sdk.TestUtils;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.Reaction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
@@ -20,11 +24,13 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,6 +51,11 @@ public class RecipesManagerTest {
 
     @Mock
     private RecipeRefreshListener recipeRefreshListener;
+
+    @BeforeClass
+    public static void init() {
+        NearLog.setLogger(TestUtils.emptyLogger());
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -139,6 +150,69 @@ public class RecipesManagerTest {
         }).when(recipesApi).fetchRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
         recipesManager.processRecipe("id");
         verify(reaction, never()).handlePushReaction(any(Recipe.class), any(ReactionBundle.class));
+    }
+
+    @Test
+    public void processRecipeFromReactionTriple_shouldTriggerReaction() {
+        String recipeId = "recipeID";
+        String notificationText = "text";
+        String plugin_name = "plugin name";
+        String plugin_action = "plugin_action";
+        String plugin_bundle_id = "pbI";
+        Reaction reaction = addMockedReaction(plugin_name);
+        recipesManager.processRecipe(recipeId, notificationText, plugin_name, plugin_action, plugin_bundle_id);
+        verifyZeroInteractions(recipesApi);
+        verify(reaction, atLeastOnce()).handlePushReaction(recipeId, notificationText, plugin_action, plugin_bundle_id);
+    }
+
+    @Test
+    public void processRecipeFromReactionTripleButNoReaction_shouldNotHaveSideEffects() {
+        String recipeId = "recipeID";
+        String notificationText = "text";
+        String plugin_name = "plugin name";
+        String plugin_action = "plugin_action";
+        String plugin_bundle_id = "pbI";
+        // Reaction reaction = addMockedReaction(plugin_name);  we don't do this
+        recipesManager.processRecipe(recipeId, notificationText, plugin_name, plugin_action, plugin_bundle_id);
+        verifyZeroInteractions(recipesApi);
+    }
+
+    @Test
+    public void evaluateRecipe_shouldSendRequestAndHandleResponse() {
+        String plugin_name = "plugin_name";
+        Reaction reaction = addMockedReaction(plugin_name);
+        final Recipe recipe = new Recipe();
+        recipe.setReaction_plugin_id(plugin_name);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((RecipesApi.SingleRecipeListener) invocation.getArguments()[1]).onRecipeFetchSuccess(recipe);
+                return null;
+            }
+        }).when(recipesApi).evaluateRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
+        recipesManager.evaluateRecipe("id");
+        verify(recipesApi, atLeastOnce()).evaluateRecipe(eq("id"), any(RecipesApi.SingleRecipeListener.class));
+        verify(reaction).handleReaction(recipe);
+    }
+
+    @Test
+    public void evaluateRecipe_shouldNotHaveSideEffectsOnError() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((RecipesApi.SingleRecipeListener)invocation.getArguments()[1]).onRecipeFetchError("error");
+                return null;
+            }
+        }).when(recipesApi).evaluateRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
+        recipesManager.evaluateRecipe("fail");
+    }
+
+    @Test
+    public void sendTracking_shouldTunnelRequest() throws JSONException {
+        String recipeId = "id";
+        String trackingEvent = "tr";
+        recipesManager.sendTracking(recipeId, trackingEvent);
+        verify(recipeTrackSender, atLeastOnce()).sendTracking(recipeId, trackingEvent);
     }
 
     private Reaction addMockedReaction(String plugin_name) {
