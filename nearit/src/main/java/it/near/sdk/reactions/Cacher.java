@@ -3,6 +3,7 @@ package it.near.sdk.reactions;
 import android.content.SharedPreferences;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 
 import org.json.JSONException;
@@ -18,7 +19,7 @@ public class Cacher<T> {
 
     public Cacher(SharedPreferences sp) {
         this.sp = sp;
-        gson = new Gson();
+        gson = new GsonBuilder().serializeNulls().create();
     }
 
     public void persistList(List<T> list) {
