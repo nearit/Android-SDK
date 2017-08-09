@@ -137,6 +137,7 @@ public class RecipesManagerTest {
                 return null;
             }
         }).when(recipesApi).fetchRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
+        recipesManager.processRecipe("id");
         verify(reaction, never()).handlePushReaction(any(Recipe.class), any(ReactionBundle.class));
     }
 
