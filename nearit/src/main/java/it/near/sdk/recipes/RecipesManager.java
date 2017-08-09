@@ -9,6 +9,7 @@ import java.util.List;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.Reaction;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.pulse.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 
 /**
@@ -150,6 +151,7 @@ public class RecipesManager implements RecipeEvaluator {
 
     /**
      * Handle a push recipe that contained the actual reaction bundle, encoded in the payload
+     *
      * @return whether the content was properly consumed by the reaction plugin
      */
     public boolean processReactionBundle(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleString) {
@@ -158,8 +160,8 @@ public class RecipesManager implements RecipeEvaluator {
         return reaction.handlePushBundledReaction(recipeId, notificationText, reactionAction, reactionBundleString);
     }
 
-    private void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle) {
-        recipesApi.onlinePulseEvaluation(pulse_plugin, pulse_action, pulse_bundle, new RecipesApi.SingleRecipeListener() {
+    private void onlinePulseEvaluation(TriggerRequest triggerRequest) {
+        recipesApi.onlinePulseEvaluation(triggerRequest.plugin_name, triggerRequest.plugin_action, triggerRequest.bundle_id, new RecipesApi.SingleRecipeListener() {
             @Override
             public void onRecipeFetchSuccess(Recipe recipe) {
                 recipeRepository.addRecipe(recipe);
@@ -175,9 +177,10 @@ public class RecipesManager implements RecipeEvaluator {
 
     /**
      * Online evaluation of a recipe.
+     *
      * @param recipeId recipe identifier.
      */
-    public void evaluateRecipe(String recipeId) {
+    void evaluateRecipe(String recipeId) {
         recipesApi.evaluateRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
             @Override
             public void onRecipeFetchSuccess(Recipe recipe) {
@@ -203,9 +206,11 @@ public class RecipesManager implements RecipeEvaluator {
         return true;
     }
 
-    @Override
-    public boolean handlePulseLocally(String plugin_name, String plugin_action, String plugin_bundle) {
-        if (plugin_name == null || plugin_action == null || plugin_bundle == null) return false;
+    private boolean handlePulseLocally(TriggerRequest triggerRequest) {
+        if (triggerRequest == null ||
+                triggerRequest.plugin_name == null ||
+                triggerRequest.plugin_action == null ||
+                triggerRequest.bundle_id == null) return false;
 
         List<Recipe> recipes = recipeRepository.getLocalRecipes();
         List<Recipe> matchingRecipes = new ArrayList<>();
@@ -218,9 +223,9 @@ public class RecipesManager implements RecipeEvaluator {
                     recipe.getPulse_bundle() == null ||
                     recipe.getPulse_bundle().getId() == null)
                 continue;
-            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                    recipe.getPulse_action().getId().equals(plugin_action) &&
-                    recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
+            if (recipe.getPulse_plugin_id().equals(triggerRequest.plugin_name) &&
+                    recipe.getPulse_action().getId().equals(triggerRequest.plugin_action) &&
+                    recipe.getPulse_bundle().getId().equals(triggerRequest.bundle_id)) {
                 matchingRecipes.add(recipe);
             }
         }
@@ -232,9 +237,12 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
 
-    @Override
-    public boolean handlePulseTags(String plugin_name, String plugin_action, List<String> plugin_tags) {
-        if (plugin_name == null || plugin_action == null || plugin_tags == null || plugin_tags.isEmpty())
+    private boolean handlePulseTags(TriggerRequest triggerRequest) {
+        if (triggerRequest == null ||
+                triggerRequest.plugin_name == null ||
+                triggerRequest.plugin_tag_action == null ||
+                triggerRequest.tags == null ||
+                triggerRequest.tags.isEmpty())
             return false;
 
         List<Recipe> recipes = recipeRepository.getLocalRecipes();
@@ -249,9 +257,9 @@ public class RecipesManager implements RecipeEvaluator {
                     recipe.tags == null ||
                     recipe.tags.isEmpty())
                 continue;
-            if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                    recipe.getPulse_action().getId().equals(plugin_action) &&
-                    plugin_tags.containsAll(recipe.tags)) {
+            if (recipe.getPulse_plugin_id().equals(triggerRequest.plugin_name) &&
+                    recipe.getPulse_action().getId().equals(triggerRequest.plugin_tag_action) &&
+                    triggerRequest.tags.containsAll(recipe.tags)) {
                 matchingRecipes.add(recipe);
             }
         }
@@ -261,23 +269,30 @@ public class RecipesManager implements RecipeEvaluator {
         return filterAndNotify(matchingRecipes);
     }
 
-    @Override
-    public void handlePulseOnline(final String plugin_name, final String plugin_action, final String plugin_bundle, final String tag_action, final List<String> tags) {
+    private void handlePulseOnline(final TriggerRequest triggerRequest) {
         if (online_eval) {
-            onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+            onlinePulseEvaluation(triggerRequest);
         } else {
             recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
                 @Override
                 public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                     if (dataChanged) {
-                        boolean found = handlePulseLocally(plugin_name, plugin_action, plugin_bundle) ||
-                                handlePulseTags(plugin_name, tag_action, tags);
+                        boolean found = handlePulseLocally(triggerRequest) ||
+                                handlePulseTags(triggerRequest);
                         if (!found && online_evaluation_fallback) {
-                            onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+                            onlinePulseEvaluation(triggerRequest);
                         }
                     }
                 }
             });
+        }
+    }
+
+    @Override
+    public void handleTriggerRequest(TriggerRequest triggerRequest) {
+        if (!handlePulseLocally(triggerRequest) &&
+                !handlePulseTags(triggerRequest)) {
+            handlePulseOnline(triggerRequest);
         }
     }
 

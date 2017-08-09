@@ -27,6 +27,7 @@ import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipeEvaluator;
+import it.near.sdk.recipes.pulse.TriggerRequest;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.utils.CurrentTime;
 
@@ -234,10 +235,14 @@ public class GeopolisManager {
 
     private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle) {
         NearLog.d(TAG, "firePulse!");
-        if (!recipeEvaluator.handlePulseLocally(PLUGIN_NAME, event.event, pulseBundle) &&
-                !recipeEvaluator.handlePulseTags(PLUGIN_NAME, event.fallback, tags)) {
-                    recipeEvaluator.handlePulseOnline(PLUGIN_NAME, event.event, pulseBundle, event.fallback, tags);
-                }
+
+        TriggerRequest triggerRequest = new TriggerRequest();
+        triggerRequest.plugin_name = PLUGIN_NAME;
+        triggerRequest.plugin_action = event.event;
+        triggerRequest.bundle_id = pulseBundle;
+        triggerRequest.plugin_tag_action = event.fallback;
+        triggerRequest.tags = tags;
+        recipeEvaluator.handleTriggerRequest(triggerRequest);
     }
 
     private final BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
