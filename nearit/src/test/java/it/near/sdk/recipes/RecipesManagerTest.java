@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -57,6 +58,8 @@ public class RecipesManagerTest {
     @Mock
     private RecipeRefreshListener recipeRefreshListener;
 
+    private TriggerRequest triggerRequest;
+
     @BeforeClass
     public static void init() {
         NearLog.setLogger(TestUtils.emptyLogger());
@@ -64,6 +67,7 @@ public class RecipesManagerTest {
 
     @Before
     public void setUp() throws Exception {
+        initTriggerRequest();
         recipesManager = new RecipesManager(
                 recipeValidationFilter,
                 recipeTrackSender,
@@ -102,7 +106,7 @@ public class RecipesManagerTest {
     }
 
     @Test
-    public void processRecipeRequest_sendsNetworkRequestAndPassListener() {
+    public void processRecipeRequest_sendsNetworkRequestWithPassListener() {
         RecipesApi.SingleRecipeListener singleRecipeListener = mock(RecipesApi.SingleRecipeListener.class);
         String recipeId = "recid";
         recipesManager.processRecipe(recipeId, singleRecipeListener);
@@ -111,13 +115,6 @@ public class RecipesManagerTest {
 
     @Test
     public void triggerRequestForLocalRecipeOnBundle_shouldTriggerWithoutNetworkCalls() {
-        TriggerRequest triggerRequest = new TriggerRequest();
-        triggerRequest.plugin_name = "myplugin";
-        triggerRequest.plugin_action = "myAction";
-        triggerRequest.bundle_id = "mybundle";
-        triggerRequest.plugin_tag_action = "tag_action";
-        triggerRequest.tags = Lists.newArrayList("parappa", "the rapper");
-
         // prepare a matching recipe in the repository
         Recipe matchingRecipe = new Recipe();
         matchingRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
@@ -142,13 +139,6 @@ public class RecipesManagerTest {
 
     @Test
     public void triggerRequestForLocalRecipeOnTags_shouldTriggerWithoutNetworkCalls() {
-        TriggerRequest triggerRequest = new TriggerRequest();
-        triggerRequest.plugin_name = "myplugin";
-        triggerRequest.plugin_action = "myAction";
-        triggerRequest.bundle_id = "mybundle";
-        triggerRequest.plugin_tag_action = "tag_action";
-        triggerRequest.tags = Lists.newArrayList("parappa", "the rapper");
-
         // prepare matching recipe
         Recipe matchingRecipe = new Recipe();
         matchingRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
@@ -171,13 +161,6 @@ public class RecipesManagerTest {
 
     @Test
     public void triggerRequestForLocalRecipeThatMatchesABundleRecipeAndATagRecipe_shouldOnlyTriggerTheBundleRecipe() {
-        TriggerRequest triggerRequest = new TriggerRequest();
-        triggerRequest.plugin_name = "myplugin";
-        triggerRequest.plugin_action = "myAction";
-        triggerRequest.bundle_id = "mybundle";
-        triggerRequest.plugin_tag_action = "tag_action";
-        triggerRequest.tags = Lists.newArrayList("parappa", "the rapper");
-
         // prepare matching recipes in the repository
         Recipe matchingBundleRecipe = new Recipe();
         Recipe matchingTagRecipe = new Recipe();
@@ -208,132 +191,152 @@ public class RecipesManagerTest {
         verify(recipeReactionHandler, never()).gotRecipe(matchingTagRecipe);
     }
 
-    /*@Test
-    public void getRecipe_triggersRightReactionPlugin() {
-        String plugin_name = "My_plugin";
-        Reaction rightReaction = addMockedReaction(plugin_name);
-
-        Reaction wrongReaction = addMockedReaction("not_my_plugin");
-
-        Recipe recipe = new Recipe();
-        recipe.setReaction_plugin_id("something_different");
-        recipesManager.gotRecipe(recipe);
-        verify(rightReaction, never()).handleReaction(recipe);
-        verify(wrongReaction, never()).handleReaction(recipe);
-
-        recipe.setReaction_plugin_id(plugin_name);
-        recipesManager.gotRecipe(recipe);
-        verify(rightReaction, atLeastOnce()).handleReaction(recipe);
-        verify(wrongReaction, never()).handleReaction(recipe);
-    }*/
-
-    /*@Test
-    public void singleRecipeProcessRequest_isDealtOnSuccess() {
-        String plugin_name = "plugin_name";
-        Reaction rightReaction = addMockedReaction(plugin_name);
+    @Test
+    public void whenNoLocalRecipesAreFoundAndOnlineEvaluationIsEnabled_matchingOnlineRecipeIsTriggeredAndAddedToRepo() {
+        // no recipes in the repository
+        when(recipeRepository.getLocalRecipes()).thenReturn(Lists.<Recipe>newArrayList());
+        // online evaluation by pulse in enabled
+        when(recipeRepository.shouldEvaluateOnline()).thenReturn(true);
 
         final Recipe recipe = new Recipe();
-        String recipeId = "id";
-        recipe.setId(recipeId);
-        recipe.setReaction_plugin_id(plugin_name);
-        ReactionBundle reactionBundle = mock(ReactionBundle.class);
-        recipe.setReaction_bundle(reactionBundle);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((RecipesApi.SingleRecipeListener) invocation.getArguments()[3]).onRecipeFetchSuccess(recipe);
+                return null;
+            }
+        }).when(recipesApi).onlinePulseEvaluation(anyString(), anyString(), anyString(), any(RecipesApi.SingleRecipeListener.class));
+
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verify(recipeReactionHandler).gotRecipe(recipe);
+        verify(recipeRepository).addRecipe(recipe);
+    }
+
+    @Test
+    public void whenNoLocalNorRemoteRecipesAreFoundAndOnlineEvaluationIsEnabled_nothingHappens() {
+        // no recipes in the repository
+        when(recipeRepository.getLocalRecipes()).thenReturn(Lists.<Recipe>newArrayList());
+        // online evaluation by pulse in enabled
+        when(recipeRepository.shouldEvaluateOnline()).thenReturn(true);
 
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((RecipesApi.SingleRecipeListener)invocation.getArguments()[1]).onRecipeFetchSuccess(recipe);
+                ((RecipesApi.SingleRecipeListener) invocation.getArguments()[3]).onRecipeFetchError("error");
                 return null;
             }
-        }).when(recipesApi).fetchRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
-        recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
-            @Override
-            public void onRecipeFetchSuccess(Recipe recipe) {
-            }
+        }).when(recipesApi).onlinePulseEvaluation(anyString(), anyString(), anyString(), any(RecipesApi.SingleRecipeListener.class));
 
-            @Override
-            public void onRecipeFetchError(String error) {
-            }
-        });
-        verify(rightReaction, atLeastOnce()).handlePushReaction(recipe, reactionBundle);
-    }*/
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verifyZeroInteractions(recipeReactionHandler);
+    }
 
-    /*@Test
-    public void singleRecipeProcessRequest_onAPIError() {
-        Reaction reaction = addMockedReaction("my_plugin");
+    @Test
+    public void whenNoLocalRecipesMatchAndSyncDoesNotRefreshData_nothingHappens() {
+        // no recipes in the repository
+        when(recipeRepository.getLocalRecipes()).thenReturn(Lists.<Recipe>newArrayList());
+        // online evaluation by pulse in disabled
+        when(recipeRepository.shouldEvaluateOnline()).thenReturn(false);
+
+        doAnswer(new Answer() {
+                     @Override
+                     public Object answer(InvocationOnMock invocation) throws Throwable {
+                         ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(
+                                 Lists.<Recipe>newArrayList(),
+                                 true,
+                                 false
+                         );
+                         return null;
+                     }
+                 }
+        ).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesListener.class));
+
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verifyZeroInteractions(recipeReactionHandler);
+    }
+
+    @Test
+    public void whenNoLocalRecipesMatchAndSyncedDataHasMatchingRecipe_thatRecipeTriggers() {
+        // no recipes in the repository
+        when(recipeRepository.getLocalRecipes()).thenReturn(Lists.<Recipe>newArrayList());
+        // online evaluation by pulse in disabled
+        when(recipeRepository.shouldEvaluateOnline()).thenReturn(false);
+
+        final Recipe matchingRecipe = new Recipe();
+        matchingRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
+        PulseAction action = new PulseAction();
+        action.setId(triggerRequest.plugin_action);
+        matchingRecipe.setPulse_action(action);
+        PulseBundle pulseBundle = new PulseBundle();
+        pulseBundle.setId(triggerRequest.bundle_id);
+        matchingRecipe.setPulse_bundle(pulseBundle);
+        matchingRecipe.labels = Maps.newHashMap();
+
+
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((RecipesApi.SingleRecipeListener)invocation.getArguments()[1]).onRecipeFetchError("error");
+                when(recipeRepository.getLocalRecipes()).thenReturn(Lists.newArrayList(matchingRecipe));
+                ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(
+                        Lists.newArrayList(matchingRecipe),
+                        false,
+                        true
+                );
                 return null;
             }
-        }).when(recipesApi).fetchRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
-        recipesManager.processRecipe("id", new RecipesApi.SingleRecipeListener() {
-            @Override
-            public void onRecipeFetchSuccess(Recipe recipe) {
-            }
+        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesListener.class));
 
-            @Override
-            public void onRecipeFetchError(String error) {
-            }
-        });
-        verify(reaction, never()).handlePushReaction(any(Recipe.class), any(ReactionBundle.class));
-    }*/
+        // the recipes are validated
+        when(recipeValidationFilter.filterRecipes(any(List.class))).then(returnsFirstArg());
 
-    /*@Test
-    public void processRecipeFromReactionTriple_shouldTriggerReaction() {
-        String recipeId = "recipeID";
-        String notificationText = "text";
-        String plugin_name = "plugin name";
-        String plugin_action = "plugin_action";
-        String plugin_bundle_id = "pbI";
-        Reaction reaction = addMockedReaction(plugin_name);
-        recipesManager.processRecipe(recipeId, notificationText, plugin_name, plugin_action, plugin_bundle_id);
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verify(recipeReactionHandler).gotRecipe(matchingRecipe);
         verifyZeroInteractions(recipesApi);
-        verify(reaction, atLeastOnce()).handlePushReaction(recipeId, notificationText, plugin_action, plugin_bundle_id);
-    }*/
+    }
 
-    /*@Test
-    public void processRecipeFromReactionTripleButNoReaction_shouldNotHaveSideEffects() {
-        String recipeId = "recipeID";
-        String notificationText = "text";
-        String plugin_name = "plugin name";
-        String plugin_action = "plugin_action";
-        String plugin_bundle_id = "pbI";
-        // Reaction reaction = addMockedReaction(plugin_name);  we don't do this
-        recipesManager.processRecipe(recipeId, notificationText, plugin_name, plugin_action, plugin_bundle_id);
-        verifyZeroInteractions(recipesApi);
-    }*/
+    @Test
+    public void whenEvOnlineSettingChangesAfterTheSync_ItGetsRespected() {
+        // no recipes in the repository
+        when(recipeRepository.getLocalRecipes()).thenReturn(Lists.<Recipe>newArrayList());
+        // online evaluation by pulse in disabled
+        when(recipeRepository.shouldEvaluateOnline()).thenReturn(false);
 
-    /*@Test
-    public void evaluateRecipe_shouldSendRequestAndHandleResponse() {
-        String plugin_name = "plugin_name";
-        Reaction reaction = addMockedReaction(plugin_name);
-        final Recipe recipe = new Recipe();
-        recipe.setReaction_plugin_id(plugin_name);
+        final Recipe matchingRecipe = new Recipe();
+        matchingRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
+        PulseAction action = new PulseAction();
+        action.setId(triggerRequest.plugin_action);
+        matchingRecipe.setPulse_action(action);
+        PulseBundle pulseBundle = new PulseBundle();
+        pulseBundle.setId(triggerRequest.bundle_id);
+        matchingRecipe.setPulse_bundle(pulseBundle);
+        matchingRecipe.labels = Maps.newHashMap();
+
+        // mock online ev setting change
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((RecipesApi.SingleRecipeListener) invocation.getArguments()[1]).onRecipeFetchSuccess(recipe);
+                ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(
+                        Lists.<Recipe>newArrayList(),
+                        true,
+                        true
+                );
                 return null;
             }
-        }).when(recipesApi).evaluateRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
-        recipesManager.evaluateRecipe("id");
-        verify(recipesApi, atLeastOnce()).evaluateRecipe(eq("id"), any(RecipesApi.SingleRecipeListener.class));
-        verify(reaction).handleReaction(recipe);
-    }*/
+        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesListener.class));
 
-    /*@Test
-    public void evaluateRecipe_shouldNotHaveSideEffectsOnError() {
+        // mock evaluation by pulse
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((RecipesApi.SingleRecipeListener)invocation.getArguments()[1]).onRecipeFetchError("error");
+                ((RecipesApi.SingleRecipeListener) invocation.getArguments()[3]).onRecipeFetchSuccess(matchingRecipe);
                 return null;
             }
-        }).when(recipesApi).evaluateRecipe(anyString(), any(RecipesApi.SingleRecipeListener.class));
-        recipesManager.evaluateRecipe("fail");
-    }*/
+        }).when(recipesApi).onlinePulseEvaluation(anyString(), anyString(), anyString(), any(RecipesApi.SingleRecipeListener.class));
+
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verify(recipeReactionHandler).gotRecipe(matchingRecipe);
+        verify(recipeRepository).addRecipe(matchingRecipe);
+    }
 
     @Test
     public void sendTracking_shouldTunnelRequest() throws JSONException {
@@ -341,6 +344,15 @@ public class RecipesManagerTest {
         String trackingEvent = "tr";
         recipesManager.sendTracking(recipeId, trackingEvent);
         verify(recipeTrackSender, atLeastOnce()).sendTracking(recipeId, trackingEvent);
+    }
+
+    private void initTriggerRequest() {
+        triggerRequest = new TriggerRequest();
+        triggerRequest.plugin_name = "myplugin";
+        triggerRequest.plugin_action = "myAction";
+        triggerRequest.bundle_id = "mybundle";
+        triggerRequest.plugin_tag_action = "tag_action";
+        triggerRequest.tags = Lists.newArrayList("parappa", "the rapper");
     }
 
 
