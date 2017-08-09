@@ -38,7 +38,7 @@ public class SimpleNotificationReaction extends Reaction {
     }
 
     @Override
-    public void handlePushReaction(Recipe recipe, String push_id, ReactionBundle reaction_bundle) {
+    public void handlePushReaction(Recipe recipe, ReactionBundle reaction_bundle) {
         nearNotifier.deliverBackgroundPushReaction(SimpleNotification.fromRecipe(recipe), recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
     }
 
