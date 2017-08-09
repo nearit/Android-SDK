@@ -25,7 +25,7 @@ public class RecipesManager implements RecipeEvaluator {
     private final RecipeValidationFilter recipeValidationFilter;
     private final RecipeRepository recipeRepository;
     private final RecipesApi recipesApi;
-    private boolean online_eval = false;
+    private boolean online_eval = true;
 
     public RecipesManager(RecipeValidationFilter recipeValidationFilter,
                           RecipeTrackSender recipeTrackSender,
@@ -262,7 +262,7 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     @Override
-    public void handlePulseOnline(final String plugin_name, final String plugin_action, final String plugin_bundle, final List<String> tags) {
+    public void handlePulseOnline(final String plugin_name, final String plugin_action, final String plugin_bundle, final String tag_action, final List<String> tags) {
         if (online_eval) {
             onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
         } else {
@@ -271,7 +271,7 @@ public class RecipesManager implements RecipeEvaluator {
                 public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                     if (dataChanged) {
                         boolean found = handlePulseLocally(plugin_name, plugin_action, plugin_bundle) ||
-                                handlePulseTags(plugin_name, plugin_action, tags);
+                                handlePulseTags(plugin_name, tag_action, tags);
                         if (!found && online_evaluation_fallback) {
                             onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
                         }

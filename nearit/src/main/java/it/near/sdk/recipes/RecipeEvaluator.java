@@ -19,6 +19,6 @@ public interface RecipeEvaluator {
     /**
      * Check online for a recipe with a matching triple.
      */
-    void handlePulseOnline(String plugin_name, String plugin_action, String plugin_bundle, List<String> tags);
+    void handlePulseOnline(String plugin_name, String plugin_action, String plugin_bundle, String tag_action, List<String> tags);
 
 }
