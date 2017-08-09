@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.zip.DataFormatException;
 
 import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
-import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.recipes.RecipeReactionHandler;
 import it.near.sdk.utils.FormatDecoder;
 
 class PushProcessor {
 
-    private final RecipesManager recipesManager;
+    private final RecipeReactionHandler recipeReactionHandler;
     private final FormatDecoder formatDecoder;
 
     static final String REACTION_PLUGIN_ID = "reaction_plugin_id";
@@ -24,8 +24,8 @@ class PushProcessor {
     static final String REACTION_BUNDLE = "reaction_bundle";
     static final String NOTIFICATION_BODY = "body";
 
-    PushProcessor(RecipesManager recipesManager, FormatDecoder formatDecoder) {
-        this.recipesManager = recipesManager;
+    PushProcessor(RecipeReactionHandler recipeReactionHandler, FormatDecoder formatDecoder) {
+        this.recipeReactionHandler = recipeReactionHandler;
         this.formatDecoder = formatDecoder;
     }
 
@@ -48,7 +48,7 @@ class PushProcessor {
 
                     try {
                         String reactionBundleString = decodeCompressedBundle(pushData);
-                        boolean success = recipesManager.processReactionBundle(recipeId, notificationText, reactionPluginId, reactionActionId, reactionBundleString);
+                        boolean success = recipeReactionHandler.processReactionBundle(recipeId, notificationText, reactionPluginId, reactionActionId, reactionBundleString);
                         if (!success) {
                             return processFromBundleId(recipeId, notificationText, reactionPluginId, reactionActionId, reactionBundleId);
                         } else {
@@ -80,12 +80,12 @@ class PushProcessor {
 
 
     private boolean oldProcessRequest(String recipeId) {
-        recipesManager.processRecipe(recipeId);
+        recipeReactionHandler.processRecipe(recipeId);
         return true;
     }
 
     private boolean processFromBundleId(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleId) {
-        recipesManager.processRecipe(recipeId, notificationText, reactionPluginId, reactionActionId, reactionBundleId);
+        recipeReactionHandler.processRecipe(recipeId, notificationText, reactionPluginId, reactionActionId, reactionBundleId);
         return true;
     }
 

@@ -15,6 +15,7 @@ import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,6 +31,7 @@ import it.near.sdk.operation.ProfileUpdateListener;
 import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
+import it.near.sdk.reactions.Reaction;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
 import it.near.sdk.reactions.couponplugin.CouponListener;
 import it.near.sdk.reactions.couponplugin.CouponReaction;
@@ -39,6 +41,7 @@ import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
 import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.RecipeReactionHandler;
 import it.near.sdk.recipes.RecipeRefreshListener;
 import it.near.sdk.recipes.RecipeRepository;
 import it.near.sdk.recipes.RecipeTrackSender;
@@ -70,7 +73,7 @@ import it.near.sdk.utils.timestamp.NearTimestampChecker;
  * }
  * </pre>
  */
-public class NearItManager implements ProfileUpdateListener {
+public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler {
 
     @Nullable
     private volatile static NearItManager sInstance = null;
@@ -94,6 +97,7 @@ public class NearItManager implements ProfileUpdateListener {
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
     private NearInstallation nearInstallation;
     private NearItUserProfile nearItUserProfile;
+    private HashMap<String, Reaction> reactions = new HashMap<>();
     private Context context;
 
 
@@ -198,24 +202,25 @@ public class NearItManager implements ProfileUpdateListener {
                 recipeValidationFilter,
                 recipeTrackSender,
                 recipeRepository,
-                recipesApi);
+                recipesApi,
+                this);
 
         geopolis = new GeopolisManager(context, recipesManager, globalConfig, trackManager);
 
         contentNotification = ContentReaction.obtain(context, nearNotifier);
-        recipesManager.addReaction(contentNotification);
+        addReaction(contentNotification);
 
         simpleNotification = new SimpleNotificationReaction(nearNotifier);
-        recipesManager.addReaction(simpleNotification);
+        addReaction(simpleNotification);
 
         couponReaction = CouponReaction.obtain(context, nearNotifier, globalConfig);
-        recipesManager.addReaction(couponReaction);
+        addReaction(couponReaction);
 
         customJSON = CustomJSONReaction.obtain(context, nearNotifier);
-        recipesManager.addReaction(customJSON);
+        addReaction(customJSON);
 
         feedback = FeedbackReaction.obtain(context, nearNotifier, globalConfig);
-        recipesManager.addReaction(feedback);
+        addReaction(feedback);
 
     }
 
@@ -425,5 +430,52 @@ public class NearItManager implements ProfileUpdateListener {
     public void onProfileUpdated() {
         nearInstallation.refreshInstallation();
         refreshConfigs();
+    }
+
+    private void addReaction(Reaction reaction) {
+        reactions.put(reaction.getReactionPluginName(), reaction);
+    }
+
+    @Override
+    public void gotRecipe(Recipe recipe) {
+        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
+        if (reaction != null) {
+            reaction.handleReaction(recipe);
+        }
+    }
+
+    @Override
+    public void processRecipe(String recipeId) {
+        recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
+            @Override
+            public void onRecipeFetchSuccess(Recipe recipe) {
+                String reactionPluginName = recipe.getReaction_plugin_id();
+                Reaction reaction = reactions.get(reactionPluginName);
+                reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
+            }
+
+            @Override
+            public void onRecipeFetchError(String error) {
+
+            }
+        });
+    }
+
+    @Override
+    public void processRecipe(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleId) {
+        Reaction reaction = reactions.get(reactionPluginId);
+        if (reaction == null) return;
+        reaction.handlePushReaction(recipeId, notificationText, reactionActionId, reactionBundleId);
+    }
+
+    @Override
+    public boolean processReactionBundle(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleString) {
+        Reaction reaction = reactions.get(reactionPluginId);
+        if (reaction == null) return false;
+        return reaction.handlePushBundledReaction(recipeId, notificationText, reactionActionId, reactionBundleString);
+    }
+
+    public RecipeReactionHandler getRecipesReactionHandler() {
+        return this;
     }
 }

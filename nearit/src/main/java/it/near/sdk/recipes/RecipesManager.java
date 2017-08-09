@@ -3,11 +3,9 @@ package it.near.sdk.recipes;
 import org.json.JSONException;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.reactions.Reaction;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.pulse.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
@@ -21,25 +19,23 @@ public class RecipesManager implements RecipeEvaluator {
 
     private static final String TAG = "RecipesManager";
 
-    private HashMap<String, Reaction> reactions = new HashMap<>();
     private final RecipeTrackSender recipeTrackSender;
     private final RecipeValidationFilter recipeValidationFilter;
     private final RecipeRepository recipeRepository;
     private final RecipesApi recipesApi;
+    private final RecipeReactionHandler recipeReactionHandler;
     private boolean online_eval = true;
 
     public RecipesManager(RecipeValidationFilter recipeValidationFilter,
                           RecipeTrackSender recipeTrackSender,
                           RecipeRepository recipeRepository,
-                          RecipesApi recipesApi) {
+                          RecipesApi recipesApi,
+                          RecipeReactionHandler recipeReactionHandler) {
         this.recipeValidationFilter = recipeValidationFilter;
         this.recipeTrackSender = recipeTrackSender;
         this.recipeRepository = recipeRepository;
         this.recipesApi = recipesApi;
-    }
-
-    public void addReaction(Reaction reaction) {
-        reactions.put(reaction.getReactionPluginName(), reaction);
+        this.recipeReactionHandler = recipeReactionHandler;
     }
 
     /**
@@ -108,56 +104,13 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     /**
-     * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
-     *
-     * @param recipe the recipe to trigger.
-     */
-    public void gotRecipe(Recipe recipe) {
-        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
-        if (reaction != null) {
-            reaction.handleReaction(recipe);
-        }
-    }
-
-    /**
      * Process a recipe from its id. Typically called for processing a push recipe.
      *
      * @param id push id.
+     * @param listener
      */
-    public void processRecipe(final String id) {
-        recipesApi.fetchRecipe(id, new RecipesApi.SingleRecipeListener() {
-            @Override
-            public void onRecipeFetchSuccess(Recipe recipe) {
-                String reactionPluginName = recipe.getReaction_plugin_id();
-                Reaction reaction = reactions.get(reactionPluginName);
-                reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
-            }
-
-            @Override
-            public void onRecipeFetchError(String error) {
-                NearLog.d(TAG, "single recipe failed: " + error);
-            }
-        });
-    }
-
-    /**
-     * Process a recipe from the reaction triple. Used for getting a content from a push
-     */
-    public void processRecipe(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleId) {
-        Reaction reaction = reactions.get(reactionPlugin);
-        if (reaction == null) return;
-        reaction.handlePushReaction(recipeId, notificationText, reactionAction, reactionBundleId);
-    }
-
-    /**
-     * Handle a push recipe that contained the actual reaction bundle, encoded in the payload
-     *
-     * @return whether the content was properly consumed by the reaction plugin
-     */
-    public boolean processReactionBundle(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleString) {
-        Reaction reaction = reactions.get(reactionPlugin);
-        if (reaction == null) return false;
-        return reaction.handlePushBundledReaction(recipeId, notificationText, reactionAction, reactionBundleString);
+    public void processRecipe(final String id, RecipesApi.SingleRecipeListener listener) {
+        recipesApi.fetchRecipe(id, listener);
     }
 
     private void onlinePulseEvaluation(TriggerRequest triggerRequest) {
@@ -165,7 +118,7 @@ public class RecipesManager implements RecipeEvaluator {
             @Override
             public void onRecipeFetchSuccess(Recipe recipe) {
                 recipeRepository.addRecipe(recipe);
-                gotRecipe(recipe);
+                recipeReactionHandler.gotRecipe(recipe);
             }
 
             @Override
@@ -180,11 +133,11 @@ public class RecipesManager implements RecipeEvaluator {
      *
      * @param recipeId recipe identifier.
      */
-    void evaluateRecipe(String recipeId) {
+    private void evaluateRecipe(String recipeId) {
         recipesApi.evaluateRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
             @Override
             public void onRecipeFetchSuccess(Recipe recipe) {
-                gotRecipe(recipe);
+                recipeReactionHandler.gotRecipe(recipe);
             }
 
             @Override
@@ -201,7 +154,7 @@ public class RecipesManager implements RecipeEvaluator {
         if (winnerRecipe.isEvaluatedOnline()) {
             evaluateRecipe(winnerRecipe.getId());
         } else {
-            gotRecipe(winnerRecipe);
+            recipeReactionHandler.gotRecipe(winnerRecipe);
         }
         return true;
     }

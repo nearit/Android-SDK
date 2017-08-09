@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.zip.DataFormatException;
 
 import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
-import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.recipes.RecipeReactionHandler;
 import it.near.sdk.utils.FormatDecoder;
 
 import static it.near.sdk.push.PushProcessor.NOTIFICATION;
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.when;
 public class PushProcessorTest {
 
     @Mock
-    RecipesManager mockRecipeManager;
+    RecipeReactionHandler mockRecipeReacionHandler;
     @Mock
     FormatDecoder mockFormatDecoder;
 
@@ -56,7 +56,7 @@ public class PushProcessorTest {
 
     @Before
     public void setUp() throws Exception {
-        pushProcessor = new PushProcessor(mockRecipeManager, mockFormatDecoder);
+        pushProcessor = new PushProcessor(mockRecipeReacionHandler, mockFormatDecoder);
         pushMap = new LinkedTreeMap<String, Object>();
 
         dummyRecipeId = "dummy_recipe_id";
@@ -78,9 +78,9 @@ public class PushProcessorTest {
         pushMap.put(RECIPE_ID, dummyRecipeId);
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
     }
 
     @Test
@@ -92,9 +92,9 @@ public class PushProcessorTest {
         pushMap.put(NOTIFICATION, dummyNotification.toString());
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
     }
 
     @Test
@@ -106,9 +106,9 @@ public class PushProcessorTest {
         pushMap.put(NOTIFICATION, dummyNotification.toString());
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, times(1)).processRecipe(eq(dummyRecipeId), eq(dummyNotificationBody), eq(SimpleNotificationReaction.PLUGIN_NAME), eq(dummyReactionAction), anyString());
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, SimpleNotificationReaction.PLUGIN_NAME, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(eq(dummyRecipeId), eq(dummyNotificationBody), eq(SimpleNotificationReaction.PLUGIN_NAME), eq(dummyReactionAction), anyString());
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, SimpleNotificationReaction.PLUGIN_NAME, dummyReactionAction, dummyDecompressedData);
     }
 
     @Test
@@ -119,14 +119,14 @@ public class PushProcessorTest {
         pushMap.put(REACTION_BUNDLE_ID, dummyReactionBundleId);
         pushMap.put(NOTIFICATION, dummyNotification.toString());
         pushMap.put(REACTION_BUNDLE, dummyCompressedData);
-        when(mockRecipeManager.processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData))
+        when(mockRecipeReacionHandler.processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData))
                 .thenReturn(true);
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
-        verify(mockRecipeManager, times(1)).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, times(1)).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
     }
 
     @Test
@@ -138,14 +138,14 @@ public class PushProcessorTest {
         pushMap.put(NOTIFICATION, dummyNotification.toString());
         pushMap.put(REACTION_BUNDLE, dummyCompressedData);
         // the plugin can't accept the compressed bundle directly (e.g. coupons)
-        when(mockRecipeManager.processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData))
+        when(mockRecipeReacionHandler.processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData))
                 .thenReturn(false);
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, times(1)).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, times(1)).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
     }
 
     @Test
@@ -159,9 +159,9 @@ public class PushProcessorTest {
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
     }
 
     @Test
@@ -175,9 +175,9 @@ public class PushProcessorTest {
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
     }
 
     @Test
@@ -191,9 +191,9 @@ public class PushProcessorTest {
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
     }
 
     @Test
@@ -208,9 +208,9 @@ public class PushProcessorTest {
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
     }
 
     @Test
@@ -225,9 +225,9 @@ public class PushProcessorTest {
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
     }
 
     @Test
@@ -242,9 +242,9 @@ public class PushProcessorTest {
 
         boolean result = pushProcessor.processPush(pushMap);
         assertThat(result, is(true));
-        verify(mockRecipeManager, never()).processRecipe(dummyRecipeId);
-        verify(mockRecipeManager, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
-        verify(mockRecipeManager, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
+        verify(mockRecipeReacionHandler, never()).processRecipe(dummyRecipeId);
+        verify(mockRecipeReacionHandler, times(1)).processRecipe(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyReactionBundleId);
+        verify(mockRecipeReacionHandler, never()).processReactionBundle(dummyRecipeId, dummyNotificationBody, dummyReactionName, dummyReactionAction, dummyDecompressedData);
 
     }
 }
