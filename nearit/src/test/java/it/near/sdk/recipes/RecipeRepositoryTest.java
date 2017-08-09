@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import org.json.JSONException;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -16,6 +17,8 @@ import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
 
+import it.near.sdk.TestUtils;
+import it.near.sdk.logging.NearLog;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.CurrentTime;
@@ -68,6 +71,11 @@ public class RecipeRepositoryTest {
 
     private long FAKE_TIMESTAMP = 1234L;
 
+    @BeforeClass
+    public static void init() {
+        NearLog.setLogger(TestUtils.emptyLogger());
+    }
+
     @Before
     public void setUp() throws Exception {
         when(sp.edit()).thenReturn(editor);
@@ -86,11 +94,12 @@ public class RecipeRepositoryTest {
     @Test
     public void whenRepoIsEmpty_ItHasNoRecipesAndAsksTheServer() {
         when(sp.getLong(TIMESTAMP, TIMESTAMP_DEF_VALUE)).thenReturn(TIMESTAMP_DEF_VALUE);
-        // when(sp.getBoolean(ONLINE_EV, ONLINE_EV_DEFAULT)).thenReturn(ONLINE_EV_DEFAULT);
+        when(sp.getBoolean(ONLINE_EV, ONLINE_EV_DEFAULT)).thenReturn(ONLINE_EV_DEFAULT);
         boolean dummyOnlineEvResponse = false;
         mockRecipeSuccessResponse(dummyRecipes, dummyOnlineEvResponse);
 
         assertThat(recipeRepository.getLocalRecipes(), empty());
+        assertThat(recipeRepository.shouldEvaluateOnline(), is(ONLINE_EV_DEFAULT));
         RecipesListener listener = mock(RecipesListener.class);
         recipeRepository.syncRecipes(listener);
         // since we are in a default state, we don't even check for the timestamp remotely
@@ -136,7 +145,7 @@ public class RecipeRepositoryTest {
         long notUpToDateTimestamp = 1234L;
         boolean online_ev = false;
         when(sp.getLong(TIMESTAMP, TIMESTAMP_DEF_VALUE)).thenReturn(notUpToDateTimestamp);
-        // when(sp.getBoolean(ONLINE_EV, ONLINE_EV_DEFAULT)).thenReturn(online_ev);
+        when(sp.getBoolean(ONLINE_EV, ONLINE_EV_DEFAULT)).thenReturn(newOnlineDev);
         when(cache.loadList(any(Type.class))).thenReturn(Collections.<Recipe>emptyList());
         long rightNowTimeStamp = 555555L;
         when(currentTime.currentTimeStampSeconds()).thenReturn(rightNowTimeStamp);
@@ -152,6 +161,7 @@ public class RecipeRepositoryTest {
         verify(nearTimestampChecker,atLeastOnce()).checkRecipeTimeStamp(eq(notUpToDateTimestamp), any(NearTimestampChecker.SyncCheckListener.class));
         verify(recipesApi, atLeastOnce()).processRecipes(any(RecipesApi.RecipesListener.class));
         assertThat(recipeRepository.getLocalRecipes(), is(dummyRecipes));
+        assertThat(recipeRepository.shouldEvaluateOnline(), is(newOnlineDev));
         verify(editor, atLeastOnce()).putLong(TIMESTAMP, rightNowTimeStamp);
         verify(cache, atLeastOnce()).persistList(dummyRecipes);
         verify(editor, atLeastOnce()).putBoolean(ONLINE_EV, newOnlineDev);
