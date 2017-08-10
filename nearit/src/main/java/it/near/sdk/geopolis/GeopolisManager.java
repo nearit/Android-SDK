@@ -8,11 +8,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -29,6 +30,7 @@ import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipeEvaluator;
 import it.near.sdk.recipes.pulse.TriggerRequest;
 import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CurrentTime;
 
 /**
@@ -242,6 +244,11 @@ public class GeopolisManager {
         triggerRequest.bundle_id = pulseBundle;
         triggerRequest.plugin_tag_action = event.fallback;
         triggerRequest.tags = tags;
+        Map<String, String> extras = new HashMap<>();
+        extras.put("node", pulseBundle);
+        TrackingInfo trackingInfo = new TrackingInfo();
+        trackingInfo.extras = extras;
+        triggerRequest.trackingInfo = trackingInfo;
         recipeEvaluator.handleTriggerRequest(triggerRequest);
     }
 
