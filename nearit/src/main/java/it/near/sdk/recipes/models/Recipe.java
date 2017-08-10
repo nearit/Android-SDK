@@ -44,7 +44,7 @@ public class Recipe extends Resource {
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";
 
-    private static final String ONLINE = "online";
+    public static final String ONLINE = "online";
 
     public boolean isEvaluatedOnline() {
         if (!labels.containsKey(ONLINE)) {

@@ -38,14 +38,14 @@ public class RecipesApi {
     private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final GlobalConfig globalConfig;
 
-    public RecipesApi(NearAsyncHttpClient httpClient, Morpheus morpheus, EvaluationBodyBuilder evaluationBodyBuilder, GlobalConfig globalConfig) {
+    private RecipesApi(NearAsyncHttpClient httpClient, Morpheus morpheus, EvaluationBodyBuilder evaluationBodyBuilder, GlobalConfig globalConfig) {
         this.httpClient = httpClient;
         this.morpheus = morpheus;
         this.evaluationBodyBuilder = evaluationBodyBuilder;
         this.globalConfig = globalConfig;
     }
 
-    public void processRecipes(final RecipesListener recipeFetcher) {
+    void processRecipes(final RecipesListener recipeFetcher) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendPath(PROCESS_PATH).build();
         String requestBody = null;
@@ -62,7 +62,6 @@ public class RecipesApi {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Got recipes: " + response.toString());
-                    List<Recipe> recipes = NearJsonAPIUtils.parseList(morpheus, response, Recipe.class);
                     ListMetaBundle<Recipe> recipeListMetaBundle =
                             NearJsonAPIUtils.parseListAndMeta(morpheus, response, Recipe.class);
 
@@ -70,31 +69,21 @@ public class RecipesApi {
                     if (recipeListMetaBundle.meta.containsKey(ONLINE_EVALUATION)) {
                         online_ev = (boolean) recipeListMetaBundle.meta.get(ONLINE_EVALUATION);
                     }
-                    // listCacher.persistList(recipes);
-                    // listener.onRecipesRefresh();
-                    recipeFetcher.onRecipeProcessSuccess(recipes, online_ev);
+                    recipeFetcher.onRecipeProcessSuccess(recipeListMetaBundle.list, online_ev);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
-                    /*try {
-                        recipes = loadChachedList();
-
-                    } catch (Exception e) {
-                        NearLog.d(TAG, "Recipe format error");
-                    }
-                    listener.onRecipesRefreshFail();*/
                     recipeFetcher.onRecipeProcessError();
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            // listener.onRecipesRefreshFail();
             recipeFetcher.onRecipeProcessError();
         }
     }
 
-    public void fetchRecipe(String recipeId, final SingleRecipeListener recipeFethcer) {
+    void fetchRecipe(String recipeId, final SingleRecipeListener recipeFethcer) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(recipeId)
                 .appendQueryParameter("filter[core][profile_id]", globalConfig.getProfileId())
@@ -121,7 +110,7 @@ public class RecipesApi {
         }
     }
 
-    public void evaluateRecipe(String recipeId, final SingleRecipeListener listener) {
+    void evaluateRecipe(String recipeId, final SingleRecipeListener listener) {
         NearLog.d(TAG, "Evaluating recipe: " + recipeId);
         if (recipeId == null) {
             listener.onRecipeFetchError("no recipe id set");
@@ -150,7 +139,6 @@ public class RecipesApi {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, response.toString());
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    // TODO refactor plugin
                     if (recipe != null) {
                         listener.onRecipeFetchSuccess(recipe);
                     }
@@ -169,7 +157,7 @@ public class RecipesApi {
 
     }
 
-    public void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle, final SingleRecipeListener listener) {
+    void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle, final SingleRecipeListener listener) {
         Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
                 .appendEncodedPath(EVALUATE).build();
         String evaluateBody = null;
@@ -187,12 +175,8 @@ public class RecipesApi {
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
                     if (recipe != null) {
-                        // TODO add recipe to cache
                         listener.onRecipeFetchSuccess(recipe);
 
-                        /*recipes.add(recipe);
-                        listCacher.persistList(recipes);
-                        gotRecipe(recipe);*/
                     }
                     listener.onRecipeFetchError("no recipe for pulse");
                 }
@@ -215,7 +199,7 @@ public class RecipesApi {
         }
     }
 
-    public static Morpheus buildMorpheus() {
+    private static Morpheus buildMorpheus() {
         Morpheus morpheus = new Morpheus();
         morpheus.getFactory().getDeserializer().registerResourceClass("recipes", Recipe.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("pulse_actions", PulseAction.class);
@@ -236,7 +220,7 @@ public class RecipesApi {
         );
     }
 
-    public interface RecipesListener {
+    interface RecipesListener {
         void onRecipeProcessSuccess(List<Recipe> recipes, boolean online_evaluation_fallback);
 
         void onRecipeProcessError();
