@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
+import com.google.gson.Gson;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,6 +68,9 @@ public class GeopolisManager {
     public static final String GF_RANGE_NEAR_SUFFIX = "RANGE_NEAR";
     public static final String GF_RANGE_IMMEDIATE_SUFFIX = "RANGE_IMMEDIATE";
     public static final String NODE_ID = "identifier";
+    public static final String META_TAGS_KEY = "tags";
+    public static final String META_NODE_TYPE_KEY = "node_type";
+    public static final String META_NODE_ID_KEY = "node_id";
 
     private final Context context;
     private final RecipeEvaluator recipeEvaluator;
@@ -230,26 +235,36 @@ public class GeopolisManager {
                 geopolisTrackingsManager.trackEvent(node.identifier, event.event);
             } catch (JSONException ignored) {
             }
-            firePulse(event, node.tags, node.identifier);
+            firePulse(event, node.tags, node.identifier, node.getClass().getSimpleName());
         }
     }
 
-    private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle) {
+    private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle, String nodeType) {
         NearLog.d(TAG, "firePulse!");
+        recipeEvaluator.handleTriggerRequest(
+                buildTriggerRequest(event, tags, pulseBundle, nodeType)
+        );
+    }
 
+    private TriggerRequest buildTriggerRequest(Events.GeoEvent event, List<String> tags, String pulseBundle, String nodeType) {
         TriggerRequest triggerRequest = new TriggerRequest();
         triggerRequest.plugin_name = PLUGIN_NAME;
         triggerRequest.plugin_action = event.event;
         triggerRequest.bundle_id = pulseBundle;
         triggerRequest.plugin_tag_action = event.fallback;
         triggerRequest.tags = tags;
-        HashMap<String, String> metadata = new HashMap<>();
-        // TODO build correct format
-        metadata.put("node", pulseBundle);
         TrackingInfo trackingInfo = new TrackingInfo();
-        trackingInfo.metadata = metadata;
+        trackingInfo.metadata = buildMetadata(tags, nodeType, pulseBundle);
         triggerRequest.trackingInfo = trackingInfo;
-        recipeEvaluator.handleTriggerRequest(triggerRequest);
+        return triggerRequest;
+    }
+
+    private HashMap<String, String> buildMetadata(List<String> tags, String nodeType, String bundleId) {
+        HashMap<String, String> metadata = new HashMap<>();
+        metadata.put(META_TAGS_KEY, new Gson().toJson(tags));
+        metadata.put(META_NODE_TYPE_KEY, nodeType);
+        metadata.put(META_NODE_ID_KEY, bundleId);
+        return metadata;
     }
 
     private final BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {
