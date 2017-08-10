@@ -4,5 +4,5 @@ import java.util.Map;
 
 public class TrackingInfo {
     public String recipeId;
-    public Map<String, String> extras;
+    public Map<String, String> metadata;
 }
