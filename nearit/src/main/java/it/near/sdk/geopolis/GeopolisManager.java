@@ -8,8 +8,6 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-import com.google.gson.Gson;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -259,9 +257,9 @@ public class GeopolisManager {
         return triggerRequest;
     }
 
-    private HashMap<String, String> buildMetadata(List<String> tags, String nodeType, String bundleId) {
-        HashMap<String, String> metadata = new HashMap<>();
-        metadata.put(META_TAGS_KEY, new Gson().toJson(tags));
+    private HashMap<String, Object> buildMetadata(List<String> tags, String nodeType, String bundleId) {
+        HashMap<String, Object> metadata = new HashMap<>();
+        metadata.put(META_TAGS_KEY, tags);
         metadata.put(META_NODE_TYPE_KEY, nodeType);
         metadata.put(META_NODE_ID_KEY, bundleId);
         return metadata;

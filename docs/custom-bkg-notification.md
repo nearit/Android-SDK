@@ -54,12 +54,8 @@ protected void onHandleIntent(Intent intent) {
 
   IMPORTANT
   If you are overriding the default notification mechanism, remember to track the recipe as notified with:
-  String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
-  try {
-      NearItManager.getInstance(this).sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
-  } catch (JSONException e) {
-      
-  }
+  TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
+  NearItManager.getInstance(this).sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
   */
 
   // always end this method with

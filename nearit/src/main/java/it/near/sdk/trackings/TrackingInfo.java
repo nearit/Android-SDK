@@ -7,14 +7,14 @@ import java.util.HashMap;
 
 public class TrackingInfo implements Parcelable {
     public String recipeId;
-    public HashMap<String, String> metadata;
+    public HashMap<String, Object> metadata;
 
     public TrackingInfo() {
     }
 
     public TrackingInfo(Parcel in) {
         recipeId = in.readString();
-        metadata = (HashMap<String, String>) in.readSerializable();
+        metadata = (HashMap<String, Object>) in.readSerializable();
     }
 
     @Override

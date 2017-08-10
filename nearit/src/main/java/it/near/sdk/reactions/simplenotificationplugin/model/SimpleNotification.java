@@ -9,18 +9,18 @@ import it.near.sdk.recipes.models.Recipe;
 
 public class SimpleNotification extends ReactionBundle implements Parcelable {
 
-    public String notificationMessage;
-    private String notificationTitle;
+    public String message;
+    private String title;
 
     public SimpleNotification(String notificationMessage, @Nullable String notificationTitle) {
-        this.notificationMessage = notificationMessage;
-        this.notificationTitle = notificationTitle;
+        this.message = notificationMessage;
+        this.title = notificationTitle;
     }
 
     protected SimpleNotification(Parcel in) {
         super(in);
-        notificationMessage = in.readString();
-        notificationTitle = in.readString();
+        message = in.readString();
+        title = in.readString();
     }
 
     public static final Creator<SimpleNotification> CREATOR = new Creator<SimpleNotification>() {
@@ -36,20 +36,20 @@ public class SimpleNotification extends ReactionBundle implements Parcelable {
     };
 
     public String getNotificationMessage() {
-        return notificationMessage;
+        return message;
     }
 
     public void setNotificationMessage(String notificationMessage) {
-        this.notificationMessage = notificationMessage;
+        this.message = notificationMessage;
     }
 
     @Deprecated
     public String getNotificationTitle() {
-        return notificationTitle;
+        return title;
     }
 
     public void setNotificationTitle(String notificationTitle) {
-        this.notificationTitle = notificationTitle;
+        this.title = notificationTitle;
     }
 
     @Override
@@ -60,15 +60,19 @@ public class SimpleNotification extends ReactionBundle implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeString(notificationMessage);
-        dest.writeString(notificationTitle);
+        dest.writeString(message);
+        dest.writeString(title);
     }
 
     public static SimpleNotification fromNotificationText(String notificationText) {
-        return new SimpleNotification(notificationText, null);
+        SimpleNotification simpleNotification = new SimpleNotification(notificationText, null);
+        simpleNotification.notificationMessage = notificationText;
+        return simpleNotification;
     }
 
     public static SimpleNotification fromRecipe(Recipe recipe) {
-        return new SimpleNotification(recipe.getNotificationBody(), recipe.getNotificationTitle());
+        SimpleNotification simpleNotification = new SimpleNotification(recipe.getNotificationBody(), recipe.getNotificationTitle());
+        simpleNotification.notificationMessage = recipe.getNotificationBody();
+        return simpleNotification;
     }
 }

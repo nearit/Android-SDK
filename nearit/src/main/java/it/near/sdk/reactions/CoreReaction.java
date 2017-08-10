@@ -204,9 +204,7 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
             public void onContentFetched(T element, boolean cached) {
                 injectRecipeId(element, recipeId);
                 element.notificationMessage = notificationText;
-                TrackingInfo trackingInfo = new TrackingInfo();
-                trackingInfo.recipeId = recipeId;
-                nearNotifier.deliverBackgroundPushReaction(element, trackingInfo);
+                nearNotifier.deliverBackgroundPushReaction(element, TrackingInfo.fromRecipeId(recipeId));
             }
 
             @Override

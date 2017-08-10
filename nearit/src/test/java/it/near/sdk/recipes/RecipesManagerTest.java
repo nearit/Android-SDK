@@ -393,7 +393,7 @@ public class RecipesManagerTest {
         triggerRequest.tags = Lists.newArrayList("parappa", "the rapper");
         TrackingInfo trackingInfo = new TrackingInfo();
         trackingInfo.recipeId = "reicpeId";
-        HashMap<String, String> metadata = Maps.newHashMap();
+        HashMap<String, Object> metadata = Maps.newHashMap();
         metadata.put("chop", "chop");
         metadata.put("master", "onion");
         trackingInfo.metadata = metadata;

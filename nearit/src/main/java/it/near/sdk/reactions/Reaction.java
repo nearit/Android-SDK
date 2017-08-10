@@ -29,6 +29,7 @@ public abstract class Reaction {
         if (!getReactionPluginName().equals(recipe.getReaction_plugin_id())) {
             return;
         }
+        trackingInfo.recipeId = recipe.getId();
         handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe, trackingInfo);
     }
 

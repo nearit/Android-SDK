@@ -71,7 +71,7 @@ public class RecipeTrackSenderTest {
         when(mockGlobalConfig.getAppId()).thenReturn(DUMMY_APP_ID);
         trackingInfo = new TrackingInfo();
         trackingInfo.recipeId = "recipeId";
-        HashMap<String, String> meta = Maps.newHashMap();
+        HashMap<String, Object> meta = Maps.newHashMap();
         meta.put("one", "two");
         meta.put("three", "for");
         trackingInfo.metadata = meta;

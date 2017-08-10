@@ -52,7 +52,6 @@ public class NearItIntentService extends IntentService {
 
         String notifTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
 
-
         sendNotifiedTracking(intent);
 
         NearNotification.send(this,

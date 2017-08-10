@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import java.util.List;
 
 import it.near.sdk.geopolis.beacons.BeaconNode;
-import it.near.sdk.geopolis.geofences.GeoFenceNode;
+import it.near.sdk.geopolis.geofences.GeofenceNode;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.utils.NearJsonAPIUtils;
@@ -49,7 +49,7 @@ public class NodesManager {
 
         morpheus.getFactory().getDeserializer().registerResourceClass("nodes", Node.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("beacon_nodes", BeaconNode.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("geofence_nodes", GeoFenceNode.class);
+        morpheus.getFactory().getDeserializer().registerResourceClass("geofence_nodes", GeofenceNode.class);
     }
 
     /**
