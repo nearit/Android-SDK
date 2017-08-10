@@ -1,5 +1,6 @@
 package it.near.sdk.recipes;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -24,11 +25,13 @@ import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.pulse.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.AdditionalAnswers.returnsFirstArg;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -36,6 +39,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RecipesManagerTest {
@@ -59,6 +63,7 @@ public class RecipesManagerTest {
     private RecipeRefreshListener recipeRefreshListener;
 
     private TriggerRequest triggerRequest;
+    private Recipe matchingBundleRecipe, matchingTagRecipe;
 
     @BeforeClass
     public static void init() {
@@ -68,6 +73,7 @@ public class RecipesManagerTest {
     @Before
     public void setUp() throws Exception {
         initTriggerRequest();
+        buildMatchingRecipes();
         recipesManager = new RecipesManager(
                 recipeValidationFilter,
                 recipeTrackSender,
@@ -116,17 +122,8 @@ public class RecipesManagerTest {
     @Test
     public void triggerRequestForLocalRecipeOnBundle_shouldTriggerWithoutNetworkCalls() {
         // prepare a matching recipe in the repository
-        Recipe matchingRecipe = new Recipe();
-        matchingRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
-        PulseAction action = new PulseAction();
-        action.setId(triggerRequest.plugin_action);
-        matchingRecipe.setPulse_action(action);
-        PulseBundle pulseBundle = new PulseBundle();
-        pulseBundle.setId(triggerRequest.bundle_id);
-        matchingRecipe.setPulse_bundle(pulseBundle);
-        matchingRecipe.labels = Maps.newHashMap();
         when(recipeRepository.getLocalRecipes()).thenReturn(
-                Lists.newArrayList(matchingRecipe)
+                Lists.newArrayList(matchingBundleRecipe)
         );
 
         // the recipe is validated
@@ -134,21 +131,14 @@ public class RecipesManagerTest {
 
         recipesManager.handleTriggerRequest(triggerRequest);
         verifyZeroInteractions(recipesApi);
-        verify(recipeReactionHandler).gotRecipe(matchingRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe);
     }
 
     @Test
     public void triggerRequestForLocalRecipeOnTags_shouldTriggerWithoutNetworkCalls() {
         // prepare matching recipe
-        Recipe matchingRecipe = new Recipe();
-        matchingRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
-        PulseAction action = new PulseAction();
-        action.setId(triggerRequest.plugin_tag_action);
-        matchingRecipe.setPulse_action(action);
-        matchingRecipe.tags = triggerRequest.tags;
-        matchingRecipe.labels = Maps.newHashMap();
         when(recipeRepository.getLocalRecipes()).thenReturn(
-                Lists.newArrayList(matchingRecipe)
+                Lists.newArrayList(matchingTagRecipe)
         );
 
         // the recipe is validated
@@ -156,28 +146,12 @@ public class RecipesManagerTest {
 
         recipesManager.handleTriggerRequest(triggerRequest);
         verifyZeroInteractions(recipesApi);
-        verify(recipeReactionHandler).gotRecipe(matchingRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingTagRecipe);
     }
 
     @Test
     public void triggerRequestForLocalRecipeThatMatchesABundleRecipeAndATagRecipe_shouldOnlyTriggerTheBundleRecipe() {
         // prepare matching recipes in the repository
-        Recipe matchingBundleRecipe = new Recipe();
-        Recipe matchingTagRecipe = new Recipe();
-        matchingBundleRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
-        matchingTagRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
-        PulseAction action = new PulseAction();
-        action.setId(triggerRequest.plugin_action);
-        matchingBundleRecipe.setPulse_action(action);
-        PulseAction tagAction = new PulseAction();
-        tagAction.setId(triggerRequest.plugin_tag_action);
-        matchingTagRecipe.setPulse_action(tagAction);
-        PulseBundle pulseBundle = new PulseBundle();
-        pulseBundle.setId(triggerRequest.bundle_id);
-        matchingBundleRecipe.setPulse_bundle(pulseBundle);
-        matchingTagRecipe.tags = triggerRequest.tags;
-        matchingBundleRecipe.labels = Maps.newHashMap();
-        matchingTagRecipe.labels = Maps.newHashMap();
         when(recipeRepository.getLocalRecipes()).thenReturn(
                 Lists.newArrayList(matchingBundleRecipe, matchingTagRecipe)
         );
@@ -189,6 +163,69 @@ public class RecipesManagerTest {
         verifyZeroInteractions(recipesApi);
         verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe);
         verify(recipeReactionHandler, never()).gotRecipe(matchingTagRecipe);
+    }
+
+    @Test
+    public void whenMatchingLocalBundleRecipeIsFiltered_localTagRecipeIsTriggered() {
+        // prepare matching recipes in the repository
+        when(recipeRepository.getLocalRecipes()).thenReturn(
+                Lists.newArrayList(matchingBundleRecipe, matchingTagRecipe)
+        );
+
+        // only validate tag recipe
+        when(recipeValidationFilter.filterRecipes((List<Recipe>) argThat(hasItem(matchingBundleRecipe)))).thenReturn(Lists.<Recipe>newArrayList());
+        when(recipeValidationFilter.filterRecipes((List<Recipe>) argThat(hasItem(matchingTagRecipe)))).then(returnsFirstArg());
+
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verify(recipeReactionHandler).gotRecipe(matchingTagRecipe);
+        verify(recipeReactionHandler, never()).gotRecipe(matchingBundleRecipe);
+    }
+
+    @Test
+    public void whenLocalMatchingRecipeIsToBeEvaluated_itGetsEvaluated() {
+        matchingBundleRecipe.labels = Maps.newHashMap(
+                ImmutableMap.<String, Object>builder().
+                put(Recipe.ONLINE, true).
+                build());
+        when(recipeRepository.getLocalRecipes()).thenReturn(Lists.newArrayList(matchingBundleRecipe));
+
+        when(recipeValidationFilter.filterRecipes(any(List.class))).then(returnsFirstArg());
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((RecipesApi.SingleRecipeListener)invocation.getArguments()[1]).onRecipeFetchSuccess(matchingBundleRecipe);
+                return null;
+            }
+        }).when(recipesApi).evaluateRecipe(eq(matchingBundleRecipe.getId()), any(RecipesApi.SingleRecipeListener.class));
+
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verify(recipesApi).evaluateRecipe(eq(matchingBundleRecipe.getId()), any(RecipesApi.SingleRecipeListener.class));
+        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe);
+    }
+
+    @Test
+    public void whenLocalMatchingRecipeIsToBeEvaluatedButFails_nothingHappens() {
+        matchingBundleRecipe.labels = Maps.newHashMap(
+                ImmutableMap.<String, Object>builder().
+                        put(Recipe.ONLINE, true).
+                        build());
+        when(recipeRepository.getLocalRecipes()).thenReturn(Lists.newArrayList(matchingBundleRecipe));
+
+        when(recipeValidationFilter.filterRecipes(any(List.class))).then(returnsFirstArg());
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((RecipesApi.SingleRecipeListener)invocation.getArguments()[1]).onRecipeFetchError("invalid");
+                return null;
+            }
+        }).when(recipesApi).evaluateRecipe(eq(matchingBundleRecipe.getId()), any(RecipesApi.SingleRecipeListener.class));
+
+        recipesManager.handleTriggerRequest(triggerRequest);
+        verify(recipesApi).evaluateRecipe(eq(matchingBundleRecipe.getId()), any(RecipesApi.SingleRecipeListener.class));
+        verifyZeroInteractions(recipeReactionHandler);
+
     }
 
     @Test
@@ -272,7 +309,6 @@ public class RecipesManagerTest {
         matchingRecipe.setPulse_bundle(pulseBundle);
         matchingRecipe.labels = Maps.newHashMap();
 
-
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
@@ -355,6 +391,26 @@ public class RecipesManagerTest {
         triggerRequest.tags = Lists.newArrayList("parappa", "the rapper");
     }
 
+    private void buildMatchingRecipes() {
+        matchingBundleRecipe = new Recipe();
+        matchingBundleRecipe.setId("id1");
+        matchingTagRecipe = new Recipe();
+        matchingTagRecipe.setId("id2");
+        matchingBundleRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
+        matchingTagRecipe.setPulse_plugin_id(triggerRequest.plugin_name);
+        PulseAction action = new PulseAction();
+        action.setId(triggerRequest.plugin_action);
+        matchingBundleRecipe.setPulse_action(action);
+        PulseAction tagAction = new PulseAction();
+        tagAction.setId(triggerRequest.plugin_tag_action);
+        matchingTagRecipe.setPulse_action(tagAction);
+        PulseBundle pulseBundle = new PulseBundle();
+        pulseBundle.setId(triggerRequest.bundle_id);
+        matchingBundleRecipe.setPulse_bundle(pulseBundle);
+        matchingTagRecipe.tags = triggerRequest.tags;
+        matchingBundleRecipe.labels = Maps.newHashMap();
+        matchingTagRecipe.labels = Maps.newHashMap();
+    }
 
     private void mockRefreshRequest(final List<Recipe> recipes, final boolean online_ev_fallback, final boolean data_changed) {
         doAnswer(new Answer() {
