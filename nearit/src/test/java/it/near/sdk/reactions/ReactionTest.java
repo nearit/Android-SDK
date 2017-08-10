@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import it.near.sdk.recipes.models.ReactionAction;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackingInfo;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -30,7 +31,7 @@ public class ReactionTest {
     public void setUp() throws Exception {
         reactionUT = mock(Reaction.class);
 
-        doCallRealMethod().when(reactionUT).handleReaction(any(Recipe.class));
+        doCallRealMethod().when(reactionUT).handleReaction(any(Recipe.class), any(TrackingInfo.class));
         when(reactionUT.getReactionPluginName()).thenReturn(TEST_PLUGIN_NAME);
 
     }
@@ -45,13 +46,14 @@ public class ReactionTest {
         recipe.reaction_plugin_id = "wrong_plugin_name";
         recipe.reaction_action = dummyReactionAction;
         recipe.reaction_bundle = dummyReactionBundle;
-        reactionUT.handleReaction(recipe);
-        verify(reactionUT, never()).handleReaction(anyString(), any(ReactionBundle.class), eq(recipe));
+        TrackingInfo trackingInfo = mock(TrackingInfo.class);
+        reactionUT.handleReaction(recipe, trackingInfo);
+        verify(reactionUT, never()).handleReaction(anyString(), any(ReactionBundle.class), eq(recipe), eq(trackingInfo));
 
         recipe.reaction_plugin_id = TEST_PLUGIN_NAME;
-        reactionUT.handleReaction(recipe);
+        reactionUT.handleReaction(recipe, trackingInfo);
 
-        verify(reactionUT, atLeastOnce()).handleReaction(eq(dummyReactionActionId), any(ReactionBundle.class), eq(recipe));
+        verify(reactionUT, atLeastOnce()).handleReaction(eq(dummyReactionActionId), any(ReactionBundle.class), eq(recipe), eq(trackingInfo));
 
     }
 }

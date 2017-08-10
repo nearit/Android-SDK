@@ -3,6 +3,7 @@ package it.near.sdk.reactions;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackingInfo;
 
 /**
  * Superclass for plugins of type "reaction". Subclass to add the support of new "What" types and handle requests to fire contents,
@@ -24,11 +25,11 @@ public abstract class Reaction {
      *
      * @param recipe matched recipe
      */
-    public void handleReaction(Recipe recipe) {
+    public void handleReaction(Recipe recipe, TrackingInfo trackingInfo) {
         if (!getReactionPluginName().equals(recipe.getReaction_plugin_id())) {
             return;
         }
-        handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe);
+        handleReaction(recipe.getReaction_action().getId(), recipe.getReaction_bundle(), recipe, trackingInfo);
     }
 
     /**
@@ -48,7 +49,7 @@ public abstract class Reaction {
      * @param reaction_bundle the reaction bundle of the recipe.
      * @param recipe          the entire recipe object.
      */
-    protected abstract void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe);
+    protected abstract void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe, TrackingInfo trackingInfo);
 
     /**
      * Handle a reaction from a push notification, including the call to the NearNotifier object. Since this will be called after the insertion

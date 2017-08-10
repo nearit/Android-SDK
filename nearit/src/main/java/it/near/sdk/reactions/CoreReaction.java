@@ -21,6 +21,7 @@ import it.near.sdk.morpheusnear.Morpheus;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 import static it.near.sdk.utils.NearUtils.safe;
@@ -104,15 +105,15 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
 
     protected abstract void normalizeElement(T element);
 
-    private void showContent(String reaction_bundle, final Recipe recipe) {
+    private void showContent(String reaction_bundle, final Recipe recipe, final TrackingInfo trackingInfo) {
         getContent(reaction_bundle, recipe, new ContentFetchListener<ReactionBundle>() {
             @Override
             public void onContentFetched(ReactionBundle content, boolean cached) {
                 if (content == null) return;
                 if (recipe.isForegroundRecipe()) {
-                    nearNotifier.deliverForegroundReaction(content, recipe);
+                    nearNotifier.deliverForegroundReaction(content, recipe, trackingInfo);
                 } else {
-                    nearNotifier.deliverBackgroundReaction(content, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+                    nearNotifier.deliverBackgroundReaction(content, trackingInfo, recipe.getNotificationBody(), getReactionPluginName());
                 }
             }
 
@@ -189,9 +190,9 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, Recipe recipe, TrackingInfo trackingInfo) {
         if (reaction_action.equals(getDefaultShowAction())) {
-            showContent(reaction_bundle.getId(), recipe);
+            showContent(reaction_bundle.getId(), recipe, trackingInfo);
         }
     }
 
@@ -219,6 +220,7 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
                 @Override
                 public void onContentFetched(T element, boolean cached) {
                     injectRecipeId(element, recipe.getId());
+
                     nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
                 }
 

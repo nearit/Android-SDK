@@ -9,6 +9,7 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
+import it.near.sdk.trackings.TrackingInfo;
 
 /**
  * Interface for being notified of core content types.
@@ -17,13 +18,13 @@ import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
  */
 public interface CoreContentsListener {
 
-    void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage);
+    void gotContentNotification(@Nullable Intent intent, Content notification, TrackingInfo trackingInfo, String notificationMessage);
 
-    void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage);
+    void gotCouponNotification(@Nullable Intent intent, Coupon notification, TrackingInfo trackingInfo, String notificationMessage);
 
-    void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage);
+    void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, TrackingInfo trackingInfo, String notificationMessage);
 
-    void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage);
+    void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, TrackingInfo trackingInfo, String notificationMessage);
 
-    void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage);
+    void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, TrackingInfo trackingInfo, String notificationMessage);
 }

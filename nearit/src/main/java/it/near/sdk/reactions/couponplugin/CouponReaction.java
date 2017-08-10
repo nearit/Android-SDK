@@ -30,6 +30,7 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.recipes.NearNotifier;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
 
@@ -94,13 +95,13 @@ public class CouponReaction extends CoreReaction<Coupon> {
     }
 
     @Override
-    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe) {
+    protected void handleReaction(String reaction_action, ReactionBundle reaction_bundle, final Recipe recipe, final TrackingInfo trackingInfo) {
         final Coupon coupon = (Coupon) reaction_bundle;
         if (coupon.hasContentToInclude()) {
             downloadSingleReaction(reaction_bundle.getId(), new ContentFetchListener<Coupon>() {
                 @Override
                 public void onContentFetched(Coupon content, boolean cached) {
-                    notifyCoupon(coupon, recipe);
+                    notifyCoupon(coupon, recipe, trackingInfo);
                 }
 
                 @Override
@@ -110,7 +111,7 @@ public class CouponReaction extends CoreReaction<Coupon> {
             });
         } else {
             normalizeElement(coupon);
-            notifyCoupon(coupon, recipe);
+            notifyCoupon(coupon, recipe, trackingInfo);
         }
 
     }
@@ -129,11 +130,11 @@ public class CouponReaction extends CoreReaction<Coupon> {
         // intentionally left blank
     }
 
-    private void notifyCoupon(Coupon coupon, Recipe recipe) {
+    private void notifyCoupon(Coupon coupon, Recipe recipe, TrackingInfo trackingInfo) {
         if (recipe.isForegroundRecipe()) {
-            nearNotifier.deliverForegroundReaction(coupon, recipe);
+            nearNotifier.deliverForegroundReaction(coupon, recipe, trackingInfo);
         } else {
-            nearNotifier.deliverBackgroundReaction(coupon, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+            nearNotifier.deliverBackgroundReaction(coupon, trackingInfo, recipe.getNotificationBody(), getReactionPluginName());
         }
     }
 

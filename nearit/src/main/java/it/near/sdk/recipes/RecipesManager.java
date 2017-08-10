@@ -9,6 +9,7 @@ import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.pulse.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
+import it.near.sdk.trackings.TrackingInfo;
 
 /**
  * Menage recipes download, caching and direct calling.
@@ -110,12 +111,12 @@ public class RecipesManager implements RecipeEvaluator {
         recipesApi.fetchRecipe(id, listener);
     }
 
-    private void onlinePulseEvaluation(TriggerRequest triggerRequest) {
+    private void onlinePulseEvaluation(final TriggerRequest triggerRequest) {
         recipesApi.onlinePulseEvaluation(triggerRequest.plugin_name, triggerRequest.plugin_action, triggerRequest.bundle_id, new RecipesApi.SingleRecipeListener() {
             @Override
             public void onRecipeFetchSuccess(Recipe recipe) {
                 recipeRepository.addRecipe(recipe);
-                recipeReactionHandler.gotRecipe(recipe);
+                recipeReactionHandler.gotRecipe(recipe, triggerRequest.trackingInfo);
             }
 
             @Override
@@ -130,11 +131,11 @@ public class RecipesManager implements RecipeEvaluator {
      *
      * @param recipeId recipe identifier.
      */
-    private void evaluateRecipe(String recipeId) {
+    private void evaluateRecipe(String recipeId, final TrackingInfo trackingInfo) {
         recipesApi.evaluateRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
             @Override
             public void onRecipeFetchSuccess(Recipe recipe) {
-                recipeReactionHandler.gotRecipe(recipe);
+                recipeReactionHandler.gotRecipe(recipe, trackingInfo);
             }
 
             @Override
@@ -144,14 +145,14 @@ public class RecipesManager implements RecipeEvaluator {
         });
     }
 
-    private boolean filterAndNotify(List<Recipe> matchingRecipes) {
+    private boolean filterAndNotify(List<Recipe> matchingRecipes, TrackingInfo trackingInfo) {
         matchingRecipes = recipeValidationFilter.filterRecipes(matchingRecipes);
         if (matchingRecipes.isEmpty()) return false;
         Recipe winnerRecipe = matchingRecipes.get(0);
         if (winnerRecipe.isEvaluatedOnline()) {
-            evaluateRecipe(winnerRecipe.getId());
+            evaluateRecipe(winnerRecipe.getId(), trackingInfo);
         } else {
-            recipeReactionHandler.gotRecipe(winnerRecipe);
+            recipeReactionHandler.gotRecipe(winnerRecipe, trackingInfo);
         }
         return true;
     }
@@ -182,7 +183,7 @@ public class RecipesManager implements RecipeEvaluator {
 
         if (matchingRecipes.isEmpty()) return false;
 
-        return filterAndNotify(matchingRecipes);
+        return filterAndNotify(matchingRecipes, triggerRequest.trackingInfo);
 
     }
 
@@ -215,7 +216,7 @@ public class RecipesManager implements RecipeEvaluator {
 
         if (matchingRecipes.isEmpty()) return false;
 
-        return filterAndNotify(matchingRecipes);
+        return filterAndNotify(matchingRecipes, triggerRequest.trackingInfo);
     }
 
     private void handlePulseOnline(final TriggerRequest triggerRequest) {
@@ -251,12 +252,12 @@ public class RecipesManager implements RecipeEvaluator {
      * {@value Recipe#NOTIFIED_STATUS} and {@value Recipe#ENGAGED_STATUS}
      * If you wish to use custom tracking, send your string as a tracking event.
      *
-     * @param recipeId      the recipe identifier.
+     * @param trackingInfo the interaction tracking info.
      * @param trackingEvent notified status to send.
      * @throws JSONException
      */
-    public void sendTracking(String recipeId, String trackingEvent) throws JSONException {
-        recipeTrackSender.sendTracking(recipeId, trackingEvent);
+    public void sendTracking(TrackingInfo trackingInfo, String trackingEvent) throws JSONException {
+        recipeTrackSender.sendTracking(trackingInfo, trackingEvent);
     }
 
 }

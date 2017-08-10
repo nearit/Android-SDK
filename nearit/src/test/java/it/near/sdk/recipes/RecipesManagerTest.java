@@ -15,6 +15,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.TestUtils;
@@ -24,6 +25,7 @@ import it.near.sdk.recipes.models.PulseBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.pulse.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
+import it.near.sdk.trackings.TrackingInfo;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -131,7 +133,7 @@ public class RecipesManagerTest {
 
         recipesManager.handleTriggerRequest(triggerRequest);
         verifyZeroInteractions(recipesApi);
-        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe, triggerRequest.trackingInfo);
     }
 
     @Test
@@ -146,7 +148,7 @@ public class RecipesManagerTest {
 
         recipesManager.handleTriggerRequest(triggerRequest);
         verifyZeroInteractions(recipesApi);
-        verify(recipeReactionHandler).gotRecipe(matchingTagRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingTagRecipe, triggerRequest.trackingInfo);
     }
 
     @Test
@@ -161,8 +163,8 @@ public class RecipesManagerTest {
 
         recipesManager.handleTriggerRequest(triggerRequest);
         verifyZeroInteractions(recipesApi);
-        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe);
-        verify(recipeReactionHandler, never()).gotRecipe(matchingTagRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe, triggerRequest.trackingInfo);
+        verify(recipeReactionHandler, never()).gotRecipe(matchingTagRecipe, triggerRequest.trackingInfo);
     }
 
     @Test
@@ -177,8 +179,8 @@ public class RecipesManagerTest {
         when(recipeValidationFilter.filterRecipes((List<Recipe>) argThat(hasItem(matchingTagRecipe)))).then(returnsFirstArg());
 
         recipesManager.handleTriggerRequest(triggerRequest);
-        verify(recipeReactionHandler).gotRecipe(matchingTagRecipe);
-        verify(recipeReactionHandler, never()).gotRecipe(matchingBundleRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingTagRecipe, triggerRequest.trackingInfo);
+        verify(recipeReactionHandler, never()).gotRecipe(matchingBundleRecipe, triggerRequest.trackingInfo);
     }
 
     @Test
@@ -201,7 +203,7 @@ public class RecipesManagerTest {
 
         recipesManager.handleTriggerRequest(triggerRequest);
         verify(recipesApi).evaluateRecipe(eq(matchingBundleRecipe.getId()), any(RecipesApi.SingleRecipeListener.class));
-        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingBundleRecipe, triggerRequest.trackingInfo);
     }
 
     @Test
@@ -245,7 +247,7 @@ public class RecipesManagerTest {
         }).when(recipesApi).onlinePulseEvaluation(anyString(), anyString(), anyString(), any(RecipesApi.SingleRecipeListener.class));
 
         recipesManager.handleTriggerRequest(triggerRequest);
-        verify(recipeReactionHandler).gotRecipe(recipe);
+        verify(recipeReactionHandler).gotRecipe(recipe, triggerRequest.trackingInfo);
         verify(recipeRepository).addRecipe(recipe);
     }
 
@@ -326,7 +328,7 @@ public class RecipesManagerTest {
         when(recipeValidationFilter.filterRecipes(any(List.class))).then(returnsFirstArg());
 
         recipesManager.handleTriggerRequest(triggerRequest);
-        verify(recipeReactionHandler).gotRecipe(matchingRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingRecipe, triggerRequest.trackingInfo);
         verifyZeroInteractions(recipesApi);
     }
 
@@ -370,7 +372,7 @@ public class RecipesManagerTest {
         }).when(recipesApi).onlinePulseEvaluation(anyString(), anyString(), anyString(), any(RecipesApi.SingleRecipeListener.class));
 
         recipesManager.handleTriggerRequest(triggerRequest);
-        verify(recipeReactionHandler).gotRecipe(matchingRecipe);
+        verify(recipeReactionHandler).gotRecipe(matchingRecipe, triggerRequest.trackingInfo);
         verify(recipeRepository).addRecipe(matchingRecipe);
     }
 
@@ -378,8 +380,8 @@ public class RecipesManagerTest {
     public void sendTracking_shouldTunnelRequest() throws JSONException {
         String recipeId = "id";
         String trackingEvent = "tr";
-        recipesManager.sendTracking(recipeId, trackingEvent);
-        verify(recipeTrackSender, atLeastOnce()).sendTracking(recipeId, trackingEvent);
+        recipesManager.sendTracking(triggerRequest.trackingInfo, trackingEvent);
+        verify(recipeTrackSender, atLeastOnce()).sendTracking(triggerRequest.trackingInfo, trackingEvent);
     }
 
     private void initTriggerRequest() {
@@ -389,6 +391,13 @@ public class RecipesManagerTest {
         triggerRequest.bundle_id = "mybundle";
         triggerRequest.plugin_tag_action = "tag_action";
         triggerRequest.tags = Lists.newArrayList("parappa", "the rapper");
+        TrackingInfo trackingInfo = new TrackingInfo();
+        trackingInfo.recipeId = "reicpeId";
+        HashMap<String, String> metadata = Maps.newHashMap();
+        metadata.put("chop", "chop");
+        metadata.put("master", "onion");
+        trackingInfo.metadata = metadata;
+        triggerRequest.trackingInfo = trackingInfo;
     }
 
     private void buildMatchingRecipes() {

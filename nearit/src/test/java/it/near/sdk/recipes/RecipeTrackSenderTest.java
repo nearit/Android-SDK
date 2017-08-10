@@ -1,5 +1,7 @@
 package it.near.sdk.recipes;
 
+import com.google.common.collect.Maps;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -12,15 +14,24 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackRequest;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CurrentTime;
 
-import static it.near.sdk.recipes.RecipeTrackSender.*;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKINGS_PATH;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKINGS_TYPE;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKING_APP_ID;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKING_EVENT;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKING_INSTALLATION_ID;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKING_PROFILE_ID;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKING_RECIPE_ID;
+import static it.near.sdk.recipes.RecipeTrackSender.TRACKING_TRACKED_AT;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -50,21 +61,28 @@ public class RecipeTrackSenderTest {
     @Mock
     private CurrentTime mockCurrentTime;
 
+    private TrackingInfo trackingInfo;
+
     @Before
     public void setUp() throws Exception {
         when(mockCurrentTime.currentTimestamp()).thenReturn(DUMMY_LONG_TIMESTAMP);
         when(mockGlobalConfig.getProfileId()).thenReturn(DUMMY_PROFILE_ID);
         when(mockGlobalConfig.getInstallationId()).thenReturn(DUMMY_INSTALLATION_ID);
         when(mockGlobalConfig.getAppId()).thenReturn(DUMMY_APP_ID);
+        trackingInfo = new TrackingInfo();
+        trackingInfo.recipeId = "recipeId";
+        HashMap<String, String> meta = Maps.newHashMap();
+        meta.put("one", "two");
+        meta.put("three", "for");
+        trackingInfo.metadata = meta;
         recipeTrackSender = new RecipeTrackSender(mockGlobalConfig, mockRecipeHistory, mockTrackManager, mockCurrentTime);
     }
 
     @Test
     public void whenNotifiedTrackingIsSent_recipeIsMarkedAsShownAndTrackingIsSent() throws JSONException {
-        String dummyRecipeId = "dummy_recipe_id";
-        recipeTrackSender.sendTracking(dummyRecipeId, Recipe.NOTIFIED_STATUS);
+        recipeTrackSender.sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
 
-        verify(mockRecipeHistory, atLeastOnce()).markRecipeAsShown(dummyRecipeId);
+        verify(mockRecipeHistory, atLeastOnce()).markRecipeAsShown(trackingInfo.recipeId);
 
         ArgumentCaptor<TrackRequest> argumentCaptor = ArgumentCaptor.forClass(TrackRequest.class);
         verify(mockTrackManager, atLeastOnce()).sendTracking(argumentCaptor.capture());
@@ -76,7 +94,9 @@ public class RecipeTrackSenderTest {
         assertThat((String) jsonBody.get(TRACKING_PROFILE_ID), is(DUMMY_PROFILE_ID));
         assertThat((String) jsonBody.get(TRACKING_INSTALLATION_ID), is(DUMMY_INSTALLATION_ID));
         assertThat((String) jsonBody.get(TRACKING_APP_ID), is(DUMMY_APP_ID));
-        assertThat((String) jsonBody.get(TRACKING_RECIPE_ID), is(dummyRecipeId));
+        assertThat((String) jsonBody.get(TRACKING_RECIPE_ID), is(trackingInfo.recipeId));
+        // TODO custom matcher?
+        // assertThat((HashMap<String, String>) jsonBody.get(TRACKING_METADATA), is(trackingInfo.metadata));
         assertThat((String) jsonBody.get(TRACKING_EVENT), is(Recipe.NOTIFIED_STATUS));
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         Date now = new Date(DUMMY_LONG_TIMESTAMP);
@@ -87,10 +107,9 @@ public class RecipeTrackSenderTest {
 
     @Test
     public void whenEngagedTrackingIsSent_recipeIsNotMarkedButIsSent() throws JSONException {
-        String dummyRecipeId = "dummy_recipe_id";
-        recipeTrackSender.sendTracking(dummyRecipeId, Recipe.ENGAGED_STATUS);
+        recipeTrackSender.sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
 
-        verify(mockRecipeHistory, never()).markRecipeAsShown(dummyRecipeId);
+        verify(mockRecipeHistory, never()).markRecipeAsShown(trackingInfo.recipeId);
 
         ArgumentCaptor<TrackRequest> argumentCaptor = ArgumentCaptor.forClass(TrackRequest.class);
         verify(mockTrackManager, atLeastOnce()).sendTracking(argumentCaptor.capture());
@@ -102,7 +121,9 @@ public class RecipeTrackSenderTest {
         assertThat((String) jsonBody.get(TRACKING_PROFILE_ID), is(DUMMY_PROFILE_ID));
         assertThat((String) jsonBody.get(TRACKING_INSTALLATION_ID), is(DUMMY_INSTALLATION_ID));
         assertThat((String) jsonBody.get(TRACKING_APP_ID), is(DUMMY_APP_ID));
-        assertThat((String) jsonBody.get(TRACKING_RECIPE_ID), is(dummyRecipeId));
+        assertThat((String) jsonBody.get(TRACKING_RECIPE_ID), is(trackingInfo.recipeId));
+        // TODO custom matcher?
+        // assertThat(jsonBody.getJSONObject(TRACKING_METADATA).keys(), hasItems(trackingInfo.metadata.keySet().iterator()));
         assertThat((String) jsonBody.get(TRACKING_EVENT), is(Recipe.ENGAGED_STATUS));
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
         Date now = new Date(DUMMY_LONG_TIMESTAMP);
@@ -112,8 +133,8 @@ public class RecipeTrackSenderTest {
     }
 
     @Test
-    public void whenTrackingIsMissingRecipeOrStatus_nothingHappens() throws JSONException {
-        recipeTrackSender.sendTracking("r", null);
+    public void whenTrackingIsMissingTrackingInfoOrStatus_nothingHappens() throws JSONException {
+        recipeTrackSender.sendTracking(trackingInfo, null);
         verify(mockRecipeHistory, never()).markRecipeAsShown(anyString());
         verify(mockTrackManager, never()).sendTracking(any(TrackRequest.class));
 
@@ -129,18 +150,18 @@ public class RecipeTrackSenderTest {
     @Test(expected = JSONException.class)
     public void whenProfileIdIsMissing_throws() throws JSONException {
         when(mockGlobalConfig.getProfileId()).thenReturn(null);
-        recipeTrackSender.sendTracking("a", "b");
+        recipeTrackSender.sendTracking(trackingInfo, "b");
     }
 
     @Test(expected = JSONException.class)
     public void whenInstallationIdIsMissing_throws() throws JSONException {
         when(mockGlobalConfig.getInstallationId()).thenReturn(null);
-        recipeTrackSender.sendTracking("a", "b");
+        recipeTrackSender.sendTracking(trackingInfo, "b");
     }
 
     @Test(expected = JSONException.class)
     public void whenAppIdIsMissing_throws() throws JSONException {
         when(mockGlobalConfig.getAppId()).thenReturn(null);
-        recipeTrackSender.sendTracking("a", "b");
+        recipeTrackSender.sendTracking(trackingInfo, "b");
     }
 }

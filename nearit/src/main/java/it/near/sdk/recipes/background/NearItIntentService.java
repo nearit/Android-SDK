@@ -5,16 +5,13 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import org.json.JSONException;
-
 import java.util.Calendar;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
-import it.near.sdk.logging.NearLog;
-import it.near.sdk.recipes.RecipesManager;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearNotification;
 
@@ -75,15 +72,8 @@ public class NearItIntentService extends IntentService {
     }
 
     protected void sendNotifiedTracking(@NonNull Intent intent) {
-        String recipeId = intent.getStringExtra(NearItIntentConstants.RECIPE_ID);
-        try {
-            RecipesManager recipesManager = NearItManager.getInstance(this).getRecipesManager();
-            if (recipesManager != null) {
-                recipesManager.sendTracking(recipeId, Recipe.NOTIFIED_STATUS);
-            }
-        } catch (JSONException e) {
-            NearLog.d(TAG, "Invalid track body");
-        }
+        TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
+        NearItManager.getInstance(this).sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
     }
 
     private int imgResFromIntent(@NonNull Intent intent) {

@@ -13,7 +13,6 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -244,7 +243,7 @@ public class GeopolisManager {
         triggerRequest.bundle_id = pulseBundle;
         triggerRequest.plugin_tag_action = event.fallback;
         triggerRequest.tags = tags;
-        Map<String, String> metadata = new HashMap<>();
+        HashMap<String, String> metadata = new HashMap<>();
         // TODO build correct format
         metadata.put("node", pulseBundle);
         TrackingInfo trackingInfo = new TrackingInfo();

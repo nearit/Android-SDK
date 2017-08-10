@@ -18,6 +18,7 @@ import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
+import it.near.sdk.trackings.TrackingInfo;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,7 +33,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class NearUtilsTest {
 
-    public static final String DUMMY_RECIPE_ID = "my_test_id";
     public static final String DUMMY_NOTIF_BODY = "notif_body";
     @Mock
     private Intent mockIntent;
@@ -40,12 +40,15 @@ public class NearUtilsTest {
     @Mock
     CoreContentsListener mockListener;
 
+    @Mock
+    TrackingInfo trackingInfo;
+
     @Test
     public void parseContent_ofTypeContent(){
         Content content = new Content();
         configMockFor(ContentReaction.PLUGIN_NAME, content);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotContentNotification(mockIntent, content, DUMMY_RECIPE_ID, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotContentNotification(mockIntent, content, trackingInfo, DUMMY_NOTIF_BODY);
     }
 
     @Test
@@ -53,7 +56,7 @@ public class NearUtilsTest {
         SimpleNotification simpleNotification = new SimpleNotification("","");
         configMockFor(SimpleNotificationReaction.PLUGIN_NAME, simpleNotification);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotSimpleNotification(mockIntent, simpleNotification, DUMMY_RECIPE_ID, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotSimpleNotification(mockIntent, simpleNotification, trackingInfo, DUMMY_NOTIF_BODY);
     }
 
     @Test
@@ -61,7 +64,7 @@ public class NearUtilsTest {
         Coupon coupon = new Coupon();
         configMockFor(CouponReaction.PLUGIN_NAME, coupon);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotCouponNotification(mockIntent, coupon, DUMMY_RECIPE_ID, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotCouponNotification(mockIntent, coupon, trackingInfo, DUMMY_NOTIF_BODY);
     }
 
     @Test
@@ -69,7 +72,7 @@ public class NearUtilsTest {
         CustomJSON customJson = new CustomJSON();
         configMockFor(CustomJSONReaction.PLUGIN_NAME, customJson);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotCustomJSONNotification(mockIntent, customJson, DUMMY_RECIPE_ID, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotCustomJSONNotification(mockIntent, customJson, trackingInfo, DUMMY_NOTIF_BODY);
     }
 
     @Test
@@ -77,7 +80,7 @@ public class NearUtilsTest {
         Feedback feedback = new Feedback();
         configMockFor(FeedbackReaction.PLUGIN_NAME, feedback);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotFeedbackNotification(mockIntent, feedback, DUMMY_RECIPE_ID, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotFeedbackNotification(mockIntent, feedback, trackingInfo, DUMMY_NOTIF_BODY);
     }
 
     @Test
@@ -92,8 +95,8 @@ public class NearUtilsTest {
     private void configMockFor(String plugin_name, Parcelable reaction) {
         when(mockIntent.getStringExtra(NearItIntentConstants.REACTION_PLUGIN))
                 .thenReturn(plugin_name);
-        when(mockIntent.getStringExtra(NearItIntentConstants.RECIPE_ID))
-                .thenReturn(DUMMY_RECIPE_ID);
+        when(mockIntent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO))
+                .thenReturn(trackingInfo);
         when(mockIntent.getStringExtra(NearItIntentConstants.NOTIF_BODY))
                 .thenReturn(DUMMY_NOTIF_BODY);
         when(mockIntent.hasExtra(NearItIntentConstants.CONTENT)).thenReturn(true);

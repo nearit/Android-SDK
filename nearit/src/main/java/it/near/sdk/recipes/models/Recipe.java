@@ -11,6 +11,7 @@ import java.util.List;
 
 import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearItIntentConstants;
 
 /**
@@ -138,9 +139,9 @@ public class Recipe extends Resource {
      */
     public static void fillIntentExtras(
             Intent intent, Parcelable parcelable,
-            String recipeId, String notificationText, String reactionPlugin) {
+            TrackingInfo trackingInfo, String notificationText, String reactionPlugin) {
 
-        intent.putExtra(NearItIntentConstants.RECIPE_ID, recipeId);
+        intent.putExtra(NearItIntentConstants.TRACKING_INFO, trackingInfo);
         // set notification text
         intent.putExtra(NearItIntentConstants.NOTIF_BODY, notificationText);
         // set contet to show

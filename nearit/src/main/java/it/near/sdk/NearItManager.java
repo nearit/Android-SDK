@@ -54,6 +54,7 @@ import it.near.sdk.recipes.validation.CooldownValidator;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.recipes.validation.Validator;
 import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearUtils;
@@ -124,7 +125,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     @NonNull
     public static NearItManager getInstance(@NonNull Context context) {
         if (sInstance == null) {
-            synchronized(SINGLETON_LOCK) {
+            synchronized (SINGLETON_LOCK) {
                 if (sInstance == null) {
                     sInstance = new NearItManager(context);
                 }
@@ -196,7 +197,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 recipesApi,
                 new CurrentTime(),
                 RecipeRepository.getSharedPreferences(this.context)
-                );
+        );
         RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipesHistory, trackManager, new CurrentTime());
         recipesManager = new RecipesManager(
                 recipeValidationFilter,
@@ -316,22 +317,24 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
-            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
+        public void deliverBackgroundReaction(Parcelable parcelable, TrackingInfo trackingInfo, String notificationText, String reactionPlugin) {
+            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, trackingInfo, notificationText, reactionPlugin);
         }
 
         @Override
         public void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
-            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
+            TrackingInfo trackingInfo = new TrackingInfo();
+            trackingInfo.recipeId = recipeId;
+            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, trackingInfo, notificationText, reactionPlugin);
         }
 
         @Override
-        public void deliverForegroundReaction(final Parcelable content, final Recipe recipe) {
+        public void deliverForegroundReaction(final Parcelable content, final Recipe recipe, final TrackingInfo trackingInfo) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     for (ProximityListener proximityListener : proximityListenerList) {
-                        proximityListener.foregroundEvent(content, recipe);
+                        proximityListener.foregroundEvent(content, recipe, trackingInfo);
                     }
                 }
             });
@@ -340,11 +343,11 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     };
 
     private void deliverBackgroundEvent(
-            Parcelable parcelable, String action, String recipeId,
+            Parcelable parcelable, String action, TrackingInfo trackingInfo,
             String notificationText, String reactionPlugin) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin);
+        Recipe.fillIntentExtras(resultIntent, parcelable, trackingInfo, notificationText, reactionPlugin);
         context.sendOrderedBroadcast(resultIntent, null);
     }
 
@@ -414,9 +417,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         proximityListenerList.clear();
     }
 
-    public void sendTracking(String recipeId, String event) {
+    public void sendTracking(TrackingInfo trackingInfo, String event) {
         try {
-            recipesManager.sendTracking(recipeId, event);
+            recipesManager.sendTracking(trackingInfo, event);
         } catch (JSONException e) {
             NearLog.d(TAG, "invalid tracking body");
         }
@@ -437,10 +440,10 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     }
 
     @Override
-    public void gotRecipe(Recipe recipe) {
+    public void gotRecipe(Recipe recipe, TrackingInfo trackingInfo) {
         Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
         if (reaction != null) {
-            reaction.handleReaction(recipe);
+            reaction.handleReaction(recipe, trackingInfo);
         }
     }
 
