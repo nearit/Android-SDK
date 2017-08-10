@@ -21,6 +21,7 @@ public class CustomJSON extends ReactionBundle implements Parcelable {
     }
 
     protected CustomJSON(Parcel in) {
+        super(in);
         setId(in.readString());
         content = (HashMap<String, Object>) in.readSerializable();
     }
@@ -44,6 +45,7 @@ public class CustomJSON extends ReactionBundle implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(getId());
         dest.writeSerializable(content);
     }

@@ -1,7 +1,6 @@
 package it.near.sdk.recipes;
 
-import android.os.Parcelable;
-
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
 
@@ -11,14 +10,14 @@ public interface NearNotifier {
      *
      * @param parcelable the generic parcelable reaction object.
      */
-    void deliverBackgroundReaction(Parcelable parcelable, TrackingInfo trackingInfo, String notificationText, String reactionPlugin);
+    void deliverBackgroundReaction(ReactionBundle parcelable, TrackingInfo trackingInfo);
 
     /**
      * Deliver a reaction in the background coming from a push.
      *
      * @param parcelable the generic parcelable reaction object.
      */
-    void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin);
+    void deliverBackgroundPushReaction(ReactionBundle parcelable, TrackingInfo trackingInfo);
 
     /**
      * Deliver a reaction for a foreground-only recipe e.g. ranging recipe.
@@ -26,5 +25,5 @@ public interface NearNotifier {
      * @param parcelable the generic parcelable reaction object.
      * @param recipe     the recipe object.
      */
-    void deliverForegroundReaction(Parcelable parcelable, Recipe recipe, TrackingInfo trackingInfo);
+    void deliverForegroundReaction(ReactionBundle parcelable, Recipe recipe, TrackingInfo trackingInfo);
 }

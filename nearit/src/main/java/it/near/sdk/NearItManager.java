@@ -48,6 +48,7 @@ import it.near.sdk.recipes.RecipeTrackSender;
 import it.near.sdk.recipes.RecipesApi;
 import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.validation.AdvScheduleValidator;
 import it.near.sdk.recipes.validation.CooldownValidator;
@@ -317,37 +318,33 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundReaction(Parcelable parcelable, TrackingInfo trackingInfo, String notificationText, String reactionPlugin) {
-            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, trackingInfo, notificationText, reactionPlugin);
+        public void deliverBackgroundReaction(ReactionBundle reactionBundle, TrackingInfo trackingInfo) {
+            deliverBackgroundEvent(reactionBundle, GEO_MESSAGE_ACTION, trackingInfo);
         }
 
         @Override
-        public void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
-            TrackingInfo trackingInfo = new TrackingInfo();
-            trackingInfo.recipeId = recipeId;
-            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, trackingInfo, notificationText, reactionPlugin);
+        public void deliverBackgroundPushReaction(ReactionBundle reactionBundle, TrackingInfo trackingInfo) {
+            deliverBackgroundEvent(reactionBundle, PUSH_MESSAGE_ACTION, trackingInfo);
         }
 
         @Override
-        public void deliverForegroundReaction(final Parcelable content, final Recipe recipe, final TrackingInfo trackingInfo) {
+        public void deliverForegroundReaction(final ReactionBundle reactionBundle, final Recipe recipe, final TrackingInfo trackingInfo) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     for (ProximityListener proximityListener : proximityListenerList) {
-                        proximityListener.foregroundEvent(content, recipe, trackingInfo);
+                        proximityListener.foregroundEvent(reactionBundle, trackingInfo);
                     }
                 }
             });
-
         }
     };
 
     private void deliverBackgroundEvent(
-            Parcelable parcelable, String action, TrackingInfo trackingInfo,
-            String notificationText, String reactionPlugin) {
+            Parcelable parcelable, String action, TrackingInfo trackingInfo) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, parcelable, trackingInfo, notificationText, reactionPlugin);
+        Recipe.fillIntentExtras(resultIntent, parcelable, trackingInfo);
         context.sendOrderedBroadcast(resultIntent, null);
     }
 

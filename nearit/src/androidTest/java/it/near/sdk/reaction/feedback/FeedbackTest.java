@@ -19,6 +19,7 @@ public class FeedbackTest {
         feedback.setId("feedback_id");
         feedback.setRecipeId("recipe_id");
         feedback.question = "what comes after five?";
+        feedback.notificationMessage = "notif";
         Parcel parcel = Parcel.obtain();
         feedback.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
@@ -26,6 +27,7 @@ public class FeedbackTest {
         assertEquals(feedback.getId(), actual.getId());
         assertEquals(feedback.getRecipeId(), actual.getRecipeId());
         assertEquals(feedback.question, actual.question);
+        assertEquals(feedback.notificationMessage, actual.notificationMessage);
     }
 
 }

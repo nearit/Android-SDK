@@ -8,15 +8,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import it.near.sdk.reactions.contentplugin.ContentReaction;
 import it.near.sdk.reactions.contentplugin.model.Content;
-import it.near.sdk.reactions.couponplugin.CouponReaction;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
-import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
-import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
-import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.trackings.TrackingInfo;
 
@@ -33,7 +28,6 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class NearUtilsTest {
 
-    public static final String DUMMY_NOTIF_BODY = "notif_body";
     @Mock
     private Intent mockIntent;
 
@@ -46,62 +40,57 @@ public class NearUtilsTest {
     @Test
     public void parseContent_ofTypeContent(){
         Content content = new Content();
-        configMockFor(ContentReaction.PLUGIN_NAME, content);
+        configMockFor(content);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotContentNotification(mockIntent, content, trackingInfo, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotContentNotification(content, trackingInfo);
     }
 
     @Test
     public void parseContent_ofTypeSimpleContent() {
         SimpleNotification simpleNotification = new SimpleNotification("","");
-        configMockFor(SimpleNotificationReaction.PLUGIN_NAME, simpleNotification);
+        configMockFor(simpleNotification);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotSimpleNotification(mockIntent, simpleNotification, trackingInfo, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotSimpleNotification(simpleNotification, trackingInfo);
     }
 
     @Test
     public void parseContent_ofTypeCoupon() {
         Coupon coupon = new Coupon();
-        configMockFor(CouponReaction.PLUGIN_NAME, coupon);
+        configMockFor(coupon);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotCouponNotification(mockIntent, coupon, trackingInfo, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotCouponNotification(coupon, trackingInfo);
     }
 
     @Test
     public void parseContent_ofTypeCustomJSON() {
         CustomJSON customJson = new CustomJSON();
-        configMockFor(CustomJSONReaction.PLUGIN_NAME, customJson);
+        configMockFor(customJson);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotCustomJSONNotification(mockIntent, customJson, trackingInfo, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotCustomJSONNotification(customJson, trackingInfo);
     }
 
     @Test
     public void parseContent_ofTypeFeedback() {
         Feedback feedback = new Feedback();
-        configMockFor(FeedbackReaction.PLUGIN_NAME, feedback);
+        configMockFor(feedback);
         NearUtils.parseCoreContents(mockIntent, mockListener);
-        verify(mockListener).gotFeedbackNotification(mockIntent, feedback, trackingInfo, DUMMY_NOTIF_BODY);
+        verify(mockListener).gotFeedbackNotification(feedback, trackingInfo);
     }
 
     @Test
     public void parseContent_ofUnsupportedType() {
         Parcelable p = mock(Parcelable.class);
-        configMockFor("Unsupported type", p);
+        configMockFor(p);
         NearUtils.parseCoreContents(mockIntent, mockListener);
         verifyZeroInteractions(mockListener);
 
     }
 
-    private void configMockFor(String plugin_name, Parcelable reaction) {
-        when(mockIntent.getStringExtra(NearItIntentConstants.REACTION_PLUGIN))
-                .thenReturn(plugin_name);
+    private void configMockFor(Parcelable reaction) {
         when(mockIntent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO))
                 .thenReturn(trackingInfo);
-        when(mockIntent.getStringExtra(NearItIntentConstants.NOTIF_BODY))
-                .thenReturn(DUMMY_NOTIF_BODY);
         when(mockIntent.hasExtra(NearItIntentConstants.CONTENT)).thenReturn(true);
         when(mockIntent.getParcelableExtra(NearItIntentConstants.CONTENT))
                 .thenReturn(reaction);
     }
-
 }

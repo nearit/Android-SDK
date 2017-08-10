@@ -39,4 +39,10 @@ public class TrackingInfo implements Parcelable {
             return new TrackingInfo[size];
         }
     };
+
+    public static TrackingInfo fromRecipeId(String id) {
+        TrackingInfo trackingInfo = new TrackingInfo();
+        trackingInfo.recipeId = id;
+        return trackingInfo;
+    }
 }

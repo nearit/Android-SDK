@@ -10,6 +10,7 @@ import java.util.Calendar;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
 import it.near.sdk.R;
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearItIntentConstants;
@@ -46,12 +47,11 @@ public class NearItIntentService extends IntentService {
      * @param intent the intent from the receiver.
      */
     protected void sendSimpleNotification(@NonNull Intent intent) {
+        ReactionBundle content = intent.getParcelableExtra(NearItIntentConstants.CONTENT);
+        String notifText = content.notificationMessage;
 
-        String notifText = intent.getStringExtra(NearItIntentConstants.NOTIF_BODY);
-        String notifTitle = intent.getStringExtra(NearItIntentConstants.NOTIF_TITLE);
-        if (notifTitle == null) {
-            notifTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
-        }
+        String notifTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
+
 
         sendNotifiedTracking(intent);
 

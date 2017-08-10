@@ -32,7 +32,7 @@ public class SimpleNotificationReaction extends Reaction {
                 if (recipe.isForegroundRecipe()) {
                     nearNotifier.deliverForegroundReaction(SimpleNotification.fromRecipe(recipe), recipe, trackingInfo);
                 } else {
-                    nearNotifier.deliverBackgroundReaction(SimpleNotification.fromRecipe(recipe), trackingInfo, recipe.getNotificationBody(), getReactionPluginName());
+                    nearNotifier.deliverBackgroundReaction(SimpleNotification.fromRecipe(recipe), trackingInfo);
                 }
                 break;
         }
@@ -40,17 +40,17 @@ public class SimpleNotificationReaction extends Reaction {
 
     @Override
     public void handlePushReaction(Recipe recipe, ReactionBundle reaction_bundle) {
-        nearNotifier.deliverBackgroundPushReaction(SimpleNotification.fromRecipe(recipe), recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+        nearNotifier.deliverBackgroundPushReaction(SimpleNotification.fromRecipe(recipe), TrackingInfo.fromRecipeId(recipe.getId()));
     }
 
     @Override
     public void handlePushReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleId) {
-        nearNotifier.deliverBackgroundPushReaction(SimpleNotification.fromNotificationText(notificationText), recipeId, notificationText, getReactionPluginName());
+        nearNotifier.deliverBackgroundPushReaction(SimpleNotification.fromNotificationText(notificationText), TrackingInfo.fromRecipeId(recipeId));
     }
 
     @Override
     public boolean handlePushBundledReaction(String recipeId, String notificationText, String reactionAction, String reactionBundleString) {
-        nearNotifier.deliverBackgroundPushReaction(SimpleNotification.fromNotificationText(notificationText), recipeId, notificationText, getReactionPluginName());
+        nearNotifier.deliverBackgroundPushReaction(SimpleNotification.fromNotificationText(notificationText), TrackingInfo.fromRecipeId(recipeId));
         return true;
     }
 }

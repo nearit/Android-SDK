@@ -2,7 +2,6 @@ package it.near.sdk.geopolis.beacons.ranging;
 
 import android.os.Parcelable;
 
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
 
 /**
@@ -10,5 +9,5 @@ import it.near.sdk.trackings.TrackingInfo;
  */
 public interface ProximityListener {
 
-    void foregroundEvent(Parcelable content, Recipe recipe, TrackingInfo trackingInfo);
+    void foregroundEvent(Parcelable content, TrackingInfo trackingInfo);
 }

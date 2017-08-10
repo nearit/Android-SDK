@@ -140,34 +140,34 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     @Override
-    public void foregroundEvent(Parcelable content, Recipe recipe, TrackingInfo trackingInfo) {
-        NearUtils.parseCoreContents(content, recipe, trackingInfo, this);
+    public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
+        NearUtils.parseCoreContents(content, trackingInfo, this);
     }
 
     @Override
-    public void gotContentNotification(@Nullable Intent intent, Content notification, TrackingInfo trackingInfo, String notificationMessage) {
+    public void gotContentNotification(Content notification, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a notification with content", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, TrackingInfo trackingInfo, String notificationMessage) {
+    public void gotCouponNotification(Coupon notification, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a coupon", Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(notification.getSerial()).create().show();
     }
 
     @Override
-    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, TrackingInfo trackingInfo, String notificationMessage) {
+    public void gotCustomJSONNotification(CustomJSON notification, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a custom json", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, TrackingInfo trackingInfo, String notificationMessage) {
+    public void gotSimpleNotification(SimpleNotification s_notif, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a simple notification", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, TrackingInfo trackingInfo, String notificationMessage) {
+    public void gotFeedbackNotification(Feedback s_notif, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a feedback request", Toast.LENGTH_SHORT).show();
     }
 

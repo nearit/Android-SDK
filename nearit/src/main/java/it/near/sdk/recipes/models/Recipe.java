@@ -113,6 +113,7 @@ public class Recipe extends Resource {
         this.scheduling = scheduling;
     }
 
+    @Deprecated
     public String getNotificationTitle() {
         if (notification.containsKey("title")) {
             return notification.get("title").toString();
@@ -139,14 +140,15 @@ public class Recipe extends Resource {
      */
     public static void fillIntentExtras(
             Intent intent, Parcelable parcelable,
-            TrackingInfo trackingInfo, String notificationText, String reactionPlugin) {
+            TrackingInfo trackingInfo) {
 
         intent.putExtra(NearItIntentConstants.TRACKING_INFO, trackingInfo);
-        // set notification text
-        intent.putExtra(NearItIntentConstants.NOTIF_BODY, notificationText);
         // set contet to show
         intent.putExtra(NearItIntentConstants.CONTENT, parcelable);
+    }
 
-        intent.putExtra(NearItIntentConstants.REACTION_PLUGIN, reactionPlugin);
+    public static String extractNotif(Intent intent) {
+        ReactionBundle content = intent.getParcelableExtra(NearItIntentConstants.CONTENT);
+        return content.notificationMessage;
     }
 }

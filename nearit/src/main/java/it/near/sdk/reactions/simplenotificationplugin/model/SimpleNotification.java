@@ -4,11 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 
-public class SimpleNotification implements Parcelable {
+public class SimpleNotification extends ReactionBundle implements Parcelable {
 
-    private String notificationMessage;
+    public String notificationMessage;
     private String notificationTitle;
 
     public SimpleNotification(String notificationMessage, @Nullable String notificationTitle) {
@@ -17,6 +18,7 @@ public class SimpleNotification implements Parcelable {
     }
 
     protected SimpleNotification(Parcel in) {
+        super(in);
         notificationMessage = in.readString();
         notificationTitle = in.readString();
     }
@@ -41,6 +43,7 @@ public class SimpleNotification implements Parcelable {
         this.notificationMessage = notificationMessage;
     }
 
+    @Deprecated
     public String getNotificationTitle() {
         return notificationTitle;
     }
@@ -56,6 +59,7 @@ public class SimpleNotification implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(notificationMessage);
         dest.writeString(notificationTitle);
     }

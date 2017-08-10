@@ -110,10 +110,11 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
             @Override
             public void onContentFetched(ReactionBundle content, boolean cached) {
                 if (content == null) return;
+                content.notificationMessage = recipe.getNotificationBody();
                 if (recipe.isForegroundRecipe()) {
                     nearNotifier.deliverForegroundReaction(content, recipe, trackingInfo);
                 } else {
-                    nearNotifier.deliverBackgroundReaction(content, trackingInfo, recipe.getNotificationBody(), getReactionPluginName());
+                    nearNotifier.deliverBackgroundReaction(content, trackingInfo);
                 }
             }
 
@@ -202,7 +203,10 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
             @Override
             public void onContentFetched(T element, boolean cached) {
                 injectRecipeId(element, recipeId);
-                nearNotifier.deliverBackgroundPushReaction(element, recipeId, notificationText, getReactionPluginName());
+                element.notificationMessage = notificationText;
+                TrackingInfo trackingInfo = new TrackingInfo();
+                trackingInfo.recipeId = recipeId;
+                nearNotifier.deliverBackgroundPushReaction(element, trackingInfo);
             }
 
             @Override
@@ -213,15 +217,16 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
     }
 
     @Override
-    public void handlePushReaction(final Recipe recipe, ReactionBundle reactionBundle) {
+    public void handlePushReaction(final Recipe recipe, final ReactionBundle reactionBundle) {
         T element = (T) reactionBundle;
         if (element.hasContentToInclude()) {
             downloadSingleReaction(element.getId(), new ContentFetchListener<T>() {
                 @Override
                 public void onContentFetched(T element, boolean cached) {
                     injectRecipeId(element, recipe.getId());
-
-                    nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+                    element.notificationMessage = recipe.getNotificationBody();
+                    nearNotifier.deliverBackgroundPushReaction(element,
+                            TrackingInfo.fromRecipeId(recipe.getId()));
                 }
 
                 @Override
@@ -232,7 +237,8 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
         } else {
             injectRecipeId(element, recipe.getId());
             normalizeElement(element);
-            nearNotifier.deliverBackgroundPushReaction(element, recipe.getId(), recipe.getNotificationBody(), getReactionPluginName());
+            element.notificationMessage = recipe.getNotificationBody();
+            nearNotifier.deliverBackgroundPushReaction(element, TrackingInfo.fromRecipeId(recipe.getId()));
         }
     }
 
@@ -244,7 +250,8 @@ public abstract class CoreReaction<T extends ReactionBundle> extends Reaction {
             if (element == null) return false;
             injectRecipeId(element, recipeId);
             normalizeElement(element);
-            nearNotifier.deliverBackgroundPushReaction(element, recipeId, notificationText, getReactionPluginName());
+            element.notificationMessage = notificationText;
+            nearNotifier.deliverBackgroundPushReaction(element, TrackingInfo.fromRecipeId(recipeId));
             return true;
         } catch (JSONException e) {
             return false;

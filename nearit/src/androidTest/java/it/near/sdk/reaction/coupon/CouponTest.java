@@ -14,6 +14,7 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
 
 import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
@@ -31,6 +32,7 @@ public class CouponTest {
         coupon.setIcon_id("coupon_icon_id");
         coupon.claims = Lists.newArrayList(new Claim(), new Claim());
         coupon.setIconSet(new ImageSet());
+        coupon.notificationMessage = "fjnef";
 
         Parcel parcel = Parcel.obtain();
         coupon.writeToParcel(parcel, 0);
@@ -45,6 +47,7 @@ public class CouponTest {
         assertEquals(coupon.redeemable_from, actual.redeemable_from);
         assertEquals(coupon.getIcon_id(), actual.getIcon_id());
         assertThat(coupon.claims, containsInAnyOrder(actual.claims.toArray()));
+        assertThat(coupon.notificationMessage, is(actual.notificationMessage));
         assertEquals(coupon.getIconSet(), actual.getIconSet());
 
     }
