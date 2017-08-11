@@ -33,6 +33,7 @@ import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.Reaction;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
+import it.near.sdk.reactions.couponplugin.CouponApi;
 import it.near.sdk.reactions.couponplugin.CouponListener;
 import it.near.sdk.reactions.couponplugin.CouponReaction;
 import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
@@ -215,7 +216,8 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         simpleNotification = new SimpleNotificationReaction(nearNotifier);
         addReaction(simpleNotification);
 
-        couponReaction = CouponReaction.obtain(context, nearNotifier, globalConfig);
+        couponReaction = CouponReaction.obtain(context, nearNotifier, globalConfig,
+                CouponApi.obtain(context, globalConfig));
         addReaction(couponReaction);
 
         customJSON = CustomJSONReaction.obtain(context, nearNotifier);
@@ -384,7 +386,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
      */
     public void getCoupons(CouponListener listener) {
         try {
-            couponReaction.getCoupons(context, listener);
+            couponReaction.getCoupons(listener);
         } catch (UnsupportedEncodingException | MalformedURLException e) {
             listener.onCouponDownloadError("Error");
         }
