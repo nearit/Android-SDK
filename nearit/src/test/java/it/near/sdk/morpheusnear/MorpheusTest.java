@@ -1,5 +1,7 @@
 package it.near.sdk.morpheusnear;
 
+import com.google.common.collect.Maps;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -37,6 +39,7 @@ public class MorpheusTest {
 
     @Before
     public void setUP() {
+        Deserializer.setRegisteredClasses(Maps.<String, Class>newHashMap());
         morpheus = new Morpheus();
         morpheus.getFactory().getDeserializer().registerResourceClass("test", TestModel.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("test_child", TestChildModel.class);
