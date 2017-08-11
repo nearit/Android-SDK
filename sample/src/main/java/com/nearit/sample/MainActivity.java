@@ -21,10 +21,8 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.RecipeRefreshListener;
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
-import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
 
 public class MainActivity extends AppCompatActivity implements ProximityListener, CoreContentsListener {
@@ -114,12 +112,6 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
                 intent.getExtras() != null &&
                 NearUtils.carriesNearItContent(intent)) {
             // we got a NearIT intent
-
-            // track it as engaged, since we tapped on it
-            NearItManager.getInstance(this).sendTracking(
-                    (TrackingInfo) intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO),
-                    Recipe.ENGAGED_STATUS
-            );
 
             NearUtils.parseCoreContents(intent, this);
         }
