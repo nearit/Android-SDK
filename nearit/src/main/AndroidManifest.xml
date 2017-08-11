@@ -47,6 +47,10 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".recipes.background.AutoTrackingReceiver"
+            android:enabled="true" />
+
         <service
             android:name=".push.fcmregistration.MyInstanceIDListenerService"
             android:exported="false">
