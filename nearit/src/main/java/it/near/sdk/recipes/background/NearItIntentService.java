@@ -58,16 +58,14 @@ public class NearItIntentService extends IntentService {
                 imgResFromIntent(intent),
                 notifTitle,
                 notifText,
-                getLauncherTargetIntent(intent),
+                getAutoTrackingTargetIntent(intent),
                 uniqueNotificationCode()
         );
     }
 
-    private Intent getLauncherTargetIntent(@NonNull Intent intent) {
-        return getPackageManager()
-                .getLaunchIntentForPackage(this.getPackageName())
-                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK)
-                .putExtras(intent.getExtras());
+    private Intent getAutoTrackingTargetIntent(@NonNull Intent intent) {
+        return new Intent(this, AutoTrackingReceiver.class)
+            .putExtras(intent.getExtras());
     }
 
     protected void sendNotifiedTracking(@NonNull Intent intent) {
