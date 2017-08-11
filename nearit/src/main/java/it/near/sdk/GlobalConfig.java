@@ -33,7 +33,7 @@ public class GlobalConfig {
     private int proximityNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
     private int pushNotificationIconRes = DEFAULT_EMPTY_NOTIFICATION;
     // ---------- suffix for sharedpreferences ----------
-    private static final String PREFS_NAME = "NearConfig";
+    static final String PREFS_NAME = "NearConfig";
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
