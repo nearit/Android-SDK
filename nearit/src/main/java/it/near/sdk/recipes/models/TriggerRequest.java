@@ -1,4 +1,4 @@
-package it.near.sdk.recipes.pulse;
+package it.near.sdk.recipes.models;
 
 import java.util.List;
 

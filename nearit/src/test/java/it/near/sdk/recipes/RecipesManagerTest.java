@@ -23,7 +23,7 @@ import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.models.PulseAction;
 import it.near.sdk.recipes.models.PulseBundle;
 import it.near.sdk.recipes.models.Recipe;
-import it.near.sdk.recipes.pulse.TriggerRequest;
+import it.near.sdk.recipes.models.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.trackings.TrackingInfo;
 

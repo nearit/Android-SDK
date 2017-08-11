@@ -1,6 +1,6 @@
 package it.near.sdk.recipes;
 
-import it.near.sdk.recipes.pulse.TriggerRequest;
+import it.near.sdk.recipes.models.TriggerRequest;
 
 public interface RecipeEvaluator {
 

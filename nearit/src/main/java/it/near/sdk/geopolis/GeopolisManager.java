@@ -11,6 +11,8 @@ import android.net.Uri;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,7 +29,7 @@ import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipeEvaluator;
-import it.near.sdk.recipes.pulse.TriggerRequest;
+import it.near.sdk.recipes.models.TriggerRequest;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CurrentTime;
