@@ -13,7 +13,7 @@ import java.util.List;
 
 public class Cacher<T> {
 
-    private static final String KEY_LIST = "list";
+    static final String KEY_LIST = "list";
     private final SharedPreferences sp;
     private Gson gson;
 
