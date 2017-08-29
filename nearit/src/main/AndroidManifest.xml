@@ -60,6 +60,11 @@
             </intent-filter>
         </service>
 
+        <provider
+            android:authorities="${applicationId}.nearInitContentProvider"
+            android:name=".NearItProvider"
+            android:exported="false" />
+
     </application>
 
 </manifest>
