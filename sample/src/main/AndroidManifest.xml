@@ -43,6 +43,9 @@
             android:theme="@style/NearDialogTheme" />
         <!-- There's need to add the special theme to avoid a smelly UI transition -->
 
+        // TODO use placeholder
+        <meta-data android:name="near_api_key" android:value="keykeykey" />
+
     </application>
 
 </manifest>
