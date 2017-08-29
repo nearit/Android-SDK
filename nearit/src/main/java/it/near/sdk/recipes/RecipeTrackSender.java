@@ -12,6 +12,7 @@ import it.near.sdk.GlobalConfig;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackRequest;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
@@ -26,6 +27,7 @@ public class RecipeTrackSender {
     static final String TRACKING_RECIPE_ID = "recipe_id";
     static final String TRACKING_EVENT = "event";
     static final String TRACKING_TRACKED_AT = "tracked_at";
+    static final String TRACKING_METADATA = "metadata";
     static final String TRACKINGS_TYPE = "trackings";
     private static final String TRACK_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
 
@@ -44,23 +46,24 @@ public class RecipeTrackSender {
         this.currentTime = checkNotNull(currentTime);
     }
 
-    void sendTracking(String recipeId, String trackingEvent) throws JSONException {
-        if (recipeId == null ||
+    void sendTracking(TrackingInfo trackingInfo, String trackingEvent) throws JSONException {
+        if (trackingInfo == null ||
+                trackingInfo.recipeId == null ||
                 trackingEvent == null) return;
 
         if (trackingEvent.equals(Recipe.NOTIFIED_STATUS)) {
-            recipesHistory.markRecipeAsShown(recipeId);
+            recipesHistory.markRecipeAsShown(trackingInfo.recipeId);
         }
 
         String trackingBody = buildTrackingBody(
-                recipeId,
+                trackingInfo,
                 trackingEvent
         );
 
         trackManager.sendTracking(new TrackRequest(TRACKINGS_PATH, trackingBody));
     }
 
-    private String buildTrackingBody(String recipeId, String trackingEvent) throws JSONException {
+    private String buildTrackingBody(TrackingInfo trackingInfo, String trackingEvent) throws JSONException {
         String profileId = globalConfig.getProfileId();
         String appId = globalConfig.getAppId();
         String installationId = globalConfig.getInstallationId();
@@ -76,7 +79,9 @@ public class RecipeTrackSender {
         attributes.put(TRACKING_PROFILE_ID, profileId);
         attributes.put(TRACKING_INSTALLATION_ID, installationId);
         attributes.put(TRACKING_APP_ID, appId);
-        attributes.put(TRACKING_RECIPE_ID, recipeId);
+        attributes.put(TRACKING_RECIPE_ID, trackingInfo.recipeId);
+        // TODO unit test for this
+        attributes.put(TRACKING_METADATA, trackingInfo.metadata);
         attributes.put(TRACKING_EVENT, trackingEvent);
         attributes.put(TRACKING_TRACKED_AT, formattedDate);
         return NearJsonAPIUtils.toJsonAPI(TRACKINGS_TYPE, attributes);

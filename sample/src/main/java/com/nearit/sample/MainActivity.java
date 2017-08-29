@@ -21,9 +21,8 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.RecipeRefreshListener;
-import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
-import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearUtils;
 
 public class MainActivity extends AppCompatActivity implements ProximityListener, CoreContentsListener {
@@ -111,14 +110,8 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         super.onNewIntent(intent);
         if (intent != null &&
                 intent.getExtras() != null &&
-                intent.hasExtra(NearItIntentConstants.RECIPE_ID)) {
+                NearUtils.carriesNearItContent(intent)) {
             // we got a NearIT intent
-
-            // track it as engaged, since we tapped on it
-            NearItManager.getInstance(this).sendTracking(
-                    intent.getStringExtra(NearItIntentConstants.RECIPE_ID),
-                    Recipe.ENGAGED_STATUS
-            );
 
             NearUtils.parseCoreContents(intent, this);
         }
@@ -139,34 +132,34 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     @Override
-    public void foregroundEvent(Parcelable content, Recipe recipe) {
-        NearUtils.parseCoreContents(content, recipe, this);
+    public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
+        NearUtils.parseCoreContents(content, trackingInfo, this);
     }
 
     @Override
-    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage) {
+    public void gotContentNotification(Content notification, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a notification with content", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage) {
+    public void gotCouponNotification(Coupon notification, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a coupon", Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(notification.getSerial()).create().show();
     }
 
     @Override
-    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage) {
+    public void gotCustomJSONNotification(CustomJSON notification, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a custom json", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage) {
+    public void gotSimpleNotification(SimpleNotification s_notif, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a simple notification", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage) {
+    public void gotFeedbackNotification(Feedback s_notif, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a feedback request", Toast.LENGTH_SHORT).show();
     }
 

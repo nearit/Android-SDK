@@ -47,7 +47,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     public static final String GEOFENCES = "geofences";
     private PendingIntent mGeofencePendingIntent;
     private GoogleApiClient mGoogleApiClient;
-    private List<GeoFenceNode> mNearGeoList;
+    private List<GeofenceNode> mNearGeoList;
     private List<Geofence> mPendingGeofences = new ArrayList<>();
 
     @Override
@@ -65,8 +65,8 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         }
 
         if (intent != null && intent.hasExtra(GEOFENCES)) {
-            List<GeoFenceNode> nodes = intent.getParcelableArrayListExtra(GEOFENCES);
-            mPendingGeofences = GeoFenceNode.toGeofences(nodes);
+            List<GeofenceNode> nodes = intent.getParcelableArrayListExtra(GEOFENCES);
+            mPendingGeofences = GeofenceNode.toGeofences(nodes);
             if (GeopolisManager.isRadarStarted(this)) {
                 setGeoFences(nodes);
                 pingSingleLocation();
@@ -180,11 +180,11 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
      * Set the geofence to monitor. Filters the geofence to only add the new ones and to
      * remove the geofences it has no longer to monitor. Persists the new ids.
      *
-     * @param geoFenceNodes
+     * @param geofenceNodes
      */
-    private void setGeoFences(List<GeoFenceNode> geoFenceNodes) {
+    private void setGeoFences(List<GeofenceNode> geofenceNodes) {
         // get the ids of the geofence to monitor
-        List<String> newIds = idsFromGeofences(geoFenceNodes);
+        List<String> newIds = idsFromGeofences(geofenceNodes);
 
         // subtracting the new ids to the old ones, find the geofence to stop monitoring
         List<String> idsToremove = loadIds();
@@ -194,12 +194,12 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         }
 
         // from the old and the new sets of ids, find the geofence to add
-        List<Geofence> geofencesToAdd = fetchNewGeofence(geoFenceNodes, newIds, loadIds());
+        List<Geofence> geofencesToAdd = fetchNewGeofence(geofenceNodes, newIds, loadIds());
         startGeoFencing(getGeofencingRequest(geofencesToAdd));
         saveIds(newIds);
     }
 
-    private List<Geofence> fetchNewGeofence(List<GeoFenceNode> geoFenceNodes, List<String> newIds, List<String> oldIds) {
+    private List<Geofence> fetchNewGeofence(List<GeofenceNode> geofenceNodes, List<String> newIds, List<String> oldIds) {
         // create copy of the new ids
         List<String> idsToAdd = new ArrayList<>(newIds);
         // subtract the old ids to the new
@@ -210,9 +210,9 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         // for each id, fetch the geofence and return them all
         List<Geofence> geoFenceNodesToAdd = new ArrayList<>();
         for (String id : idsToAdd) {
-            GeoFenceNode geoFenceNode = getGeofenceFromId(geoFenceNodes, id);
-            if (geoFenceNode != null) {
-                geoFenceNodesToAdd.add(geoFenceNode.toGeofence());
+            GeofenceNode geofenceNode = getGeofenceFromId(geofenceNodes, id);
+            if (geofenceNode != null) {
+                geoFenceNodesToAdd.add(geofenceNode.toGeofence());
             }
         }
         return geoFenceNodesToAdd;
@@ -229,23 +229,23 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     /**
      * Find a geofence from a geofence list, given its id
      *
-     * @param geoFenceNodes
+     * @param geofenceNodes
      * @param id
      * @return
      */
-    private GeoFenceNode getGeofenceFromId(List<GeoFenceNode> geoFenceNodes, String id) {
-        for (GeoFenceNode geoFenceNode : geoFenceNodes) {
-            if (geoFenceNode.getId().equals(id)) {
-                return geoFenceNode;
+    private GeofenceNode getGeofenceFromId(List<GeofenceNode> geofenceNodes, String id) {
+        for (GeofenceNode geofenceNode : geofenceNodes) {
+            if (geofenceNode.getId().equals(id)) {
+                return geofenceNode;
             }
         }
         return null;
     }
 
-    private List<String> idsFromGeofences(List<GeoFenceNode> geoFenceNodes) {
+    private List<String> idsFromGeofences(List<GeofenceNode> geofenceNodes) {
         List<String> ids = new ArrayList<>();
-        for (GeoFenceNode geoFenceNode : geoFenceNodes) {
-            ids.add(geoFenceNode.getId());
+        for (GeofenceNode geofenceNode : geofenceNodes) {
+            ids.add(geofenceNode.getId());
         }
         return ids;
     }

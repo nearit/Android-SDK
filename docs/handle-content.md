@@ -26,10 +26,10 @@ To receive foreground content (e.g. ranging recipes) set a proximity listener wi
 }
 
 @Override
-public void foregroundEvent(Parcelable content, Recipe recipe) {
+public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
     // handle the event
     // To extract the content and to have it automatically casted to the appropriate object type
-    NearUtils.parseCoreContents(content, recipe, coreContentListener)
+    NearUtils.parseCoreContents(content, trackingInfo, coreContentListener);
 }   
 ```
 
@@ -53,21 +53,27 @@ NearIT analytics on recipes are built from trackings describing the status of us
 
 Background recipes track themselves as notified. To track the tap event, use this method:
 ```java
-NearItManager.getInstance(context).sendTracking(recipeId, Recipe.ENGAGED_STATUS);
+NearItManager.getInstance(context).sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
 ```
 You should be able to catch the event inside the activity that is started after interacting with the notification. If your using our notification building IntentService, that activity is your launcher activity.
+This is how you extract the `trackingInfo` from the Intent.
+```java
+TrackingInfo trackingInfo = (TrackingInfo) intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO)
+```
 
 Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
 ```java
-NearItManager.getInstance(context).sendTracking(recipe.getId(), Recipe.NOTIFIED_STATUS);
+NearItManager.getInstance(context).sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
 // and
-NearItManager.getInstance(context).sendTracking(recipe.getId(), Recipe.ENGAGED_STATUS);
+NearItManager.getInstance(context).sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
 ```
 The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
 
 ## Content Objects
 
-For each callback method of the *coreContentListener* you will receive a different content object. Every object type has a `getId()` getter, and here are the details for every other one:
+For each callback method of the *coreContentListener* you will receive a different content object.
+Every object has a `notificationMessage` public field and a `getId()` getter method.
+Here are the details for every other one:
 
 - `SimpleNotification` with the following getters:
     - `getNotificationMessage()` returns the notification message
@@ -87,8 +93,6 @@ To give a feedback call this method:
 ```java
 // rating must be an integer between 1 and 5, and you can set a comment string.
 NearItManager.getInstance(context).sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
-// if you don't hold the feedback object use this constructor
-NearItManager.getInstance(context).sendEvent(new FeedbackEvent(feedbackId, rating, "Nice", recipeId));
 // the sendEvent method is available in 2 variants: with or without explicit callback handler. Example:
 NearItManager.getInstance(context).sendEvent(new FeedbackEvent(...), responseHandler);
 ```

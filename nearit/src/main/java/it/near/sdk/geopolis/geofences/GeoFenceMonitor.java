@@ -25,7 +25,7 @@ public class GeoFenceMonitor {
     private static final String TAG = "GeoFenceMonitor";
     private static final String CURRENT_GEOFENCES = "current_geofences";
     private Context mContext;
-    private List<GeoFenceNode> currentGeofences;
+    private List<GeofenceNode> currentGeofences;
     GeoFenceService geoFenceService;
     private static final String PREFS_SUFFIX = "NearGeoMonitor";
 
@@ -38,7 +38,7 @@ public class GeoFenceMonitor {
      *
      * @param nodes
      */
-    public void setUpMonitor(List<GeoFenceNode> nodes) {
+    public void setUpMonitor(List<GeofenceNode> nodes) {
         currentGeofences = nodes;
         persistCurrentGeofences(mContext, currentGeofences);
         if (GeopolisManager.isRadarStarted(mContext) && currentGeofences.size() > 0) {
@@ -63,40 +63,40 @@ public class GeoFenceMonitor {
      * @param nodes
      * @return
      */
-    public static List<GeoFenceNode> filterGeofence(List<Node> nodes) {
-        List<GeoFenceNode> geoFenceNodeList = new ArrayList<>();
-        if (nodes == null) return geoFenceNodeList;
+    public static List<GeofenceNode> filterGeofence(List<Node> nodes) {
+        List<GeofenceNode> geofenceNodeList = new ArrayList<>();
+        if (nodes == null) return geofenceNodeList;
         for (Node node : nodes) {
-            if (node instanceof GeoFenceNode) {
-                geoFenceNodeList.add((GeoFenceNode) node);
+            if (node instanceof GeofenceNode) {
+                geofenceNodeList.add((GeofenceNode) node);
             }
         }
-        return geoFenceNodeList;
+        return geofenceNodeList;
     }
 
-    public static void persistCurrentGeofences(Context context, List<GeoFenceNode> currentGeofences) {
+    public static void persistCurrentGeofences(Context context, List<GeofenceNode> currentGeofences) {
         String PACK_NAME = context.getApplicationContext().getPackageName();
         SharedPreferences.Editor edit = context.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0).edit();
-        Gson gson = new GsonBuilder().setExclusionStrategies(GeoFenceNode.getExclusionStrategy()).create();
+        Gson gson = new GsonBuilder().setExclusionStrategies(GeofenceNode.getExclusionStrategy()).create();
         String json = gson.toJson(currentGeofences);
         edit.putString(CURRENT_GEOFENCES, json).apply();
     }
 
-    public static List<GeoFenceNode> getCurrentGeofences(Context context) {
+    public static List<GeofenceNode> getCurrentGeofences(Context context) {
         String PACK_NAME = context.getApplicationContext().getPackageName();
         SharedPreferences sp = context.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0);
         Gson gson = new Gson();
         String json = sp.getString(CURRENT_GEOFENCES, null);
-        Type type = new TypeToken<ArrayList<GeoFenceNode>>() {
+        Type type = new TypeToken<ArrayList<GeofenceNode>>() {
         }.getType();
-        return gson.<ArrayList<GeoFenceNode>>fromJson(json, type);
+        return gson.<ArrayList<GeofenceNode>>fromJson(json, type);
     }
 
-    public static List<GeoFenceNode> geofencesOnEnter(List<Node> nodes, Node node) {
+    public static List<GeofenceNode> geofencesOnEnter(List<Node> nodes, Node node) {
         if (nodes == null || node == null) {
             return new ArrayList<>();
         }
-        List<GeoFenceNode> toListen = new ArrayList<>();
+        List<GeofenceNode> toListen = new ArrayList<>();
         // add children
         toListen.addAll(filterGeofence(node.children));
         if (node.parent != null) {
@@ -107,7 +107,7 @@ public class GeoFenceMonitor {
         return toListen;
     }
 
-    public static List<GeoFenceNode> geofencesOnExit(List<Node> nodes, Node node) {
+    public static List<GeofenceNode> geofencesOnExit(List<Node> nodes, Node node) {
         if (nodes == null || node == null) {
             return new ArrayList<>();
         }

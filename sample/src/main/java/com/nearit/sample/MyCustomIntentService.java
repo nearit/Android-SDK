@@ -10,6 +10,7 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.background.NearItIntentService;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearUtils;
 
@@ -35,27 +36,27 @@ public class MyCustomIntentService extends NearItIntentService implements CoreCo
     }
 
     @Override
-    public void gotContentNotification(@Nullable Intent intent, Content notification, String recipeId, String notificationMessage) {
+    public void gotContentNotification(Content notification, TrackingInfo trackingInfo) {
         Log.d(TAG, "gotContentNotification");
     }
 
     @Override
-    public void gotCouponNotification(@Nullable Intent intent, Coupon notification, String recipeId, String notificationMessage) {
+    public void gotCouponNotification(Coupon notification, TrackingInfo trackingInfo) {
         Log.d(TAG, "gotCouponNotification");
     }
 
     @Override
-    public void gotCustomJSONNotification(@Nullable Intent intent, CustomJSON notification, String recipeId, String notificationMessage) {
+    public void gotCustomJSONNotification(CustomJSON notification, TrackingInfo trackingInfo) {
         Log.d(TAG, "gotCustomJsonNotification");
     }
 
     @Override
-    public void gotSimpleNotification(@Nullable Intent intent, SimpleNotification s_notif, String recipeId, String notificationMessage) {
+    public void gotSimpleNotification(SimpleNotification s_notif, TrackingInfo trackingInfo) {
         Log.d(TAG, "gotSimpleNotification");
     }
 
     @Override
-    public void gotFeedbackNotification(@Nullable Intent intent, Feedback s_notif, String recipeId, String notificationMessage) {
+    public void gotFeedbackNotification(Feedback s_notif, TrackingInfo trackingInfo) {
         Log.d(TAG, "gotFeedbackNotification");
     }
 }

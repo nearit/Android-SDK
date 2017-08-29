@@ -101,5 +101,4 @@ public class ContentReactionTest extends BaseReactionTest<ContentReaction> {
         assertThat(modelMap.get(RES_AUDIOS), is((Object) Audio.class));
         assertThat(modelMap.get(RES_UPLOADS), is((Object) Upload.class));
     }
-
 }

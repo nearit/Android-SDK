@@ -8,10 +8,12 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -27,7 +29,9 @@ import it.near.sdk.geopolis.trackings.Events;
 import it.near.sdk.geopolis.trackings.GeopolisTrackingsManager;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.recipes.RecipeEvaluator;
+import it.near.sdk.recipes.models.TriggerRequest;
 import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CurrentTime;
 
 /**
@@ -64,6 +68,9 @@ public class GeopolisManager {
     public static final String GF_RANGE_NEAR_SUFFIX = "RANGE_NEAR";
     public static final String GF_RANGE_IMMEDIATE_SUFFIX = "RANGE_IMMEDIATE";
     public static final String NODE_ID = "identifier";
+    public static final String META_TAGS_KEY = "tags";
+    public static final String META_NODE_TYPE_KEY = "node_type";
+    public static final String META_NODE_ID_KEY = "node_id";
 
     private final Context context;
     private final RecipeEvaluator recipeEvaluator;
@@ -228,16 +235,36 @@ public class GeopolisManager {
                 geopolisTrackingsManager.trackEvent(node.identifier, event.event);
             } catch (JSONException ignored) {
             }
-            firePulse(event, node.tags, node.identifier);
+            firePulse(event, node.tags, node.identifier, node.getClass().getSimpleName());
         }
     }
 
-    private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle) {
+    private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle, String nodeType) {
         NearLog.d(TAG, "firePulse!");
-        if (!recipeEvaluator.handlePulseLocally(PLUGIN_NAME, event.event, pulseBundle) &&
-                !recipeEvaluator.handlePulseTags(PLUGIN_NAME, event.fallback, tags)) {
-                    recipeEvaluator.handlePulseOnline(PLUGIN_NAME, event.event, pulseBundle);
-                }
+        recipeEvaluator.handleTriggerRequest(
+                buildTriggerRequest(event, tags, pulseBundle, nodeType)
+        );
+    }
+
+    private TriggerRequest buildTriggerRequest(Events.GeoEvent event, List<String> tags, String pulseBundle, String nodeType) {
+        TriggerRequest triggerRequest = new TriggerRequest();
+        triggerRequest.plugin_name = PLUGIN_NAME;
+        triggerRequest.plugin_action = event.event;
+        triggerRequest.bundle_id = pulseBundle;
+        triggerRequest.plugin_tag_action = event.fallback;
+        triggerRequest.tags = tags;
+        TrackingInfo trackingInfo = new TrackingInfo();
+        trackingInfo.metadata = buildMetadata(tags, nodeType, pulseBundle);
+        triggerRequest.trackingInfo = trackingInfo;
+        return triggerRequest;
+    }
+
+    private HashMap<String, Object> buildMetadata(List<String> tags, String nodeType, String bundleId) {
+        HashMap<String, Object> metadata = new HashMap<>();
+        metadata.put(META_TAGS_KEY, tags);
+        metadata.put(META_NODE_TYPE_KEY, nodeType);
+        metadata.put(META_NODE_ID_KEY, bundleId);
+        return metadata;
     }
 
     private final BroadcastReceiver resetEventReceiver = new BroadcastReceiver() {

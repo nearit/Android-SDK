@@ -1,5 +1,6 @@
 package it.near.sdk;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 
 import org.junit.Before;
@@ -10,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.logging.NearLogger;
 
 import static it.near.sdk.GlobalConfig.APIKEY;
 import static it.near.sdk.GlobalConfig.APPID;
@@ -19,6 +19,7 @@ import static it.near.sdk.GlobalConfig.DEVICETOKEN;
 import static it.near.sdk.GlobalConfig.INSTALLATIONID;
 import static it.near.sdk.GlobalConfig.KEY_PROXIMITY_ICON;
 import static it.near.sdk.GlobalConfig.KEY_PUSH_ICON;
+import static it.near.sdk.GlobalConfig.PREFS_NAME;
 import static it.near.sdk.GlobalConfig.PROFILE_ID;
 import static junit.framework.Assert.assertNull;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,6 +29,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,57 +45,7 @@ public class GlobalConfigTest {
 
     @Before
     public void setUp() throws Exception {
-        NearLog.setLogger(new NearLogger() {
-            @Override
-            public void v(String tag, String msg) {
-
-            }
-
-            @Override
-            public void v(String tag, String msg, Throwable tr) {
-
-            }
-
-            @Override
-            public void d(String tag, String msg) {
-
-            }
-
-            @Override
-            public void d(String tag, String msg, Throwable tr) {
-
-            }
-
-            @Override
-            public void i(String tag, String msg) {
-
-            }
-
-            @Override
-            public void i(String tag, String msg, Throwable tr) {
-
-            }
-
-            @Override
-            public void w(String tag, String msg) {
-
-            }
-
-            @Override
-            public void w(String tag, String msg, Throwable tr) {
-
-            }
-
-            @Override
-            public void e(String tag, String msg) {
-
-            }
-
-            @Override
-            public void e(String tag, String msg, Throwable tr) {
-
-            }
-        });
+        NearLog.setLogger(TestUtils.emptyLogger());
         when(mockSharedPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.putString(anyString(), anyString())).thenReturn(mockEditor);
         when(mockEditor.putInt(anyString(), anyInt())).thenReturn(mockEditor);
@@ -177,6 +129,13 @@ public class GlobalConfigTest {
         int pushNotificationIcon = 7;
         globalConfig.setPushNotificationIcon(pushNotificationIcon);
         verify(mockEditor, atLeastOnce()).putInt(KEY_PUSH_ICON, pushNotificationIcon);
+    }
+
+    @Test
+    public void prefBuilderReturnsPrefs() {
+        Context context = mock(Context.class);
+        GlobalConfig.buildSharedPreferences(context);
+        verify(context).getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
     }
 
 }

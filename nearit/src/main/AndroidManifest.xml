@@ -47,6 +47,11 @@
             </intent-filter>
         </receiver>
 
+        <!-- receiver for auto-tracking the ENGAGED status -->
+        <receiver
+            android:name=".recipes.background.AutoTrackingReceiver"
+            android:enabled="true" />
+
         <service
             android:name=".push.fcmregistration.MyInstanceIDListenerService"
             android:exported="false">

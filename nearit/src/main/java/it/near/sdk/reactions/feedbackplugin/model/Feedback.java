@@ -22,6 +22,7 @@ public class Feedback extends ReactionBundle implements Parcelable {
     }
 
     protected Feedback(Parcel in) {
+        super(in);
         question = in.readString();
         setRecipeId(in.readString());
         setId(in.readString());
@@ -54,6 +55,7 @@ public class Feedback extends ReactionBundle implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(question);
         dest.writeString(getRecipeId());
         dest.writeString(getId());

@@ -25,13 +25,6 @@ public class FeedbackEvent extends Event {
     private String comment;
     private String recipeId;
 
-    public FeedbackEvent(String feedbackId, int rating, String comment, String recipeId) {
-        this.feedbackId = feedbackId;
-        this.rating = rating;
-        this.comment = comment;
-        this.recipeId = recipeId;
-    }
-
     public FeedbackEvent(Feedback feedback, int rating, String comment) {
         this.feedbackId = feedback.getId();
         this.rating = rating;

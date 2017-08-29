@@ -129,6 +129,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(getId());
         dest.writeString(name);
         dest.writeString(description);
@@ -153,6 +154,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
     };
 
     protected Coupon(Parcel in) {
+        super(in);
         setId(in.readString());
         name = in.readString();
         description = in.readString();
