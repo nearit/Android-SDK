@@ -70,11 +70,11 @@ public class NearItIntentService extends IntentService {
 
     protected void sendNotifiedTracking(@NonNull Intent intent) {
         TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
-        NearItManager.getInstance(this).sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
+        NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
     }
 
     private int imgResFromIntent(@NonNull Intent intent) {
-        GlobalConfig globalConfig = NearItManager.getInstance(this).globalConfig;
+        GlobalConfig globalConfig = NearItManager.getInstance().globalConfig;
         if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)) {
             return fetchPushNotification(globalConfig);
         } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)) {

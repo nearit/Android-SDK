@@ -22,7 +22,7 @@ public class ForegroundActivity extends AppCompatActivity implements ProximityLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_foreground);
 
-        NearItManager.getInstance(this).addProximityListener(this);
+        NearItManager.getInstance().addProximityListener(this);
 
     }
 

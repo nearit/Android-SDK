@@ -49,7 +49,7 @@ public class MyFcmListenerService extends FirebaseMessagingService {
     }
 
     private RecipeReactionHandler getRecipesReactionHandler() {
-        return NearItManager.getInstance(this).getRecipesReactionHandler();
+        return NearItManager.getInstance().getRecipesReactionHandler();
     }
     // [END receive_message]
 

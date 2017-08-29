@@ -10,10 +10,10 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        NearItManager.init(this, getString(R.string.near_api_key));
+        // NearItManager.init(this, getString(R.string.near_api_key));
 
-        NearItManager.getInstance(this).setProximityNotificationIcon(R.drawable.common_full_open_on_phone);
-        NearItManager.getInstance(this).setPushNotificationIcon(R.drawable.googleg_disabled_color_18);
+        NearItManager.getInstance().setProximityNotificationIcon(R.drawable.common_full_open_on_phone);
+        NearItManager.getInstance().setPushNotificationIcon(R.drawable.googleg_disabled_color_18);
     }
 
 }

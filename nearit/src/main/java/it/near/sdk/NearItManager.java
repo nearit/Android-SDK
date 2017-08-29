@@ -101,18 +101,19 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     private NearInstallation nearInstallation;
     private NearItUserProfile nearItUserProfile;
     private HashMap<String, Reaction> reactions = new HashMap<>();
-    private Context context;
-
+    private static Context context;
 
     /**
      * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
      */
     @NonNull
-    public static NearItManager init(@NonNull Application application, @NonNull String apiKey) {
+    static NearItManager init(@NonNull Application application, @NonNull String apiKey) {
         // store api key
+        context = application;
         ApiKeyConfig.saveApiKey(application, apiKey);
+
         // build instance
-        NearItManager nearItManager = getInstance(application);
+        NearItManager nearItManager = getInstance();
         // init lifecycle method
         nearItManager.initLifecycleMethods(application);
         // first run: this is executed only after the setup.
@@ -125,7 +126,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
      * Double check pattern for getter.
      */
     @NonNull
-    public static NearItManager getInstance(@NonNull Context context) {
+    public static NearItManager getInstance() {
         if (sInstance == null) {
             synchronized (SINGLETON_LOCK) {
                 if (sInstance == null) {

@@ -19,7 +19,7 @@ public class AutoTrackingReceiver extends WakefulBroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         // sends tracking
         TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
-        NearItManager.getInstance(context).sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
+        NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
 
         // sends intent to the launcher activity
         Intent launcherIntent = context.getPackageManager()

@@ -65,12 +65,12 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             }
         });
 
-        NearItManager.getInstance(this).addProximityListener(this);
+        NearItManager.getInstance().addProximityListener(this);
 
     }
 
     private void refreshNearRecipes() {
-        NearItManager.getInstance(this).refreshConfigs(new RecipeRefreshListener() {
+        NearItManager.getInstance().refreshConfigs(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
                 Toast.makeText(MainActivity.this, "Recipes refreshed", Toast.LENGTH_SHORT).show();
@@ -88,14 +88,14 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEAR_PERMISSION_REQUEST &&
                 resultCode == Activity.RESULT_OK) {
-            NearItManager.getInstance(this).startRadar();
+            NearItManager.getInstance().startRadar();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NearItManager.getInstance(this).removeProximityListener(this);
+        NearItManager.getInstance().removeProximityListener(this);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     private void profileMyUser() {
-        NearItManager.getInstance(this).setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
+        NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
             @Override
             public void onDataCreated() {
                 Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
     @Override
     public void gotSimpleNotification(SimpleNotification s_notif, TrackingInfo trackingInfo) {
-        Toast.makeText(this, "You received a simple notification", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "You received a simple notification: " + s_notif.getNotificationMessage(), Toast.LENGTH_SHORT).show();
     }
 
     @Override
