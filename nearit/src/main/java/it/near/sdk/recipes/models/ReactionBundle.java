@@ -8,7 +8,7 @@ import it.near.sdk.morpheusnear.Resource;
 /**
  * @author cattaneostefano.
  */
-public abstract class ReactionBundle extends Resource implements Parcelable {
+public class ReactionBundle extends Resource implements Parcelable {
     public String notificationMessage;
 
     public ReactionBundle() {
@@ -18,12 +18,29 @@ public abstract class ReactionBundle extends Resource implements Parcelable {
         notificationMessage = in.readString();
     }
 
+    public static final Creator<ReactionBundle> CREATOR = new Creator<ReactionBundle>() {
+        @Override
+        public ReactionBundle createFromParcel(Parcel in) {
+            return new ReactionBundle(in);
+        }
+
+        @Override
+        public ReactionBundle[] newArray(int size) {
+            return new ReactionBundle[size];
+        }
+    };
+
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(notificationMessage);
     }
 
     public boolean hasContentToInclude() {
         return false;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
 }
