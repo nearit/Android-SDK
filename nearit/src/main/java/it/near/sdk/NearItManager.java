@@ -107,7 +107,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
      * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
      */
     @NonNull
-    static NearItManager init(@NonNull Application application, @NonNull String apiKey) {
+    public static NearItManager init(@NonNull Application application, @NonNull String apiKey) {
         // store api key
         context = application;
         ApiKeyConfig.saveApiKey(application, apiKey);
@@ -138,6 +138,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     }
 
     protected NearItManager(Context context) {
+        if (context == null) {
+            NearLog.e(TAG, "The NearIT library could not be instantiated. Is the api key included in the manifest?");
+        }
         String apiKey = ApiKeyConfig.readApiKey(context);
         this.context = context.getApplicationContext();
 

@@ -43,7 +43,9 @@
             android:theme="@style/NearDialogTheme" />
         <!-- There's need to add the special theme to avoid a smelly UI transition -->
 
-        <meta-data android:name="near_api_key" android:value="@string/near_api_key" />
+        <meta-data
+            android:name="near_api_key"
+            android:value="@string/near_api_key" />
 
     </application>
 

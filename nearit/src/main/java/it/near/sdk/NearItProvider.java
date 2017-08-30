@@ -12,7 +12,11 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import it.near.sdk.logging.NearLog;
+
 public class NearItProvider extends ContentProvider {
+
+    private static final String TAG = "NearItProvider";
 
     @Override
     public boolean onCreate() {
@@ -24,13 +28,14 @@ public class NearItProvider extends ContentProvider {
             );
             Bundle bundle = ai.metaData;
             String apiKey = bundle.getString("near_api_key");
-            // TODO log api missing if api_key is null
+            if (apiKey == null) {
+                NearLog.e(TAG, "Missing near api key from manifest");
+                return true;
+            }
             NearItManager.init((Application) getContext().getApplicationContext(), apiKey);
 
-        } catch (PackageManager.NameNotFoundException e) {
-
-        } catch (NullPointerException e) {
-
+        } catch (PackageManager.NameNotFoundException | NullPointerException e) {
+            NearLog.e(TAG, "The NearIT SDK was not instantiated correctly");
         }
         return true;
     }
