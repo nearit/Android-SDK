@@ -11,6 +11,7 @@ import java.util.List;
 
 import it.near.sdk.morpheusnear.Resource;
 import it.near.sdk.morpheusnear.annotations.Relationship;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearItIntentConstants;
 
 /**
@@ -44,7 +45,7 @@ public class Recipe extends Resource {
     public static final String NOTIFIED_STATUS = "notified";
     public static final String ENGAGED_STATUS = "engaged";
 
-    private static final String ONLINE = "online";
+    public static final String ONLINE = "online";
 
     public boolean isEvaluatedOnline() {
         if (!labels.containsKey(ONLINE)) {
@@ -112,6 +113,7 @@ public class Recipe extends Resource {
         this.scheduling = scheduling;
     }
 
+    @Deprecated
     public String getNotificationTitle() {
         if (notification.containsKey("title")) {
             return notification.get("title").toString();
@@ -138,14 +140,15 @@ public class Recipe extends Resource {
      */
     public static void fillIntentExtras(
             Intent intent, Parcelable parcelable,
-            String recipeId, String notificationText, String reactionPlugin) {
+            TrackingInfo trackingInfo) {
 
-        intent.putExtra(NearItIntentConstants.RECIPE_ID, recipeId);
-        // set notification text
-        intent.putExtra(NearItIntentConstants.NOTIF_BODY, notificationText);
+        intent.putExtra(NearItIntentConstants.TRACKING_INFO, trackingInfo);
         // set contet to show
         intent.putExtra(NearItIntentConstants.CONTENT, parcelable);
+    }
 
-        intent.putExtra(NearItIntentConstants.REACTION_PLUGIN, reactionPlugin);
+    public static String extractNotif(Intent intent) {
+        ReactionBundle content = intent.getParcelableExtra(NearItIntentConstants.CONTENT);
+        return content.notificationMessage;
     }
 }

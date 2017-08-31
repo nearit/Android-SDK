@@ -45,6 +45,7 @@ public class Content extends ReactionBundle implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
+        super.writeToParcel(dest, flags);
         dest.writeString(contentString);
         dest.writeString(video_link);
         dest.writeString(updated_at);
@@ -66,6 +67,7 @@ public class Content extends ReactionBundle implements Parcelable {
     };
 
     public Content(Parcel in) {
+        super(in);
         contentString = in.readString();
         video_link = in.readString();
         updated_at = in.readString();

@@ -8,7 +8,7 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
  * @author cattaneostefano.
  */
 public interface CouponListener {
-    void onCouponsDownloaded(List<Coupon> claims);
+    void onCouponsDownloaded(List<Coupon> coupons);
 
     void onCouponDownloadError(String error);
 }

@@ -30,6 +30,7 @@ public class CustomJSONTest {
         customJSON.content = content;
         String customJSONId = "custom_json_id";
         customJSON.setId(customJSONId);
+        customJSON.notificationMessage = "ndfj";
 
         Parcel parcel = Parcel.obtain();
         customJSON.writeToParcel(parcel, 0);
@@ -41,6 +42,7 @@ public class CustomJSONTest {
         assertThat((Boolean)actual.content.get("boolean"), is(true));
         assertThat((int[])actual.content.get("arrayInt"), is(new int[]{3,2,5,4,1}));
         assertThat((String[])actual.content.get("arrayString"), is(new String[]{"blah", "hey", "yo"}));
+        assertThat(actual.notificationMessage, is(customJSON.notificationMessage));
 
         assertThat(actual.getId(), is(customJSONId));
     }

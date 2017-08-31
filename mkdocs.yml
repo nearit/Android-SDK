@@ -12,7 +12,6 @@ pages:
     - 'Custom Background Notification' : 'custom-bkg-notification.md'
     - 'Testing' : 'testing.md'
   - 'Samples' :
-    - 'Integration Samples' : 'integration-samples.md'
     - 'Best Practice on Permissions Request' : 'permission-request-sample.md'
   - 'Other resources' :
     - 'Logging' : 'logging.md'

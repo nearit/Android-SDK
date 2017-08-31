@@ -17,7 +17,7 @@ import it.near.sdk.geopolis.Node;
  * Created by cattaneostefano on 21/09/16.
  */
 
-public class GeoFenceNode extends Node implements Parcelable {
+public class GeofenceNode extends Node implements Parcelable {
     private static final int LOITERING_DELAY = 30000;
     @SerializedName("latitude")
     public Number latitude;
@@ -28,7 +28,7 @@ public class GeoFenceNode extends Node implements Parcelable {
     @SerializedName("radius")
     public Number radius;
 
-    public GeoFenceNode() {
+    public GeofenceNode() {
         super();
     }
 
@@ -56,29 +56,29 @@ public class GeoFenceNode extends Node implements Parcelable {
         dest.writeString(getId());
     }
 
-    protected GeoFenceNode(Parcel in) {
+    protected GeofenceNode(Parcel in) {
         latitude = in.readDouble();
         longitude = in.readDouble();
         radius = in.readDouble();
         setId(in.readString());
     }
 
-    public static final Creator<GeoFenceNode> CREATOR = new Creator<GeoFenceNode>() {
+    public static final Creator<GeofenceNode> CREATOR = new Creator<GeofenceNode>() {
         @Override
-        public GeoFenceNode createFromParcel(Parcel in) {
-            return new GeoFenceNode(in);
+        public GeofenceNode createFromParcel(Parcel in) {
+            return new GeofenceNode(in);
         }
 
         @Override
-        public GeoFenceNode[] newArray(int size) {
-            return new GeoFenceNode[size];
+        public GeofenceNode[] newArray(int size) {
+            return new GeofenceNode[size];
         }
     };
 
-    public static List<Geofence> toGeofences(List<GeoFenceNode> geoFenceNodes) {
+    public static List<Geofence> toGeofences(List<GeofenceNode> geofenceNodes) {
         List<Geofence> geofences = new ArrayList<>();
-        for (GeoFenceNode geoFenceNode : geoFenceNodes) {
-            geofences.add(geoFenceNode.toGeofence());
+        for (GeofenceNode geofenceNode : geofenceNodes) {
+            geofences.add(geofenceNode.toGeofence());
         }
         return geofences;
     }

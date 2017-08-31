@@ -2,7 +2,7 @@ package it.near.sdk.geopolis.beacons;
 
 import org.junit.Test;
 
-import it.near.sdk.geopolis.geofences.GeoFenceNode;
+import it.near.sdk.geopolis.geofences.GeofenceNode;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -29,7 +29,7 @@ public class BeaconNodeTest {
 
     @Test
     public void shouldNotRecognizeBeacon_whenGeofence() {
-        GeoFenceNode geofence = new GeoFenceNode();
+        GeofenceNode geofence = new GeofenceNode();
         geofence.latitude = 1.2345;
         geofence.longitude = 9.8765;
         geofence.radius = 1.2345;

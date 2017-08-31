@@ -15,7 +15,7 @@ public class BluetoothStatusReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
-        NearItManager nearItManager = NearItManager.getInstance(context);
+        NearItManager nearItManager = NearItManager.getInstance();
         if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
             if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1) == BluetoothAdapter.STATE_OFF) {
                 NearLog.d(TAG, "BT turned off");

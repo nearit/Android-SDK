@@ -15,6 +15,7 @@ import org.json.JSONException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,29 +31,37 @@ import it.near.sdk.operation.ProfileUpdateListener;
 import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
+import it.near.sdk.reactions.Reaction;
 import it.near.sdk.reactions.contentplugin.ContentReaction;
+import it.near.sdk.reactions.couponplugin.CouponApi;
 import it.near.sdk.reactions.couponplugin.CouponListener;
 import it.near.sdk.reactions.couponplugin.CouponReaction;
 import it.near.sdk.reactions.customjsonplugin.CustomJSONReaction;
 import it.near.sdk.reactions.feedbackplugin.FeedbackEvent;
 import it.near.sdk.reactions.feedbackplugin.FeedbackReaction;
 import it.near.sdk.reactions.simplenotificationplugin.SimpleNotificationReaction;
-import it.near.sdk.recipes.EvaluationBodyBuilder;
 import it.near.sdk.recipes.NearITEventHandler;
 import it.near.sdk.recipes.NearNotifier;
+import it.near.sdk.recipes.RecipeReactionHandler;
 import it.near.sdk.recipes.RecipeRefreshListener;
+import it.near.sdk.recipes.RecipeRepository;
 import it.near.sdk.recipes.RecipeTrackSender;
+import it.near.sdk.recipes.RecipesApi;
 import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.validation.AdvScheduleValidator;
 import it.near.sdk.recipes.validation.CooldownValidator;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.recipes.validation.Validator;
 import it.near.sdk.trackings.TrackManager;
+import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.CurrentTime;
 import it.near.sdk.utils.NearUtils;
+import it.near.sdk.utils.timestamp.NearItTimeStampApi;
+import it.near.sdk.utils.timestamp.NearTimestampChecker;
 
 /**
  * Central class used to interact with the Near framework. This class should be instantiated in a custom Application class.
@@ -67,7 +76,7 @@ import it.near.sdk.utils.NearUtils;
  * }
  * </pre>
  */
-public class NearItManager implements ProfileUpdateListener {
+public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler {
 
     @Nullable
     private volatile static NearItManager sInstance = null;
@@ -91,8 +100,8 @@ public class NearItManager implements ProfileUpdateListener {
     private final List<ProximityListener> proximityListenerList = new CopyOnWriteArrayList<>();
     private NearInstallation nearInstallation;
     private NearItUserProfile nearItUserProfile;
-    private Context context;
-
+    private HashMap<String, Reaction> reactions = new HashMap<>();
+    private static Context context;
 
     /**
      * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
@@ -100,9 +109,11 @@ public class NearItManager implements ProfileUpdateListener {
     @NonNull
     public static NearItManager init(@NonNull Application application, @NonNull String apiKey) {
         // store api key
+        context = application;
         ApiKeyConfig.saveApiKey(application, apiKey);
+
         // build instance
-        NearItManager nearItManager = getInstance(application);
+        NearItManager nearItManager = getInstance();
         // init lifecycle method
         nearItManager.initLifecycleMethods(application);
         // first run: this is executed only after the setup.
@@ -115,9 +126,9 @@ public class NearItManager implements ProfileUpdateListener {
      * Double check pattern for getter.
      */
     @NonNull
-    public static NearItManager getInstance(@NonNull Context context) {
+    public static NearItManager getInstance() {
         if (sInstance == null) {
-            synchronized(SINGLETON_LOCK) {
+            synchronized (SINGLETON_LOCK) {
                 if (sInstance == null) {
                     sInstance = new NearItManager(context);
                 }
@@ -127,6 +138,9 @@ public class NearItManager implements ProfileUpdateListener {
     }
 
     protected NearItManager(Context context) {
+        if (context == null) {
+            NearLog.e(TAG, "The NearIT library could not be instantiated. Is the api key included in the manifest?");
+        }
         String apiKey = ApiKeyConfig.readApiKey(context);
         this.context = context.getApplicationContext();
 
@@ -148,7 +162,11 @@ public class NearItManager implements ProfileUpdateListener {
             @Override
             public void onProfileCreated(boolean created, String profileId) {
                 NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
-                refreshConfigs();
+                if (created) {
+                    recipesManager.refreshConfig();
+                } else {
+                    recipesManager.syncConfig();
+                }
             }
 
             @Override
@@ -157,47 +175,60 @@ public class NearItManager implements ProfileUpdateListener {
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
                 updateInstallation();
+                recipesManager.syncConfig();
             }
         });
     }
 
-    private void plugInSetup(Context application, GlobalConfig globalConfig) {
+    private void plugInSetup(Context context, GlobalConfig globalConfig) {
         RecipesHistory recipesHistory = new RecipesHistory(
-                RecipesHistory.getSharedPreferences(application),
+                RecipesHistory.getSharedPreferences(context),
                 new CurrentTime()
         );
-        EvaluationBodyBuilder evaluationBodyBuilder = new EvaluationBodyBuilder(globalConfig, recipesHistory, new CurrentTime());
-        TrackManager trackManager = TrackManager.obtain(application);
+        TrackManager trackManager = TrackManager.obtain(context);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
         validators.add(new AdvScheduleValidator(new CurrentTime()));
         RecipeValidationFilter recipeValidationFilter = new RecipeValidationFilter(validators);
 
+        RecipesApi recipesApi = RecipesApi.obtain(context, recipesHistory, globalConfig);
+        NearItTimeStampApi nearItTimeStampApi = new NearItTimeStampApi(
+                new NearAsyncHttpClient(this.context),
+                NearItTimeStampApi.buildMorpheus(),
+                globalConfig);
+        NearTimestampChecker nearTimestampChecker = new NearTimestampChecker(nearItTimeStampApi);
+        RecipeRepository recipeRepository = new RecipeRepository(
+                nearTimestampChecker,
+                new Cacher<Recipe>(RecipeRepository.getSharedPreferences(this.context)),
+                recipesApi,
+                new CurrentTime(),
+                RecipeRepository.getSharedPreferences(this.context)
+        );
         RecipeTrackSender recipeTrackSender = new RecipeTrackSender(globalConfig, recipesHistory, trackManager, new CurrentTime());
         recipesManager = new RecipesManager(
-                new NearAsyncHttpClient(application),
-                globalConfig,
                 recipeValidationFilter,
-                evaluationBodyBuilder,
                 recipeTrackSender,
-                new Cacher<Recipe>(RecipesManager.getSharedPreferences(application)));
+                recipeRepository,
+                recipesApi,
+                this);
 
-        geopolis = new GeopolisManager(application, recipesManager, globalConfig, trackManager);
+        geopolis = new GeopolisManager(context, recipesManager, globalConfig, trackManager);
 
-        contentNotification = ContentReaction.obtain(application, nearNotifier);
-        recipesManager.addReaction(contentNotification);
+        contentNotification = ContentReaction.obtain(context, nearNotifier);
+        addReaction(contentNotification);
 
         simpleNotification = new SimpleNotificationReaction(nearNotifier);
-        recipesManager.addReaction(simpleNotification);
+        addReaction(simpleNotification);
 
-        couponReaction = CouponReaction.obtain(application, nearNotifier, globalConfig);
-        recipesManager.addReaction(couponReaction);
+        couponReaction = CouponReaction.obtain(context, nearNotifier, globalConfig,
+                CouponApi.obtain(context, globalConfig));
+        addReaction(couponReaction);
 
-        customJSON = CustomJSONReaction.obtain(application, nearNotifier);
-        recipesManager.addReaction(customJSON);
+        customJSON = CustomJSONReaction.obtain(context, nearNotifier);
+        addReaction(customJSON);
 
-        feedback = FeedbackReaction.obtain(application, nearNotifier, globalConfig);
-        recipesManager.addReaction(feedback);
+        feedback = FeedbackReaction.obtain(context, nearNotifier, globalConfig);
+        addReaction(feedback);
 
     }
 
@@ -283,7 +314,7 @@ public class NearItManager implements ProfileUpdateListener {
      * Force the refresh of all SDK configurations. The listener will be notified with the recipes refresh outcome.
      */
     public void refreshConfigs(RecipeRefreshListener listener) {
-        recipesManager.refreshConfig(listener);
+        recipesManager.syncConfig(listener);
         geopolis.refreshConfig();
         contentNotification.refreshConfig();
         simpleNotification.refreshConfig();
@@ -293,35 +324,33 @@ public class NearItManager implements ProfileUpdateListener {
 
     private NearNotifier nearNotifier = new NearNotifier() {
         @Override
-        public void deliverBackgroundReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
-            deliverBackgroundEvent(parcelable, GEO_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
+        public void deliverBackgroundReaction(ReactionBundle reactionBundle, TrackingInfo trackingInfo) {
+            deliverBackgroundEvent(reactionBundle, GEO_MESSAGE_ACTION, trackingInfo);
         }
 
         @Override
-        public void deliverBackgroundPushReaction(Parcelable parcelable, String recipeId, String notificationText, String reactionPlugin) {
-            deliverBackgroundEvent(parcelable, PUSH_MESSAGE_ACTION, recipeId, notificationText, reactionPlugin);
+        public void deliverBackgroundPushReaction(ReactionBundle reactionBundle, TrackingInfo trackingInfo) {
+            deliverBackgroundEvent(reactionBundle, PUSH_MESSAGE_ACTION, trackingInfo);
         }
 
         @Override
-        public void deliverForegroundReaction(final Parcelable content, final Recipe recipe) {
+        public void deliverForegroundReaction(final ReactionBundle reactionBundle, final Recipe recipe, final TrackingInfo trackingInfo) {
             new Handler(Looper.getMainLooper()).post(new Runnable() {
                 @Override
                 public void run() {
                     for (ProximityListener proximityListener : proximityListenerList) {
-                        proximityListener.foregroundEvent(content, recipe);
+                        proximityListener.foregroundEvent(reactionBundle, trackingInfo);
                     }
                 }
             });
-
         }
     };
 
     private void deliverBackgroundEvent(
-            Parcelable parcelable, String action, String recipeId,
-            String notificationText, String reactionPlugin) {
+            Parcelable parcelable, String action, TrackingInfo trackingInfo) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
         Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, parcelable, recipeId, notificationText, reactionPlugin);
+        Recipe.fillIntentExtras(resultIntent, parcelable, trackingInfo);
         context.sendOrderedBroadcast(resultIntent, null);
     }
 
@@ -361,7 +390,7 @@ public class NearItManager implements ProfileUpdateListener {
      */
     public void getCoupons(CouponListener listener) {
         try {
-            couponReaction.getCoupons(context, listener);
+            couponReaction.getCoupons(listener);
         } catch (UnsupportedEncodingException | MalformedURLException e) {
             listener.onCouponDownloadError("Error");
         }
@@ -391,9 +420,9 @@ public class NearItManager implements ProfileUpdateListener {
         proximityListenerList.clear();
     }
 
-    public void sendTracking(String recipeId, String event) {
+    public void sendTracking(TrackingInfo trackingInfo, String event) {
         try {
-            recipesManager.sendTracking(recipeId, event);
+            recipesManager.sendTracking(trackingInfo, event);
         } catch (JSONException e) {
             NearLog.d(TAG, "invalid tracking body");
         }
@@ -407,5 +436,52 @@ public class NearItManager implements ProfileUpdateListener {
     public void onProfileUpdated() {
         nearInstallation.refreshInstallation();
         refreshConfigs();
+    }
+
+    private void addReaction(Reaction reaction) {
+        reactions.put(reaction.getReactionPluginName(), reaction);
+    }
+
+    @Override
+    public void gotRecipe(Recipe recipe, TrackingInfo trackingInfo) {
+        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
+        if (reaction != null) {
+            reaction.handleReaction(recipe, trackingInfo);
+        }
+    }
+
+    @Override
+    public void processRecipe(String recipeId) {
+        recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
+            @Override
+            public void onRecipeFetchSuccess(Recipe recipe) {
+                String reactionPluginName = recipe.getReaction_plugin_id();
+                Reaction reaction = reactions.get(reactionPluginName);
+                reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
+            }
+
+            @Override
+            public void onRecipeFetchError(String error) {
+
+            }
+        });
+    }
+
+    @Override
+    public void processRecipe(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleId) {
+        Reaction reaction = reactions.get(reactionPluginId);
+        if (reaction == null) return;
+        reaction.handlePushReaction(recipeId, notificationText, reactionActionId, reactionBundleId);
+    }
+
+    @Override
+    public boolean processReactionBundle(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleString) {
+        Reaction reaction = reactions.get(reactionPluginId);
+        if (reaction == null) return false;
+        return reaction.handlePushBundledReaction(recipeId, notificationText, reactionActionId, reactionBundleString);
+    }
+
+    public RecipeReactionHandler getRecipesReactionHandler() {
+        return this;
     }
 }

@@ -16,8 +16,8 @@ import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.contentplugin.model.Upload;
 
-import static junit.framework.Assert.*;
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -45,17 +45,20 @@ public class ContentTest {
         uploadMap.put("url", "a.pdf");
         upload.uploadMap = uploadMap;
         content.upload = upload;
+        content.notificationMessage = "fejrf";
+
         Parcel parcel = Parcel.obtain();
         content.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
         Content actual = Content.CREATOR.createFromParcel(parcel);
-        assertEquals(content.contentString, actual.contentString);
+        assertThat(content.contentString, is(actual.contentString));
         assertThat(content.getImages_links(), containsInAnyOrder(actual.getImages_links().toArray()));
-        assertEquals(content.video_link, actual.video_link);
-        assertEquals(content.getId(), actual.getId());
-        assertEquals(content.updated_at, actual.updated_at);
-        assertEquals(content.audio.audioMap, actual.audio.audioMap);
-        assertEquals(content.upload.uploadMap, actual.upload.uploadMap);
+        assertThat(content.video_link, is(actual.video_link));
+        assertThat(content.getId(), is(actual.getId()));
+        assertThat(content.updated_at, is(actual.updated_at));
+        assertThat(content.audio.audioMap, is(actual.audio.audioMap));
+        assertThat(content.upload.uploadMap, is(actual.upload.uploadMap));
+        assertThat(content.notificationMessage, is(actual.notificationMessage));
     }
 
 }

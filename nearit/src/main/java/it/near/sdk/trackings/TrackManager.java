@@ -15,10 +15,10 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
     private final TrackCache trackCache;
     private final ApplicationVisibility applicationVisibility;
 
-    public TrackManager(ConnectivityManager connectivityManager,
-                        TrackSender trackSender,
-                        TrackCache trackCache,
-                        ApplicationVisibility applicationVisibility) {
+    TrackManager(ConnectivityManager connectivityManager,
+                 TrackSender trackSender,
+                 TrackCache trackCache,
+                 ApplicationVisibility applicationVisibility) {
         this.connectivityManager = connectivityManager;
         this.trackSender = trackSender;
         this.trackCache = trackCache;

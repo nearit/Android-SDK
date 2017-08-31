@@ -46,10 +46,10 @@ public final class AppVisibilityDetector {
     private static final int MSG_GOTO_FOREGROUND = 1;
     private static final int MSG_GOTO_BACKGROUND = 2;
 
-    public static void init(final Application app, AppVisibilityCallback appVisibilityCallback) {
+    public static void init(final Context app, AppVisibilityCallback appVisibilityCallback) {
         checkIsMainProcess(app);
         sAppVisibilityCallbackList.add(appVisibilityCallback);
-        app.registerActivityLifecycleCallbacks(new AppActivityLifecycleCallbacks());
+        ((Application)app.getApplicationContext()).registerActivityLifecycleCallbacks(new AppActivityLifecycleCallbacks());
 
         sHandler = new Handler(app.getMainLooper()) {
             @Override
@@ -82,7 +82,7 @@ public final class AppVisibilityDetector {
         sAppVisibilityCallbackList.remove(callback);
     }
 
-    private static void checkIsMainProcess(Application app) {
+    private static void checkIsMainProcess(Context app) {
         ActivityManager activityManager = (ActivityManager) app.getSystemService(Context.ACTIVITY_SERVICE);
         List<RunningAppProcessInfo> runningAppProcessInfoList = activityManager.getRunningAppProcesses();
         String currProcessName = null;

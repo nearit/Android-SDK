@@ -70,7 +70,7 @@ public class NearItUserProfile {
      * @param listener interface for success or failure on profile creation.
      */
     public void createNewProfile(final Context context, final ProfileCreationListener listener) {
-        final NearItManager nearItManager = NearItManager.getInstance(context);
+        final NearItManager nearItManager = NearItManager.getInstance();
         final GlobalConfig globalConfig = nearItManager.globalConfig;
         String profileId = globalConfig.getProfileId();
         if (profileId != null) {
@@ -140,7 +140,7 @@ public class NearItUserProfile {
      * @param listener interface for success or failure on property creation.
      */
     public void setUserData(final Context context, String key, String value, final UserDataNotifier listener) {
-        final NearItManager nearItManager = NearItManager.getInstance(context);
+        final NearItManager nearItManager = NearItManager.getInstance();
         String profileId = nearItManager.globalConfig.getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
@@ -201,7 +201,7 @@ public class NearItUserProfile {
      * @param listener  interface for success or failure on properties creation.
      */
     public void setBatchUserData(final Context context, Map<String, String> valuesMap, final UserDataNotifier listener) {
-        String profileId = NearItManager.getInstance(context).globalConfig.getProfileId();
+        String profileId = NearItManager.getInstance().globalConfig.getProfileId();
         if (profileId == null) {
             listener.onDataNotSetError("Profile didn't exists");
             createNewProfile(context, new ProfileCreationListener() {
@@ -243,7 +243,7 @@ public class NearItUserProfile {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "datapoint created: " + response.toString());
-                    NearItManager.getInstance(context).getRecipesManager().refreshConfig();
+                    NearItManager.getInstance().getRecipesManager().refreshConfig();
                     listener.onDataCreated();
                 }
 

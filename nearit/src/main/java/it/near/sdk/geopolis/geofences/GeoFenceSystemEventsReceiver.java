@@ -36,7 +36,7 @@ public class GeoFenceSystemEventsReceiver extends BroadcastReceiver {
             sendResetIntent(context, anyLocationProv);
         }
 
-        NearItManager.getInstance(context).updateInstallation();
+        NearItManager.getInstance().updateInstallation();
     }
 
     /**
