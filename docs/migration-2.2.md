@@ -43,5 +43,13 @@ Also, callbacks for the content parser follow the same change. For example:
 public void gotCustomJSONNotification(CustomJSON customJson, TrackingInfo trackingInfo) {
     // handle the content
 }
+```
 
+## Automatic trackings
+If you are using the built-in notification builder, now you get both automatic *notified* and *engaged* trackings, respectively, when the notification is shown and when it's tapped on.
+If you are customizing the notification, you can still use manual trackings:
+```java
+// to extract the TrackingInfo from the intent:
+// TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
+NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
 ```
