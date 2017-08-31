@@ -52,7 +52,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onCreate() {
         super.onCreate();
-        NearLog.d(TAG, "onCreate()");
+        NearLog.i(TAG, "onCreate()");
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
     }
@@ -60,7 +60,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // can be called multiple times
-        NearLog.d(TAG, "onStartCommand()");
+        NearLog.i(TAG, "onStartCommand()");
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
             startGoogleApiClient();
         }
@@ -87,53 +87,15 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            NearLog.d(TAG, "onLocationChanged");
-                            NearLog.d(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
+                            NearLog.i(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
                         }
                     }
                 });
-
-        /*LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-        criteria.setPowerRequirement(Criteria.POWER_LOW);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        locationManager.requestSingleUpdate(criteria, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                NearLog.d(TAG, "onLocationChanged");
-                NearLog.d(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
-            }
-
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-                NearLog.d(TAG, "onStatusChanged");
-            }
-
-            @Override
-            public void onProviderEnabled(String s) {
-                NearLog.d(TAG, "onProviderEnabled");
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-                NearLog.d(TAG, "onProviderDisabled");
-            }
-        }, null);*/
     }
 
     @Override
     public void onDestroy() {
-        NearLog.d(TAG, "onDestroy on geofence service");
+        NearLog.i(TAG, "onDestroy on geofence service");
         super.onDestroy();
         stopAllGeofences();
         resetIds(this);
@@ -274,7 +236,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        NearLog.d(TAG, "Geofences removed");
+                        NearLog.i(TAG, "Geofences removed");
                     }
                 });
     }
@@ -309,7 +271,6 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
         ).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                NearLog.d(TAG, "Geofences added");
                 pingSingleLocation();
             }
         });
@@ -367,12 +328,12 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        NearLog.d(TAG, "onConnectionFailed");
+        NearLog.i(TAG, "onConnectionFailed");
     }
 
     @Override
     public void onResult(@NonNull Status status) {
-        NearLog.d(TAG, "onResult: " + status.getStatusMessage());
+        NearLog.i(TAG, "onResult: " + status.getStatusMessage());
     }
 
     public static String getSharedPrefName(Context context) {
