@@ -1,5 +1,7 @@
 package it.near.sdk.morpheusnear;
 
+import com.google.common.collect.Maps;
+
 import org.hamcrest.core.IsInstanceOf;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -7,16 +9,16 @@ import org.junit.Test;
 
 import java.util.List;
 
+import it.near.sdk.TestUtils;
 import it.near.sdk.morpheusnear.models.TestChildModel;
 import it.near.sdk.morpheusnear.models.TestModel;
 import it.near.sdk.morpheusnear.models.TestWithChildModel;
 import it.near.sdk.morpheusnear.models.TestWithChildrenModel;
-import it.near.sdk.TestUtils;
-import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertNotNull;
 import static org.hamcrest.CoreMatchers.everyItem;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -37,6 +39,7 @@ public class MorpheusTest {
 
     @Before
     public void setUP() {
+        Deserializer.setRegisteredClasses(Maps.<String, Class>newHashMap());
         morpheus = new Morpheus();
         morpheus.getFactory().getDeserializer().registerResourceClass("test", TestModel.class);
         morpheus.getFactory().getDeserializer().registerResourceClass("test_child", TestChildModel.class);
@@ -113,6 +116,16 @@ public class MorpheusTest {
         assertThat(children.get(1).getIsFavoChild(), is(false));
     }
 
+    @Test
+    public void parseElementWithStringListAttribute() throws Exception {
+        JSONObject jsonObject = readJsonFile("list_attribute_with_spaces.json");
+        TestModel testModel = NearJsonAPIUtils.parseElement(morpheus, jsonObject, TestModel.class);
+        assertThat(testModel.strings, is(notNullValue()));
+        assertThat(testModel.strings, hasSize(3));
+        assertThat(testModel.strings, hasItem("one"));
+        assertThat(testModel.strings, hasItem("two"));
+        assertThat(testModel.strings, hasItem("number three"));
+    }
     // TODO inheritance in models
     // TODO transitive relationships
     // TODO circular relationships

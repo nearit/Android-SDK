@@ -47,6 +47,11 @@
             </intent-filter>
         </receiver>
 
+        <!-- receiver for auto-tracking the ENGAGED status -->
+        <receiver
+            android:name=".recipes.background.AutoTrackingReceiver"
+            android:enabled="true" />
+
         <service
             android:name=".push.fcmregistration.MyInstanceIDListenerService"
             android:exported="false">
@@ -54,6 +59,11 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
+
+        <provider
+            android:authorities="${applicationId}.nearInitContentProvider"
+            android:name=".NearItProvider"
+            android:exported="false" />
 
     </application>
 

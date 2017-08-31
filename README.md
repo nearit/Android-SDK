@@ -37,28 +37,29 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.1.36'
+    compile 'it.near.sdk:nearit:2.2.0'
 }
 ```
 
-You **MUST** initialize the library in the *onCreate* method, passing the API key as a String.
+In AndroidManifest.xml, add the following element as a child of the `<application>` element, by inserting it just before the closing `</application>` tag:
 
-```java
-@Override
-public void onCreate() {
-    super.onCreate();
-
-    NearItManager.init(this, "NEARIT API KEY");
-    // calling this method on the Application onCreate is absolutely MANDATORY
-}
+```xml
+<meta-data
+       android:name="near_api_key"
+       android:value="<your-near-api-key>" />
 ```
-Calling this method in the application onCreate callback is **MANDATORY**. You must not use lazy instantiation or use any other callback (in the Application or in any Activity class) to initialize the library.
+then, re-build your application.
+
 In your app, you can access the NearItManager instance with 
 ```java
-    NearItManager.getInstance(context)
+    NearItManager.getInstance()
 ```
 
 
 ## Integration guide
 
 For information on how to integrate all NearIT feautures in your app, visit the [documentation website](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
+
+## Migration
+
+If you are upgrading your NearIt dependency from 2.1.x follow this [guide](docs/migration-2.2.md)

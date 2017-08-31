@@ -52,7 +52,7 @@ public class NearNotification {
     }
 
     private static PendingIntent getPendingIntent(Context context, Intent resultIntent) {
-        return PendingIntent.getActivity(
+        return PendingIntent.getBroadcast(
                 context,
                 (int) (System.currentTimeMillis() % Integer.MAX_VALUE),
                 resultIntent,

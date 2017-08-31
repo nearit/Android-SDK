@@ -1,37 +1,15 @@
 package it.near.sdk.recipes;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.Uri;
-
-import com.google.gson.reflect.TypeToken;
-
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.auth.AuthenticationException;
-import it.near.sdk.GlobalConfig;
-import it.near.sdk.communication.Constants;
-import it.near.sdk.communication.NearAsyncHttpClient;
-import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.morpheusnear.Morpheus;
-import it.near.sdk.reactions.Cacher;
-import it.near.sdk.reactions.Reaction;
-import it.near.sdk.recipes.models.OperationAction;
-import it.near.sdk.recipes.models.PulseAction;
-import it.near.sdk.recipes.models.PulseBundle;
-import it.near.sdk.recipes.models.ReactionAction;
-import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
+import it.near.sdk.recipes.models.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
-import it.near.sdk.utils.NearJsonAPIUtils;
+import it.near.sdk.trackings.TrackingInfo;
 
 /**
  * Menage recipes download, caching and direct calling.
@@ -41,60 +19,23 @@ import it.near.sdk.utils.NearJsonAPIUtils;
 public class RecipesManager implements RecipeEvaluator {
 
     private static final String TAG = "RecipesManager";
-    private static final String NEAR_RECIPES_PREFS_NAME = "NearRecipes";
-    private static final String PROCESS_PATH = "process";
-    private static final String EVALUATE = "evaluate";
 
-    private Morpheus morpheus;
-    private List<Recipe> recipes = new ArrayList<>();
-    private HashMap<String, Reaction> reactions = new HashMap<>();
-    private final NearAsyncHttpClient httpClient;
-    private final GlobalConfig globalConfig;
-    private final EvaluationBodyBuilder evaluationBodyBuilder;
     private final RecipeTrackSender recipeTrackSender;
     private final RecipeValidationFilter recipeValidationFilter;
-    private final Cacher<Recipe> listCacher;
+    private final RecipeRepository recipeRepository;
+    private final RecipesApi recipesApi;
+    private final RecipeReactionHandler recipeReactionHandler;
 
-    public RecipesManager(NearAsyncHttpClient httpClient,
-                          GlobalConfig globalConfig,
-                          RecipeValidationFilter recipeValidationFilter,
-                          EvaluationBodyBuilder evaluationBodyBuilder,
+    public RecipesManager(RecipeValidationFilter recipeValidationFilter,
                           RecipeTrackSender recipeTrackSender,
-                          Cacher<Recipe> listCacher) {
-        this.httpClient = httpClient;
-        this.globalConfig = globalConfig;
-        this.evaluationBodyBuilder = evaluationBodyBuilder;
+                          RecipeRepository recipeRepository,
+                          RecipesApi recipesApi,
+                          RecipeReactionHandler recipeReactionHandler) {
         this.recipeValidationFilter = recipeValidationFilter;
         this.recipeTrackSender = recipeTrackSender;
-        this.listCacher = listCacher;
-
-        try {
-            recipes = loadChachedList();
-        } catch (Exception e) {
-            NearLog.d(TAG, "Recipes format error");
-        }
-        setUpMorpheusParser();
-        refreshConfig();
-    }
-
-    /**
-     * Set up Morpheus parser. Morpheus parses jsonApi encoded resources
-     * https://github.com/xamoom/Morpheus
-     * We didn't actually use this library due to its minSdkVersion. We instead imported its code and adapted it.
-     */
-    private void setUpMorpheusParser() {
-        morpheus = new Morpheus();
-        // register your resources
-        morpheus.getFactory().getDeserializer().registerResourceClass("recipes", Recipe.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_actions", PulseAction.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("operation_actions", OperationAction.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_actions", ReactionAction.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("pulse_bundles", PulseBundle.class);
-        morpheus.getFactory().getDeserializer().registerResourceClass("reaction_bundles", ReactionBundle.class);
-    }
-
-    public void addReaction(Reaction reaction) {
-        reactions.put(reaction.getReactionPluginName(), reaction);
+        this.recipeRepository = recipeRepository;
+        this.recipesApi = recipesApi;
+        this.recipeReactionHandler = recipeReactionHandler;
     }
 
     /**
@@ -103,7 +44,7 @@ public class RecipesManager implements RecipeEvaluator {
      * @return the list of recipes
      */
     public List<Recipe> getRecipes() {
-        return recipes != null ? recipes : new ArrayList<Recipe>();
+        return recipeRepository.getLocalRecipes();
     }
 
     /**
@@ -121,146 +62,68 @@ public class RecipesManager implements RecipeEvaluator {
         });
     }
 
+    public void syncConfig() {
+        syncConfig(new RecipeRefreshListener() {
+            @Override
+            public void onRecipesRefresh() {
+
+            }
+
+            @Override
+            public void onRecipesRefreshFail() {
+
+            }
+        });
+    }
+
     /**
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      * Plus a listener will be notified of the refresh process.
      */
     public void refreshConfig(final RecipeRefreshListener listener) {
-        Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendPath(PROCESS_PATH).build();
-        String requestBody = null;
-        try {
-            requestBody = evaluationBodyBuilder.buildEvaluateBody();
-        } catch (JSONException e) {
-            NearLog.d(TAG, "Can't build request body");
-            return;
-        }
-
-        try {
-            httpClient.nearPost(url.toString(), requestBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "Got recipes: " + response.toString());
-                    recipes = NearJsonAPIUtils.parseList(morpheus, response, Recipe.class);
-                    listCacher.persistList(recipes);
-                    listener.onRecipesRefresh();
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "Error in downloading recipes: " + statusCode);
-                    try {
-                        recipes = loadChachedList();
-
-                    } catch (Exception e) {
-                        NearLog.d(TAG, "Recipe format error");
-                    }
-                    listener.onRecipesRefreshFail();
-                }
-            });
-        } catch (AuthenticationException | UnsupportedEncodingException e) {
-            listener.onRecipesRefreshFail();
-        }
+        recipeRepository.refreshRecipes(new RecipeRepository.RecipesListener() {
+            @Override
+            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                listener.onRecipesRefresh();
+            }
+        });
     }
 
-    private List<Recipe> loadChachedList() throws JSONException {
-        return listCacher.loadList(new TypeToken<List<Recipe>>() {}.getType());
-    }
-    
     /**
-     * Tries to trigger a recipe. If no reaction plugin can handle the recipe, nothing happens.
-     *
-     * @param recipe the recipe to trigger.
+     * Sync the recipe configuration, only if the cache is cold.
      */
-    public void gotRecipe(Recipe recipe) {
-        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
-        reaction.handleReaction(recipe);
+    public void syncConfig(final RecipeRefreshListener listener) {
+        recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
+            @Override
+            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                listener.onRecipesRefresh();
+            }
+        });
     }
 
     /**
      * Process a recipe from its id. Typically called for processing a push recipe.
      *
      * @param id push id.
+     * @param listener
      */
-    public void processRecipe(final String id) {
-        Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendEncodedPath(id)
-                .appendQueryParameter("filter[core][profile_id]", globalConfig.getProfileId())
-                .appendQueryParameter("include", "reaction_bundle")
-                .build();
-        try {
-            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, response.toString());
-                    Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    String reactionPluginName = recipe.getReaction_plugin_id();
-                    Reaction reaction = reactions.get(reactionPluginName);
-                    reaction.handlePushReaction(recipe, id, recipe.getReaction_bundle());
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "single recipe failed");
-                }
-            });
-        } catch (AuthenticationException e) {
-        }
+    public void processRecipe(final String id, RecipesApi.SingleRecipeListener listener) {
+        recipesApi.fetchRecipe(id, listener);
     }
 
-    /**
-     * Process a recipe from the reaction triple. Used for getting a content from a push
+    private void onlinePulseEvaluation(final TriggerRequest triggerRequest) {
+        recipesApi.onlinePulseEvaluation(triggerRequest.plugin_name, triggerRequest.plugin_action, triggerRequest.bundle_id, new RecipesApi.SingleRecipeListener() {
+            @Override
+            public void onRecipeFetchSuccess(Recipe recipe) {
+                recipeRepository.addRecipe(recipe);
+                recipeReactionHandler.gotRecipe(recipe, triggerRequest.trackingInfo);
+            }
 
-     */
-    public void processRecipe(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleId) {
-        Reaction reaction = reactions.get(reactionPlugin);
-        if (reaction == null) return;
-        reaction.handlePushReaction(recipeId, notificationText, reactionAction, reactionBundleId);
-    }
-
-    public boolean processReactionBundle(String recipeId, String notificationText, String reactionPlugin, String reactionAction, String reactionBundleString) {
-        Reaction reaction = reactions.get(reactionPlugin);
-        if (reaction == null) return false;
-        return reaction.handlePushBundledReaction(recipeId, notificationText, reactionAction, reactionBundleString);
-    }
-
-    private void onlinePulseEvaluation(String pulse_plugin, String pulse_action, String pulse_bundle) {
-        Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendEncodedPath(EVALUATE).build();
-        String evaluateBody = null;
-        try {
-            evaluateBody = evaluationBodyBuilder.buildEvaluateBody(pulse_plugin, pulse_action, pulse_bundle);
-        } catch (JSONException e) {
-            NearLog.d(TAG, "body build error");
-            return;
-        }
-
-        try {
-            httpClient.nearPost(url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    if (recipe != null) {
-                        // add recipe to cache
-                        recipes.add(recipe);
-                        listCacher.persistList(recipes);
-                        gotRecipe(recipe);
-                    }
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "Error in handling on failure: " + statusCode);
-                }
-            });
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Authentication error");
-        } catch (UnsupportedEncodingException e) {
-            NearLog.d(TAG, "Unsuported encoding");
-        } catch (NullPointerException e) {
-            NearLog.d(TAG, "Shouldn't be here");
-        }
+            @Override
+            public void onRecipeFetchError(String error) {
+                NearLog.d(TAG, "Recipe eval by pulse error: " + error);
+            }
+        });
     }
 
     /**
@@ -268,126 +131,119 @@ public class RecipesManager implements RecipeEvaluator {
      *
      * @param recipeId recipe identifier.
      */
-    public void evaluateRecipe(String recipeId) {
-        NearLog.d(TAG, "Evaluating recipe: " + recipeId);
-        if (recipeId == null) return;
-        Uri url = Uri.parse(Constants.API.RECIPES_PATH).buildUpon()
-                .appendEncodedPath(recipeId)
-                .appendPath(EVALUATE).build();
-        String evaluateBody = null;
-        try {
-            evaluateBody = evaluationBodyBuilder.buildEvaluateBody();
-        } catch (JSONException e) {
-            NearLog.d(TAG, "body build error");
-            return;
-        }
+    private void evaluateRecipe(String recipeId, final TrackingInfo trackingInfo) {
+        recipesApi.evaluateRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
+            @Override
+            public void onRecipeFetchSuccess(Recipe recipe) {
+                recipeReactionHandler.gotRecipe(recipe, trackingInfo);
+            }
 
-        try {
-            httpClient.nearPost(url.toString(), evaluateBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void setUsePoolThread(boolean pool) {
-                    super.setUsePoolThread(true);
-                }
-
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, response.toString());
-                    Recipe recipe = NearJsonAPIUtils.parseElement(morpheus, response, Recipe.class);
-                    // TODO refactor plugin
-                    if (recipe != null) {
-                        gotRecipe(recipe);
-                    }
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "Error in handling on failure: " + statusCode);
-                }
-            });
-        } catch (AuthenticationException | UnsupportedEncodingException e) {
-            NearLog.d(TAG, "Error");
-        }
+            @Override
+            public void onRecipeFetchError(String error) {
+                NearLog.d(TAG, "Recipe evaluation error: " + error);
+            }
+        });
     }
 
-    private boolean filterAndNotify(List<Recipe> matchingRecipes) {
+    private boolean filterAndNotify(List<Recipe> matchingRecipes, TrackingInfo trackingInfo) {
         matchingRecipes = recipeValidationFilter.filterRecipes(matchingRecipes);
         if (matchingRecipes.isEmpty()) return false;
         Recipe winnerRecipe = matchingRecipes.get(0);
         if (winnerRecipe.isEvaluatedOnline()) {
-            evaluateRecipe(winnerRecipe.getId());
+            evaluateRecipe(winnerRecipe.getId(), trackingInfo);
         } else {
-            gotRecipe(winnerRecipe);
+            recipeReactionHandler.gotRecipe(winnerRecipe, trackingInfo);
         }
         return true;
     }
 
-    @Override
-    public boolean handlePulseLocally(String plugin_name, String plugin_action, String plugin_bundle) {
-        if (plugin_name == null || plugin_action == null || plugin_bundle == null) return false;
+    private boolean handlePulseLocally(TriggerRequest triggerRequest) {
+        if (triggerRequest == null ||
+                triggerRequest.plugin_name == null ||
+                triggerRequest.plugin_action == null ||
+                triggerRequest.bundle_id == null) return false;
 
+        List<Recipe> recipes = recipeRepository.getLocalRecipes();
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
-        try {
-            for (Recipe recipe : recipes) {
-                if (recipe.getPulse_plugin_id() == null ||
-                        recipe.getPulse_action() == null ||
-                        recipe.getPulse_action().getId() == null ||
-                        recipe.getPulse_bundle() == null ||
-                        recipe.getPulse_bundle().getId() == null)
-                    continue;
-                if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                        recipe.getPulse_action().getId().equals(plugin_action) &&
-                        recipe.getPulse_bundle().getId().equals(plugin_bundle)) {
-                    matchingRecipes.add(recipe);
-                }
+        for (Recipe recipe : recipes) {
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.getPulse_bundle() == null ||
+                    recipe.getPulse_bundle().getId() == null)
+                continue;
+            if (recipe.getPulse_plugin_id().equals(triggerRequest.plugin_name) &&
+                    recipe.getPulse_action().getId().equals(triggerRequest.plugin_action) &&
+                    recipe.getPulse_bundle().getId().equals(triggerRequest.bundle_id)) {
+                matchingRecipes.add(recipe);
             }
-        } catch (ClassCastException exception) {
-            recipes = null;
-            return false;
         }
 
         if (matchingRecipes.isEmpty()) return false;
 
-        return filterAndNotify(matchingRecipes);
+        return filterAndNotify(matchingRecipes, triggerRequest.trackingInfo);
+
     }
 
-
-    @Override
-    public boolean handlePulseTags(String plugin_name, String plugin_action, List<String> plugin_tags) {
-        if (plugin_name == null || plugin_action == null || plugin_tags == null || plugin_tags.isEmpty())
+    private boolean handlePulseTags(TriggerRequest triggerRequest) {
+        if (triggerRequest == null ||
+                triggerRequest.plugin_name == null ||
+                triggerRequest.plugin_tag_action == null ||
+                triggerRequest.tags == null ||
+                triggerRequest.tags.isEmpty())
             return false;
 
+        List<Recipe> recipes = recipeRepository.getLocalRecipes();
         List<Recipe> matchingRecipes = new ArrayList<>();
         if (recipes == null) return false;
         // Find the recipes that matches the pulse
-        try {
-            for (Recipe recipe : recipes) {
-                if (recipe.getPulse_plugin_id() == null ||
-                        recipe.getPulse_action() == null ||
-                        recipe.getPulse_action().getId() == null ||
-                        recipe.tags == null ||
-                        recipe.tags.isEmpty())
-                    continue;
-                if (recipe.getPulse_plugin_id().equals(plugin_name) &&
-                        recipe.getPulse_action().getId().equals(plugin_action) &&
-                        plugin_tags.containsAll(recipe.tags)) {
-                    matchingRecipes.add(recipe);
-                }
+
+        for (Recipe recipe : recipes) {
+            if (recipe.getPulse_plugin_id() == null ||
+                    recipe.getPulse_action() == null ||
+                    recipe.getPulse_action().getId() == null ||
+                    recipe.tags == null ||
+                    recipe.tags.isEmpty())
+                continue;
+            if (recipe.getPulse_plugin_id().equals(triggerRequest.plugin_name) &&
+                    recipe.getPulse_action().getId().equals(triggerRequest.plugin_tag_action) &&
+                    triggerRequest.tags.containsAll(recipe.tags)) {
+                matchingRecipes.add(recipe);
             }
-        } catch (ClassCastException exception) {
-            recipes = null;
-            return false;
         }
 
         if (matchingRecipes.isEmpty()) return false;
 
-        return filterAndNotify(matchingRecipes);
+        return filterAndNotify(matchingRecipes, triggerRequest.trackingInfo);
+    }
+
+    private void handlePulseOnline(final TriggerRequest triggerRequest) {
+        if (recipeRepository.shouldEvaluateOnline()) {
+            onlinePulseEvaluation(triggerRequest);
+        } else {
+            recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
+                @Override
+                public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                    if (dataChanged) {
+                        boolean found = handlePulseLocally(triggerRequest) ||
+                                handlePulseTags(triggerRequest);
+                        if (!found && online_evaluation_fallback) {
+                            onlinePulseEvaluation(triggerRequest);
+                        }
+                    }
+                }
+            });
+        }
     }
 
     @Override
-    public void handlePulseOnline(String plugin_name, String plugin_action, String plugin_bundle) {
-        onlinePulseEvaluation(plugin_name, plugin_action, plugin_bundle);
+    public void handleTriggerRequest(TriggerRequest triggerRequest) {
+        if (!handlePulseLocally(triggerRequest) &&
+                !handlePulseTags(triggerRequest)) {
+            handlePulseOnline(triggerRequest);
+        }
     }
 
     /**
@@ -396,15 +252,12 @@ public class RecipesManager implements RecipeEvaluator {
      * {@value Recipe#NOTIFIED_STATUS} and {@value Recipe#ENGAGED_STATUS}
      * If you wish to use custom tracking, send your string as a tracking event.
      *
-     * @param recipeId      the recipe identifier.
+     * @param trackingInfo the interaction tracking info.
      * @param trackingEvent notified status to send.
      * @throws JSONException
      */
-    public void sendTracking(String recipeId, String trackingEvent) throws JSONException {
-        recipeTrackSender.sendTracking(recipeId, trackingEvent);
+    public void sendTracking(TrackingInfo trackingInfo, String trackingEvent) throws JSONException {
+        recipeTrackSender.sendTracking(trackingInfo, trackingEvent);
     }
 
-    public static SharedPreferences getSharedPreferences(Context context) {
-        return context.getSharedPreferences(NEAR_RECIPES_PREFS_NAME, Context.MODE_PRIVATE);
-    }
 }

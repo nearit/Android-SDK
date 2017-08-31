@@ -8,7 +8,8 @@ import org.junit.runner.RunWith;
 
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 
-import static junit.framework.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(AndroidJUnit4.class)
 public class FeedbackTest {
@@ -19,13 +20,16 @@ public class FeedbackTest {
         feedback.setId("feedback_id");
         feedback.setRecipeId("recipe_id");
         feedback.question = "what comes after five?";
+        feedback.notificationMessage = "notif";
         Parcel parcel = Parcel.obtain();
         feedback.writeToParcel(parcel, 0);
         parcel.setDataPosition(0);
+
         Feedback actual = Feedback.CREATOR.createFromParcel(parcel);
-        assertEquals(feedback.getId(), actual.getId());
-        assertEquals(feedback.getRecipeId(), actual.getRecipeId());
-        assertEquals(feedback.question, actual.question);
+        assertThat(actual.getId(), is(feedback.getId()));
+        assertThat(actual.getRecipeId(), is(feedback.getRecipeId()));
+        assertThat(actual.question, is(feedback.question));
+        assertThat(actual.notificationMessage, is(feedback.notificationMessage));
     }
 
 }

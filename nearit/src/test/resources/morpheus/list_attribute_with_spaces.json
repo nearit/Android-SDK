@@ -1,0 +1,11 @@
+{
+  "data": {
+    "type": "test",
+    "id": "1",
+    "attributes": {
+      "list_string" : [
+        "one", "two", "number three"
+      ]
+    }
+  }
+}
