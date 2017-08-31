@@ -41,8 +41,6 @@ dependencies {
 }
 ```
 
-You **MUST** initialize the library in the *onCreate* method, passing the API key as a String.
-
 In AndroidManifest.xml, add the following element as a child of the `<application>` element, by inserting it just before the closing `</application>` tag:
 
 ```xml
