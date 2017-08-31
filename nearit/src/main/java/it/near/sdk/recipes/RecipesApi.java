@@ -123,7 +123,6 @@ public class RecipesApi {
         try {
             evaluateBody = evaluationBodyBuilder.buildEvaluateBody();
         } catch (JSONException e) {
-            NearLog.d(TAG, "body build error");
             listener.onRecipeFetchError("body build error");
             return;
         }
@@ -146,12 +145,10 @@ public class RecipesApi {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "Error in handling on failure: " + statusCode);
                     listener.onRecipeFetchError("Server error");
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
-            NearLog.d(TAG, "Error");
             listener.onRecipeFetchError("Error");
         }
 
@@ -164,7 +161,6 @@ public class RecipesApi {
         try {
             evaluateBody = evaluationBodyBuilder.buildEvaluateBody(pulse_plugin, pulse_action, pulse_bundle);
         } catch (JSONException e) {
-            NearLog.d(TAG, "body build error");
             listener.onRecipeFetchError("can't build evaluation body");
             return;
         }
@@ -183,18 +179,14 @@ public class RecipesApi {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "Error in handling on failure: " + statusCode);
                     listener.onRecipeFetchError("Server error");
                 }
             });
         } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Authentication error");
             listener.onRecipeFetchError("Authentication error");
         } catch (UnsupportedEncodingException e) {
             NearLog.d(TAG, "Unsupported encoding");
-            listener.onRecipeFetchError("Unsupported encoding");
         } catch (NullPointerException e) {
-            NearLog.d(TAG, "Shouldn't be here");
             listener.onRecipeFetchError("Shouldn't be here");
         }
     }
