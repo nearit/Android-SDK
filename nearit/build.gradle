@@ -2,7 +2,7 @@ buildscript {
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         jcenter()
-        flatDir{
+        flatDir {
             dirs 'libs'
         }
     }
@@ -64,9 +64,9 @@ def getLatestVersionName = {
     }
 }
 
-def playServicesVersion = '11.0.2'
+def playServicesVersion = '11.2.0'
 
-allprojects{
+allprojects {
     version = "${getVersionName()}"
 }
 
@@ -77,8 +77,8 @@ buildProperties {
 }
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.0'
 
     defaultConfig {
         minSdkVersion 15
@@ -122,26 +122,26 @@ bintray {
 
 // Upload docs on ftp
 
-repositories{
+repositories {
     mavenCentral()
 }
 configurations {
     ftpAntTask
 }
-dependencies{
-    ftpAntTask ("org.apache.ant:ant-commons-net:1.8.4") {
+dependencies {
+    ftpAntTask("org.apache.ant:ant-commons-net:1.8.4") {
         module("commons-net:commons-net:1.4.1") {
             dependencies "oro:oro:2.0.8:jar"
         }
     }
 }
 
-task injectVersionsInMarkdowns(type: Copy){
+task injectVersionsInMarkdowns(type: Copy) {
     duplicatesStrategy 'exclude'
     from('docs/src') {
         include '*'
-        filter{ it.replaceAll('@@versionNumber@@', "${getLatestVersionName()}")}
-        filter{ it.replaceAll('@@playServicesNumber@@', playServicesVersion)}
+        filter { it.replaceAll('@@versionNumber@@', "${getLatestVersionName()}") }
+        filter { it.replaceAll('@@playServicesNumber@@', playServicesVersion) }
     }
     into 'docs'
 }
