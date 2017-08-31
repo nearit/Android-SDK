@@ -23,7 +23,7 @@ You can find the API key on [NearIT web interface](https://go.nearit.com/), unde
 
 In your app, you can access the NearItManager instance with 
 ```java
-NearItManager.getInstance()
+NearItManager.getInstance();
 ```
 
 The initialization process for `NearItManager` will try to sync the recipes with our servers. If you need to sync the recipes configuration more often than you call the constructor, call this method:
