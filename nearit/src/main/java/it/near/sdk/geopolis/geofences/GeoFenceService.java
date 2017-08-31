@@ -264,7 +264,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        NearLog.d(TAG, "startGeofencing");
+        NearLog.i(TAG, "startGeofencing");
         geofencingClient.addGeofences(
                 request,
                 getGeofencePendingIntent()
@@ -313,7 +313,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        NearLog.d(TAG, "onConnected");
+        NearLog.i(TAG, "onConnected");
         // If we have pending geofences (that need to be started)
         // we start the geofence now that the client is connected.
         if (mPendingGeofences != null) {
@@ -323,7 +323,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnectionSuspended(int i) {
-        NearLog.d(TAG, "onConnectionSuspended");
+        NearLog.i(TAG, "onConnectionSuspended");
     }
 
     @Override
