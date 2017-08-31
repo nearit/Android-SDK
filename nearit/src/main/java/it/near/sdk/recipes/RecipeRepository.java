@@ -76,7 +76,7 @@ public class RecipeRepository {
 
             @Override
             public void syncNotNeeded() {
-                NearLog.d(TAG, "Local recipes were up to date, we avoided a process request");
+                NearLog.i(TAG, "Local recipes were up to date, we avoided a process request");
                 listener.onGotRecipes(getLocalRecipes(), getOnlineEv(), false);
             }
         });
