@@ -58,7 +58,7 @@ In your app, you can access the NearItManager instance with
 
 ## Integration guide
 
-For information on how to integrate all NearIT feautures in your app, visit the [documentation website](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
+For information on how to integrate all NearIT feautures in your app, follow the [integration guide](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
 
 ## Migration
 
