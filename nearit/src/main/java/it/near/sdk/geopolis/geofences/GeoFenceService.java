@@ -52,7 +52,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     @Override
     public void onCreate() {
         super.onCreate();
-        NearLog.i(TAG, "onCreate()");
+        NearLog.v(TAG, "onCreate()");
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
         geofencingClient = LocationServices.getGeofencingClient(this);
     }
@@ -60,7 +60,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         // can be called multiple times
-        NearLog.i(TAG, "onStartCommand()");
+        NearLog.v(TAG, "onStartCommand()");
         if (mGoogleApiClient == null || !mGoogleApiClient.isConnected()) {
             startGoogleApiClient();
         }
@@ -87,7 +87,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                     @Override
                     public void onSuccess(Location location) {
                         if (location != null) {
-                            NearLog.i(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
+                            NearLog.v(TAG, "location: " + location.getLongitude() + " " + location.getLatitude());
                         }
                     }
                 });
@@ -95,7 +95,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onDestroy() {
-        NearLog.i(TAG, "onDestroy on geofence service");
+        NearLog.v(TAG, "onDestroy on geofence service");
         super.onDestroy();
         stopAllGeofences();
         resetIds(this);
@@ -236,7 +236,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        NearLog.i(TAG, "Geofences removed");
+                        NearLog.v(TAG, "Geofences removed");
                     }
                 });
     }
@@ -264,7 +264,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        NearLog.i(TAG, "startGeofencing");
+        NearLog.v(TAG, "startGeofencing");
         geofencingClient.addGeofences(
                 request,
                 getGeofencePendingIntent()
@@ -313,7 +313,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        NearLog.i(TAG, "onConnected");
+        NearLog.v(TAG, "onConnected");
         // If we have pending geofences (that need to be started)
         // we start the geofence now that the client is connected.
         if (mPendingGeofences != null) {
@@ -323,17 +323,17 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
 
     @Override
     public void onConnectionSuspended(int i) {
-        NearLog.i(TAG, "onConnectionSuspended");
+        NearLog.v(TAG, "onConnectionSuspended");
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        NearLog.i(TAG, "onConnectionFailed");
+        NearLog.v(TAG, "onConnectionFailed");
     }
 
     @Override
     public void onResult(@NonNull Status status) {
-        NearLog.i(TAG, "onResult: " + status.getStatusMessage());
+        NearLog.v(TAG, "onResult: " + status.getStatusMessage());
     }
 
     public static String getSharedPrefName(Context context) {
