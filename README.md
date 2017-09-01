@@ -52,7 +52,7 @@ then, re-build your application.
 
 In your app, you can access the NearItManager instance with 
 ```java
-    NearItManager.getInstance()
+NearItManager.getInstance()
 ```
 
 
