@@ -61,7 +61,7 @@ public class RecipesApi {
             httpClient.nearPost(url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "Got recipes: " + response.toString());
+                    NearLog.v(TAG, "Got recipes: " + response.toString());
                     ListMetaBundle<Recipe> recipeListMetaBundle =
                             NearJsonAPIUtils.parseListAndMeta(morpheus, response, Recipe.class);
 

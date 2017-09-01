@@ -70,7 +70,7 @@ public class GeoFenceService extends Service implements GoogleApiClient.Connecti
             mPendingGeofences = GeofenceNode.toGeofences(nodes);
             if (GeopolisManager.isRadarStarted(this)) {
                 setGeoFences(nodes);
-                pingSingleLocation();
+                // pingSingleLocation();
             }
         }
 
