@@ -1,8 +1,11 @@
 package it.near.sdk;
 
 import android.app.Application;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
@@ -24,6 +27,7 @@ import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearInstallation;
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
+import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
@@ -55,6 +59,7 @@ import it.near.sdk.recipes.validation.AdvScheduleValidator;
 import it.near.sdk.recipes.validation.CooldownValidator;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.recipes.validation.Validator;
+import it.near.sdk.trackings.BluetoothStatusReceiver;
 import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.ApiKeyConfig;
@@ -119,6 +124,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         // first run: this is executed only after the setup.
         // usually to inject the nearit manager instance in object that needs it, it couldn't been done inside the nearItManager constructor.
         nearItManager.firstRun();
+
+        registerReceivers();
+
         return nearItManager;
     }
 
@@ -178,6 +186,11 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 recipesManager.syncConfig();
             }
         });
+    }
+
+    private static void registerReceivers() {
+        context.registerReceiver(new BluetoothStatusReceiver(), new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+        context.registerReceiver(new GeoFenceSystemEventsReceiver(), new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
     }
 
     private void plugInSetup(Context context, GlobalConfig globalConfig) {
