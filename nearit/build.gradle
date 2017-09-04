@@ -154,7 +154,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.google.code.gson:gson:2.8.0'
-    compile 'org.altbeacon:android-beacon-library:2.12.1'
+    compile 'org.altbeacon:android-beacon-library:2.12.2'
     compile "com.google.firebase:firebase-messaging:${playServicesVersion}"
     compile "com.google.firebase:firebase-core:${playServicesVersion}"
     compile "com.google.android.gms:play-services-location:${playServicesVersion}"
