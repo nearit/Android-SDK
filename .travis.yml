@@ -3,43 +3,26 @@ dist: precise
 sudo: required
 jdk:
 - oraclejdk8
-before_cache:
-  # Do not cache a few Gradle files/directories (see https://docs.travis-ci.com/user/languages/java/#Caching)
-  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
-  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
-cache:
-  directories:
-    # Android SDK
-    - $HOME/android-sdk-dl
-    - $HOME/android-sdk
-
-    # Gradle dependencies
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
-
-    # Android build cache (see http://tools.android.com/tech-docs/build-cache)
-    - $HOME/.android/build-cache
 env:
   global:
     # switch glibc to a memory conserving mode
     - MALLOC_ARENA_MAX=2
     # wait up to 10 minutes for adb to connect to emulator
     - ADB_INSTALL_TIMEOUT=10
-install:
-  # Download and unzip the Android SDK tools (if not already there thanks to the cache mechanism)
-  - if test ! -e $HOME/android-sdk-dl/tools_r25.2.5-linux.zip ; then curl https://dl.google.com/android/repository/tools_r25.2.5-linux.zip > $HOME/android-sdk-dl/tools_r25.2.5-linux.zip ; fi
-  - unzip -n $HOME/android-sdk-dl/tools_r25.2.5-linux.zip -d $HOME/android-sdk
-
-  # Install or update Android SDK components (will not do anything if already up to date thanks to the cache mechanism)
-  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'tools'
-  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platform-tools'
-  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'build-tools;25.0.2'
-  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'platforms;android-25'
-  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'extras;android;m2repository'
-  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'extras;google;google_play_services'
-  - echo y | $HOME/android-sdk/tools/bin/sdkmanager 'extras;google;m2repository'
-env:
-  - ANDROID_HOME=$HOME/android-sdk
+android:
+  components:
+    - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
+    - platform-tools
+    - build-tools-26.0.1
+    - tools
+    - android-26
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - sys-img-armeabi-v7a-android-21
+  licenses:
+    - 'android-sdk-preview-license-52d11cd2'
+    - 'android-sdk-license-.+'
+    - 'google-gdk-license-.+'
 before_install:
   - export TZ=Australia/Canberra
 script:
