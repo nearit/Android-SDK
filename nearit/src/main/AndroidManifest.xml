@@ -38,6 +38,9 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name=".geopolis.geofences.LocationUpdatesReceiver"
+            android:exported="false" />
         <!-- receiver for auto-tracking the ENGAGED status -->
         <receiver
             android:name=".recipes.background.AutoTrackingReceiver"

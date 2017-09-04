@@ -2,6 +2,7 @@ package it.near.sdk.geopolis.geofences;
 
 import android.Manifest;
 import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -26,8 +27,6 @@ import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.Node;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.AppVisibilityDetector;
-
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 /**
  * Created by cattaneostefano on 28/09/2016.
@@ -65,10 +64,29 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
         Intent serviceIntent = new Intent(mContext, GeoFenceService.class);
         serviceIntent.putParcelableArrayListExtra(GeoFenceService.GEOFENCES, (ArrayList<? extends Parcelable>) currentGeofences);
         mContext.startService(serviceIntent);
+        registerForLocationUpdates();
     }
 
     public void stopGFRadar() {
         mContext.stopService(new Intent(mContext, GeoFenceService.class));
+        mFusedLocationClient.removeLocationUpdates(getPendingIntent());
+    }
+
+    private void registerForLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000L);
+        mLocationRequest.setFastestInterval(2000L);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent intent = new Intent(mContext, LocationUpdatesReceiver.class);
+        intent.setAction(LocationUpdatesReceiver.ACTION_PROCESS_UPDATES);
+        return PendingIntent.getBroadcast(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -151,7 +169,7 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
 
     @Override
     public void onAppGotoForeground() {
-        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+       /* if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
         NearLog.i(TAG, "Requesting single location");
@@ -159,12 +177,12 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
         mLocationRequest.setInterval(5000L);
         mLocationRequest.setFastestInterval(2000L);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);*/
     }
 
     @Override
     public void onAppGotoBackground() {
-        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        /*mFusedLocationClient.removeLocationUpdates(mLocationCallback);*/
     }
 
     LocationCallback mLocationCallback = new LocationCallback() {
