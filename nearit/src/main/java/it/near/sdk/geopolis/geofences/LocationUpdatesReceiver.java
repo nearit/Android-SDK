@@ -8,10 +8,10 @@ import it.near.sdk.logging.NearLog;
 
 public class LocationUpdatesReceiver extends BroadcastReceiver {
     private static final String TAG = "LocationUpdatesReceiver";
-    public static final String ACTION_PROCESS_UPDATES = "kjhdbfds";
+    public static final String ACTION_PROCESS_UPDATES = "empty_action";
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        NearLog.d(TAG, "got location update");
+        NearLog.i(TAG, "got location update");
     }
 }
