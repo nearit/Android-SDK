@@ -126,9 +126,9 @@ public class MorpheusTest {
         assertThat(testModel.strings, hasItem("two"));
         assertThat(testModel.strings, hasItem("number three"));
     }
-    // TODO inheritance in models
-    // TODO transitive relationships
-    // TODO circular relationships
+    // TODO inheritance in models: B and C extend A, parse a list of b and c elements onto a list of As
+    // TODO transitive relationships: element in the included array has a relationship with another element in the included array and it gets resolved
+    // TODO circular relationships: element A as a relationship with B and B has a relationship (same or different name) with A, the creation of those elements instantiation stop at the first cycle
 
     private JSONObject readJsonFile(String filename) throws Exception {
         return TestUtils.readJsonFile(getClass(), MORPHEUS_TEST_RES_FOLDER + "/" + filename);
