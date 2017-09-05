@@ -6,16 +6,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import android.widget.Toast;
-
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.R;
+import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.logging.NearLog;
 
 /**
@@ -80,10 +78,6 @@ public class NearGeofenceTransitionsIntentService extends IntentService {
         intent.setAction(packageName + "." + actionSuffix);
         intent.putExtra(GeopolisManager.NODE_ID, triggeringGeofence.getRequestId());
         sendBroadcast(intent);
-    }
-
-    private void sendNotification(String geofenceTransitionDetails, int geofenceTransition) {
-        Toast.makeText(this, "Geofence event", Toast.LENGTH_SHORT).show();
     }
 
     /**
