@@ -85,6 +85,7 @@ public class CacherTest {
     public void hashMapWithNullValues() throws Exception {
         Map<String, Object> map = Maps.newLinkedHashMap();
         map.put("string", "my_string");
+        // this looks stupid, but gson parses every map value that looks like a number to a Double. Without this, the equals check breaks
         map.put("int", ((Integer) 3).doubleValue());
         map.put("long", (Double) 9D);
         map.put("list", Lists.newArrayList("one", "two"));
