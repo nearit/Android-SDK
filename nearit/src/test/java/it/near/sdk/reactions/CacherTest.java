@@ -37,38 +37,83 @@ public class CacherTest {
     @Mock
     SharedPreferences.Editor editor;
 
-    List<ModelForCache> list;
+    private List<ModelForCache> list;
 
     @Before
     public void setUp() throws Exception {
         when(sharedPreferences.edit()).thenReturn(editor);
         when(editor.putString(anyString(), anyString())).thenReturn(editor);
         cacher = new Cacher<>(sharedPreferences);
-        buildList();
-    }
-
-    private void buildList() {
-        list = Lists.newArrayList(
-                new ModelForCache("string1", 1, 1L, buildHash(1)),
-                new ModelForCache("string2", 2, 2L, buildHash(2))
-        );
-    }
-
-    private Map<String, Object> buildHash(int i) {
-        Map<String, Object> map = Maps.newHashMap();
-        map.put("value", Double.valueOf(i));
-        return map;
     }
 
     @Test
     public void simplePersistence() throws Exception {
+        list = Lists.newArrayList(
+                new ModelForCache("string1", 1, 1L, buildMap(1)),
+                new ModelForCache("string2", 2, 2L, buildMap(2))
+        );
         cacher.persistList(list);
+        // capture argument
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(editor).putString(eq(KEY_LIST), captor.capture());
         String stringifiedList = captor.getValue();
         when(sharedPreferences.getString(eq(KEY_LIST), anyString())).thenReturn(stringifiedList);
-        Type type = new TypeToken<List<ModelForCache>>() {}.getType();
+        Type type = new TypeToken<List<ModelForCache>>() {
+        }.getType();
         List<ModelForCache> modelForCaches = cacher.loadList(type);
         assertThat(modelForCaches, contains(list.toArray()));
+    }
+
+    @Test
+    public void nullValuesPersistance() throws Exception {
+        list = Lists.newArrayList(
+                new ModelForCache(null, 0, 0L, null)
+        );
+        cacher.persistList(list);
+        // capture argument
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(editor).putString(eq(KEY_LIST), captor.capture());
+        String stringifiedList = captor.getValue();
+        when(sharedPreferences.getString(eq(KEY_LIST), anyString())).thenReturn(stringifiedList);
+        Type type = new TypeToken<List<ModelForCache>>() {
+        }.getType();
+        List<ModelForCache> modelForCaches = cacher.loadList(type);
+        assertThat(modelForCaches, contains(list.toArray()));
+    }
+
+    @Test
+    public void hashMapWithNullValues() throws Exception {
+        Map<String, Object> map = Maps.newLinkedHashMap();
+        map.put("string", "my_string");
+        map.put("int", ((Integer) 3).doubleValue());
+        map.put("long", (Double) 9D);
+        map.put("list", Lists.newArrayList("one", "two"));
+        map.put("null_object", null);
+        list = Lists.newArrayList(
+                new ModelForCache(null, 0, 0L, map)
+        );
+        cacher.persistList(list);
+        // capture argument
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(editor).putString(eq(KEY_LIST), captor.capture());
+        String stringifiedList = captor.getValue();
+        when(sharedPreferences.getString(eq(KEY_LIST), anyString())).thenReturn(stringifiedList);
+        Type type = new TypeToken<List<ModelForCache>>() {
+        }.getType();
+        List<ModelForCache> modelForCaches = cacher.loadList(type);
+        assertThat(modelForCaches, contains(list.toArray()));
+    }
+
+    private void buildList() {
+        list = Lists.newArrayList(
+                new ModelForCache("string1", 1, 1L, buildMap(1)),
+                new ModelForCache("string2", 2, 2L, buildMap(2))
+        );
+    }
+
+    private Map<String, Object> buildMap(int i) {
+        Map<String, Object> map = Maps.newLinkedHashMap();
+        map.put("value", (double) i);
+        return map;
     }
 }
