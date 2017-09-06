@@ -17,22 +17,20 @@ In AndroidManifest.xml, add the following element as a child of the `<applicatio
        android:name="near_api_key"
        android:value="<your-near-api-key>" />
 ```
-then, re-build your application.
 
-You can find the API key on [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
+You can find your API key on [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
 
-In your app, you can access the NearItManager instance with 
-```java
-NearItManager.getInstance();
-```
 
-The initialization process for `NearItManager` will try to sync the recipes with our servers. If you need to sync the recipes configuration more often than you call the constructor, call this method:
+##Manual Configuration Refresh##
+
+The SDK **initialization is done automatically** and handles the task of syncing the recipes with our servers when your app starts up.
+<br>However, if you need to sync the recipes configuration more often, you can call this method:
 
 ```java
 NearItManager.getInstance().refreshConfigs();
 ```
 
-If you need feedback on whether the refresh was successfull or not, you can use this other version of the method:
+If you need feedback on whether the refresh was successful or not, you can use this other version of the method:
 
 ```java
 NearItManager.getInstance().refreshConfigs(recipeRefreshListener);

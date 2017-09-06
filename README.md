@@ -58,7 +58,7 @@ NearItManager.getInstance()
 
 ## Integration guide
 
-For information on how to integrate all NearIT feautures in your app, follow the [integration guide](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
+For information on how to integrate all NearIT features in your app, follow the [integration guide](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
 
 ## Migration
 
