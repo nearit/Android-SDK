@@ -5,14 +5,13 @@ pages:
   - 'Getting started' : 'index.md'
   - 'User Guide' :
     - 'Installation' : 'installation.md'
-    - 'Enable Triggers' : 'enable-triggers.md'
-    - 'Handle Recipe Content' : 'handle-content.md'
+    - 'Location Based Notifications' : 'location-based-notifications.md'
+    - 'Push Notifications' : 'push-notifications.md'
+    - 'In-app Content' : 'in-app-content.md'
     - 'User Profiling' : 'user-profilation.md'
-  - 'Advanced Topics' :
-    - 'Custom Background Notification' : 'custom-bkg-notification.md'
+  - 'Other resources' :
+    - 'Customize Notifications' : 'custom-bkg-notification.md'
     - 'Testing' : 'testing.md'
+    - 'Logging' : 'logging.md'
   - 'Samples' :
     - 'Best Practice on Permissions Request' : 'permission-request-sample.md'
-  - 'Other resources' :
-    - 'Logging' : 'logging.md'
-    - 'Firebase Help' : 'firebase.md'
