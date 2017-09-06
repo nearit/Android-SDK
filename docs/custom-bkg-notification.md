@@ -1,9 +1,15 @@
-# Custom Background Notification
+# Customize Notifications
 
-To receive background notifications, you can add our built-in receiver as shown in the [Enable Triggers](enable-triggers.md) section. The receiver shows a system notification, with the provided texts and a pre-set system icon. Other than our platform **cooldown** feature, there's no time-limit or special condition to be met to show the notification so you will always get it. To handle complex use cases, you can write your own receivers by subclassing the built-in one.
+
+## Styling options
+You can set your own icon for the location-based notifications and the push notifications with the methods:
+```java
+NearItManager.getInstance().setProximityNotificationIcon(R.drawable.ic_my_location_notification);
+NearItManager.getInstance().setPushNotificationIcon(R.drawable.ic_my_push_notification);
+```
 
 ## Custom Receiver and Service
-
+To handle complex use cases, you can write your own receivers by subclassing the built-in one.
 Let's look at the built-in receiver manifest declaration:
 ```xml
 <!-- built in background receiver -->
