@@ -64,21 +64,20 @@ The recipe cooldown feature uses tracking calls to hook its functionality, so fa
 
 For each callback method of the *coreContentListener* you will receive a different content object.
 Every object has a `notificationMessage` public field and a `getId()` getter method.
-Here are the details for every other one:
+Here are the public fields for every other one:
 
-- `SimpleNotification` with the following getters:
-    - `getNotificationMessage()` returns the notification message
-    - `getNotificationTitle()` returns the notification title
+- `SimpleNotification` with the following fileds:
+    - `message` returns the notification message (it is the same as `notificationMessage`)
     
-- `Content` for the notification with content, with the following getters:
-    - `getContent()` returns the text content
-    - `getVideo_link()` returns the video link string
+- `Content` for the notification with content, with the following getters and fields:
+    - `contentString` returns the text content
+    - `video_link` returns the video link string
     - `getImages_links()` returns a list of *ImageSet* object containing the source links for the images
-    - `getUpload()` returns an Upload object containing a link to a file uploaded on NearIT if any
-    - `getAudio()` returns an Audio object containing a link to an audio file uploaded on NearIT if any
+    - `upload` returns an Upload object containing a link to a file uploaded on NearIT if any
+    - `audio` returns an Audio object containing a link to an audio file uploaded on NearIT if any
     
-- `Feedback` with the following getters:
-    - `getQuestion()` returns the feedback request string
+- `Feedback` with the following getters and fields:
+    - `question` returns the feedback request string
     - `getRecipeId()` returns the recipeId associated with the feedback (you'll need it for answer it)
 To give a feedback call this method:
 ```java
@@ -88,13 +87,13 @@ NearItManager.getInstance().sendEvent(new FeedbackEvent(feedback, rating, "Aweso
 NearItManager.getInstance().sendEvent(new FeedbackEvent(...), responseHandler);
 ```
     
-- `Coupon` with the following getters:
-    - `getName()` returns the coupon name
-    - `getDescription()` returns the coupon description
-    - `getValue()` returns the value string
-    - `getExpires_at()` returns the expiring date (as a string), might be null
+- `Coupon` with the following getters and fields:
+    - `name` returns the coupon name
+    - `description` returns the coupon description
+    - `value` returns the value string
+    - `expires_at` returns the expiring date (as a string), might be null
     - `getExpiresAtDate()` returns a the expiring Date object. Since coupon validity period is timezone related, consider showing the time of day.
-    - `getRedeemableFrom()` returns the validity start date (as a string), might be null
+    - `redeemable_from` returns the validity start date (as a string), might be null
     - `getRedeemableFromDate()` returns the validity start Date object. Since coupon validity period is timezone related, consider showing the time of day.
     - `getIconSet()` returns an *ImageSet* object containing the source links for the icon
     - `getSerial()` returns the serial code of the single coupon as a string
@@ -103,8 +102,8 @@ NearItManager.getInstance().sendEvent(new FeedbackEvent(...), responseHandler);
     - `getRedeemedAt()` returns the redeemed date (when the coupon was used) of the coupon as a string
     - `getRedeemedAtDate()` returns the redeemed Date object.
     
-- `CustomJSON` with the following getters:
-    - `getContent()` returns the json content as an *HashMap<String, Object>* (just like Gson)
+- `CustomJSON` with the following fields:
+    - `content` returns the json content as an *HashMap<String, Object>* (just like Gson)
 
 ## Fetch current user coupon
 
