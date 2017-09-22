@@ -8,7 +8,7 @@ pages:
     - 'Location Based Notifications' : 'location-based-notifications.md'
     - 'Push Notifications' : 'push-notifications.md'
     - 'In-app Content' : 'in-app-content.md'
-    - 'User Profiling' : 'user-profilation.md'
+    - 'User Profiling' : 'user-profiling.md'
   - 'Other resources' :
     - 'Customize Notifications' : 'custom-bkg-notification.md'
     - 'Testing' : 'testing.md'
