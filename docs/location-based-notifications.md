@@ -15,26 +15,7 @@ If you are also manually including ACCESS_COARSE_LOCATION in your manifest pleas
         android:maxSdkVersion="22"/>
 ```
 
-
-## Enable Background Notification
-
-To enable our built-in background system notifications for both location and push triggers, add this in your app manifest application element.
-```xml
-<!-- built in background receiver -->
-<receiver
-    android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-</receiver>
-```
-On the notification tap, your launcher activity will start.
+The SDK creates a system notification for every background recipe. On the notification tap, your launcher activity will start.
 To learn how to deal with in-app content once the user taps on the notification, see this [section](in-app-content.md).
 
 If you want to customize your notifications, see this [section](custom-bkg-notification.md).

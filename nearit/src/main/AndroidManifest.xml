@@ -4,8 +4,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
-        android:maxSdkVersion="22"/>
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:maxSdkVersion="22" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -13,6 +14,7 @@
 
     <application>
 
+        <!-- Services for fcm push notifications -->
         <service
             android:name="it.near.sdk.push.MyFcmListenerService"
             android:exported="false">
@@ -22,9 +24,34 @@
         </service>
 
         <service
+            android:name=".push.fcmregistration.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Receiver and service for built-in background notification -->
+
+        <service
             android:name=".recipes.background.NearItIntentService"
             android:exported="false" />
 
+        <receiver
+            android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
+
+
+        <!-- Geofence services -->
         <service
             android:name=".geopolis.geofences.GeoFenceService"
             android:exported="false" />
@@ -32,13 +59,14 @@
             android:name=".geopolis.geofences.NearGeofenceTransitionsIntentService"
             android:exported="false" />
 
+        <!-- Android system receivers -->
         <receiver android:name=".geopolis.geofences.GeoFenceSystemEventsReceiver">
             <intent-filter>
                 <action android:name="android.location.PROVIDERS_CHANGED" />
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        
+
         <receiver
             android:name=".trackings.BluetoothStatusReceiver"
             android:enabled="true">
@@ -52,17 +80,10 @@
             android:name=".recipes.background.AutoTrackingReceiver"
             android:enabled="true" />
 
-        <service
-            android:name=".push.fcmregistration.MyInstanceIDListenerService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
-            </intent-filter>
-        </service>
-
+        <!-- Auto-init provider -->
         <provider
-            android:authorities="${applicationId}.nearInitContentProvider"
             android:name=".NearItProvider"
+            android:authorities="${applicationId}.nearInitContentProvider"
             android:exported="false" />
 
     </application>
