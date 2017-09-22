@@ -58,6 +58,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         return toDate(redeemable_from);
     }
 
+    @Nullable
     public String getIcon_id() {
         return icon_id;
     }
@@ -114,6 +115,7 @@ public class Coupon extends ReactionBundle implements Parcelable {
         return claims.get(0).recipe_id;
     }
 
+    @Nullable
     public ImageSet getIconSet() {
         return iconSet;
     }
