@@ -4,15 +4,16 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"
-        android:maxSdkVersion="22"/>
+    <uses-permission
+        android:name="android.permission.ACCESS_COARSE_LOCATION"
+        android:maxSdkVersion="22" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application>
-        
+
         <!-- Services for fcm push notifications -->
         <service
             android:name="it.near.sdk.push.MyFcmListenerService"
@@ -65,7 +66,7 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        
+
         <receiver
             android:name=".trackings.BluetoothStatusReceiver"
             android:enabled="true">
@@ -81,8 +82,8 @@
 
         <!-- Auto-init provider -->
         <provider
-            android:authorities="${applicationId}.nearInitContentProvider"
             android:name=".NearItProvider"
+            android:authorities="${applicationId}.nearInitContentProvider"
             android:exported="false" />
 
     </application>
