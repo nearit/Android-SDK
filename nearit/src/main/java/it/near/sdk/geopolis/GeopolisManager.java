@@ -11,8 +11,6 @@ import android.net.Uri;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -298,5 +296,6 @@ public class GeopolisManager {
 
     public void initLifecycle(Application application) {
         altBeaconMonitor.initAppLifecycleMonitor(application);
+        geofenceMonitor.initAppLifecycleMonitor(application);
     }
 }

@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.HttpEntity;
@@ -20,6 +21,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.message.BasicHeader;
 import it.near.sdk.R;
 import it.near.sdk.utils.ApiKeyConfig;
+import it.near.sdk.utils.NearUtils;
 
 /**
  * @author cattaneostefano.
@@ -105,7 +107,8 @@ public class NearAsyncHttpClient {
                 new BasicHeader(Constants.Headers.contentType, Constants.Headers.jsonApiHeader),
                 new BasicHeader(Constants.Headers.accept, Constants.Headers.jsonApiHeader),
                 new BasicHeader(Constants.Headers.version_header_key, String.valueOf(it.near.sdk.BuildConfig.API_VERSION)),
-                new BasicHeader(Constants.Headers.near_version_header_key, String.valueOf(it.near.sdk.BuildConfig.NEAR_API_VERSION))
+                new BasicHeader(Constants.Headers.near_version_header_key, String.valueOf(it.near.sdk.BuildConfig.NEAR_API_VERSION)),
+                new BasicHeader(Constants.Headers.acceptLanguage, NearUtils.toBcp47Language(Locale.getDefault()))
         };
     }
 

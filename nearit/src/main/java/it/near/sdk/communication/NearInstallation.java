@@ -12,10 +12,12 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import org.json.JSONException;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
+import it.near.sdk.utils.NearUtils;
 
 /**
  * Class with static method to register an app installation to our Near APIs.
@@ -35,6 +37,7 @@ public class NearInstallation {
     private static final String LOCATION = "location";
     private static final String TAG = "NearInstallation";
     private static final String PROFILE_ID = "profile_id";
+    private static final String LANG = "lang";
 
     private NearInstallationRequestQueue requestQueue;
     private Context context;
@@ -84,7 +87,13 @@ public class NearInstallation {
         attributeMap.put(BLUETOOTH, getBluetoothStatus());
         // Set location permission
         attributeMap.put(LOCATION, getLocationPermissionStatus(context));
+        // Set language
+        attributeMap.put(LANG, getDeviceLanguage());
         return NearJsonAPIUtils.toJsonAPI(INSTALLATION_RES_TYPE, id, attributeMap);
+    }
+
+    private String getDeviceLanguage() {
+        return NearUtils.toBcp47Language(Locale.getDefault());
     }
 
     private static boolean getLocationPermissionStatus(Context context) {

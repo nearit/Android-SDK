@@ -21,13 +21,6 @@ Once the settings are configured, **everyone** - even people without technical s
 
 **NearIT SDK** synchronize with servers and behave accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.
 
-## Features
-* User Segmentation
-* Beacon monitoring and ranging
-* Geofence monitoring
-* Notifications and in-app content
-* Analytics
-
 ## Installation
 
 Minimum Requirements:
@@ -37,7 +30,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.2.1'
+    compile 'it.near.sdk:nearit:2.2.2'
 }
 ```
 
@@ -54,7 +47,6 @@ In your app, you can access the NearItManager instance with
 ```java
 NearItManager.getInstance()
 ```
-
 
 ## Integration guide
 

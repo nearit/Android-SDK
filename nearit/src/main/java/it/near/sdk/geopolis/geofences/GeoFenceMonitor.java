@@ -1,10 +1,20 @@
 package it.near.sdk.geopolis.geofences;
 
+import android.Manifest;
+import android.app.Application;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Parcelable;
+import android.support.v4.app.ActivityCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -15,22 +25,25 @@ import java.util.List;
 
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.Node;
+import it.near.sdk.logging.NearLog;
+import it.near.sdk.utils.AppVisibilityDetector;
 
 /**
  * Created by cattaneostefano on 28/09/2016.
  */
 
-public class GeoFenceMonitor {
+public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallback {
 
     private static final String TAG = "GeoFenceMonitor";
     private static final String CURRENT_GEOFENCES = "current_geofences";
     private Context mContext;
     private List<GeofenceNode> currentGeofences;
-    GeoFenceService geoFenceService;
     private static final String PREFS_SUFFIX = "NearGeoMonitor";
+    private FusedLocationProviderClient mFusedLocationClient;
 
     public GeoFenceMonitor(Context mContext) {
         this.mContext = mContext;
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext);
     }
 
     /**
@@ -51,10 +64,29 @@ public class GeoFenceMonitor {
         Intent serviceIntent = new Intent(mContext, GeoFenceService.class);
         serviceIntent.putParcelableArrayListExtra(GeoFenceService.GEOFENCES, (ArrayList<? extends Parcelable>) currentGeofences);
         mContext.startService(serviceIntent);
+        registerForLocationUpdates();
     }
 
     public void stopGFRadar() {
         mContext.stopService(new Intent(mContext, GeoFenceService.class));
+        mFusedLocationClient.removeLocationUpdates(getPendingIntent());
+    }
+
+    private void registerForLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000L);
+        mLocationRequest.setFastestInterval(2000L);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+    }
+
+    private PendingIntent getPendingIntent() {
+        Intent intent = new Intent(mContext, LocationUpdatesReceiver.class);
+        intent.setAction(LocationUpdatesReceiver.ACTION_PROCESS_UPDATES);
+        return PendingIntent.getBroadcast(mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -130,4 +162,33 @@ public class GeoFenceMonitor {
         }
         return filterGeofence(toListen);
     }
+
+    public void initAppLifecycleMonitor(Application application) {
+        AppVisibilityDetector.init(application, this);
+    }
+
+    @Override
+    public void onAppGotoForeground() {
+       /* if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        NearLog.i(TAG, "Requesting single location");
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(5000L);
+        mLocationRequest.setFastestInterval(2000L);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, mLocationCallback, null);*/
+    }
+
+    @Override
+    public void onAppGotoBackground() {
+        /*mFusedLocationClient.removeLocationUpdates(mLocationCallback);*/
+    }
+
+    LocationCallback mLocationCallback = new LocationCallback() {
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            NearLog.i(TAG, "Got location update");
+        }
+    };
 }

@@ -12,7 +12,7 @@ echo '{
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "0",
+        "mobilesdk_app_id": "1:123456789000:android:f1bf012572b04063",
         "android_client_info": {
           "package_name": "com.nearit.sample"
         }
