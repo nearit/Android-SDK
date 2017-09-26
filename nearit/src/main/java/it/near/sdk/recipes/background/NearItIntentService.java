@@ -1,11 +1,15 @@
 package it.near.sdk.recipes.background;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Calendar;
+import java.util.List;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
@@ -75,9 +79,10 @@ public class NearItIntentService extends IntentService {
 
     private int imgResFromIntent(@NonNull Intent intent) {
         GlobalConfig globalConfig = NearItManager.getInstance().globalConfig;
-        if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)) {
+        String action = intent.getStringExtra(NearItIntentConstants.ACTION);
+        if (action.equals(NearItManager.PUSH_MESSAGE_ACTION)) {
             return fetchPushNotification(globalConfig);
-        } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)) {
+        } else if (action.equals(NearItManager.GEO_MESSAGE_ACTION)) {
             return fetchProximityNotification(globalConfig);
         } else
             return fetchProximityNotification(globalConfig);
@@ -114,5 +119,16 @@ public class NearItIntentService extends IntentService {
             default:
                 return REGION_NOTIFICATION_ID;
         }
+    }
+
+    @Nullable
+    public static Intent getIntent(Context context, String action) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
+        List<ResolveInfo> resolverInfo = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
+        if (resolverInfo.size() < 1) {
+            return null;
+        }
+        return intent;
     }
 }

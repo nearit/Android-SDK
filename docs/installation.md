@@ -7,9 +7,25 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.2.2'
+    compile 'it.near.sdk:nearit:2.2.3'
 }
 ```
+
+In the project *build.gradle* make sure to include the following:
+```java
+buildscript {
+    dependencies {
+    ...
+    classpath 'com.google.gms:google-services:3.1.0'
+    }
+}
+allprojects {
+    repositories {
+        maven { url "https://maven.google.com" }
+    }
+}
+```
+
 In AndroidManifest.xml, add the following element as a child of the `<application>` element, by inserting it just before the closing `</application>` tag:
 
 ```xml

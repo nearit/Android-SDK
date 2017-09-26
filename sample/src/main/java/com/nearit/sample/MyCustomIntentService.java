@@ -9,6 +9,7 @@ import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
+import it.near.sdk.recipes.background.NearItBroadcastReceiver;
 import it.near.sdk.recipes.background.NearItIntentService;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
@@ -17,7 +18,16 @@ import it.near.sdk.utils.NearUtils;
 /**
  * This is the manifest element for the IntentService
  * <service android:name=".MyCustomIntentService"
- * android:exported="false"/>
+ * android:exported="false">
+ *  <intent-filter>
+ *      <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
+ *      <category android:name="android.intent.category.DEFAULT" />
+ *  </intent-filter>
+ *  <intent-filter>
+ *      <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+ *      <category android:name="android.intent.category.DEFAULT" />
+ *  </intent-filter>
+ * </service>
  */
 
 public class MyCustomIntentService extends NearItIntentService implements CoreContentsListener {
@@ -31,7 +41,7 @@ public class MyCustomIntentService extends NearItIntentService implements CoreCo
             sendSimpleNotification(intent);
             NearUtils.parseCoreContents(intent, this);
             // Release the wake lock provided by the WakefulBroadcastReceiver.
-            MyCustomBroadcastReceiver.completeWakefulIntent(intent);
+            NearItBroadcastReceiver.completeWakefulIntent(intent);
         }
     }
 
