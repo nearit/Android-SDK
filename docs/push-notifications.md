@@ -20,7 +20,7 @@ buildscript {
     // ...
     dependencies {
         // ...
-        classpath 'com.google.gms:google-services:3.1.0’ // google-services plugin
+        classpath 'com.google.gms:google-services:3.1.0' // google-services plugin
     }
 }
 ```
