@@ -2,6 +2,7 @@ package it.near.sdk;
 
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -53,6 +54,7 @@ import it.near.sdk.recipes.RecipeTrackSender;
 import it.near.sdk.recipes.RecipesApi;
 import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
+import it.near.sdk.recipes.background.NearItIntentService;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.validation.AdvScheduleValidator;
@@ -362,9 +364,12 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     private void deliverBackgroundEvent(
             Parcelable parcelable, String action, TrackingInfo trackingInfo) {
         NearLog.d(TAG, "deliver Event: " + parcelable.toString());
-        Intent resultIntent = new Intent(action);
-        Recipe.fillIntentExtras(resultIntent, parcelable, trackingInfo);
-        context.sendOrderedBroadcast(resultIntent, null);
+        Intent resultIntent = NearItIntentService.getIntent(context, action);
+        if (resultIntent == null) {
+            resultIntent = new Intent().setComponent(new ComponentName(context.getPackageName(), NearItIntentService.class.getName()));
+        }
+        Recipe.fillIntentExtras(resultIntent, parcelable, trackingInfo, action);
+        context.startService(resultIntent);
     }
 
     public boolean sendEvent(Event event) {

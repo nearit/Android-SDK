@@ -158,6 +158,7 @@ dependencies {
     compile "com.google.firebase:firebase-messaging:${playServicesVersion}"
     compile "com.google.firebase:firebase-core:${playServicesVersion}"
     compile "com.google.android.gms:play-services-location:${playServicesVersion}"
+    compile 'com.android.support:appcompat-v7:26.1.0'
 
     testCompile 'junit:junit:4.12'
     testCompile "org.mockito:mockito-core:2.7.6"

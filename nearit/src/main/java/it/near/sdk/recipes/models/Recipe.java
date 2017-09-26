@@ -140,10 +140,11 @@ public class Recipe extends Resource {
      */
     public static void fillIntentExtras(
             Intent intent, Parcelable parcelable,
-            TrackingInfo trackingInfo) {
+            TrackingInfo trackingInfo, String action) {
 
         intent.putExtra(NearItIntentConstants.TRACKING_INFO, trackingInfo);
         // set contet to show
+        intent.putExtra(NearItIntentConstants.ACTION, action);
         intent.putExtra(NearItIntentConstants.CONTENT, parcelable);
     }
 
