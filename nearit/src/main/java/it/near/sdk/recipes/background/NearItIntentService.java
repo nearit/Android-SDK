@@ -131,4 +131,13 @@ public class NearItIntentService extends IntentService {
         }
         return intent;
     }
+
+    @Nullable
+    public static String getResolverInfo(Context context, String action) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
+        List<ResolveInfo> resolveInfos = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
+        if (resolveInfos.size() < 1) return null;
+        return resolveInfos.get(0).serviceInfo.name;
+    }
 }
