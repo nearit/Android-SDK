@@ -1,6 +1,7 @@
 package it.near.sdk.utils;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 
 public class NearNotification {
@@ -16,6 +18,7 @@ public class NearNotification {
     private static final int LIGHTS_ON_MILLIS = 500;
     private static final int LIGHTS_OFF_MILLIS = 500;
     private static final long[] VIBRATE_PATTERN = {100, 200, 100, 500};
+    private static final String NOTIFICATION_CHANNEL_ID = "NearNotifications";
 
     public static void send(Context context,
                             int imgRes,
@@ -29,7 +32,24 @@ public class NearNotification {
                 .bigText(message)
                 .build();
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            buildChannel(context, mBuilder);
+        }
+
         showNotification(context, code, notification);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private static void buildChannel(Context context, NotificationCompat.Builder mBuilder) {
+        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+        // Configure the notification channel.
+        notificationChannel.setDescription("Channel description");
+        notificationChannel.enableLights(true);
+        notificationChannel.setLightColor(Color.RED);
+        notificationChannel.setVibrationPattern(VIBRATE_PATTERN);
+        notificationChannel.enableVibration(true);
+        mNotificationManager.createNotificationChannel(notificationChannel);
     }
 
     private static NotificationCompat.Builder getBuilder(Context context,
@@ -37,8 +57,8 @@ public class NearNotification {
                                                          String message,
                                                          int imgRes,
                                                          Intent resultIntent) {
-        
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                 .setContentText(message)
                 .setContentIntent(getPendingIntent(context, resultIntent))
                 .setSmallIcon(imgRes)
@@ -71,8 +91,10 @@ public class NearNotification {
             return builder;
     }
 
+
     private static void showNotification(Context context, int code, Notification notification) {
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
         notification.flags |= Notification.FLAG_AUTO_CANCEL;
         mNotificationManager.notify(code, notification);
     }
