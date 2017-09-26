@@ -1,6 +1,5 @@
 # Customize Notifications
 
-
 ## Styling options
 You can set your own icon for the location-based notifications and the push notifications with the methods:
 ```java
@@ -9,6 +8,8 @@ NearItManager.getInstance().setPushNotificationIcon(R.drawable.ic_my_push_notifi
 ```
 
 ## Custom Service
+*WARNING* This feature will not work on devices running Oreo
+
 To handle complex use cases, you can write your own IntentService by subclassing the built-in one.
 Let's look at the built-in IntentService manifest declaration:
 ```xml

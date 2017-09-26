@@ -31,7 +31,7 @@
             </intent-filter>
         </service>
 
-        <!-- Receiver and service for built-in background notification -->
+        <!-- service for built-in background notification -->
 
         <service
             android:name=".recipes.background.NearItIntentService"
