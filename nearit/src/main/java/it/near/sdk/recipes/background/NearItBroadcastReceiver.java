@@ -6,27 +6,7 @@ import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
 /**
- * WakefulBroadcastReceiver to receive background messages. This receiver should be initiated in the manifest to use the default implementation
- * or extended to create a custom implementation (In this case the extended receiver it's the one to include in the app manifest).
- * The action to register in the manifest is <code>it.near.sdk.permission.GEO_MESSAGE</code> for location and <code>it.near.sdk.permission.PUSH_MESSAGE"</code> for push notifications.
- *
- * <pre>
- *     {@code
- *           <receiver android:name="it.near.sdk.Beacons.Monitoring.NearItBroadcastReceiver"
- *           android:exported="false">
- *              <intent-filter>
- *                  <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
- *                  <category android:name="android.intent.category.DEFAULT" />
- *              </intent-filter>
- *              <intent-filter>
- *                  <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
- *                  <category android:name="android.intent.category.DEFAULT" />
- *              </intent-filter>
- *           </receiver>
- *     }
- * </pre>
- *
- * @author cattaneostefano
+ * Deprecated
  */
 public class NearItBroadcastReceiver extends WakefulBroadcastReceiver {
 

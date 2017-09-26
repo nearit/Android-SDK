@@ -8,39 +8,17 @@ NearItManager.getInstance().setProximityNotificationIcon(R.drawable.ic_my_locati
 NearItManager.getInstance().setPushNotificationIcon(R.drawable.ic_my_push_notification);
 ```
 
-## Custom Receiver and Service
-To handle complex use cases, you can write your own receivers by subclassing the built-in one.
-Let's look at the built-in receiver manifest declaration:
+## Custom Service
+To handle complex use cases, you can write your own IntentService by subclassing the built-in one.
+Let's look at the built-in IntentService manifest declaration:
 ```xml
-<!-- built in background receiver -->
-<receiver
-    android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
-    android:exported="false">
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-    <intent-filter>
-        <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
-        <category android:name="android.intent.category.DEFAULT" />
-    </intent-filter>
-</receiver>
+<!-- built in intent service receiver -->
+<service
+    android:name=".recipes.background.NearItIntentService"
+    android:exported="false" />
 ```
-This receiver, along with a built-in service (not to be declared in the app manifest), creates the background functionality.
-By extending NearItBroadcastReceiver and NearItIntentService you can customize the app background behavior.
-
-In the `onReceive` method of your custom receiver, start your custom service:
-```java
-@Override
-public void onReceive(Context context, Intent intent) {
-  // Explicitly specify that MyCustomIntentService will handle the intent.
-  ComponentName comp = new ComponentName(context.getPackageName(),
-    MyCustomIntentService.class.getName());
-
-  // Start the service, keeping the device awake while it is launching.
-  startWakefulService(context, (intent.setComponent(comp)));
-}
-```
+This service (not to be declared in the app manifest), creates the background notification functionality.
+By extending NearItIntentService you can customize the app background behavior.
 
 In the `onHandleIntent` of the custom IntentService:
 ```java
@@ -65,35 +43,23 @@ protected void onHandleIntent(Intent intent) {
   */
 
   // always end this method with
-  MyCustomBroadcastReciever.completeWakefulIntent(intent);
+  NearItBroadcastReceiver.completeWakefulIntent(intent);
 }
 ```
-Remove our receiver in your manifest
-```xml
-<receiver
-    android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
-    tools:node="remove" />
-```
 
-Then replace the custom broadcast receiver and add the custom intent service to the manifest
+Then add your custom IntentService to the manifest
 ```xml
 <service android:name=".MyCustomIntentService"
-            android:exported="false" />
-
-<receiver
-    android:name=".MyCustomBroadcastReciever"
-    android:exported="false">
-    <!-- Add both intent filters to deal with both trigger notification in the same way -->
+            android:exported="false">
     <intent-filter>
         <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
         <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
     <intent-filter>
-            <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
-            <category android:name="android.intent.category.DEFAULT" />
+        <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
+        <category android:name="android.intent.category.DEFAULT" />
     </intent-filter>
-</receiver>
+</service>
 ```
 
-By combination of receivers and intent filters, you can customize only one kind of background notifications, or use 2 different receivers for the 2 situations.
-Remember that you can always programmatically check the action of an intent, inside `onReceive` in the receiver and inside `onHandleIntent` in the intent service with `intent.getAction()`.
+By combination of intent filters, you can customize only one kind of background notifications, or use 2 different intent serivces for the 2 situations.
