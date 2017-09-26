@@ -39,7 +39,7 @@ public class NearItIntentService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
         // Create the notification about the content inside the intent
         if (intent != null) {
-            sendSimpleNotification(intent);
+            sendSimpleNotification(this, intent);
             // Release the wake lock provided by the WakefulBroadcastReceiver.
             NearItBroadcastReceiver.completeWakefulIntent(intent);
         }
@@ -50,34 +50,34 @@ public class NearItIntentService extends IntentService {
      *
      * @param intent the intent from the receiver.
      */
-    protected void sendSimpleNotification(@NonNull Intent intent) {
+    public static void sendSimpleNotification(Context context, @NonNull Intent intent) {
         ReactionBundle content = intent.getParcelableExtra(NearItIntentConstants.CONTENT);
         String notifText = content.notificationMessage;
 
-        String notifTitle = getApplicationInfo().loadLabel(getPackageManager()).toString();
+        String notifTitle = context.getApplicationInfo().loadLabel(context.getPackageManager()).toString();
 
         sendNotifiedTracking(intent);
 
-        NearNotification.send(this,
+        NearNotification.send(context,
                 imgResFromIntent(intent),
                 notifTitle,
                 notifText,
-                getAutoTrackingTargetIntent(intent),
+                getAutoTrackingTargetIntent(context, intent),
                 uniqueNotificationCode()
         );
     }
 
-    private Intent getAutoTrackingTargetIntent(@NonNull Intent intent) {
-        return new Intent(this, AutoTrackingReceiver.class)
+    private static Intent getAutoTrackingTargetIntent(Context context, @NonNull Intent intent) {
+        return new Intent(context, AutoTrackingReceiver.class)
             .putExtras(intent.getExtras());
     }
 
-    protected void sendNotifiedTracking(@NonNull Intent intent) {
+    protected static void sendNotifiedTracking(@NonNull Intent intent) {
         TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
         NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
     }
 
-    private int imgResFromIntent(@NonNull Intent intent) {
+    private static int imgResFromIntent(@NonNull Intent intent) {
         GlobalConfig globalConfig = NearItManager.getInstance().globalConfig;
         String action = intent.getStringExtra(NearItIntentConstants.ACTION);
         if (action.equals(NearItManager.PUSH_MESSAGE_ACTION)) {
@@ -88,7 +88,7 @@ public class NearItIntentService extends IntentService {
             return fetchProximityNotification(globalConfig);
     }
 
-    private int fetchProximityNotification(GlobalConfig globalConfig) {
+    private static int fetchProximityNotification(GlobalConfig globalConfig) {
         int imgRes = globalConfig.getProximityNotificationIcon();
         if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
             return imgRes;
@@ -97,7 +97,7 @@ public class NearItIntentService extends IntentService {
         }
     }
 
-    private int fetchPushNotification(GlobalConfig globalConfig) {
+    private static int fetchPushNotification(GlobalConfig globalConfig) {
         int imgRes = globalConfig.getPushNotificationIcon();
         if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
             return imgRes;
@@ -106,7 +106,7 @@ public class NearItIntentService extends IntentService {
         }
     }
 
-    private int uniqueNotificationCode() {
+    private static int uniqueNotificationCode() {
         return (int) Calendar.getInstance().getTimeInMillis();
     }
 

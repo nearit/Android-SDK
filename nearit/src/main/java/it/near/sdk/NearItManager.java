@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Parcelable;
@@ -85,6 +86,7 @@ import it.near.sdk.utils.timestamp.NearTimestampChecker;
  */
 public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler {
 
+    private static final int NEAR_JOB_SERVICE_ID = 888;
     @Nullable
     private volatile static NearItManager sInstance = null;
 
@@ -369,7 +371,11 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
             resultIntent = new Intent().setComponent(new ComponentName(context.getPackageName(), NearItIntentService.class.getName()));
         }
         Recipe.fillIntentExtras(resultIntent, parcelable, trackingInfo, action);
-        context.startService(resultIntent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NearItIntentService.sendSimpleNotification(context, resultIntent);
+        } else {
+            context.startService(resultIntent);
+        }
     }
 
     public boolean sendEvent(Event event) {

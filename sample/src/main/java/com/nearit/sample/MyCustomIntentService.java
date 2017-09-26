@@ -38,7 +38,7 @@ public class MyCustomIntentService extends NearItIntentService implements CoreCo
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         if (intent != null) {
-            sendSimpleNotification(intent);
+            sendSimpleNotification(this, intent);
             NearUtils.parseCoreContents(intent, this);
             // Release the wake lock provided by the WakefulBroadcastReceiver.
             NearItBroadcastReceiver.completeWakefulIntent(intent);
