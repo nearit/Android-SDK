@@ -68,6 +68,12 @@ protected void onHandleIntent(Intent intent) {
   MyCustomBroadcastReciever.completeWakefulIntent(intent);
 }
 ```
+Remove our receiver in your manifest
+```xml
+<receiver
+    android:name="it.near.sdk.recipes.background.NearItBroadcastReceiver"
+    tools:node="remove" />
+```
 
 Then replace the custom broadcast receiver and add the custom intent service to the manifest
 ```xml
