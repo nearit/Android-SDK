@@ -75,9 +75,10 @@ public class NearItIntentService extends IntentService {
 
     private int imgResFromIntent(@NonNull Intent intent) {
         GlobalConfig globalConfig = NearItManager.getInstance().globalConfig;
-        if (intent.getAction().equals(NearItManager.PUSH_MESSAGE_ACTION)) {
+        String action = intent.getStringExtra(NearItIntentConstants.ACTION);
+        if (action.equals(NearItManager.PUSH_MESSAGE_ACTION)) {
             return fetchPushNotification(globalConfig);
-        } else if (intent.getAction().equals(NearItManager.GEO_MESSAGE_ACTION)) {
+        } else if (action.equals(NearItManager.GEO_MESSAGE_ACTION)) {
             return fetchProximityNotification(globalConfig);
         } else
             return fetchProximityNotification(globalConfig);
