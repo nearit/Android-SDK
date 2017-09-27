@@ -23,10 +23,9 @@ import it.near.sdk.utils.NearNotification;
 
 import static it.near.sdk.utils.NearItIntentConstants.ACTION;
 
-
 public class NearBackgroundJobIntentService extends JobIntentService {
 
-    private static final int JOB_ID = 1;
+    private static final int JOB_ID = 778899;
 
     private static final int DEFAULT_GEO_NOTIFICATION_ICON = R.drawable.icon_geo_default_24dp;
     private static final int DEFAULT_PUSH_NOTIFICATION_ICON = R.drawable.icon_push_default_24dp;
