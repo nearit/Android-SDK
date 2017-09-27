@@ -63,7 +63,11 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
     public void startGFRadar() {
         Intent serviceIntent = new Intent(mContext, GeoFenceService.class);
         serviceIntent.putParcelableArrayListExtra(GeoFenceService.GEOFENCES, (ArrayList<? extends Parcelable>) currentGeofences);
-        mContext.startService(serviceIntent);
+        try {
+            mContext.startService(serviceIntent);
+        } catch(Throwable t) {
+            NearLog.d(TAG, "Could not restart service in the background");
+        }
         registerForLocationUpdates();
     }
 

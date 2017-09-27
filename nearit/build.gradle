@@ -82,7 +82,7 @@ android {
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 0
         versionName version
         buildConfigField("int", "API_VERSION", "2")

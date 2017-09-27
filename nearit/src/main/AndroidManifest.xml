@@ -34,8 +34,9 @@
         <!-- service for built-in background notification -->
 
         <service
-            android:name=".recipes.background.NearItIntentService"
-            android:exported="false" />
+            android:name=".recipes.background.NearBackgroundJobIntentService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
         <!-- Geofence services -->
         <service

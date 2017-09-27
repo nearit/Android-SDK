@@ -30,6 +30,20 @@
             android:theme="@style/NearDialogTheme" />
         <!-- There's need to add the special theme to avoid a smelly UI transition -->
 
+        <service
+            android:name=".MyBackgroundJIS"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
+           <intent-filter>
+                <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="it.near.sdk.permission.GEO_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </service>
+
         <meta-data
             android:name="near_api_key"
             android:value="@string/near_api_key" />
