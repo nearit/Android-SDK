@@ -8,7 +8,6 @@ NearItManager.getInstance().setPushNotificationIcon(R.drawable.ic_my_push_notifi
 ```
 
 ## Custom Service
-
 To handle complex use cases, you can write your own IntentService by subclassing the built-in one.
 Let's look at the built-in IntentService manifest declaration:
 ```xml
