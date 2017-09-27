@@ -53,7 +53,7 @@ import it.near.sdk.recipes.RecipeTrackSender;
 import it.near.sdk.recipes.RecipesApi;
 import it.near.sdk.recipes.RecipesHistory;
 import it.near.sdk.recipes.RecipesManager;
-import it.near.sdk.recipes.background.BackgroundJobIntentService;
+import it.near.sdk.recipes.background.NearBackgroundJobIntentService;
 import it.near.sdk.recipes.models.ReactionBundle;
 import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.validation.AdvScheduleValidator;
@@ -368,7 +368,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         Intent intent = new Intent();
         Recipe.fillIntentExtras(intent, parcelable, trackingInfo, action);
 
-        BackgroundJobIntentService.enqueueWork(context, intent);
+        NearBackgroundJobIntentService.enqueueWork(context, intent);
         // NearItIntentService.sendSimpleNotification(context, resultIntent);
 
     }

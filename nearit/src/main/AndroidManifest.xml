@@ -38,10 +38,9 @@
             android:exported="false" />
 
         <service
-            android:name=".recipes.background.BackgroundJobIntentService"
+            android:name=".recipes.background.NearBackgroundJobIntentService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
-
 
         <!-- Geofence services -->
         <service

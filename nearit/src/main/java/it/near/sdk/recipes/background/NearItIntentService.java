@@ -3,13 +3,10 @@ package it.near.sdk.recipes.background;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import java.util.Calendar;
-import java.util.List;
 
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.NearItManager;
@@ -121,23 +118,4 @@ public class NearItIntentService extends IntentService {
         }
     }
 
-    @Nullable
-    public static Intent getIntent(Context context, String action) {
-        PackageManager packageManager = context.getPackageManager();
-        Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
-        List<ResolveInfo> resolverInfo = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
-        if (resolverInfo.size() < 1) {
-            return null;
-        }
-        return intent;
-    }
-
-    @Nullable
-    public static String getResolverInfo(Context context, String action) {
-        PackageManager packageManager = context.getPackageManager();
-        Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
-        List<ResolveInfo> resolveInfos = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
-        if (resolveInfos.size() < 1) return null;
-        return resolveInfos.get(0).serviceInfo.name;
-    }
 }

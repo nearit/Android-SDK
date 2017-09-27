@@ -2,26 +2,32 @@ package it.near.sdk.recipes.background;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.JobIntentService;
 import android.util.Log;
+
+import java.util.List;
 
 import static it.near.sdk.utils.NearItIntentConstants.ACTION;
 
 
-public class BackgroundJobIntentService extends JobIntentService {
+public class NearBackgroundJobIntentService extends JobIntentService {
 
     private static final int JOB_ID = 1;
 
     public static void enqueueWork(Context context, Intent work) {
-        String name = NearItIntentService.getResolverInfo(context, work.getStringExtra(ACTION));
+        String name = getResolverInfo(context, work.getStringExtra(ACTION));
         if (name == null) {
-            enqueueWork(context, BackgroundJobIntentService.class, JOB_ID, work);
+            enqueueWork(context, NearBackgroundJobIntentService.class, JOB_ID, work);
         } else {
             try {
                 Class t = Class.forName(name);
                 enqueueWork(context, t, JOB_ID, work);
-            } catch (Exception ignored) {
+            } catch (Throwable ignored) {
+                enqueueWork(context, NearBackgroundJobIntentService.class, JOB_ID, work);
             }
         }
     }
@@ -35,5 +41,14 @@ public class BackgroundJobIntentService extends JobIntentService {
             // Release the wake lock provided by the WakefulBroadcastReceiver.
             NearItBroadcastReceiver.completeWakefulIntent(intent);
         }
+    }
+
+    @Nullable
+    public static String getResolverInfo(Context context, String action) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
+        List<ResolveInfo> resolveInfos = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
+        if (resolveInfos.size() < 1) return null;
+        return resolveInfos.get(0).serviceInfo.name;
     }
 }
