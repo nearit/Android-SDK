@@ -8,30 +8,29 @@ NearItManager.getInstance().setPushNotificationIcon(R.drawable.ic_my_push_notifi
 ```
 
 ## Custom Service
-*WARNING* This feature will not work on devices running Oreo
-
 To handle complex use cases, you can write your own IntentService by subclassing the built-in one.
 Let's look at the built-in IntentService manifest declaration:
 ```xml
-<!-- built in intent service receiver -->
+<!-- built in service -->
 <service
-    android:name=".recipes.background.NearItIntentService"
-    android:exported="false" />
+    android:name=".recipes.background.NearBackgroundJobIntentService"
+    android:exported="false"
+    android:permission="android.permission.BIND_JOB_SERVICE" />
 ```
-This service (not to be declared in the app manifest), creates the background notification functionality.
-By extending NearItIntentService you can customize the app background behavior.
+This JobIntentService (not to be declared in the app manifest), creates the background notification functionality.
+By extending NearBackgroundJobIntentService you can customize the app background behavior.
 
-In the `onHandleIntent` of the custom IntentService:
+In the `onHandleWork` of the custom IntentService:
 ```java
 @Override
-protected void onHandleIntent(Intent intent) {
+protected void onHandleWork(@NonNull Intent intent) {
   /*
-  Do whatever you want with the intent, like custom trackings or 
+  Do whatever you want with the intent, be aware that, depending on the target,
+  this might be executed in a jobservice and background limitations apply.
 
   To notify it to the user with a system notification, call 
   super.sendSimpleNotification(intent);
   this method also sends the proper tracking information to our servers.
-  
   
   If you want to completely customize the user experience, you should implement your logic here.
   You may want to use this method:
@@ -42,15 +41,12 @@ protected void onHandleIntent(Intent intent) {
   TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
   NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
   */
-
-  // always end this method with
-  NearItBroadcastReceiver.completeWakefulIntent(intent);
 }
 ```
 
 Then add your custom IntentService to the manifest
 ```xml
-<service android:name=".MyCustomIntentService"
+<service android:name=".MyCustomJobIntentService"
             android:exported="false">
     <intent-filter>
         <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
@@ -63,4 +59,4 @@ Then add your custom IntentService to the manifest
 </service>
 ```
 
-By combination of intent filters, you can customize only one kind of background notifications, or use 2 different intent serivces for the 2 situations.
+By combination of intent filters, you can customize only one kind of background notifications, or use 2 different intent services for the 2 situations.

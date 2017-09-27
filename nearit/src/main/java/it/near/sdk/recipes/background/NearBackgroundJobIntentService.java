@@ -1,12 +1,13 @@
 package it.near.sdk.recipes.background;
 
-import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.JobIntentService;
+import android.util.Log;
 
 import java.util.Calendar;
 import java.util.List;
@@ -20,28 +21,38 @@ import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.NearItIntentConstants;
 import it.near.sdk.utils.NearNotification;
 
-public class NearItIntentService extends IntentService {
+import static it.near.sdk.utils.NearItIntentConstants.ACTION;
 
-    public static final int REGION_NOTIFICATION_ID = 1;
-    public static final int PUSH_NOTIFICATION_ID = 2;
-    private static final String TAG = "NearITIntentService";
+
+public class NearBackgroundJobIntentService extends JobIntentService {
+
+    private static final int JOB_ID = 1;
+
     private static final int DEFAULT_GEO_NOTIFICATION_ICON = R.drawable.icon_geo_default_24dp;
     private static final int DEFAULT_PUSH_NOTIFICATION_ICON = R.drawable.icon_push_default_24dp;
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     */
-    public NearItIntentService() {
-        super(NearItIntentService.class.getName());
+    public static void enqueueWork(Context context, Intent work) {
+        String name = getResolverInfo(context, work.getStringExtra(ACTION));
+        if (name == null) {
+            enqueueWork(context, NearBackgroundJobIntentService.class, JOB_ID, work);
+        } else {
+            try {
+                Class t = Class.forName(name);
+                enqueueWork(context, t, JOB_ID, work);
+            } catch (Throwable ignored) {
+                enqueueWork(context, NearBackgroundJobIntentService.class, JOB_ID, work);
+            }
+        }
     }
 
     @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
+    protected void onHandleWork(@NonNull Intent intent) {
+        Log.e("JIS", "jis running");
         // Create the notification about the content inside the intent
         if (intent != null) {
             sendSimpleNotification(this, intent);
             // Release the wake lock provided by the WakefulBroadcastReceiver.
-            NearItBroadcastReceiver.completeWakefulIntent(intent);
+            // NearItBroadcastReceiver.completeWakefulIntent(intent);
         }
     }
 
@@ -50,7 +61,7 @@ public class NearItIntentService extends IntentService {
      *
      * @param intent the intent from the receiver.
      */
-    public static void sendSimpleNotification(Context context, @NonNull Intent intent) {
+    public void sendSimpleNotification(Context context, @NonNull Intent intent) {
         ReactionBundle content = intent.getParcelableExtra(NearItIntentConstants.CONTENT);
         String notifText = content.notificationMessage;
 
@@ -67,17 +78,30 @@ public class NearItIntentService extends IntentService {
         );
     }
 
-    private static Intent getAutoTrackingTargetIntent(Context context, @NonNull Intent intent) {
-        return new Intent(context, AutoTrackingReceiver.class)
-            .putExtras(intent.getExtras());
-    }
-
-    protected static void sendNotifiedTracking(@NonNull Intent intent) {
+    protected void sendNotifiedTracking(@NonNull Intent intent) {
         TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
         NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
     }
 
-    private static int imgResFromIntent(@NonNull Intent intent) {
+    private int fetchProximityNotification(GlobalConfig globalConfig) {
+        int imgRes = globalConfig.getProximityNotificationIcon();
+        if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
+            return imgRes;
+        } else {
+            return DEFAULT_GEO_NOTIFICATION_ICON;
+        }
+    }
+
+    private int fetchPushNotification(GlobalConfig globalConfig) {
+        int imgRes = globalConfig.getPushNotificationIcon();
+        if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
+            return imgRes;
+        } else {
+            return DEFAULT_PUSH_NOTIFICATION_ICON;
+        }
+    }
+
+    private int imgResFromIntent(@NonNull Intent intent) {
         GlobalConfig globalConfig = NearItManager.getInstance().globalConfig;
         String action = intent.getStringExtra(NearItIntentConstants.ACTION);
         if (action.equals(NearItManager.PUSH_MESSAGE_ACTION)) {
@@ -88,47 +112,21 @@ public class NearItIntentService extends IntentService {
             return fetchProximityNotification(globalConfig);
     }
 
-    private static int fetchProximityNotification(GlobalConfig globalConfig) {
-        int imgRes = globalConfig.getProximityNotificationIcon();
-        if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
-            return imgRes;
-        } else {
-            return DEFAULT_GEO_NOTIFICATION_ICON;
-        }
-    }
-
-    private static int fetchPushNotification(GlobalConfig globalConfig) {
-        int imgRes = globalConfig.getPushNotificationIcon();
-        if (imgRes != GlobalConfig.DEFAULT_EMPTY_NOTIFICATION) {
-            return imgRes;
-        } else {
-            return DEFAULT_PUSH_NOTIFICATION_ICON;
-        }
+    private Intent getAutoTrackingTargetIntent(Context context, @NonNull Intent intent) {
+        return new Intent(context, AutoTrackingReceiver.class)
+                .putExtras(intent.getExtras());
     }
 
     private static int uniqueNotificationCode() {
         return (int) Calendar.getInstance().getTimeInMillis();
     }
 
-    private int notificationCodeFromIntent(@NonNull Intent intent) {
-        switch (intent.getAction()) {
-            case NearItManager.PUSH_MESSAGE_ACTION:
-                return PUSH_NOTIFICATION_ID;
-            case NearItManager.GEO_MESSAGE_ACTION:
-                return REGION_NOTIFICATION_ID;
-            default:
-                return REGION_NOTIFICATION_ID;
-        }
-    }
-
     @Nullable
-    public static Intent getIntent(Context context, String action) {
+    public static String getResolverInfo(Context context, String action) {
         PackageManager packageManager = context.getPackageManager();
         Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
-        List<ResolveInfo> resolverInfo = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
-        if (resolverInfo.size() < 1) {
-            return null;
-        }
-        return intent;
+        List<ResolveInfo> resolveInfos = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
+        if (resolveInfos.size() < 1) return null;
+        return resolveInfos.get(0).serviceInfo.name;
     }
 }
