@@ -59,4 +59,4 @@ Then add your custom IntentService to the manifest
 </service>
 ```
 
-By combination of intent filters, you can customize only one kind of background notifications, or use 2 different intent serivces for the 2 situations.
+By combination of intent filters, you can customize only one kind of background notifications, or use 2 different intent services for the 2 situations.
