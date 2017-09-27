@@ -44,6 +44,15 @@ public class NearBackgroundJobIntentService extends JobIntentService {
         }
     }
 
+    @Nullable
+    public static String getResolverInfo(Context context, String action) {
+        PackageManager packageManager = context.getPackageManager();
+        Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
+        List<ResolveInfo> resolveInfos = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
+        if (resolveInfos.size() < 1) return null;
+        return resolveInfos.get(0).serviceInfo.name;
+    }
+
     @Override
     protected void onHandleWork(@NonNull Intent intent) {
         Log.e("JIS", "jis running");
@@ -118,14 +127,5 @@ public class NearBackgroundJobIntentService extends JobIntentService {
 
     private static int uniqueNotificationCode() {
         return (int) Calendar.getInstance().getTimeInMillis();
-    }
-
-    @Nullable
-    public static String getResolverInfo(Context context, String action) {
-        PackageManager packageManager = context.getPackageManager();
-        Intent intent = new Intent().setAction(action).setPackage(context.getPackageName());
-        List<ResolveInfo> resolveInfos = packageManager.queryIntentServices(intent, PackageManager.GET_META_DATA);
-        if (resolveInfos.size() < 1) return null;
-        return resolveInfos.get(0).serviceInfo.name;
     }
 }
