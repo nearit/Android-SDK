@@ -16,7 +16,7 @@
 
         <!-- Services for fcm push notifications -->
         <service
-            android:name="it.near.sdk.push.MyFcmListenerService"
+            android:name="it.near.sdk.push.NearFcmListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
@@ -24,7 +24,7 @@
         </service>
 
         <service
-            android:name=".push.fcmregistration.MyInstanceIDListenerService"
+            android:name=".push.fcmregistration.NearInstanceIDListenerService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />

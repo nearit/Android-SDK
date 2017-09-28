@@ -44,6 +44,24 @@
             </intent-filter>
         </service>
 
+        <!-- if you want to customize or need to override fcm event -->
+        <!--<service
+            android:name=".CustomFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".CustomFirebaseInstanceIdService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>-->
+
+
         <meta-data
             android:name="near_api_key"
             android:value="@string/near_api_key" />
