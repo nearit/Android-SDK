@@ -48,17 +48,27 @@ boolean hasNearContent = NearUtils.carriesNearItContent(intent);
 If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md)
 
 ## Trackings
+NearIT allows to track user engagement events on recipes. Any recipe has at least two default events:
 
-NearIT analytics on recipes are built from trackings describing the status of user engagement with a recipe. The two recipe states are "Notified" and "Engaged" to represent a recipe delivered to the user and a recipe that the user responded to.
-Built-in background recipes track themselves as notified and engaged.
+  - **Notified**: the user *received* a notification
+  - **Engaged**: the user *tapped* on the notification
+  
+Usually the SDK tracks those events automatically, but if you write custom code to show notification or content (i.e. to receive foreground event) please make sure that at least the "**notified**" event is tracked.
+<br>**Warning:** Failing in tracking this event cause some NearIT features to not work.
 
-Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
+
+You can track **default or custom events** using the "**sendTracking**" method:
+ 
 ```java
+// notified - notification received
 NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
-// and
+
+// engaged - notification tapped
 NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
+
+// custom recipe event
+NearItManager.getInstance().sendTracking(trackingInfo, "my awesome custom event");
 ```
-The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
 
 ## Content Objects
 
