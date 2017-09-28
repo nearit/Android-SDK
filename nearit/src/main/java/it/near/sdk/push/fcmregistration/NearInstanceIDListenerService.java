@@ -12,7 +12,7 @@ import it.near.sdk.logging.NearLog;
  *
  * @author cattaneostefano
  */
-public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
+public class NearInstanceIDListenerService extends FirebaseInstanceIdService {
 
     private static final String TAG = "NearInstIDListenerServ";
 
@@ -31,7 +31,7 @@ public class MyInstanceIDListenerService extends FirebaseInstanceIdService {
      *
      * @param token The new token.
      */
-    private void sendRegistrationToServer(String token) {
+    public static void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
         NearItManager nearItManager = NearItManager.getInstance();
         nearItManager.globalConfig.setDeviceToken(token);

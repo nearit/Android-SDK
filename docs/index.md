@@ -17,7 +17,7 @@ NearIT allows to manage apps by defining "recipes". Those are simple rules made 
 
 ## How It Works
 
-[**NearIT web interface**](https://go.nearit.com/) allows you to configure all the features quickly.
+<a href="https://go.nearit.com/" target="_blank">**NearIT web interface**</a> allows you to configure all the features quickly.
 Once the settings are configured, **everyone** - even people without technical skills - can manage context-aware mobile content.
 
 **NearIT SDK** synchronizes with servers and behaves accordingly to the settings and the recipes. Any content will be delivered at the right time, you just need to handle its presentation.

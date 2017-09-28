@@ -7,7 +7,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.2.4'
+    compile 'it.near.sdk:nearit:2.2.5'
 }
 ```
 
@@ -34,7 +34,7 @@ In AndroidManifest.xml, add the following element as a child of the `<applicatio
        android:value="<your-near-api-key>" />
 ```
 
-You can find your API key on [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
+You can find your API key on <a href="https://go.nearit.com/" target="_blank">**NearIT web interface**</a>, under the "SDK Integration" section.
 
 
 ##Manual Configuration Refresh##
