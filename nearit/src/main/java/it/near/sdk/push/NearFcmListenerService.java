@@ -14,9 +14,9 @@ import it.near.sdk.utils.FormatDecoder;
  *
  * @author cattaneostefano
  */
-public class MyFcmListenerService extends FirebaseMessagingService {
+public class NearFcmListenerService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFcmListenerService";
+    private static final String TAG = "NearFcmListenerService";
 
     /**
      * Called when message is received.
@@ -27,28 +27,17 @@ public class MyFcmListenerService extends FirebaseMessagingService {
         NearLog.d(TAG, "From: " + message.getFrom());
         NearLog.d(TAG, "Message: " + message);
 
+        processRemoteMessage(message);
+    }
+
+    public static void processRemoteMessage(RemoteMessage remoteMessage) {
         new PushProcessor(
                 getRecipesReactionHandler(),
                 new FormatDecoder()
-        ).processPush(message.getData());
-
-        // [START_EXCLUDE]
-        /*
-          Production applications would usually process the message here.
-          Eg: - Syncing with server.
-              - Store message in local database.
-              - Update UI.
-         */
-
-        /*
-          In some cases it may be useful to show a notification indicating to the user
-          that a message was received.
-         */
-        // sendNotification(message);
-        // [END_EXCLUDE]
+        ).processPush(remoteMessage.getData());
     }
 
-    private RecipeReactionHandler getRecipesReactionHandler() {
+    private static RecipeReactionHandler getRecipesReactionHandler() {
         return NearItManager.getInstance().getRecipesReactionHandler();
     }
     // [END receive_message]
