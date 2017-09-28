@@ -1,6 +1,5 @@
 package it.near.sdk.push;
 
-
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
