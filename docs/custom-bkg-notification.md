@@ -25,7 +25,7 @@ In the `onHandleWork` of the custom IntentService:
 @Override
 protected void onHandleWork(@NonNull Intent intent) {
   /*
-  Do whatever you want with the intent, be aware that, depending on the target,
+  Do whatever you want with the intent, but be aware that, depending on the target,
   this might be executed in a jobservice and background limitations apply.
 
   To notify it to the user with a system notification, call 
