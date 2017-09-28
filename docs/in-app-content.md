@@ -1,21 +1,21 @@
 # Handle In-app Content
 
-NearIT takes care of delivering content at the right time, you will just need to handle content presentation. 
+After an user **taps on a notification**, you will receive content through an intent to your app launcher activity.
+If you want to just check if the intent carries NearIT content use this method:
+```java
+boolean hasNearItContent = NearUtils.carriesNearItContent(intent);
+```
+To extract the content from an intent use the utility method:
+```java
+NearUtils.parseCoreContents(intent, coreContentListener);
+```
 
-## Foreground vs Background
 
-Recipes either deliver content in background or in foreground but not both. Check this table to see how you will be notified.
+If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md).
 
-| Type of trigger                  | Delivery           |
-|----------------------------------|--------------------|
-| Push (immediate or scheduled)    | Background intent  |
-| Enter and Exit on geofences      | Background intent  |
-| Enter and Exit on beacon regions | Background intent  |
-| Enter in a specific beacon range | Proximity listener (foreground) |
-
-## Foreground Content
-
-To receive foreground content (e.g. ranging recipes) set a proximity listener with the method
+## Beacon Interaction Content
+Beacon interaction (beacon ranging) is a peculiar trigger that works only when your app is in the foreground.<br>
+To receive this kind of content set a **proximity listener** with the method:
 ```java
 {
     ...
@@ -32,20 +32,8 @@ public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
     NearUtils.parseCoreContents(content, trackingInfo, coreContentListener);
 }   
 ```
+**Warning:** For this kind of content you will need to write the code for **Trackings** and to eventually show an **In-app notification**.
 
-## Background Content
-
-Once you have added at least one of the receivers for any background working trigger you will be delivered the actual content through an intent that will call your app launcher activity and carry some extras.
-To extract the content from an intent use the utility method:
-```java
-NearUtils.parseCoreContents(intent, coreContentListener);
-```
-If you want to just check if the intent carries NearIT content, without having to eventually handle the actual content, use this method
-```java
-boolean hasNearContent = NearUtils.carriesNearItContent(intent);
-```
-
-If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md)
 
 ## Trackings
 NearIT allows to track user engagement events on recipes. Any recipe has at least two default events:
@@ -53,7 +41,7 @@ NearIT allows to track user engagement events on recipes. Any recipe has at leas
   - **Notified**: the user *received* a notification
   - **Engaged**: the user *tapped* on the notification
   
-Usually the SDK tracks those events automatically, but if you write custom code to show notification or content (i.e. to receive foreground event) please make sure that at least the "**notified**" event is tracked.
+Usually the SDK tracks those events automatically, but if you write custom code to show notification or content (i.e. to receive Beacon interaction content) please make sure that at least the "**notified**" event is tracked.
 <br>**Warning:** Failing in tracking this event cause some NearIT features to not work.
 
 
@@ -121,16 +109,16 @@ We handle the complete emission and redemption coupon cycle in our platform, and
 You can ask the library to fetch the list of all the user current coupons with the method:
 ```java
 NearItManager.getInstance().getCoupons(new CouponListener() {
-            @Override
-            public void onCouponsDownloaded(List<Coupon> list) {
+	@Override
+	public void onCouponsDownloaded(List<Coupon> list) {
 
-            }
+	}
 
-            @Override
-            public void onCouponDownloadError(String s) {
+	@Override
+	public void onCouponDownloadError(String s) {
 
-            }
-        });
+	}
+});
 ```
 The method will also return already redeemed coupons so you get to decide to filter them if necessary.
 

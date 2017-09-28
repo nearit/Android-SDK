@@ -32,16 +32,16 @@ userDataMap.put("name", "John");
 userDataMap.put("age", "23");           // set everything as String
 userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
 NearItManager.getInstance().setBatchUserData(userDataMap, new UserDataNotifier() {
-            @Override
-            public void onDataCreated() {
-                // data was set/created 
-            }
+	@Override
+	public void onDataCreated() {
+		// data was set/created 
+	}
 
-            @Override
-            public void onDataNotSetError(String error) {
+	@Override
+	public void onDataNotSetError(String error) {
 
-            }
-        });
+	}
+});
 ```
 If you try to set user data before creating a profile the error callback will be called.
 
