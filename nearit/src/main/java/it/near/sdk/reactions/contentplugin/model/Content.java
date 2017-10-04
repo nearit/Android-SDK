@@ -2,38 +2,81 @@ package it.near.sdk.reactions.contentplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.morpheusnear.annotations.Relationship;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 public class Content extends ReactionBundle implements Parcelable {
+
+    @Nullable
+    @SerializedName("title")
+    public String title;
+
+    @Nullable
     @SerializedName("content")
     public String contentString;
-    @SerializedName("video_link")
-    public String video_link;
+
+    @Nullable
+    @SerializedName("link")
+    public HashMap<String, Object> link;
+
     @SerializedName("updated_at")
     public String updated_at;
+
+    @Deprecated
     @Relationship("images")
     public List<Image> images;
+
+    @Deprecated
     @Relationship("audio")
     public Audio audio;
+
+    @Deprecated
     @Relationship("upload")
     public Upload upload;
 
+    @Deprecated
+    @SerializedName("video_link")
+    public String video_link;
+
     private List<ImageSet> images_links;
+    private ContentLink cta;
 
     public Content() {
     }
 
+    @Nullable
+    public ImageSet getImageLink() {
+        if (images_links == null || images_links.isEmpty())
+            return null;
+        return images_links.get(0);
+    }
+
+    /**
+     * @deprecated please use {@link #getImageLink()}
+     */
+    @Deprecated
     public List<ImageSet> getImages_links() {
         return images_links;
     }
 
+    @Nullable
+    public ContentLink getCta() {
+        return cta;
+    }
+
+    public void setCta(ContentLink cta) {
+        this.cta = cta;
+    }
+
+    @Deprecated
     public void setImages_links(List<ImageSet> images_links) {
         this.images_links = images_links;
     }
@@ -46,11 +89,13 @@ public class Content extends ReactionBundle implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
+        dest.writeString(title);
         dest.writeString(contentString);
         dest.writeString(video_link);
         dest.writeString(updated_at);
         dest.writeString(getId());
         dest.writeTypedList(getImages_links());
+        dest.writeParcelable(cta, flags);
         dest.writeParcelable(audio, flags);
         dest.writeParcelable(upload, flags);
     }
@@ -68,6 +113,7 @@ public class Content extends ReactionBundle implements Parcelable {
 
     public Content(Parcel in) {
         super(in);
+        title = in.readString();
         contentString = in.readString();
         video_link = in.readString();
         updated_at = in.readString();
@@ -75,6 +121,7 @@ public class Content extends ReactionBundle implements Parcelable {
         List<ImageSet> list = new ArrayList<ImageSet>();
         in.readTypedList(list, ImageSet.CREATOR);
         setImages_links(list);
+        cta = in.readParcelable(ContentLink.class.getClassLoader());
         audio = in.readParcelable(Audio.class.getClassLoader());
         upload = in.readParcelable(Upload.class.getClassLoader());
     }
