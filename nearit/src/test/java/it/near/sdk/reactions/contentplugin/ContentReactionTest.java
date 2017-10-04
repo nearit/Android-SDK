@@ -1,5 +1,7 @@
 package it.near.sdk.reactions.contentplugin;
 
+import com.google.common.collect.Maps;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,6 +13,7 @@ import java.util.HashMap;
 import it.near.sdk.reactions.BaseReactionTest;
 import it.near.sdk.reactions.contentplugin.model.Audio;
 import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.ContentLink;
 import it.near.sdk.reactions.contentplugin.model.Image;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.contentplugin.model.Upload;
@@ -19,8 +22,12 @@ import static it.near.sdk.reactions.contentplugin.ContentReaction.RES_AUDIOS;
 import static it.near.sdk.reactions.contentplugin.ContentReaction.RES_CONTENTS;
 import static it.near.sdk.reactions.contentplugin.ContentReaction.RES_IMAGES;
 import static it.near.sdk.reactions.contentplugin.ContentReaction.RES_UPLOADS;
+import static it.near.sdk.reactions.contentplugin.model.ContentLink.CTA_LABEL_KEY;
+import static it.near.sdk.reactions.contentplugin.model.ContentLink.CTA_URL_KEY;
+import static junit.framework.Assert.assertNull;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -91,6 +98,40 @@ public class ContentReactionTest extends BaseReactionTest<ContentReaction> {
         reaction.normalizeElement(content);
 
         assertThat(content.getImages_links(), hasItems(imageSet1, imageSet2));
+    }
+
+    @Test
+    public void normalizeElementShouldNormalizeContentLink() {
+        Content content = new Content();
+        HashMap<String, Object> ctaMap = Maps.newHashMap();
+        String label = "label";
+        ctaMap.put(CTA_LABEL_KEY, label);
+        String url = "url";
+        ctaMap.put(CTA_URL_KEY, url);
+        content.link = ctaMap;
+
+        reaction.normalizeElement(content);
+
+        ContentLink actualContentLink = content.getCta();
+        assertNotNull(actualContentLink);
+        assertThat(actualContentLink.label, is(label));
+        assertThat(actualContentLink.url, is(url));
+    }
+
+    @Test
+    public void incompleteCtaShouldNotCreateContentLink() {
+        Content content = new Content();
+        HashMap<String, Object> ctaMap = Maps.newHashMap();
+        String label = "label";
+        ctaMap.put(CTA_LABEL_KEY, label);
+        // String url = "url";
+        // ctaMap.put(CTA_URL_KEY, url);
+        content.link = ctaMap;
+
+        reaction.normalizeElement(content);
+
+        ContentLink actualContentLink = content.getCta();
+        assertNull(actualContentLink);
     }
 
     @Test

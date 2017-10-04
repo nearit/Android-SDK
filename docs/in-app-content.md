@@ -1,21 +1,21 @@
 # Handle In-app Content
 
-NearIT takes care of delivering content at the right time, you will just need to handle content presentation. 
+After an user **taps on a notification**, you will receive content through an intent to your app launcher activity.
+If you want to just check if the intent carries NearIT content use this method:
+```java
+boolean hasNearItContent = NearUtils.carriesNearItContent(intent);
+```
+To extract the content from an intent use the utility method:
+```java
+NearUtils.parseCoreContents(intent, coreContentListener);
+```
 
-## Foreground vs Background
 
-Recipes either deliver content in background or in foreground but not both. Check this table to see how you will be notified.
+If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md).
 
-| Type of trigger                  | Delivery           |
-|----------------------------------|--------------------|
-| Push (immediate or scheduled)    | Background intent  |
-| Enter and Exit on geofences      | Background intent  |
-| Enter and Exit on beacon regions | Background intent  |
-| Enter in a specific beacon range | Proximity listener (foreground) |
-
-## Foreground Content
-
-To receive foreground content (e.g. ranging recipes) set a proximity listener with the method
+## Beacon Interaction Content
+Beacon interaction (beacon ranging) is a peculiar trigger that works only when your app is in the foreground.<br>
+To receive this kind of content set a **proximity listener** with the method:
 ```java
 {
     ...
@@ -32,33 +32,31 @@ public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
     NearUtils.parseCoreContents(content, trackingInfo, coreContentListener);
 }   
 ```
+**Warning:** For this kind of content you will need to write the code for **Trackings** and to eventually show an **In-app notification**.
 
-## Background Content
-
-Once you have added at least one of the receivers for any background working trigger you will be delivered the actual content through an intent that will call your app launcher activity and carry some extras.
-To extract the content from an intent use the utility method:
-```java
-NearUtils.parseCoreContents(intent, coreContentListener);
-```
-If you want to just check if the intent carries NearIT content, without having to eventually handle the actual content, use this method
-```java
-boolean hasNearContent = NearUtils.carriesNearItContent(intent);
-```
-
-If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md)
 
 ## Trackings
+NearIT allows to track user engagement events on recipes. Any recipe has at least two default events:
 
-NearIT analytics on recipes are built from trackings describing the status of user engagement with a recipe. The two recipe states are "Notified" and "Engaged" to represent a recipe delivered to the user and a recipe that the user responded to.
-Built-in background recipes track themselves as notified and engaged.
+  - **Notified**: the user *received* a notification
+  - **Engaged**: the user *tapped* on the notification
+  
+Usually the SDK tracks those events automatically, but if you write custom code to show notification or content (i.e. to receive Beacon interaction content) please make sure that at least the "**notified**" event is tracked.
+<br>**Warning:** Failing in tracking this event cause some NearIT features to not work.
 
-Foreground recipes don't have automatic tracking. You need to track both the "Notified" and the "Engaged" statuses when it's the best appropriate for you scenario.
+
+You can track **default or custom events** using the "**sendTracking**" method:
+ 
 ```java
+// notified - notification received
 NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
-// and
+
+// engaged - notification tapped
 NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
+
+// custom recipe event
+NearItManager.getInstance().sendTracking(trackingInfo, "my awesome custom event");
 ```
-The recipe cooldown feature uses tracking calls to hook its functionality, so failing to properly track user interactions will result in the cooldown not being applied.
 
 ## Content Objects
 
@@ -70,11 +68,9 @@ Here are the public fields for every other one:
     - `message` returns the notification message (it is the same as `notificationMessage`)
     
 - `Content` for the notification with content, with the following getters and fields:
+    - `title` returns the content title
     - `contentString` returns the text content
-    - `video_link` returns the video link string
-    - `getImages_links()` returns a list of *ImageSet* object containing the source links for the images
-    - `upload` returns an Upload object containing a link to a file uploaded on NearIT if any
-    - `audio` returns an Audio object containing a link to an audio file uploaded on NearIT if any
+    - `getImageLink()` returns an *ImageSet* object containing the links for the image
     
 - `Feedback` with the following getters and fields:
     - `question` returns the feedback request string
@@ -111,16 +107,16 @@ We handle the complete emission and redemption coupon cycle in our platform, and
 You can ask the library to fetch the list of all the user current coupons with the method:
 ```java
 NearItManager.getInstance().getCoupons(new CouponListener() {
-            @Override
-            public void onCouponsDownloaded(List<Coupon> list) {
+	@Override
+	public void onCouponsDownloaded(List<Coupon> list) {
 
-            }
+	}
 
-            @Override
-            public void onCouponDownloadError(String s) {
+	@Override
+	public void onCouponDownloadError(String s) {
 
-            }
-        });
+	}
+});
 ```
 The method will also return already redeemed coupons so you get to decide to filter them if necessary.
 
