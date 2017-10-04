@@ -68,11 +68,9 @@ Here are the public fields for every other one:
     - `message` returns the notification message (it is the same as `notificationMessage`)
     
 - `Content` for the notification with content, with the following getters and fields:
+    - `title` returns the content title
     - `contentString` returns the text content
-    - `video_link` returns the video link string
-    - `getImages_links()` returns a list of *ImageSet* object containing the source links for the images
-    - `upload` returns an Upload object containing a link to a file uploaded on NearIT if any
-    - `audio` returns an Audio object containing a link to an audio file uploaded on NearIT if any
+    - `getImageLink()` returns an *ImageSet* object containing the links for the image
     
 - `Feedback` with the following getters and fields:
     - `question` returns the feedback request string

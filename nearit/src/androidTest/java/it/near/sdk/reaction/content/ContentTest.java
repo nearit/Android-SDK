@@ -65,6 +65,7 @@ public class ContentTest {
         assertThat(content.notificationMessage, is(actual.notificationMessage));
         assertThat(content.title, is(actual.title));
         assertThat(content.getCta(), is(actual.getCta()));
+        assertThat(content.getImageLink(), is(actual.getImageLink()));
     }
 
 }
