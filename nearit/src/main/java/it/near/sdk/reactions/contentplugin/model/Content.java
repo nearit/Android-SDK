@@ -14,12 +14,16 @@ import it.near.sdk.morpheusnear.annotations.Relationship;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 public class Content extends ReactionBundle implements Parcelable {
+
+    @Nullable
     @SerializedName("title")
     public String title;
 
+    @Nullable
     @SerializedName("content")
     public String contentString;
 
+    @Nullable
     @SerializedName("link")
     public HashMap<String, Object> link;
 
@@ -48,6 +52,16 @@ public class Content extends ReactionBundle implements Parcelable {
     public Content() {
     }
 
+    @Nullable
+    public ImageSet getImageLink() {
+        if (images_links == null || images_links.isEmpty())
+            return null;
+        return images_links.get(0);
+    }
+
+    /**
+     * @deprecated please use {@link #getImageLink()}
+     */
     @Deprecated
     public List<ImageSet> getImages_links() {
         return images_links;
