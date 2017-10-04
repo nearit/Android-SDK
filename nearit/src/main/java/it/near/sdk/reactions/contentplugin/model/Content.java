@@ -2,10 +2,12 @@ package it.near.sdk.reactions.contentplugin.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import it.near.sdk.morpheusnear.annotations.Relationship;
@@ -17,6 +19,9 @@ public class Content extends ReactionBundle implements Parcelable {
 
     @SerializedName("content")
     public String contentString;
+
+    @SerializedName("link")
+    public HashMap<String, Object> link;
 
     @SerializedName("updated_at")
     public String updated_at;
@@ -38,6 +43,7 @@ public class Content extends ReactionBundle implements Parcelable {
     public String video_link;
 
     private List<ImageSet> images_links;
+    private ContentLink cta;
 
     public Content() {
     }
@@ -45,6 +51,15 @@ public class Content extends ReactionBundle implements Parcelable {
     @Deprecated
     public List<ImageSet> getImages_links() {
         return images_links;
+    }
+
+    @Nullable
+    public ContentLink getCta() {
+        return cta;
+    }
+
+    public void setCta(ContentLink cta) {
+        this.cta = cta;
     }
 
     @Deprecated

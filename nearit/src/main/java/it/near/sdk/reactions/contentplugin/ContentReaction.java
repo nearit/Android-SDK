@@ -16,10 +16,15 @@ import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.CoreReaction;
 import it.near.sdk.reactions.contentplugin.model.Audio;
 import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.ContentLink;
 import it.near.sdk.reactions.contentplugin.model.Image;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.contentplugin.model.Upload;
 import it.near.sdk.recipes.NearNotifier;
+
+import static it.near.sdk.reactions.contentplugin.model.ContentLink.CTA_LABEL_KEY;
+import static it.near.sdk.reactions.contentplugin.model.ContentLink.CTA_URL_KEY;
+import static it.near.sdk.utils.NearUtils.safe;
 
 public class ContentReaction extends CoreReaction<Content> {
     // ---------- content notification plugin ----------
@@ -33,6 +38,7 @@ public class ContentReaction extends CoreReaction<Content> {
     public static final String RES_IMAGES = "images";
     public static final String RES_AUDIOS = "audios";
     public static final String RES_UPLOADS = "uploads";
+
 
     ContentReaction(Cacher<Content> cacher, NearAsyncHttpClient httpClient, NearNotifier nearNotifier, Type cacheType) {
         super(cacher, httpClient, nearNotifier, Content.class, cacheType);
@@ -76,7 +82,7 @@ public class ContentReaction extends CoreReaction<Content> {
     protected void normalizeElement(Content element) {
         List<Image> images = element.images;
         List<ImageSet> imageSets = new ArrayList<>();
-        for (Image image : images) {
+        for (Image image : safe(images)) {
             try {
                 imageSets.add(image.toImageSet());
             } catch (Image.MissingImageException ignored) {
@@ -84,6 +90,19 @@ public class ContentReaction extends CoreReaction<Content> {
             }
         }
         element.setImages_links(imageSets);
+
+        try {
+            if (element.link != null &&
+                    element.link.containsKey(CTA_LABEL_KEY) &&
+                    element.link.containsKey(CTA_URL_KEY)) {
+                String label = (String) element.link.get(CTA_LABEL_KEY);
+                String url = (String) element.link.get(CTA_URL_KEY);
+
+                ContentLink contentLink = new ContentLink(label, url);
+                element.setCta(contentLink);
+            }
+        } catch (Throwable ignored) {}
+
     }
 
     @Override
