@@ -35,6 +35,7 @@ public class ContentTest {
         content.video_link = "video_link";
         content.setId("content_id");
         content.updated_at = "updated@whatever";
+        content.title = "title";
         Audio audio = new Audio();
         HashMap<String, Object> audioMap = Maps.newHashMap();
         audioMap.put("url", "a.mp3");
@@ -59,6 +60,7 @@ public class ContentTest {
         assertThat(content.audio.audioMap, is(actual.audio.audioMap));
         assertThat(content.upload.uploadMap, is(actual.upload.uploadMap));
         assertThat(content.notificationMessage, is(actual.notificationMessage));
+        assertThat(content.title, is(actual.title));
     }
 
 }

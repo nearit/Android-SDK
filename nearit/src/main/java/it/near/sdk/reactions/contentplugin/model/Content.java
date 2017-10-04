@@ -12,28 +12,42 @@ import it.near.sdk.morpheusnear.annotations.Relationship;
 import it.near.sdk.recipes.models.ReactionBundle;
 
 public class Content extends ReactionBundle implements Parcelable {
+    @SerializedName("title")
+    public String title;
+
     @SerializedName("content")
     public String contentString;
-    @SerializedName("video_link")
-    public String video_link;
+
     @SerializedName("updated_at")
     public String updated_at;
+
+    @Deprecated
     @Relationship("images")
     public List<Image> images;
+
+    @Deprecated
     @Relationship("audio")
     public Audio audio;
+
+    @Deprecated
     @Relationship("upload")
     public Upload upload;
+
+    @Deprecated
+    @SerializedName("video_link")
+    public String video_link;
 
     private List<ImageSet> images_links;
 
     public Content() {
     }
 
+    @Deprecated
     public List<ImageSet> getImages_links() {
         return images_links;
     }
 
+    @Deprecated
     public void setImages_links(List<ImageSet> images_links) {
         this.images_links = images_links;
     }
@@ -46,6 +60,7 @@ public class Content extends ReactionBundle implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
+        dest.writeString(title);
         dest.writeString(contentString);
         dest.writeString(video_link);
         dest.writeString(updated_at);
@@ -68,6 +83,7 @@ public class Content extends ReactionBundle implements Parcelable {
 
     public Content(Parcel in) {
         super(in);
+        title = in.readString();
         contentString = in.readString();
         video_link = in.readString();
         updated_at = in.readString();
