@@ -13,6 +13,7 @@ import java.util.HashMap;
 
 import it.near.sdk.reactions.contentplugin.model.Audio;
 import it.near.sdk.reactions.contentplugin.model.Content;
+import it.near.sdk.reactions.contentplugin.model.ContentLink;
 import it.near.sdk.reactions.contentplugin.model.ImageSet;
 import it.near.sdk.reactions.contentplugin.model.Upload;
 
@@ -47,6 +48,8 @@ public class ContentTest {
         upload.uploadMap = uploadMap;
         content.upload = upload;
         content.notificationMessage = "fejrf";
+        ContentLink contentLink = new ContentLink("a", "b");
+        content.setCta(contentLink);
 
         Parcel parcel = Parcel.obtain();
         content.writeToParcel(parcel, 0);
@@ -61,6 +64,7 @@ public class ContentTest {
         assertThat(content.upload.uploadMap, is(actual.upload.uploadMap));
         assertThat(content.notificationMessage, is(actual.notificationMessage));
         assertThat(content.title, is(actual.title));
+        assertThat(content.getCta(), is(actual.getCta()));
     }
 
 }

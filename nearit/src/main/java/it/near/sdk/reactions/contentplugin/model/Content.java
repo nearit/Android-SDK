@@ -81,6 +81,7 @@ public class Content extends ReactionBundle implements Parcelable {
         dest.writeString(updated_at);
         dest.writeString(getId());
         dest.writeTypedList(getImages_links());
+        dest.writeParcelable(cta, flags);
         dest.writeParcelable(audio, flags);
         dest.writeParcelable(upload, flags);
     }
@@ -106,6 +107,7 @@ public class Content extends ReactionBundle implements Parcelable {
         List<ImageSet> list = new ArrayList<ImageSet>();
         in.readTypedList(list, ImageSet.CREATOR);
         setImages_links(list);
+        cta = in.readParcelable(ContentLink.class.getClassLoader());
         audio = in.readParcelable(Audio.class.getClassLoader());
         upload = in.readParcelable(Upload.class.getClassLoader());
     }
