@@ -85,7 +85,6 @@ NearItManager.getInstance().sendEvent(new FeedbackEvent(...), responseHandler);
 ```
     
 - `Coupon` with the following getters and fields:
-    - `name` returns the coupon title
     - `getTitle()` returns the coupon title
     - `description` returns the coupon description
     - `value` returns the value string
