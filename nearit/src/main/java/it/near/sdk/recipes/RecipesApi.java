@@ -212,6 +212,7 @@ public class RecipesApi {
         );
     }
 
+    // this should remain public, for Xamarin bindings
     public interface RecipesListener {
         void onRecipeProcessSuccess(List<Recipe> recipes, boolean online_evaluation_fallback);
 

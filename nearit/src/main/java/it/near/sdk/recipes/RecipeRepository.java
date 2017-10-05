@@ -129,6 +129,7 @@ public class RecipeRepository {
         return getOnlineEv();
     }
 
+    // this should remain public, for Xamarin bindings
     public interface RecipesFetchListener {
         void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged);
     }
