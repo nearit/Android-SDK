@@ -62,7 +62,7 @@ public class RecipeRepository {
         this.recipes = recipes;
     }
 
-    void syncRecipes(final RecipesListener listener) {
+    void syncRecipes(final RecipesFetchListener listener) {
         long timestamp = getCacheTimestamp();
         if (timestamp == TIMESTAMP_DEF_VALUE) {
             refreshRecipes(listener);
@@ -82,7 +82,7 @@ public class RecipeRepository {
         });
     }
 
-    void refreshRecipes(final RecipesListener listener) {
+    void refreshRecipes(final RecipesFetchListener listener) {
         recipesApi.processRecipes(new RecipesApi.RecipesListener() {
             @Override
             public void onRecipeProcessSuccess(List<Recipe> remote_recipes, boolean online_evaluation_fallback) {
@@ -129,7 +129,8 @@ public class RecipeRepository {
         return getOnlineEv();
     }
 
-    interface RecipesListener {
+    // this should remain public, for Xamarin bindings
+    public interface RecipesFetchListener {
         void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged);
     }
 

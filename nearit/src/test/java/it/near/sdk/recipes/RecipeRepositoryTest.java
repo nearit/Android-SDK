@@ -27,7 +27,7 @@ import it.near.sdk.utils.timestamp.NearTimestampChecker;
 import static it.near.sdk.recipes.RecipeRepository.NEAR_RECIPES_REPO_PREFS_NAME;
 import static it.near.sdk.recipes.RecipeRepository.ONLINE_EV;
 import static it.near.sdk.recipes.RecipeRepository.ONLINE_EV_DEFAULT;
-import static it.near.sdk.recipes.RecipeRepository.RecipesListener;
+import static it.near.sdk.recipes.RecipeRepository.RecipesFetchListener;
 import static it.near.sdk.recipes.RecipeRepository.TIMESTAMP;
 import static it.near.sdk.recipes.RecipeRepository.TIMESTAMP_DEF_VALUE;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -100,7 +100,7 @@ public class RecipeRepositoryTest {
 
         assertThat(recipeRepository.getLocalRecipes(), empty());
         assertThat(recipeRepository.shouldEvaluateOnline(), is(ONLINE_EV_DEFAULT));
-        RecipesListener listener = mock(RecipesListener.class);
+        RecipesFetchListener listener = mock(RecipesFetchListener.class);
         recipeRepository.syncRecipes(listener);
         // since we are in a default state, we don't even check for the timestamp remotely
         verifyZeroInteractions(nearTimestampChecker);
@@ -130,7 +130,7 @@ public class RecipeRepositoryTest {
                 recipesApi,
                 currentTime,
                 sp);
-        RecipesListener listener = mock(RecipesListener.class);
+        RecipesFetchListener listener = mock(RecipesFetchListener.class);
         recipeRepository.syncRecipes(listener);
         verifyZeroInteractions(recipesApi);
         verify(nearTimestampChecker, atLeastOnce()).checkRecipeTimeStamp(eq(upToDateTimestamp), any(NearTimestampChecker.SyncCheckListener.class));
@@ -156,7 +156,7 @@ public class RecipeRepositoryTest {
                 recipesApi,
                 currentTime,
                 sp);
-        RecipesListener listener = mock(RecipesListener.class);
+        RecipesFetchListener listener = mock(RecipesFetchListener.class);
         recipeRepository.syncRecipes(listener);
         verify(nearTimestampChecker,atLeastOnce()).checkRecipeTimeStamp(eq(notUpToDateTimestamp), any(NearTimestampChecker.SyncCheckListener.class));
         verify(recipesApi, atLeastOnce()).processRecipes(any(RecipesApi.RecipesListener.class));
@@ -175,7 +175,7 @@ public class RecipeRepositoryTest {
         when(sp.getLong(TIMESTAMP, TIMESTAMP_DEF_VALUE)).thenReturn(9876L);
         boolean online_ev = true;
         when(sp.getBoolean(ONLINE_EV, ONLINE_EV_DEFAULT)).thenReturn(online_ev);
-        RecipesListener listener = mock(RecipesListener.class);
+        RecipesFetchListener listener = mock(RecipesFetchListener.class);
         when(cache.loadList(any(Type.class))).thenReturn(dummyRecipes);
         // we instantiate again, so that the cache loading results are actually loaded in the constructor
         recipeRepository = new RecipeRepository(
