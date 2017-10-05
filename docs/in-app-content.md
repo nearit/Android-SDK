@@ -70,6 +70,7 @@ Here are the public fields for every other one:
 - `Content` for the notification with content, with the following getters and fields:
     - `title` returns the content title
     - `contentString` returns the text content
+    - `cta` returns a `ContentLink` with a label and url fields.
     - `getImageLink()` returns an *ImageSet* object containing the links for the image
     
 - `Feedback` with the following getters and fields:
