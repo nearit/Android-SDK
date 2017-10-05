@@ -25,6 +25,11 @@ import it.near.sdk.recipes.models.ReactionBundle;
  */
 public class Coupon extends ReactionBundle implements Parcelable {
     private static final String COUPON_DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
+    /**
+     * @deprecated use {@link #getTitle()}
+     */
+    @Deprecated
     @SerializedName("name")
     public String name;
     @SerializedName("description")
@@ -46,6 +51,11 @@ public class Coupon extends ReactionBundle implements Parcelable {
     private ImageSet iconSet;
 
     public Coupon() {
+    }
+
+    @Nullable
+    public String getTitle() {
+        return name;
     }
 
     @Nullable
