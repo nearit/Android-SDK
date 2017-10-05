@@ -280,7 +280,7 @@ public class RecipesManagerTest {
         doAnswer(new Answer() {
                      @Override
                      public Object answer(InvocationOnMock invocation) throws Throwable {
-                         ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(
+                         ((RecipeRepository.RecipesFetchListener) invocation.getArguments()[0]).onGotRecipes(
                                  Lists.<Recipe>newArrayList(),
                                  true,
                                  false
@@ -288,7 +288,7 @@ public class RecipesManagerTest {
                          return null;
                      }
                  }
-        ).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesListener.class));
+        ).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesFetchListener.class));
 
         recipesManager.handleTriggerRequest(triggerRequest);
         verifyZeroInteractions(recipeReactionHandler);
@@ -315,14 +315,14 @@ public class RecipesManagerTest {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 when(recipeRepository.getLocalRecipes()).thenReturn(Lists.newArrayList(matchingRecipe));
-                ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(
+                ((RecipeRepository.RecipesFetchListener) invocation.getArguments()[0]).onGotRecipes(
                         Lists.newArrayList(matchingRecipe),
                         false,
                         true
                 );
                 return null;
             }
-        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesListener.class));
+        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesFetchListener.class));
 
         // the recipes are validated
         when(recipeValidationFilter.filterRecipes(any(List.class))).then(returnsFirstArg());
@@ -353,14 +353,14 @@ public class RecipesManagerTest {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(
+                ((RecipeRepository.RecipesFetchListener) invocation.getArguments()[0]).onGotRecipes(
                         Lists.<Recipe>newArrayList(),
                         true,
                         true
                 );
                 return null;
             }
-        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesListener.class));
+        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesFetchListener.class));
 
         // mock evaluation by pulse
         doAnswer(new Answer() {
@@ -425,20 +425,20 @@ public class RecipesManagerTest {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(recipes, online_ev_fallback, data_changed);
+                ((RecipeRepository.RecipesFetchListener) invocation.getArguments()[0]).onGotRecipes(recipes, online_ev_fallback, data_changed);
                 return null;
             }
-        }).when(recipeRepository).refreshRecipes(any(RecipeRepository.RecipesListener.class));
+        }).when(recipeRepository).refreshRecipes(any(RecipeRepository.RecipesFetchListener.class));
     }
 
     private void mockSyncRequest(final List<Recipe> recipes, final boolean online_ev_fallback, final boolean data_changed) {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                ((RecipeRepository.RecipesListener) invocation.getArguments()[0]).onGotRecipes(recipes, online_ev_fallback, data_changed);
+                ((RecipeRepository.RecipesFetchListener) invocation.getArguments()[0]).onGotRecipes(recipes, online_ev_fallback, data_changed);
                 return null;
             }
-        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesListener.class));
+        }).when(recipeRepository).syncRecipes(any(RecipeRepository.RecipesFetchListener.class));
     }
 
 }

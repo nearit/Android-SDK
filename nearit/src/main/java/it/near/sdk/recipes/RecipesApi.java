@@ -212,7 +212,7 @@ public class RecipesApi {
         );
     }
 
-    interface RecipesListener {
+    public interface RecipesListener {
         void onRecipeProcessSuccess(List<Recipe> recipes, boolean online_evaluation_fallback);
 
         void onRecipeProcessError();

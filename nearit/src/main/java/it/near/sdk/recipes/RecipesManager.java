@@ -81,7 +81,7 @@ public class RecipesManager implements RecipeEvaluator {
      * Plus a listener will be notified of the refresh process.
      */
     public void refreshConfig(final RecipeRefreshListener listener) {
-        recipeRepository.refreshRecipes(new RecipeRepository.RecipesListener() {
+        recipeRepository.refreshRecipes(new RecipeRepository.RecipesFetchListener() {
             @Override
             public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                 listener.onRecipesRefresh();
@@ -93,7 +93,7 @@ public class RecipesManager implements RecipeEvaluator {
      * Sync the recipe configuration, only if the cache is cold.
      */
     public void syncConfig(final RecipeRefreshListener listener) {
-        recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
+        recipeRepository.syncRecipes(new RecipeRepository.RecipesFetchListener() {
             @Override
             public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                 listener.onRecipesRefresh();
@@ -223,7 +223,7 @@ public class RecipesManager implements RecipeEvaluator {
         if (recipeRepository.shouldEvaluateOnline()) {
             onlinePulseEvaluation(triggerRequest);
         } else {
-            recipeRepository.syncRecipes(new RecipeRepository.RecipesListener() {
+            recipeRepository.syncRecipes(new RecipeRepository.RecipesFetchListener() {
                 @Override
                 public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
                     if (dataChanged) {
