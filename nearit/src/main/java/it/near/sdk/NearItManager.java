@@ -279,9 +279,14 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         setProfileId(null);
     }
 
+    @Deprecated
     @Nullable
     public String getProfileId() {
         return nearItUserProfile.getProfileId();
+    }
+
+    public void getProfileId(NearItUserProfile.ProfileFetchListener listener) {
+        nearItUserProfile.getProfileId(context, listener);
     }
 
     public void setUserData(String key, String value, UserDataNotifier listener) {

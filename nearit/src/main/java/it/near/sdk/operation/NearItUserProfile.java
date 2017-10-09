@@ -67,16 +67,25 @@ public class NearItUserProfile {
         return globalConfig.getProfileId();
     }
 
-    public void getProfileId(ProfileFetchListener listener) {
+    public void getProfileId(Context context, final ProfileFetchListener listener) {
         String profileId = globalConfig.getProfileId();
         if (profileId != null) {
             listener.onProfileId(profileId);
-            return;
         } else {
             if (profileCreationBusy) {
                 profileFetchListener = listener;
             } else {
+                createNewProfile(context, new ProfileCreationListener() {
+                    @Override
+                    public void onProfileCreated(boolean created, String profileId) {
+                        listener.onProfileId(profileId);
+                    }
 
+                    @Override
+                    public void onProfileCreationError(String error) {
+                        listener.onError("Couldn't create profile");
+                    }
+                });
             }
         }
     }
@@ -119,7 +128,7 @@ public class NearItUserProfile {
             httpClient.nearPost(url.toString(), requestBody, new NearJsonHttpResponseHandler() {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "got profile: " + response.toString());
+                    NearLog.d(TAG, "profile created: " + response.toString());
 
                     String profileId = null;
                     try {
@@ -129,6 +138,7 @@ public class NearItUserProfile {
                         nearItManager.updateInstallation();
                         nearItManager.getRecipesManager().refreshConfig();
                         profileCreationBusy = false;
+                        notifyFetchListener(profileId);
                         listener.onProfileCreated(true, profileId);
                     } catch (JSONException e) {
                         profileCreationBusy = false;
