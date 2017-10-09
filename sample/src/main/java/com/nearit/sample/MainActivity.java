@@ -14,8 +14,7 @@ import android.widget.Toast;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
-import it.near.sdk.logging.NearLog;
-import it.near.sdk.operation.NearItUserProfile;
+import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
@@ -119,20 +118,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     private void profileMyUser() {
-
-        NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
-            @Override
-            public void onProfileId(String profileId) {
-                NearLog.d(TAG, "profile reset: " + profileId);
-            }
-
-            @Override
-            public void onError(String error) {
-
-            }
-        });
-
-        /*NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
+        NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
             @Override
             public void onDataCreated() {
                 Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
@@ -142,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             public void onDataNotSetError(String error) {
 
             }
-        });*/
+        });
     }
 
     @Override

@@ -4,13 +4,23 @@ NearIT creates an anonymous profile for every user of your app. You can choose t
 
 ## Send User-Data to NearIT
 
-We automatically create an anonymous profile for every installation of the app. You can check that a profile was created by checking the existance of a profile ID.
+We automatically create an anonymous profile for every installation of the app. You can get your profileId like this:
 ```java
-String profileId = NearItManager.getInstance().getProfileId();
+NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
+            @Override
+            public void onProfileId(String profileId) {
+                NearLog.d(TAG, "your profile: " + profileId);
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
 ```
 If the result is null, it means that no profile is associated with the app installation (probably due to a network error). The SDK will re-try to create a profile at every start, and every time a new user data is set.
 
-After the profile is created set user data:
+After the profile is created, you can set user data:
 ```java
 NearItManager.getInstance().setUserData("name", "John", new UserDataNotifier() {
     @Override
@@ -47,10 +57,19 @@ If you try to set user data before creating a profile the error callback will be
 
 If you want to reset your profile use this method:
 ```java
-NearItManager.getInstance().resetProfileId()
+NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
+            @Override
+            public void onProfileId(String profileId) {
+                NearLog.d(TAG, "profile reset: " + profileId);
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
 ```
-Further calls to *getProfileId()* will return null.
-A creation of a new profile after the reset will create a profile with no user data.
+Be aware that this profile will have no user data.
 
 ## Save the profile ID!
 
@@ -62,7 +81,17 @@ If you can, we recommend you to store the NearIT profileID in your CRM database 
 
 Getting the local profile ID of an user is easy:
 ```java
-String profileId = NearItManager.getInstance().getProfileId();
+NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
+            @Override
+            public void onProfileId(String profileId) {
+                NearLog.d(TAG, "save this on your CRM: " + profileId);
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
 ```
 
 
