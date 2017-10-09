@@ -37,6 +37,9 @@ public class NearItUserProfile {
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
     private ProfileUpdateListener profileUpdateListener;
+    private ProfileFetchListener profileFetchListener;
+
+    private boolean profileCreationBusy = false;
 
     public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
         this.globalConfig = globalConfig;
@@ -58,9 +61,24 @@ public class NearItUserProfile {
         }
     }
 
+    @Deprecated
     @Nullable
     public String getProfileId() {
         return globalConfig.getProfileId();
+    }
+
+    public void getProfileId(ProfileFetchListener listener) {
+        String profileId = globalConfig.getProfileId();
+        if (profileId != null) {
+            listener.onProfileId(profileId);
+            return;
+        } else {
+            if (profileCreationBusy) {
+                profileFetchListener = listener;
+            } else {
+
+            }
+        }
     }
 
     /**
@@ -70,12 +88,15 @@ public class NearItUserProfile {
      * @param listener interface for success or failure on profile creation.
      */
     public void createNewProfile(final Context context, final ProfileCreationListener listener) {
+        profileCreationBusy = true;
         final NearItManager nearItManager = NearItManager.getInstance();
         final GlobalConfig globalConfig = nearItManager.globalConfig;
         String profileId = globalConfig.getProfileId();
         if (profileId != null) {
             // profile already created
             nearItManager.updateInstallation();
+            profileCreationBusy = false;
+            notifyFetchListener(profileId);
             listener.onProfileCreated(false, profileId);
             return;
         }
@@ -84,7 +105,9 @@ public class NearItUserProfile {
         try {
             requestBody = buildProfileCreationRequestBody(globalConfig);
         } catch (JSONException e) {
+            profileCreationBusy = false;
             listener.onProfileCreationError("Can't compute request body");
+            notifyFetchListener();
             return;
         }
 
@@ -105,9 +128,11 @@ public class NearItUserProfile {
                         // update the installation with the profile id
                         nearItManager.updateInstallation();
                         nearItManager.getRecipesManager().refreshConfig();
-
+                        profileCreationBusy = false;
                         listener.onProfileCreated(true, profileId);
                     } catch (JSONException e) {
+                        profileCreationBusy = false;
+                        notifyFetchListener();
                         listener.onProfileCreationError("unknown server format");
                     }
                 }
@@ -115,12 +140,30 @@ public class NearItUserProfile {
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
                     NearLog.d(TAG, "profile erro: " + statusCode);
+                    profileCreationBusy = false;
+                    notifyFetchListener();
                     listener.onProfileCreationError("network error: " + statusCode);
                 }
 
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
+            profileCreationBusy = false;
+            notifyFetchListener();
             listener.onProfileCreationError("error: impossible to make a request");
+        }
+    }
+
+    private void notifyFetchListener(String profileId) {
+        if (profileFetchListener != null) {
+            profileFetchListener.onProfileId(profileId);
+            profileFetchListener = null;
+        }
+    }
+
+    private void notifyFetchListener() {
+        if (profileFetchListener != null) {
+            profileFetchListener.onError("Couldn't fetch profile");
+            profileFetchListener = null;
         }
     }
 
@@ -255,5 +298,11 @@ public class NearItUserProfile {
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             listener.onDataNotSetError("error: impossible to send request");
         }
+    }
+
+    public interface ProfileFetchListener {
+        void onProfileId(String profileId);
+
+        void onError(String error);
     }
 }
