@@ -41,14 +41,14 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPermissionButton = (Button) findViewById(R.id.permission_button);
+        requestPermissionButton = findViewById(R.id.permission_button);
         requestPermissionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
             }
         });
-        refreshRecipesButton = (Button) findViewById(R.id.refresh_button);
+        refreshRecipesButton = findViewById(R.id.refresh_button);
         refreshRecipesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,8 +56,8 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
             }
         });
 
-        ageEditText = (EditText) findViewById(R.id.ageEditText);
-        setAgeButtom = (Button) findViewById(R.id.ageSetButton);
+        ageEditText = findViewById(R.id.ageEditText);
+        setAgeButtom = findViewById(R.id.ageSetButton);
         setAgeButtom.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
