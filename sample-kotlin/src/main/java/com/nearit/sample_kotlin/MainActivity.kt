@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
-import android.view.View
 import android.widget.Toast
 import it.near.sdk.NearItManager
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener
@@ -38,17 +37,22 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        permission_button.setOnClickListener { requestPermissions() }
+        refresh_button.setOnClickListener { refreshNearRecipes() }
+        ageSetButton.setOnClickListener { profileMyUser() }
+        loginButton.setOnClickListener { userLogInAndOut() }
+
         fakeCrm = FakeCrm()
 
         setLoginButtonText(isUserLoggedIn)
         NearItManager.getInstance().addProximityListener(this@MainActivity)
     }
 
-    fun requestPermissions(view: View) {
+    private fun requestPermissions() {
         startActivityForResult(PermissionsActivity.createIntent(this@MainActivity), NEAR_PERMISSION_REQUEST)
     }
 
-    fun refreshNearRecipes(view: View) {
+    private fun refreshNearRecipes() {
         NearItManager.getInstance().refreshConfigs(object : RecipeRefreshListener {
             override fun onRecipesRefresh() {
                 Toast.makeText(this@MainActivity, "Recipes refreshed", Toast.LENGTH_SHORT).show()
@@ -60,7 +64,7 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
         })
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == NEAR_PERMISSION_REQUEST && resultCode == Activity.RESULT_OK) {
             NearItManager.getInstance().startRadar()
@@ -89,7 +93,7 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
         }
     }
 
-    fun profileMyUser(view: View) {
+    private fun profileMyUser() {
         NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, ageEditText.text.toString(), object : UserDataNotifier {
             override fun onDataCreated() {
                 Toast.makeText(this@MainActivity, "Profile updated", Toast.LENGTH_SHORT).show()
@@ -101,7 +105,7 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
         })
     }
 
-    fun userLogInAndOut(view: View) {
+    private fun userLogInAndOut() {
         // this is an example crm integration
         if (isUserLoggedIn) {
             logout()
