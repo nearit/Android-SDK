@@ -275,20 +275,31 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         updateInstallation();
     }
 
+    @Deprecated
     public void resetProfileId() {
         setProfileId(null);
     }
 
+    public void resetProfileId(@NonNull NearItUserProfile.ProfileFetchListener listener) {
+        nearItUserProfile.setProfileId(null);
+        nearItUserProfile.getProfileId(context, listener);
+    }
+
+    @Deprecated
     @Nullable
     public String getProfileId() {
         return nearItUserProfile.getProfileId();
     }
 
-    public void setUserData(String key, String value, UserDataNotifier listener) {
+    public void getProfileId(@NonNull NearItUserProfile.ProfileFetchListener listener) {
+        nearItUserProfile.getProfileId(context, listener);
+    }
+
+    public void setUserData(String key, String value, @NonNull UserDataNotifier listener) {
         nearItUserProfile.setUserData(context, key, value, listener);
     }
 
-    public void setBatchUserData(Map<String, String> valuesMap, UserDataNotifier listener) {
+    public void setBatchUserData(Map<String, String> valuesMap, @NonNull UserDataNotifier listener) {
         nearItUserProfile.setBatchUserData(context, valuesMap, listener);
     }
 
