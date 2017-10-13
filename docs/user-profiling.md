@@ -2,25 +2,9 @@
 
 NearIT creates an anonymous profile for every user of your app. You can choose to add data to user profile. This data will be available inside recipes to allow the creation of user targets.
 
-## Send User-Data to NearIT
+## Add User-data to NearIT
 
-We automatically create an anonymous profile for every installation of the app. You can get your profileId like this:
-```java
-NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
-            @Override
-            public void onProfileId(String profileId) {
-                NearLog.d(TAG, "your profile: " + profileId);
-            }
-
-            @Override
-            public void onError(String error) {
-
-            }
-        });
-```
-If the result is null, it means that no profile is associated with the app installation (probably due to a network error). The SDK will re-try to create a profile at every start, and every time a new user data is set.
-
-After the profile is created, you can set user data:
+You can set user data with this method:
 ```java
 NearItManager.getInstance().setUserData("name", "John", new UserDataNotifier() {
     @Override
@@ -53,23 +37,6 @@ NearItManager.getInstance().setBatchUserData(userDataMap, new UserDataNotifier()
 	}
 });
 ```
-If you try to set user data before creating a profile the error callback will be called.
-
-If you want to reset your profile use this method:
-```java
-NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
-            @Override
-            public void onProfileId(String profileId) {
-                NearLog.d(TAG, "profile reset: " + profileId);
-            }
-
-            @Override
-            public void onError(String error) {
-
-            }
-        });
-```
-Be aware that this profile will have no user data.
 
 ## Save the profile ID!
 
