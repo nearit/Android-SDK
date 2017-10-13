@@ -73,13 +73,12 @@ Be aware that this profile will have no user data.
 
 ## Save the profile ID!
 
-If you can, we recommend you to store the NearIT profileID in your CRM database for two main reasons:
+If you can, we recommend you to **store the NearIT profileID** in your CRM database for two main reasons:
 
 - it allows you to link our analytics to your users
 - it allows to associate all the devices of an user to the same NearIT profile.
 
-
-Getting the local profile ID of an user is easy:
+You probably have a sign in system in your app, you should request the profile ID from NearIT before the user signs in:
 ```java
 NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
             @Override
@@ -94,8 +93,22 @@ NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListe
         });
 ```
 
-
-If you detect that your user already has a NearIT profileID in your CRM database (i.e. after a login), you should manually write it on a local app installation:
+If you detect that your user already has a NearIT profile ID in your CRM database (i.e. after a sign in), you should pass the profile ID to NearIT:
 ```java
 NearItManager.getInstance().setProfileId(profileId);
+```
+
+Whenever a user **sings out** from your app, you should reset the NearIT profileID:
+```java
+NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
+            @Override
+            public void onProfileId(String profileId) {
+                // a new empty profile was generated
+            }
+
+            @Override
+            public void onError(String error) {
+                // your local profile was wiped, but no new profile was created
+            }
+        });
 ```
