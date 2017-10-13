@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    tools:context="com.nearit.sample.MainActivity">
+    tools:context="com.nearit.sample_kotlin.MainActivity">
 
     <Button
         android:id="@+id/permission_button"
