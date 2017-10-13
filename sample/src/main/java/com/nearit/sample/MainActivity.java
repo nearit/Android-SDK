@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
+import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -34,42 +35,33 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
      */
     private static final String KEY_FOR_AGE_FIELD = "age";
 
-    Button requestPermissionButton, setAgeButtom, refreshRecipesButton;
+    private boolean isUserLoggedIn = false;
+    private FakeCrm fakeCrm;
+
+    Button loginButton;
     EditText ageEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        requestPermissionButton = findViewById(R.id.permission_button);
-        requestPermissionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
-            }
-        });
-        refreshRecipesButton = findViewById(R.id.refresh_button);
-        refreshRecipesButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                refreshNearRecipes();
-            }
-        });
+
+        fakeCrm = new FakeCrm();
 
         ageEditText = findViewById(R.id.ageEditText);
-        setAgeButtom = findViewById(R.id.ageSetButton);
-        setAgeButtom.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                profileMyUser();
-            }
-        });
+        loginButton = findViewById(R.id.loginButton);
+
+        setLoginButtonText(isUserLoggedIn);
 
         NearItManager.getInstance().addProximityListener(this);
 
     }
 
-    private void refreshNearRecipes() {
+    public void requestPermissions(View view) {
+        startActivityForResult(PermissionsActivity.createIntent(MainActivity.this), NEAR_PERMISSION_REQUEST);
+    }
+
+    public void refreshNearRecipes(View view) {
         NearItManager.getInstance().refreshConfigs(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
@@ -117,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         }
     }
 
-    private void profileMyUser() {
+    public void profileMyUser(View view) {
         NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
             @Override
             public void onDataCreated() {
@@ -129,6 +121,68 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
             }
         });
+    }
+
+    public void userLogInAndOut(View view) {
+        // this is an example crm integration
+        if (isUserLoggedIn) {
+            logout();
+        } else {
+            login();
+        }
+    }
+
+    private void logout() {
+        fakeCrm.logout();
+        NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
+            @Override
+            public void onProfileId(String profileId) {
+                // a new empty profile was generated
+            }
+
+            @Override
+            public void onError(String error) {
+                // your local profile was wiped, but no new profile was created
+            }
+        });
+        isUserLoggedIn = false;
+        setLoginButtonText(isUserLoggedIn);
+    }
+
+    private void login() {
+        fakeCrm.login("username", "password", new FakeCrm.LoginListener() {
+
+            @Override
+            public void onLogin(FakeCrm.UserData userData) {
+                isUserLoggedIn = true;
+                setLoginButtonText(isUserLoggedIn);
+                String nearProfileFromServer = userData.nearProfileId;
+                if (nearProfileFromServer == null) {
+                    // user needs a near profile
+                    NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
+
+                        @Override
+                        public void onProfileId(String profileId) {
+                            fakeCrm.saveProfileId(profileId);
+                        }
+
+                        @Override
+                        public void onError(String error) {}
+                    });
+                } else {
+                    // user already has a near profile
+                    NearItManager.getInstance().setProfileId(nearProfileFromServer);
+                }
+            }
+        });
+    }
+
+    private void setLoginButtonText(boolean isUserLoggedIn) {
+        if (isUserLoggedIn) {
+            loginButton.setText("logout");
+        } else {
+            loginButton.setText("login");
+        }
     }
 
     @Override

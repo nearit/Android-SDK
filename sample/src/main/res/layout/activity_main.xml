@@ -12,7 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:text="Start radar" />
+        android:text="Start radar"
+        android:onClick="requestPermissions"/>
 
     <Button
         android:id="@+id/refresh_button"
@@ -20,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_below="@+id/permission_button"
-        android:text="Refresh recipes"/>
+        android:text="Refresh recipes"
+        android:onClick="refreshNearRecipes"/>
 
     <EditText
         android:id="@+id/ageEditText"
@@ -35,7 +37,15 @@
         android:id="@+id/ageSetButton"
         android:layout_below="@+id/refresh_button"
         android:layout_toRightOf="@id/ageEditText"
-        android:text="Set Age"/>
+        android:text="Set Age"
+        android:onClick="profileMyUser"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginButton"
+        android:layout_below="@id/ageSetButton"
+        android:onClick="userLogInAndOut"/>
 
 
 </RelativeLayout>
