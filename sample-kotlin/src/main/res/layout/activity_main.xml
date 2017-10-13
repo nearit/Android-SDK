@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    tools:context="com.nearit.sample.MainActivity">
+
+    <Button
+        android:id="@+id/permission_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:text="Start radar"
+        android:onClick="requestPermissions"/>
+
+    <Button
+        android:id="@+id/refresh_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:layout_below="@+id/permission_button"
+        android:text="Refresh recipes"
+        android:onClick="refreshNearRecipes"/>
+
+    <EditText
+        android:id="@+id/ageEditText"
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/refresh_button"
+        android:inputType="number" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ageSetButton"
+        android:layout_below="@+id/refresh_button"
+        android:layout_toRightOf="@id/ageEditText"
+        android:text="Set Age"
+        android:onClick="profileMyUser"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loginButton"
+        android:layout_below="@id/ageSetButton"
+        android:onClick="userLogInAndOut"/>
+
+
+</RelativeLayout>
