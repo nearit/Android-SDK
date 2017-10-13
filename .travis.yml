@@ -14,6 +14,7 @@ android:
     - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
     - platform-tools
     - build-tools-26.0.1
+    - build-tools-26.0.2
     - tools
     - android-26
     - extra-google-m2repository
