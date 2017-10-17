@@ -1,11 +1,6 @@
 package it.near.sdk.operation;
 
-
 import android.os.Handler;
-
-/**
- * Created by Federico Boschini on 16/10/17.
- */
 
 public class UserDataTimer {
 

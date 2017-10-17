@@ -1,6 +1,7 @@
 package it.near.sdk.operation;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,11 +18,7 @@ import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
-/**
- * Created by Federico Boschini on 16/10/17.
- */
-
-public class NearItUserDataAPI {
+class NearItUserDataAPI {
 
     private static final String TAG = "NearItUserDataAPI";
     private static final String PLUGIN_NAME = "congrego";
@@ -31,62 +28,54 @@ public class NearItUserDataAPI {
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
 
-    private boolean isBusy = false;
-
-    public NearItUserDataAPI(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
+    NearItUserDataAPI(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
         this.globalConfig = globalConfig;
         this.httpClient = httpClient;
     }
 
-    public boolean getIsBusy() {
-        return this.isBusy;
-    }
-
-    public void sendDataPoints(HashMap<String, Object> userData, final UserDataSendListener listener) {
+    void sendDataPoints(@NonNull final HashMap<String, String> userData, final UserDataSendListener listener) {
         String profileId = globalConfig.getProfileId();
+        HashMap<String, Object> userDataConv = new HashMap<>();
+        userDataConv.putAll(userData);
         if (profileId != null) {
-            if (!isBusy) {
-                isBusy = true;
+            String reqBody;
+            try {
+                reqBody = NearJsonAPIUtils.toJsonAPI("data_points", userDataConv);
+            } catch (JSONException e) {
+                NearLog.d(TAG, "Error creating userdata request");
+                listener.onSendingFailure();
+                return;
+            }
 
-                final HashMap<String, Object> userDataCopy = new HashMap<>(userData);
+            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(PLUGIN_NAME)
+                    .appendPath(PROFILE_RES_TYPE)
+                    .appendPath(profileId)
+                    .appendPath(DATA_POINTS_RES_TYPE).build();
 
-                String reqBody = null;
-                try {
-                    reqBody = NearJsonAPIUtils.toJsonAPI("data_points", userDataCopy);
-                } catch (JSONException e) {
-                    NearLog.d(TAG, "Error creating userdata request");
-                }
+            try {
+                httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        NearLog.d(TAG, "datapoint created: " + response.toString());
+                        listener.onSendingSuccess(userData);
+                    }
 
-                Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                        .appendPath(PLUGIN_NAME)
-                        .appendPath(PROFILE_RES_TYPE)
-                        .appendPath(profileId)
-                        .appendPath(DATA_POINTS_RES_TYPE).build();
-
-                try {
-                    httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            NearLog.d(TAG, "datapoint created: " + response.toString());
-                            listener.onSendingSuccess(userDataCopy);
-                        }
-
-                        @Override
-                        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                            NearLog.d(TAG, "datapoint not created, network error: " + statusCode);
-                            listener.onSendingFailure();
-                        }
-                    });
-                    isBusy = false;
-                } catch (AuthenticationException | UnsupportedEncodingException e) {
-                    NearLog.d(TAG, "error: impossible to send requests");
-                }
+                    @Override
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                        NearLog.d(TAG, "datapoint not created, network error: " + statusCode);
+                        listener.onSendingFailure();
+                    }
+                });
+            } catch (AuthenticationException | UnsupportedEncodingException e) {
+                NearLog.d(TAG, "error: impossible to send requests");
             }
         }
     }
 
-    public interface UserDataSendListener {
-        void onSendingSuccess(HashMap<String, Object> sentData);
+    interface UserDataSendListener {
+        void onSendingSuccess(HashMap<String, String> sentData);
+
         void onSendingFailure();
     }
 }

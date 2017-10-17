@@ -2,65 +2,112 @@ package it.near.sdk.operation;
 
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
+import android.support.annotation.Nullable;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
-
-/**
- * Created by Federico Boschini on 16/10/17.
- */
+import java.util.Iterator;
 
 public class UserDataCacheManager {
 
-    private static final String SP_MAP_KEY = "NearItUserDataMap";
+    static final String SP_MAP_KEY = "NearItUserDataMap";
 
     private final SharedPreferences sharedPreferences;
-    private final Gson gson;
+    private HashMap<String, String> userData;
 
-    public UserDataCacheManager(SharedPreferences sharedPreferences, Gson gson) {
+    public UserDataCacheManager(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
-        this.gson = gson;
+        userData = new HashMap<>();
     }
 
-    boolean hasQueue() {
-        return !loadUserDataFromCache().isEmpty();
+    boolean hasData() {
+        return !userData.isEmpty();
     }
 
-    HashMap<String, Object> loadUserDataFromCache() {
+    void setUserData(String key, String value) {
+        if (!userData.containsKey(key)) {
+            userData.put(key, value);
+        } else if (!userData.get(key).equals(value)) {
+            userData.put(key, value);
+        }
+        saveUserDataToSP(key, value);
+    }
+
+    @SuppressLint("ApplySharedPref")
+    private void saveUserDataToSP(String key, String value) {
+        HashMap<String, String> storedData = loadUserDataFromSP();
+        if (!storedData.containsKey(key)) {
+            storedData.put(key, value);
+        } else if (!storedData.get(key).equals(value)) {
+            storedData.put(key, value);
+        }
+        String stringMap = serialize(storedData);
+        sharedPreferences.edit().putString(SP_MAP_KEY, stringMap).commit();
+    }
+
+    HashMap<String, String> getUserData() {
+        if (userData.isEmpty()) {
+            userData = loadUserDataFromSP();
+        }
+        return userData;
+    }
+
+    private HashMap<String, String> loadUserDataFromSP() {
         String stringMap = sharedPreferences.getString(SP_MAP_KEY, null);
-        Type type = new TypeToken<HashMap<String, Object>>() {}.getType();
-        HashMap<String, Object> map = gson.fromJson(stringMap, type);
+        HashMap<String, String> map = deserialize(stringMap);
         return map;
     }
 
     @SuppressLint("ApplySharedPref")
-    void saveUserDataToCache(String key, String value) {
-        HashMap<String, Object> cachedData = loadUserDataFromCache();
-        if(cachedData.get(key) != value) {
-            cachedData.put(key, value);
-            String stringMap = gson.toJson(cachedData);
-            sharedPreferences.edit().putString(SP_MAP_KEY, stringMap).commit();
-        }
-    }
-
-    @SuppressLint("ApplySharedPref")
-    void removeSentData(HashMap<String, Object> sentData) {
-        HashMap<String, Object> cachedData = loadUserDataFromCache();
-        for (String key: sentData.keySet()) {
-            if (cachedData.get(key) == sentData.get(key)) {
-                cachedData.remove(key);
+    boolean removeSentData(HashMap<String, String> sentData) {
+        boolean removed = false;
+        HashMap<String, String> storedData = loadUserDataFromSP();
+        for (String key : sentData.keySet()) {
+            if (userData.containsKey(key) && userData.get(key).equals(sentData.get(key))) {
+                userData.remove(key);
+                if (storedData.containsKey(key) && storedData.get(key).equals(sentData.get(key))) {
+                    storedData.remove(key);
+                }
+                removed = true;
             }
         }
-        String stringMap = gson.toJson(cachedData);
-        sharedPreferences.edit().putString(SP_MAP_KEY, stringMap).commit();
+        if (removed) {
+            String stringMap = serialize(storedData);
+            sharedPreferences.edit().putString(SP_MAP_KEY, stringMap).commit();
+        }
+        return removed;
     }
 
     @SuppressLint("ApplySharedPref")
-    void removeAllDataFromCache() {
-        sharedPreferences.edit().remove(SP_MAP_KEY).commit();
+    void removeAllData() {
+        userData.clear();
+        sharedPreferences.edit().clear().commit();
+
     }
 
+    private String serialize(HashMap<String, String> data) {
+        JSONObject jsonObject = new JSONObject(data);
+        return jsonObject.toString();
+    }
+
+    private HashMap<String, String> deserialize(@Nullable String serializedData) {
+        HashMap<String, String> map = new HashMap<>();
+
+        if (serializedData != null) {
+            try {
+                JSONObject jsonObject = new JSONObject(serializedData);
+                Iterator<?> keys = jsonObject.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    String value = jsonObject.getString(key);
+                    map.put(key, value);
+                }
+            } catch (JSONException ignored) {
+
+            }
+        }
+        return map;
+    }
 }

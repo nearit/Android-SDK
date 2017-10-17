@@ -2,10 +2,6 @@ package it.near.sdk.operation;
 
 import java.util.HashMap;
 
-/**
- * Created by Federico Boschini on 16/10/17.
- */
-
 public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListener {
 
     private static final String TAG = "NearItUserProfiler";
@@ -14,18 +10,14 @@ public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListene
     private final NearItUserDataAPI userDataAPI;
     private final UserDataTimer timer;
 
-    private HashMap<String, Object> userData;
+    private HashMap<String, String> userData;
     private boolean hasTimer = false;
+    private boolean isBusy = false;
 
-
-    public NearItUserProfiler(UserDataCacheManager userDataCacheManager, NearItUserDataAPI userDataAPI, UserDataTimer timer) {
+    NearItUserProfiler(UserDataCacheManager userDataCacheManager, NearItUserDataAPI userDataAPI, UserDataTimer timer) {
         this.userDataCacheManager = userDataCacheManager;
         this.userDataAPI = userDataAPI;
         this.timer = timer;
-    }
-
-    public void clearUserData() {
-        userDataCacheManager.removeAllDataFromCache();
     }
 
     public void setUserData(String key, String value) {
@@ -38,12 +30,17 @@ public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListene
                 }
             });
         }
-        userDataCacheManager.saveUserDataToCache(key, value);
+        userDataCacheManager.setUserData(key, value);
     }
 
     public void sendDataPoints() {
-        userData = userDataCacheManager.loadUserDataFromCache();
+        userData = userDataCacheManager.getUserData();
+        isBusy = true;
         userDataAPI.sendDataPoints(userData, this);
+    }
+
+    public void clearUserData() {
+        userDataCacheManager.removeAllData();
     }
 
     private void startSend() {
@@ -52,19 +49,21 @@ public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListene
     }
 
     private void shouldSendDataPoints() {
-        if (userDataCacheManager.hasQueue()) {
-            userData = userDataCacheManager.loadUserDataFromCache();
+        if (userDataCacheManager.hasData()) {
+            userData = userDataCacheManager.getUserData();
+            isBusy = true;
             userDataAPI.sendDataPoints(userData, this);
         }
     }
 
     @Override
-    public void onSendingSuccess(HashMap<String, Object> sentData) {
+    public void onSendingSuccess(HashMap<String, String> sentData) {
+        isBusy = false;
         userDataCacheManager.removeSentData(sentData);
     }
 
     @Override
     public void onSendingFailure() {
-
+        isBusy = false;
     }
 }
