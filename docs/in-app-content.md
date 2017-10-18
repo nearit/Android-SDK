@@ -2,21 +2,27 @@
 
 After an user **taps on a notification**, you will receive content through an intent to your app launcher activity.
 If you want to just check if the intent carries NearIT content use this method:
-```java
-boolean hasNearItContent = NearUtils.carriesNearItContent(intent);
-```
-To extract the content from an intent use the utility method:
-```java
-NearUtils.parseCoreContents(intent, coreContentListener);
-```
 
+<div class="code-java">
+boolean hasNearItContent = NearUtils.carriesNearItContent(intent);
+</div>
+<div class="code-kotlin">
+var hasNearItContent = NearUtils.carriesNearItContent(intent)
+</div>
+To extract the content from an intent use the utility method:
+<div class="code-java">
+NearUtils.parseCoreContents(intent, coreContentListener);
+</div>
+<div class="code-kotlin">
+NearUtils.parseCoreContents(intent, coreContentListener)
+</div>
 
 If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md).
 
 ## Beacon Interaction Content
 Beacon interaction (beacon ranging) is a peculiar trigger that works only when your app is in the foreground.<br>
 To receive this kind of content set a **proximity listener** with the method:
-```java
+<div class="code-java">
 {
     ...
     NearItManager.getInstance().addProximityListener(this);
@@ -24,14 +30,29 @@ To receive this kind of content set a **proximity listener** with the method:
     // NearItManager.getInstance().removeProximityListener(this);
     ...
 }
-
 @Override
 public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
     // handle the event
     // To extract the content and to have it automatically casted to the appropriate object type
     NearUtils.parseCoreContents(content, trackingInfo, coreContentListener);
-}   
-```
+}
+</div>
+<div class="code-kotlin">
+{
+    ...
+    NearItManager.getInstance().addProximityListener(this)
+    // remember to remove the listener when the object is being destroyed with 
+    // NearItManager.getInstance().removeProximityListener(this)
+    ...
+}
+override fun foregroundEvent(content: Parcelable, trackingInfo: TrackingInfo) {
+    // handle the event
+    // To extract the content and to have it automatically casted to the appropriate object type
+    NearUtils.parseCoreContents(content, trackingInfo, coreContentListener)
+}
+</div>
+
+
 **Warning:** For this kind of content you will need to write the code for **Trackings** and to eventually show an **In-app notification**.
 
 
@@ -46,8 +67,8 @@ Usually the SDK tracks those events automatically, but if you write custom code 
 
 
 You can track **default or custom events** using the "**sendTracking**" method:
- 
-```java
+
+<div class="code-java">
 // notified - notification received
 NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
 
@@ -56,7 +77,17 @@ NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
 
 // custom recipe event
 NearItManager.getInstance().sendTracking(trackingInfo, "my awesome custom event");
-```
+</div>
+<div class="code-kotlin">
+// notified - notification received
+NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS)
+
+// engaged - notification tapped
+NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS)
+
+// custom recipe event
+NearItManager.getInstance().sendTracking(trackingInfo, "my awesome custom event")
+</div>
 
 ## Content Objects
 
@@ -77,12 +108,19 @@ Here are the public fields for every other one:
     - `question` returns the feedback request string
     - `getRecipeId()` returns the recipeId associated with the feedback (you'll need it for answer it)
 To give a feedback call this method:
-```java
+
+<div class="code-java">
 // rating must be an integer between 1 and 5, and you can set a comment string.
 NearItManager.getInstance().sendEvent(new FeedbackEvent(feedback, rating, "Awesome"));
 // the sendEvent method is available in 2 variants: with or without explicit callback handler. Example:
 NearItManager.getInstance().sendEvent(new FeedbackEvent(...), responseHandler);
-```
+</div>
+<div class="code-kotlin">
+// rating must be an integer between 1 and 5, and you can set a comment string.
+NearItManager.getInstance().sendEvent(FeedbackEvent(feedback, rating, "Awesome"))
+// the sendEvent method is available in 2 variants: with or without explicit callback handler. Example:
+NearItManager.getInstance().sendEvent(FeedbackEvent(...), responseHandler)
+</div>
     
 - `Coupon` with the following getters and fields:
     - `getTitle()` returns the coupon title
@@ -106,19 +144,24 @@ NearItManager.getInstance().sendEvent(new FeedbackEvent(...), responseHandler);
 
 We handle the complete emission and redemption coupon cycle in our platform, and we deliver a coupon content only when a coupon is emitted (you will not be notified of recipes when a profile has already received the coupon, even if the coupon is still valid).
 You can ask the library to fetch the list of all the user current coupons with the method:
-```java
+<div class="code-java">
 NearItManager.getInstance().getCoupons(new CouponListener() {
 	@Override
 	public void onCouponsDownloaded(List<Coupon> list) {
-
 	}
-
 	@Override
 	public void onCouponDownloadError(String s) {
-
-	}
+    }
 });
-```
+</div>
+<div class="code-kotlin">
+NearItManager.getInstance().getCoupons(object : CouponListener {
+    override fun onCouponsDownloaded(coupons: MutableList<Coupon>?) {
+    }
+    override fun onCouponDownloadError(s: String) {
+    }
+})
+</div>
 The method will also return already redeemed coupons so you get to decide to filter them if necessary.
 
 

@@ -50,6 +50,28 @@ a.icon-home {
 /* bigger text in code elements */
 code {font-size: 14px !important}
 
+.code-switcher {
+  margin-bottom: -1px;
+}
+
+.code-switcher button {
+  background: #fff;
+  border: 1px solid #DDD;
+  color: #666;
+  position: relative;
+}
+
+.code-switcher button.active {
+  color: #222;
+  border-bottom: 1px solid white;
+}
+
+pre.code {
+  margin-top:0;
+}
+
+button:focus {outline:0;}
+
 /* bigger text in tables */
 th, td {font-size: 100% !important}
 
