@@ -42,12 +42,18 @@ You can find your API key on <a href="https://go.nearit.com/" target="_blank">**
 The SDK **initialization is done automatically** and handles the task of syncing the recipes with our servers when your app starts up.
 <br>However, if you need to sync the recipes configuration more often, you can call this method:
 
-```java
+<div class="code-java">
 NearItManager.getInstance().refreshConfigs();
-```
+</div>
+<div class="code-kotlin">
+NearItManager.getInstance().refreshConfigs()
+</div>
 
 If you need feedback on whether the refresh was successful or not, you can use this other version of the method:
 
-```java
+<div class="code-java">
 NearItManager.getInstance().refreshConfigs(recipeRefreshListener);
-```
+</div>
+<div class="code-kotlin">
+NearItManager.getInstance().refreshConfigs(recipeRefreshListener)
+</div>
