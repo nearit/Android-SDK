@@ -62,6 +62,8 @@ NearItManager.getInstance().setBatchUserData(userDataMap, object : UserDataNotif
 })
 </div>
 
+If you want to set a **date** as a value, you have to use the format "MM-DD-YYYY".
+
 ## Save the profile ID!
 
 If you can, we recommend you to **store the NearIT profileID** in your CRM database for two main reasons:
