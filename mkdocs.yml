@@ -1,6 +1,7 @@
 site_name: NearIT Android
 theme: readthedocs
 extra_css : ["css/nearitdocs.css"]
+extra_javascript : ["js/extra.js"]
 pages:
   - 'Getting started' : 'index.md'
   - 'User Guide' :
