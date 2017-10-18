@@ -2,7 +2,7 @@ package it.near.sdk.operation;
 
 import java.util.HashMap;
 
-public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListener {
+public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListener, UserDataTimer.TimerListener {
 
     private static final String TAG = "NearItUserProfiler";
 
@@ -11,7 +11,6 @@ public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListene
     private final UserDataTimer timer;
 
     private HashMap<String, String> userData;
-    private boolean hasTimer = false;
     private boolean isBusy = false;
 
     NearItUserProfiler(UserDataCacheManager userDataCacheManager, NearItUserDataAPI userDataAPI, UserDataTimer timer) {
@@ -21,15 +20,7 @@ public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListene
     }
 
     public void setUserData(String key, String value) {
-        if (!hasTimer) {
-            hasTimer = true;
-            timer.start(new UserDataTimer.TimerListener() {
-                @Override
-                public void sendNow() {
-                    startSend();
-                }
-            });
-        }
+        timer.start(this);
         userDataCacheManager.setUserData(key, value);
     }
 
@@ -45,7 +36,6 @@ public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListene
 
     private void startSend() {
         shouldSendDataPoints();
-        hasTimer = false;
     }
 
     private void shouldSendDataPoints() {
@@ -65,5 +55,10 @@ public class NearItUserProfiler implements NearItUserDataAPI.UserDataSendListene
     @Override
     public void onSendingFailure() {
         isBusy = false;
+    }
+
+    @Override
+    public void sendNow() {
+        startSend();
     }
 }
