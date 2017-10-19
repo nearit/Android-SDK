@@ -22,13 +22,10 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NearItUserProfilerTest {
-
-    private static final String SP_MAP_KEY = "NearItUserDataMap";
 
     @Mock
     private UserDataCacheManager mockUserDataCacheManager;
@@ -58,19 +55,19 @@ public class NearItUserProfilerTest {
         verify(mockUserDataCacheManager, times(1)).setUserData("dummy2", "dummy2");
         verify(mockUserDataCacheManager, times(2)).setUserData(anyString(), anyString());
 
+
+        HashMap<String, String> toBeSent = Maps.newHashMap();
+        toBeSent.put("dummy", "dummy");
+        toBeSent.put("dummy2", "dummy2");
+        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
+        when(mockUserDataCacheManager.hasData()).thenReturn(true);
+
         captor.getValue().sendNow();
 
-//        verify(mockUserDataAPI, times(1)).sendDataPoints(ArgumentMatchers.<HashMap<String, String>>any(), any(NearItUserDataAPI.UserDataSendListener.class));
+        verify(mockUserDataCacheManager, times(1)).hasData();
+        verify(mockUserDataCacheManager, times(1)).getUserData();
+        verify(mockUserDataAPI, times(1)).sendDataPoints(eq(toBeSent), any(NearItUserDataAPI.UserDataSendListener.class));
 
-       /* HashMap<String, String> cachedData = Maps.newHashMap();
-        cachedData.put("dummy", "dummy");
-        verify(mockUserDataCacheManager, times(1)).setUserData(eq("dummy"), eq("dummy"));
-        when(mockUserDataCacheManager.getUserData()).thenReturn(cachedData);
-        when(mockUserDataCacheManager.hasData()).thenReturn(true);
-        verify(mockUserDataTimer, times(1)).start(nearItUserProfiler);
-        assertTrue(mockUserDataCacheManager.hasData());
-        verify(mockUserDataAPI, times(1)).sendDataPoints(eq(cachedData), any(NearItUserDataAPI.UserDataSendListener.class));
-    */
     }
 
     @Test
@@ -85,7 +82,6 @@ public class NearItUserProfilerTest {
 
     @Test
     public void testSendFailure_shouldNotRemoveFromCache() {
-        when(mockUserDataCacheManager.hasData()).thenReturn(true);
         HashMap<String, String> toBeSent = Maps.newHashMap();
         toBeSent.put("dummy", "dummy");
         when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
@@ -99,13 +95,33 @@ public class NearItUserProfilerTest {
     }
 
     @Test
-    public void testSendSuccess_shouldRemoveFromCache() {
-        when(mockUserDataCacheManager.hasData()).thenReturn(true);
+    public void testShouldSendFailure_shouldNotRemoveFromCache() {
+        nearItUserProfiler.setUserData("dummy", "dummy");
+
+        ArgumentCaptor<UserDataTimer.TimerListener> captor = ArgumentCaptor.forClass(UserDataTimer.TimerListener.class);
+        verify(mockUserDataTimer, times(1)).start(captor.capture());
+        verify(mockUserDataCacheManager, times(1)).setUserData(anyString(), anyString());
+
         HashMap<String, String> toBeSent = Maps.newHashMap();
         toBeSent.put("dummy", "dummy");
         when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
-        mockSendSuccess();
+        when(mockUserDataCacheManager.hasData()).thenReturn(true);
 
+        captor.getValue().sendNow();
+        mockSendFailure();
+
+        verify(mockUserDataCacheManager, times(1)).hasData();
+        verify(mockUserDataCacheManager, times(1)).getUserData();
+        verify(mockUserDataAPI, times(1)).sendDataPoints(eq(toBeSent), ArgumentMatchers.<NearItUserDataAPI.UserDataSendListener>any());
+    }
+
+    @Test
+    public void testSendSuccess_shouldRemoveFromCache() {
+        HashMap<String, String> toBeSent = Maps.newHashMap();
+        toBeSent.put("dummy", "dummy");
+        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
+
+        mockSendSuccess();
         nearItUserProfiler.sendDataPoints();
 
         verify(mockUserDataCacheManager, times(1)).getUserData();
@@ -115,19 +131,24 @@ public class NearItUserProfilerTest {
 
     @Test
     public void testIfBusy_DoNotSend() {
-        when(mockUserDataCacheManager.hasData()).thenReturn(true);
         HashMap<String, String> toBeSent = Maps.newHashMap();
         toBeSent.put("dummy", "dummy");
         when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
 
+        mockSendDoNothing();
+        nearItUserProfiler.sendDataPoints();
+
+        verify(mockUserDataCacheManager, times(1)).getUserData();
+        verify(mockUserDataAPI, times(1)).sendDataPoints(ArgumentMatchers.<HashMap<String, String>>any(), any(NearItUserDataAPI.UserDataSendListener.class));
+
+        mockSendNowTrigger();
         nearItUserProfiler.setUserData("ehi", "ehi");
+
         verify(mockUserDataTimer).start(any(UserDataTimer.TimerListener.class));
         verify(mockUserDataCacheManager, times(1)).setUserData(eq("ehi"), eq("ehi"));
-
-
+        verify(mockUserDataCacheManager, times(1)).hasData();
+        verifyNoMoreInteractions(mockUserDataAPI);
     }
-
-
 
     @Test
     public void testClearData() {
@@ -145,6 +166,15 @@ public class NearItUserProfilerTest {
         }).when(mockUserDataAPI).sendDataPoints(ArgumentMatchers.<HashMap<String, String>>any(), any(NearItUserDataAPI.UserDataSendListener.class));
     }
 
+    private void mockSendDoNothing() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                return null;
+            }
+        }).when(mockUserDataAPI).sendDataPoints(ArgumentMatchers.<HashMap<String, String>>any(), any(NearItUserDataAPI.UserDataSendListener.class));
+    }
+
     private void mockSendSuccess() {
         doAnswer(new Answer() {
             @Override
@@ -157,4 +187,13 @@ public class NearItUserProfilerTest {
         }).when(mockUserDataAPI).sendDataPoints(ArgumentMatchers.<HashMap<String, String>>any(), any(NearItUserDataAPI.UserDataSendListener.class));
     }
 
+    private void mockSendNowTrigger() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                ((UserDataTimer.TimerListener) invocation.getArguments()[0]).sendNow();
+                return null;
+            }
+        }).when(mockUserDataTimer).start(any(UserDataTimer.TimerListener.class));
+    }
 }
