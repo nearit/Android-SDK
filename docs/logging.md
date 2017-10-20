@@ -5,10 +5,13 @@ If you are scanning beacons you have probably noticed the flood of logging messa
 ![logfilter](logfilter.png "")
 
 The SDK itself produces logs for various events. Without specific configuration it uses the Android system logs, but you can set your own logger with the method:
-```java
+<div class="code-java">
 NearLog.setLogger(new NearLogger() {
-            
-            // various methods to override
-            
-        });
-```
+    // various methods to override
+});
+</div>
+<div class="code-kotlin">
+NearLog.setLogger(object : NearLogger {
+    // various methods to override
+})
+</div>
