@@ -4,6 +4,7 @@ import android.os.Handler;
 
 public class UserDataTimer {
 
+    private final static int TIMEOUT = 2000;
     private Handler handler;
 
     public UserDataTimer() {
@@ -14,9 +15,11 @@ public class UserDataTimer {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                listener.sendNow();
+                if(listener!=null){
+                    listener.sendNow();
+                }
             }
-        }, 2000);
+        }, TIMEOUT);
     }
 
     public interface TimerListener {

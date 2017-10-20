@@ -18,7 +18,7 @@ import it.near.sdk.communication.NearJsonHttpResponseHandler;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.utils.NearJsonAPIUtils;
 
-class NearItUserDataAPI {
+public class NearItUserDataAPI {
 
     private static final String TAG = "NearItUserDataAPI";
     private static final String PLUGIN_NAME = "congrego";
@@ -28,12 +28,12 @@ class NearItUserDataAPI {
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
 
-    NearItUserDataAPI(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
+    public NearItUserDataAPI(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
         this.globalConfig = globalConfig;
         this.httpClient = httpClient;
     }
 
-    void sendDataPoints(@NonNull final HashMap<String, String> userData, final UserDataSendListener listener) {
+    public void sendDataPoints(@NonNull final HashMap<String, String> userData, final UserDataSendListener listener) {
         String profileId = globalConfig.getProfileId();
         HashMap<String, Object> userDataConv = new HashMap<>();
         userDataConv.putAll(userData);

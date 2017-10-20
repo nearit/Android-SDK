@@ -56,8 +56,7 @@ public class UserDataCacheManager {
 
     private HashMap<String, String> loadUserDataFromSP() {
         String stringMap = sharedPreferences.getString(SP_MAP_KEY, null);
-        HashMap<String, String> map = deserialize(stringMap);
-        return map;
+        return deserialize(stringMap);
     }
 
     @SuppressLint("ApplySharedPref")

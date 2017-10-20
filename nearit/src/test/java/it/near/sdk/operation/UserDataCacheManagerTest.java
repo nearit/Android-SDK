@@ -138,7 +138,7 @@ public class UserDataCacheManagerTest {
     }
 
     @Test
-    public void removeData() {
+    public void removeSentData() {
         HashMap<String, String> toBeRemoved = Maps.newHashMap();
         cacheManager.setUserData("dummy", "dummy");
         cacheManager.setUserData("dummy2", "dummy2");
