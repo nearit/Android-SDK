@@ -1,5 +1,6 @@
 package it.near.sdk.operation;
 
+import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
@@ -71,6 +72,10 @@ public class NearItUserDataAPI {
                 NearLog.d(TAG, "error: impossible to send requests");
             }
         }
+    }
+
+    public static NearItUserDataAPI obtain(GlobalConfig globalConfig, Context context) {
+        return new NearItUserDataAPI(globalConfig, new NearAsyncHttpClient(context));
     }
 
     interface UserDataSendListener {

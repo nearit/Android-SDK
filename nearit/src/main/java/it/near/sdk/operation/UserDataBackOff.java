@@ -1,5 +1,6 @@
 package it.near.sdk.operation;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 import java.util.HashMap;
@@ -7,7 +8,7 @@ import java.util.Map;
 
 import it.near.sdk.GlobalConfig;
 
-class UserDataBackOff {
+public class UserDataBackOff {
 
     private static final String TAG = "UserDataBackOff";
 
@@ -21,7 +22,7 @@ class UserDataBackOff {
     private HashMap<String, String> userData;
     private boolean isBusy = false;
 
-    UserDataBackOff(UserDataCacheManager userDataCacheManager, NearItUserDataAPI userDataAPI, UserDataTimer timer, GlobalConfig globalConfig) {
+    public UserDataBackOff(UserDataCacheManager userDataCacheManager, NearItUserDataAPI userDataAPI, UserDataTimer timer, GlobalConfig globalConfig) {
         this.userDataCacheManager = userDataCacheManager;
         this.userDataAPI = userDataAPI;
         this.timer = timer;
@@ -101,5 +102,9 @@ class UserDataBackOff {
                 });
             }
         }
+    }
+
+    public static UserDataBackOff obtain(UserDataCacheManager userDataCacheManager, GlobalConfig globalConfig, Context context) {
+        return new UserDataBackOff(userDataCacheManager, NearItUserDataAPI.obtain(globalConfig, context), new UserDataTimer(), globalConfig);
     }
 }

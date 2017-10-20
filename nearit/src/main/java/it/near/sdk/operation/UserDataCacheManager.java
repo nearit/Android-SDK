@@ -1,6 +1,7 @@
 package it.near.sdk.operation;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 
@@ -108,5 +109,9 @@ public class UserDataCacheManager {
             }
         }
         return map;
+    }
+
+    public static UserDataCacheManager obtain(Context context) {
+        return new UserDataCacheManager(context.getSharedPreferences(SP_MAP_KEY, Context.MODE_PRIVATE));
     }
 }

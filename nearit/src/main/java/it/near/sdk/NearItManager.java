@@ -29,12 +29,15 @@ import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.operation.NearItUserDataAPI;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
 import it.near.sdk.operation.ProfileDataUpdateListener;
 import it.near.sdk.operation.ProfileIdUpdateListener;
+import it.near.sdk.operation.UserDataBackOff;
 import it.near.sdk.operation.UserDataCacheManager;
 import it.near.sdk.operation.UserDataNotifier;
+import it.near.sdk.operation.UserDataTimer;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
 import it.near.sdk.reactions.Reaction;
@@ -166,8 +169,7 @@ public class NearItManager implements RecipeReactionHandler {
 
         nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context), globalConfig);
 
-        UserDataCacheManager userDataCacheManager = new UserDataCacheManager(context.getSharedPreferences(SP_MAP_KEY, Context.MODE_PRIVATE));
-        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context), userDataCacheManager);
+        nearItUserProfile = NearItUserProfile.obtain(globalConfig, context);
         listener = new ProfileChangesListener();
         nearItUserProfile.setProfileDataUpdateListener(listener);
 

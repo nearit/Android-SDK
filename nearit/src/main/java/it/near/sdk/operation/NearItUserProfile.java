@@ -34,17 +34,17 @@ public class NearItUserProfile {
 
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
-    private UserDataBackOff userDataBackOff;
+    private final UserDataBackOff userDataBackOff;
 
     private ProfileIdUpdateListener profileIdUpdateListener;
     private ProfileFetchListener profileFetchListener;
 
     private boolean profileCreationBusy = false;
 
-    public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient, UserDataCacheManager userDataCacheManager) {
+    public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient, UserDataBackOff userDataBackOff) {
         this.globalConfig = globalConfig;
         this.httpClient = httpClient;
-        this.userDataBackOff = new UserDataBackOff(userDataCacheManager, new NearItUserDataAPI(globalConfig, httpClient), new UserDataTimer(), globalConfig);
+        this.userDataBackOff = userDataBackOff;
     }
 
     public void setProfileIdUpdateListener(ProfileIdUpdateListener profileIdUpdateListener) {
@@ -215,6 +215,12 @@ public class NearItUserProfile {
      */
     public void setBatchUserData(Map<String, String> valuesMap) {
         userDataBackOff.setBatchUserData(valuesMap);
+    }
+
+    public static NearItUserProfile obtain(GlobalConfig globalConfig, Context context) {
+        UserDataCacheManager userDataCacheManager = UserDataCacheManager.obtain(context);
+        UserDataBackOff userDataBackOff =  UserDataBackOff.obtain(userDataCacheManager, globalConfig, context);
+        return new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context),userDataBackOff);
     }
 
     public interface ProfileFetchListener {
