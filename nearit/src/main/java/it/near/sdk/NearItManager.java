@@ -31,7 +31,9 @@ import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.operation.ProfileCreationListener;
-import it.near.sdk.operation.ProfileUpdateListener;
+import it.near.sdk.operation.ProfileDataUpdateListener;
+import it.near.sdk.operation.ProfileIdUpdateListener;
+import it.near.sdk.operation.UserDataCacheManager;
 import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.Cacher;
 import it.near.sdk.reactions.Event;
@@ -82,7 +84,7 @@ import it.near.sdk.utils.timestamp.NearTimestampChecker;
  * }
  * </pre>
  */
-public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler {
+public class NearItManager implements RecipeReactionHandler {
 
     private static final int NEAR_JOB_SERVICE_ID = 888;
     @Nullable
@@ -93,6 +95,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
      */
     private static final Object SINGLETON_LOCK = new Object();
 
+    private static final String SP_MAP_KEY = "NearItUserDataMap";
     private static final String TAG = "NearItManager";
     public static final String GEO_MESSAGE_ACTION = "it.near.sdk.permission.GEO_MESSAGE";
     public static final String PUSH_MESSAGE_ACTION = "it.near.sdk.permission.PUSH_MESSAGE";
@@ -109,6 +112,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     private NearItUserProfile nearItUserProfile;
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private static Context context;
+    private static ProfileChangesListener listener;
 
     /**
      * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
@@ -161,33 +165,18 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
         nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context), globalConfig);
-        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context));
+
+        UserDataCacheManager userDataCacheManager = new UserDataCacheManager(context.getSharedPreferences(SP_MAP_KEY, Context.MODE_PRIVATE));
+        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context), userDataCacheManager);
+        listener = new ProfileChangesListener();
+        nearItUserProfile.setProfileDataUpdateListener(listener);
 
         plugInSetup(context, globalConfig);
     }
 
     private void firstRun() {
-        nearItUserProfile.setProfileUpdateListener(this);
-        nearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
-            @Override
-            public void onProfileCreated(boolean created, String profileId) {
-                NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
-                if (created) {
-                    recipesManager.refreshConfig();
-                } else {
-                    recipesManager.syncConfig();
-                }
-            }
-
-            @Override
-            public void onProfileCreationError(String error) {
-                NearLog.d(TAG, "Error creating profile. Profile not present");
-                // in case of success, the installation is automatically registered
-                // so we update/create the installation only on profile failure
-                updateInstallation();
-                recipesManager.syncConfig();
-            }
-        });
+        nearItUserProfile.setProfileIdUpdateListener(listener);
+        nearItUserProfile.createNewProfile(context, listener);
     }
 
     private static void registerReceivers() {
@@ -295,12 +284,32 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         nearItUserProfile.getProfileId(context, listener);
     }
 
+    /**
+     * @deprecated use {@link #setUserData(String, String)} instead.
+     * The listener will always receive immediate success
+     */
+    @Deprecated
     public void setUserData(String key, String value, @NonNull UserDataNotifier listener) {
-        nearItUserProfile.setUserData(context, key, value, listener);
+        nearItUserProfile.setUserData(key, value);
+        listener.onDataCreated();
     }
 
+    /**
+     * @deprecated use {@link #setBatchUserData(Map)} instead.
+     * The listener will always receive immediate success
+     */
+    @Deprecated
     public void setBatchUserData(Map<String, String> valuesMap, @NonNull UserDataNotifier listener) {
-        nearItUserProfile.setBatchUserData(context, valuesMap, listener);
+        nearItUserProfile.setBatchUserData(valuesMap);
+        listener.onDataCreated();
+    }
+
+    public void setUserData(String key, String value) {
+        nearItUserProfile.setUserData(key, value);
+    }
+
+    public void setBatchUserData(Map<String, String> valuesMap) {
+        nearItUserProfile.setBatchUserData(valuesMap);
     }
 
     /**
@@ -462,12 +471,6 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         nearInstallation.refreshInstallation();
     }
 
-    @Override
-    public void onProfileUpdated() {
-        nearInstallation.refreshInstallation();
-        refreshConfigs();
-    }
-
     private void addReaction(Reaction reaction) {
         reactions.put(reaction.getReactionPluginName(), reaction);
     }
@@ -513,5 +516,38 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     public RecipeReactionHandler getRecipesReactionHandler() {
         return this;
+    }
+
+    private class ProfileChangesListener implements ProfileCreationListener, ProfileIdUpdateListener, ProfileDataUpdateListener {
+
+        @Override
+        public void onProfileCreated(boolean created, String profileId) {
+            NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
+            if (created) {
+                recipesManager.refreshConfig();
+            } else {
+                recipesManager.syncConfig();
+            }
+        }
+
+        @Override
+        public void onProfileCreationError(String error) {
+            NearLog.d(TAG, "Error creating profile. Profile not present");
+            // in case of success, the installation is automatically registered
+            // so we update/create the installation only on profile failure
+            updateInstallation();
+            recipesManager.syncConfig();
+        }
+
+        @Override
+        public void onProfileIdUpdated() {
+            nearInstallation.refreshInstallation();
+            refreshConfigs();
+        }
+
+        @Override
+        public void onProfileDataUpdated() {
+            recipesManager.refreshConfig();
+        }
     }
 }

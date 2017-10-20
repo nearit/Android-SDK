@@ -8,7 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,23 +30,29 @@ public class NearItUserProfile {
 
     private static final String PLUGIN_NAME = "congrego";
     private static final String PROFILE_RES_TYPE = "profiles";
-    private static final String DATA_POINTS_RES_TYPE = "data_points";
     private static final String TAG = "NearItUserProfile";
 
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
-    private ProfileUpdateListener profileUpdateListener;
+    private UserDataBackOff userDataBackOff;
+
+    private ProfileIdUpdateListener profileIdUpdateListener;
     private ProfileFetchListener profileFetchListener;
 
     private boolean profileCreationBusy = false;
 
-    public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
+    public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient, UserDataCacheManager userDataCacheManager) {
         this.globalConfig = globalConfig;
         this.httpClient = httpClient;
+        this.userDataBackOff = new UserDataBackOff(userDataCacheManager, new NearItUserDataAPI(globalConfig, httpClient), new UserDataTimer(), globalConfig);
     }
 
-    public void setProfileUpdateListener(ProfileUpdateListener profileUpdateListener) {
-        this.profileUpdateListener = profileUpdateListener;
+    public void setProfileIdUpdateListener(ProfileIdUpdateListener profileIdUpdateListener) {
+        this.profileIdUpdateListener = profileIdUpdateListener;
+    }
+
+    public void setProfileDataUpdateListener(ProfileDataUpdateListener profileDataUpdateListener) {
+        userDataBackOff.setProfileDataUpdateListener(profileDataUpdateListener);
     }
 
     public void setProfileId(String profileId) {
@@ -56,8 +61,8 @@ public class NearItUserProfile {
     }
 
     private void notifyListener() {
-        if (profileUpdateListener != null) {
-            profileUpdateListener.onProfileUpdated();
+        if (profileIdUpdateListener != null) {
+            profileIdUpdateListener.onProfileIdUpdated();
         }
     }
 
@@ -73,6 +78,7 @@ public class NearItUserProfile {
             listener.onProfileId(profileId);
         } else {
             if (profileCreationBusy) {
+                //  if a creation is already in progress, notify this listener too when ready
                 profileFetchListener = listener;
             } else {
                 createNewProfile(context, new ProfileCreationListener() {
@@ -105,6 +111,8 @@ public class NearItUserProfile {
             // profile already created
             nearItManager.updateInstallation();
             profileCreationBusy = false;
+
+            //  notify the listener
             notifyFetchListener(profileId);
             listener.onProfileCreated(false, profileId);
             return;
@@ -134,9 +142,15 @@ public class NearItUserProfile {
                     try {
                         profileId = response.getJSONObject("data").getString("id");
                         globalConfig.setProfileId(profileId);
+
                         // update the installation with the profile id
                         nearItManager.updateInstallation();
+
+                        userDataBackOff.sendDataPoints();
+
+                        //  notifies to NearItManager
                         nearItManager.getRecipesManager().refreshConfig();
+
                         profileCreationBusy = false;
                         notifyFetchListener(profileId);
                         listener.onProfileCreated(true, profileId);
@@ -149,7 +163,7 @@ public class NearItUserProfile {
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "profile erro: " + statusCode);
+                    NearLog.d(TAG, "profile error: " + statusCode);
                     profileCreationBusy = false;
                     notifyFetchListener();
                     listener.onProfileCreationError("network error: " + statusCode);
@@ -187,132 +201,24 @@ public class NearItUserProfile {
     /**
      * Create or update user data, a key/value couple used in profile segmentation.
      *
-     * @param context  the application context.
-     * @param key      the name of the data field.
-     * @param value    the value of the data field for the current user.
-     * @param listener interface for success or failure on property creation.
+     * @param key   the name of the data field.
+     * @param value the value of the data field for the current user.
      */
-    public void setUserData(final Context context, String key, String value, final UserDataNotifier listener) {
-        final NearItManager nearItManager = NearItManager.getInstance();
-        String profileId = nearItManager.globalConfig.getProfileId();
-        if (profileId == null) {
-            listener.onDataNotSetError("Profile didn't exists");
-            createNewProfile(context, new ProfileCreationListener() {
-                @Override
-                public void onProfileCreated(boolean created, String profileId) {
-                    // TODO replay method call?
-                }
-
-                @Override
-                public void onProfileCreationError(String error) {
-
-                }
-            });
-            return;
-        }
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("key", key);
-        map.put("value", value);
-        String reqBody = null;
-        try {
-            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", map);
-        } catch (JSONException e) {
-            listener.onDataNotSetError("Request creation error");
-        }
-
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(PROFILE_RES_TYPE)
-                .appendPath(profileId)
-                .appendPath(DATA_POINTS_RES_TYPE).build();
-        //TODO not tested
-        try {
-            httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "datapoint created: " + response.toString());
-                    nearItManager.getRecipesManager().refreshConfig();
-                    listener.onDataCreated();
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    listener.onDataNotSetError("network error: " + statusCode);
-                }
-            });
-        } catch (AuthenticationException | UnsupportedEncodingException e) {
-            listener.onDataNotSetError("error: impossible to send requests");
-        }
+    public void setUserData(String key, String value) {
+        userDataBackOff.setUserData(key, value);
     }
 
     /**
      * Create or update multiple user data, key/value couples used in profile segmentation.
      *
-     * @param context   the application context.
      * @param valuesMap map fo key values profile data.
-     * @param listener  interface for success or failure on properties creation.
      */
-    public void setBatchUserData(final Context context, Map<String, String> valuesMap, final UserDataNotifier listener) {
-        String profileId = NearItManager.getInstance().globalConfig.getProfileId();
-        if (profileId == null) {
-            listener.onDataNotSetError("Profile didn't exists");
-            createNewProfile(context, new ProfileCreationListener() {
-                @Override
-                public void onProfileCreated(boolean created, String profileId) {
-
-                }
-
-                @Override
-                public void onProfileCreationError(String error) {
-
-                }
-            });
-            return;
-        }
-
-        ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
-        for (Map.Entry<String, String> entry : valuesMap.entrySet()) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("key", entry.getKey());
-            map.put("value", entry.getValue());
-            maps.add(map);
-        }
-        String reqBody = null;
-        try {
-            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
-        } catch (JSONException e) {
-            listener.onDataNotSetError("Request creatin error");
-        }
-
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(PROFILE_RES_TYPE)
-                .appendPath(profileId)
-                .appendPath(DATA_POINTS_RES_TYPE).build();
-
-        try {
-            httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "datapoint created: " + response.toString());
-                    NearItManager.getInstance().getRecipesManager().refreshConfig();
-                    listener.onDataCreated();
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    listener.onDataNotSetError("network error: " + statusCode);
-                }
-            });
-        } catch (AuthenticationException | UnsupportedEncodingException e) {
-            listener.onDataNotSetError("error: impossible to send request");
-        }
+    public void setBatchUserData(Map<String, String> valuesMap) {
+        userDataBackOff.setBatchUserData(valuesMap);
     }
 
     public interface ProfileFetchListener {
         void onProfileId(String profileId);
-
         void onError(String error);
     }
 }
