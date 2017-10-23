@@ -15,11 +15,15 @@ import org.mockito.stubbing.Answer;
 import java.util.HashMap;
 
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.utils.ApplicationVisibility;
+import it.near.sdk.utils.device.ConnectionChecker;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,6 +44,10 @@ public class UserDataBackOffTest {
     private UserDataTimer mockUserDataTimer;
     @Mock
     private GlobalConfig mockGlobalConfig;
+    @Mock
+    private ApplicationVisibility mockApplicationVisibility;
+    @Mock
+    private ConnectionChecker mockConnectionChecker;
 
     @Mock
     private ProfileDataUpdateListener mockUpdateListener;
@@ -48,7 +56,7 @@ public class UserDataBackOffTest {
 
     @Before
     public void setUP() {
-        userDataBackOff = new UserDataBackOff(mockUserDataCacheManager, mockUserDataAPI, mockUserDataTimer, mockGlobalConfig);
+        userDataBackOff = new UserDataBackOff(mockUserDataCacheManager, mockUserDataAPI, mockUserDataTimer, mockGlobalConfig, mockConnectionChecker, mockApplicationVisibility);
         userDataBackOff.setProfileDataUpdateListener(mockUpdateListener);
     }
 
@@ -95,11 +103,7 @@ public class UserDataBackOffTest {
         verify(mockUserDataCacheManager, times(2)).setUserData(anyString(), anyString());
 
 
-        HashMap<String, String> toBeSent = Maps.newHashMap();
-        toBeSent.put("dummy", "dummy");
-        toBeSent.put("dummy2", "dummy2");
-        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
-        when(mockUserDataCacheManager.hasData()).thenReturn(true);
+        HashMap<String, String> toBeSent = mockHasDataToSend();
 
         captor.getValue().sendNow();
         verify(mockUserDataCacheManager, times(1)).hasData();
@@ -110,9 +114,7 @@ public class UserDataBackOffTest {
 
     @Test
     public void testSendData() {
-        HashMap<String, String> cachedData = Maps.newHashMap();
-        cachedData.put("dummy", "dummy");
-        when(mockUserDataCacheManager.getUserData()).thenReturn(cachedData);
+        HashMap<String, String> cachedData = mockHasDataToSend();
 
         userDataBackOff.sendDataPoints();
         verify(mockUserDataCacheManager, times(1)).getUserData();
@@ -139,9 +141,7 @@ public class UserDataBackOffTest {
 
     @Test
     public void testSendFailure_shouldNotRemoveFromCache() {
-        HashMap<String, String> toBeSent = Maps.newHashMap();
-        toBeSent.put("dummy", "dummy");
-        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
+        HashMap<String, String> toBeSent = mockHasDataToSend();
         mockSendFailure();
 
         userDataBackOff.sendDataPoints();
@@ -159,10 +159,7 @@ public class UserDataBackOffTest {
         verify(mockUserDataTimer, times(1)).start(captor.capture());
         verify(mockUserDataCacheManager, times(1)).setUserData(anyString(), anyString());
 
-        HashMap<String, String> toBeSent = Maps.newHashMap();
-        toBeSent.put("dummy", "dummy");
-        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
-        when(mockUserDataCacheManager.hasData()).thenReturn(true);
+        HashMap<String, String> toBeSent = mockHasDataToSend();
 
         captor.getValue().sendNow();
         mockSendFailure();
@@ -177,9 +174,7 @@ public class UserDataBackOffTest {
 
     @Test
     public void testSendSuccess_shouldRemoveFromCache() {
-        HashMap<String, String> toBeSent = Maps.newHashMap();
-        toBeSent.put("dummy", "dummy");
-        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
+        HashMap<String, String> toBeSent = mockHasDataToSend();
 
         mockSendSuccess();
         userDataBackOff.sendDataPoints();
@@ -198,10 +193,7 @@ public class UserDataBackOffTest {
         verify(mockUserDataTimer, times(1)).start(captor.capture());
         verify(mockUserDataCacheManager, times(1)).setUserData(anyString(), anyString());
 
-        HashMap<String, String> toBeSent = Maps.newHashMap();
-        toBeSent.put("dummy", "dummy");
-        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
-        when(mockUserDataCacheManager.hasData()).thenReturn(true);
+        HashMap<String, String> toBeSent = mockHasDataToSend();
 
         captor.getValue().sendNow();
 
@@ -217,9 +209,7 @@ public class UserDataBackOffTest {
 
     @Test
     public void testIfBusy_DoNotSend() {
-        HashMap<String, String> toBeSent = Maps.newHashMap();
-        toBeSent.put("dummy", "dummy");
-        when(mockUserDataCacheManager.getUserData()).thenReturn(toBeSent);
+        mockHasDataToSend();
         mockProfilePresent();
 
         mockSendDoNothing();
@@ -241,6 +231,46 @@ public class UserDataBackOffTest {
     public void testClearData() {
         userDataBackOff.clearUserData();
         verify(mockUserDataCacheManager, times(1)).removeAllData();
+    }
+
+    @Test
+    public void testIfOnline_shouldSendData() {
+        mockHasDataToSend();
+        mockOnlineStatus();
+        userDataBackOff.onAppGotoForeground();
+
+        verify(mockConnectionChecker, atLeastOnce()).isDeviceOnline();
+        verify(mockUserDataCacheManager, atLeastOnce()).getUserData();
+        verify(mockUserDataAPI, atLeastOnce()).sendDataPoints(ArgumentMatchers.<HashMap<String, String>>any(), any(NearItUserDataAPI.UserDataSendListener.class));
+    }
+
+    @Test
+    public void testIfOffline_shouldNotSendData() {
+        mockHasDataToSend();
+        mockOfflineStatus();
+        userDataBackOff.onAppGotoForeground();
+
+        verify(mockConnectionChecker, atLeastOnce()).isDeviceOnline();
+        verifyZeroInteractions(mockUserDataCacheManager);
+        verifyZeroInteractions(mockUserDataAPI);
+    }
+
+
+
+    private HashMap<String, String> mockHasDataToSend() {
+        HashMap<String, String> cachedData = Maps.newHashMap();
+        cachedData.put("dummy", "dummy");
+        when(mockUserDataCacheManager.getUserData()).thenReturn(cachedData);
+        when(mockUserDataCacheManager.hasData()).thenReturn(true);
+        return cachedData;
+    }
+
+    private void mockOnlineStatus() {
+        when(mockConnectionChecker.isDeviceOnline()).thenReturn(true);
+    }
+
+    private void mockOfflineStatus() {
+        when(mockConnectionChecker.isDeviceOnline()).thenReturn(false);
     }
 
     private void mockProfilePresent() {

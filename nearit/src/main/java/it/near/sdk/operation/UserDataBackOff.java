@@ -7,8 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import it.near.sdk.GlobalConfig;
+import it.near.sdk.utils.AppVisibilityDetector;
+import it.near.sdk.utils.ApplicationVisibility;
+import it.near.sdk.utils.device.ConnectionChecker;
 
-public class UserDataBackOff {
+public class UserDataBackOff implements AppVisibilityDetector.AppVisibilityCallback {
 
     private static final String TAG = "UserDataBackOff";
 
@@ -16,17 +19,22 @@ public class UserDataBackOff {
     private final NearItUserDataAPI userDataAPI;
     private final UserDataTimer timer;
     private final GlobalConfig globalConfig;
+    private final ConnectionChecker connectionChecker;
+    private final ApplicationVisibility applicationVisibility;
 
     private ProfileDataUpdateListener profileDataUpdateListener;
 
     private HashMap<String, String> userData;
     private boolean isBusy = false;
 
-    public UserDataBackOff(UserDataCacheManager userDataCacheManager, NearItUserDataAPI userDataAPI, UserDataTimer timer, GlobalConfig globalConfig) {
+    public UserDataBackOff(UserDataCacheManager userDataCacheManager, NearItUserDataAPI userDataAPI, UserDataTimer timer, GlobalConfig globalConfig, ConnectionChecker connectionChecker, ApplicationVisibility applicationVisibility) {
         this.userDataCacheManager = userDataCacheManager;
         this.userDataAPI = userDataAPI;
         this.timer = timer;
         this.globalConfig = globalConfig;
+        this.connectionChecker = connectionChecker;
+        this.applicationVisibility = applicationVisibility;
+        this.applicationVisibility.setCallback(this);
     }
 
     void setProfileDataUpdateListener(ProfileDataUpdateListener profileDataUpdateListener) {
@@ -105,6 +113,16 @@ public class UserDataBackOff {
     }
 
     public static UserDataBackOff obtain(UserDataCacheManager userDataCacheManager, GlobalConfig globalConfig, Context context) {
-        return new UserDataBackOff(userDataCacheManager, NearItUserDataAPI.obtain(globalConfig, context), new UserDataTimer(), globalConfig);
+        return new UserDataBackOff(userDataCacheManager, NearItUserDataAPI.obtain(globalConfig, context), new UserDataTimer(), globalConfig, new ConnectionChecker(context), new ApplicationVisibility());
+    }
+
+    @Override
+    public void onAppGotoForeground() {
+        if (connectionChecker.isDeviceOnline()) sendDataPoints();
+    }
+
+    @Override
+    public void onAppGotoBackground() {
+
     }
 }
