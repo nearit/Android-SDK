@@ -42,4 +42,5 @@ public class NearItUserDataAPITest {
         dataAPI.sendDataPoints(userData, mockSendListener);
         verifyZeroInteractions(mockHttpClient);
     }
+
 }

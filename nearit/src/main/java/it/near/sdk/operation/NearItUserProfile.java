@@ -28,23 +28,16 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  */
 public class NearItUserProfile {
 
-    private static final String PLUGIN_NAME = "congrego";
-    private static final String PROFILE_RES_TYPE = "profiles";
-    private static final String TAG = "NearItUserProfile";
-
     private final GlobalConfig globalConfig;
-    private final NearAsyncHttpClient httpClient;
     private final UserDataBackOff userDataBackOff;
+    private final NearItUserProfileAPI userProfileAPI;
 
     private ProfileIdUpdateListener profileIdUpdateListener;
-    private ProfileFetchListener profileFetchListener;
 
-    private boolean profileCreationBusy = false;
-
-    public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient, UserDataBackOff userDataBackOff) {
+    public NearItUserProfile(GlobalConfig globalConfig, UserDataBackOff userDataBackOff, NearItUserProfileAPI userProfileAPI) {
         this.globalConfig = globalConfig;
-        this.httpClient = httpClient;
         this.userDataBackOff = userDataBackOff;
+        this.userProfileAPI = userProfileAPI;
     }
 
     public void setProfileIdUpdateListener(ProfileIdUpdateListener profileIdUpdateListener) {
@@ -73,27 +66,7 @@ public class NearItUserProfile {
     }
 
     public void getProfileId(Context context, final ProfileFetchListener listener) {
-        String profileId = globalConfig.getProfileId();
-        if (profileId != null) {
-            listener.onProfileId(profileId);
-        } else {
-            if (profileCreationBusy) {
-                //  if a creation is already in progress, notify this listener too when ready
-                profileFetchListener = listener;
-            } else {
-                createNewProfile(context, new ProfileCreationListener() {
-                    @Override
-                    public void onProfileCreated(boolean created, String profileId) {
-                        listener.onProfileId(profileId);
-                    }
-
-                    @Override
-                    public void onProfileCreationError(String error) {
-                        listener.onError("Couldn't create profile");
-                    }
-                });
-            }
-        }
+        userProfileAPI.getProfileId(listener);
     }
 
     /**
@@ -103,99 +76,7 @@ public class NearItUserProfile {
      * @param listener interface for success or failure on profile creation.
      */
     public void createNewProfile(final Context context, final ProfileCreationListener listener) {
-        profileCreationBusy = true;
-        final NearItManager nearItManager = NearItManager.getInstance();
-        final GlobalConfig globalConfig = nearItManager.globalConfig;
-        String profileId = globalConfig.getProfileId();
-        if (profileId != null) {
-            // profile already created
-            nearItManager.updateInstallation();
-            profileCreationBusy = false;
-
-            //  notify the listener
-            notifyFetchListener(profileId);
-            listener.onProfileCreated(false, profileId);
-            return;
-        }
-
-        String requestBody = null;
-        try {
-            requestBody = buildProfileCreationRequestBody(globalConfig);
-        } catch (JSONException e) {
-            profileCreationBusy = false;
-            listener.onProfileCreationError("Can't compute request body");
-            notifyFetchListener();
-            return;
-        }
-
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(PROFILE_RES_TYPE).build();
-
-        try {
-            httpClient.nearPost(url.toString(), requestBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "profile created: " + response.toString());
-
-                    String profileId = null;
-                    try {
-                        profileId = response.getJSONObject("data").getString("id");
-                        globalConfig.setProfileId(profileId);
-
-                        // update the installation with the profile id
-                        nearItManager.updateInstallation();
-
-                        userDataBackOff.sendDataPoints();
-
-                        //  notifies to NearItManager
-                        nearItManager.getRecipesManager().refreshConfig();
-
-                        profileCreationBusy = false;
-                        notifyFetchListener(profileId);
-                        listener.onProfileCreated(true, profileId);
-                    } catch (JSONException e) {
-                        profileCreationBusy = false;
-                        notifyFetchListener();
-                        listener.onProfileCreationError("unknown server format");
-                    }
-                }
-
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "profile error: " + statusCode);
-                    profileCreationBusy = false;
-                    notifyFetchListener();
-                    listener.onProfileCreationError("network error: " + statusCode);
-                }
-
-            });
-        } catch (AuthenticationException | UnsupportedEncodingException e) {
-            profileCreationBusy = false;
-            notifyFetchListener();
-            listener.onProfileCreationError("error: impossible to make a request");
-        }
-    }
-
-    private void notifyFetchListener(String profileId) {
-        if (profileFetchListener != null) {
-            profileFetchListener.onProfileId(profileId);
-            profileFetchListener = null;
-        }
-    }
-
-    private void notifyFetchListener() {
-        if (profileFetchListener != null) {
-            profileFetchListener.onError("Couldn't fetch profile");
-            profileFetchListener = null;
-        }
-    }
-
-    private String buildProfileCreationRequestBody(GlobalConfig globalConfig) throws JSONException {
-        String appId = globalConfig.getAppId();
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("app_id", appId);
-        return NearJsonAPIUtils.toJsonAPI("profiles", map);
+        userProfileAPI.createNewProfile(listener);
     }
 
     /**
@@ -219,8 +100,9 @@ public class NearItUserProfile {
 
     public static NearItUserProfile obtain(GlobalConfig globalConfig, Context context) {
         UserDataCacheManager userDataCacheManager = UserDataCacheManager.obtain(context);
-        UserDataBackOff userDataBackOff =  UserDataBackOff.obtain(userDataCacheManager, globalConfig, context);
-        return new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context),userDataBackOff);
+        UserDataBackOff userDataBackOff = UserDataBackOff.obtain(userDataCacheManager, globalConfig, context);
+        NearItUserProfileAPI nearItUserProfileAPI = new NearItUserProfileAPI(userDataBackOff, new NearAsyncHttpClient(context), globalConfig);
+        return new NearItUserProfile(globalConfig, userDataBackOff, nearItUserProfileAPI);
     }
 
     public interface ProfileFetchListener {
