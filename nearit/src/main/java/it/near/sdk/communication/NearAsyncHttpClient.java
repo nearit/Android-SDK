@@ -19,6 +19,7 @@ import cz.msebera.android.httpclient.HttpEntity;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import cz.msebera.android.httpclient.entity.StringEntity;
 import cz.msebera.android.httpclient.message.BasicHeader;
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.R;
 import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.NearUtils;
@@ -32,9 +33,11 @@ public class NearAsyncHttpClient {
     private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
     private final Context context;
+    private final GlobalConfig globalConfig;
 
-    public NearAsyncHttpClient(Context context) {
+    public NearAsyncHttpClient(Context context, GlobalConfig globalConfig) {
         this.context = context;
+        this.globalConfig = globalConfig;
     }
 
     public RequestHandle nearGet(String url, ResponseHandlerInterface responseHandlerInterface) throws AuthenticationException {

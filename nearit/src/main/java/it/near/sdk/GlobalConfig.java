@@ -37,6 +37,11 @@ public class GlobalConfig {
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
 
+    static final String OPT_OUT = "optout";
+    public static final boolean DEFAULT_OPT_OUT = false;
+    private boolean optOut;
+    private OptOutListener optOutListener;
+
     public GlobalConfig(SharedPreferences sp) {
         this.sp = sp;
         this.editor = sp.edit();
@@ -122,6 +127,26 @@ public class GlobalConfig {
         setLocalString(INSTALLATIONID, installationId);
     }
 
+    public void setOptOutListener(OptOutListener optOutListener) {
+        this.optOutListener = optOutListener;
+    }
+
+    public void setOptOut() {
+        NearLog.d("GlobalConfig", "Opting out");
+        this.optOut = true;
+        editor.putBoolean(OPT_OUT, true).apply();
+        if (optOutListener != null) {
+            optOutListener.onOptOut();
+        }
+    }
+
+    public boolean getOptOut() {
+        if (optOut == DEFAULT_OPT_OUT) {
+            optOut = sp.getBoolean(OPT_OUT, DEFAULT_OPT_OUT);
+        }
+        return optOut;
+    }
+
     @Nullable
     public String getProfileId() {
         if (profileId == null) {
@@ -144,5 +169,8 @@ public class GlobalConfig {
         return sp.getString(name, null);
     }
 
+    public interface OptOutListener {
+        void onOptOut();
+    }
 
 }

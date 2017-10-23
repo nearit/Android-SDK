@@ -79,7 +79,7 @@ public class CouponApi {
         map.put(IMAGES_RES, Image.class);
         Morpheus morpheus = MorphUtil.buildMorpheusFrom(map);
         return new CouponApi(
-                new NearAsyncHttpClient(context),
+                new NearAsyncHttpClient(context, globalConfig),
                 globalConfig,
                 morpheus);
     }

@@ -109,7 +109,7 @@ public class GeopolisManager {
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
         sp = this.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        httpClient = new NearAsyncHttpClient(context);
+        httpClient = new NearAsyncHttpClient(context, globalConfig);
         refreshConfig();
     }
 

@@ -9,6 +9,7 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.reactions.Cacher;
@@ -74,11 +75,11 @@ public class CustomJSONReaction extends CoreReaction<CustomJSON> {
         return map;
     }
 
-    public static CustomJSONReaction obtain(Context context, NearNotifier nearNotifier) {
+    public static CustomJSONReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         return new CustomJSONReaction(
                 new Cacher<CustomJSON>(
                         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
-                new NearAsyncHttpClient(context),
+                new NearAsyncHttpClient(context, globalConfig),
                 nearNotifier,
                 new TypeToken<List<CustomJSON>>() {}.getType()
         );

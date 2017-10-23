@@ -125,7 +125,7 @@ public class FeedbackReaction extends CoreReaction<Feedback> {
         return new FeedbackReaction(
                 new Cacher<Feedback>(
                         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
-                new NearAsyncHttpClient(context),
+                new NearAsyncHttpClient(context, globalConfig),
                 nearNotifier,
                 globalConfig,
                 new TypeToken<List<Feedback>>() {}.getType()

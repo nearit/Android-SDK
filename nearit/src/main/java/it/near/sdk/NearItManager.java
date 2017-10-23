@@ -82,7 +82,7 @@ import it.near.sdk.utils.timestamp.NearTimestampChecker;
  * }
  * </pre>
  */
-public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler {
+public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler, GlobalConfig.OptOutListener {
 
     private static final int NEAR_JOB_SERVICE_ID = 888;
     @Nullable
@@ -157,11 +157,12 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         this.globalConfig = new GlobalConfig(
                 GlobalConfig.buildSharedPreferences(context));
 
+        globalConfig.setOptOutListener(this);
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
-        nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context), globalConfig);
-        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context));
+        nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context, globalConfig), globalConfig);
+        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context, globalConfig));
 
         plugInSetup(context, globalConfig);
     }
@@ -200,7 +201,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 RecipesHistory.getSharedPreferences(context),
                 new CurrentTime()
         );
-        TrackManager trackManager = TrackManager.obtain(context);
+        TrackManager trackManager = TrackManager.obtain(context, globalConfig);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
         validators.add(new AdvScheduleValidator(new CurrentTime()));
@@ -208,7 +209,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
         RecipesApi recipesApi = RecipesApi.obtain(context, recipesHistory, globalConfig);
         NearItTimeStampApi nearItTimeStampApi = new NearItTimeStampApi(
-                new NearAsyncHttpClient(this.context),
+                new NearAsyncHttpClient(this.context, globalConfig),
                 NearItTimeStampApi.buildMorpheus(),
                 globalConfig);
         NearTimestampChecker nearTimestampChecker = new NearTimestampChecker(nearItTimeStampApi);
@@ -229,7 +230,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
         geopolis = new GeopolisManager(context, recipesManager, globalConfig, trackManager);
 
-        contentNotification = ContentReaction.obtain(context, nearNotifier);
+        contentNotification = ContentReaction.obtain(context, nearNotifier, globalConfig);
         addReaction(contentNotification);
 
         simpleNotification = new SimpleNotificationReaction(nearNotifier);
@@ -239,7 +240,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 CouponApi.obtain(context, globalConfig));
         addReaction(couponReaction);
 
-        customJSON = CustomJSONReaction.obtain(context, nearNotifier);
+        customJSON = CustomJSONReaction.obtain(context, nearNotifier, globalConfig);
         addReaction(customJSON);
 
         feedback = FeedbackReaction.obtain(context, nearNotifier, globalConfig);
@@ -513,5 +514,10 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     public RecipeReactionHandler getRecipesReactionHandler() {
         return this;
+    }
+
+    @Override
+    public void onOptOut() {
+
     }
 }

@@ -205,7 +205,7 @@ public class RecipesApi {
     public static RecipesApi obtain(Context context, RecipesHistory recipesHistory, GlobalConfig globalConfig) {
         EvaluationBodyBuilder evaluationBodyBuilder = EvaluationBodyBuilder.obtain(globalConfig, recipesHistory);
         return new RecipesApi(
-                new NearAsyncHttpClient(context),
+                new NearAsyncHttpClient(context, globalConfig),
                 RecipesApi.buildMorpheus(),
                 evaluationBodyBuilder,
                 globalConfig
