@@ -38,38 +38,40 @@ public class NearItUserDataAPI {
         String profileId = globalConfig.getProfileId();
         HashMap<String, Object> userDataConv = new HashMap<>();
         userDataConv.putAll(userData);
-        if (profileId != null) {
-            String reqBody;
-            try {
-                reqBody = NearJsonAPIUtils.toJsonAPI("data_points", userDataConv);
-            } catch (JSONException e) {
-                NearLog.d(TAG, "Error creating userdata request");
-                listener.onSendingFailure();
-                return;
-            }
+        if (!userDataConv.isEmpty()) {
+            if (profileId != null) {
+                String reqBody;
+                try {
+                    reqBody = NearJsonAPIUtils.toJsonAPI("data_points", userDataConv);
+                } catch (JSONException e) {
+                    NearLog.d(TAG, "Error creating userdata request");
+                    listener.onSendingFailure();
+                    return;
+                }
 
-            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                    .appendPath(PLUGIN_NAME)
-                    .appendPath(PROFILE_RES_TYPE)
-                    .appendPath(profileId)
-                    .appendPath(DATA_POINTS_RES_TYPE).build();
+                Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                        .appendPath(PLUGIN_NAME)
+                        .appendPath(PROFILE_RES_TYPE)
+                        .appendPath(profileId)
+                        .appendPath(DATA_POINTS_RES_TYPE).build();
 
-            try {
-                httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        NearLog.d(TAG, "datapoint created: " + response.toString());
-                        listener.onSendingSuccess(userData);
-                    }
+                try {
+                    httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            NearLog.d(TAG, "datapoint created: " + response.toString());
+                            listener.onSendingSuccess(userData);
+                        }
 
-                    @Override
-                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        NearLog.d(TAG, "datapoint not created, network error: " + statusCode);
-                        listener.onSendingFailure();
-                    }
-                });
-            } catch (AuthenticationException | UnsupportedEncodingException e) {
-                NearLog.d(TAG, "error: impossible to send requests");
+                        @Override
+                        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                            NearLog.d(TAG, "datapoint not created, network error: " + statusCode);
+                            listener.onSendingFailure();
+                        }
+                    });
+                } catch (AuthenticationException | UnsupportedEncodingException e) {
+                    NearLog.d(TAG, "error: impossible to send requests");
+                }
             }
         }
     }
