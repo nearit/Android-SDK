@@ -6,8 +6,9 @@ import android.support.annotation.Nullable;
 
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.communication.OptOutAPI;
 import it.near.sdk.logging.NearLog;
-import it.near.sdk.utils.NearItOptOutListener;
+import it.near.sdk.communication.OptOutNotifier;
 
 /**
  * Class containing global configuration. It saves all configuration strings on disk.
@@ -132,7 +133,7 @@ public class GlobalConfig {
         this.optOutListener = optOutListener;
     }
 
-    public void setOptOut(NearItOptOutListener listener) {
+    public void setOptOut() {
         optOut = getOptOut();
         if (!optOut) {
             NearLog.d("GlobalConfig", "Opting out");
