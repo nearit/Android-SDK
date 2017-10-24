@@ -15,6 +15,7 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
     private final TrackSender trackSender;
     private final TrackCache trackCache;
     private final ApplicationVisibility applicationVisibility;
+    private boolean optedOut;
 
     TrackManager(ConnectivityManager connectivityManager,
                  TrackSender trackSender,
@@ -28,8 +29,10 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
     }
 
     public void sendTracking(final TrackRequest trackRequest) {
-        trackCache.addToCache(trackRequest);
-        launchCachedRequests();
+        if(!optedOut) {
+            trackCache.addToCache(trackRequest);
+            launchCachedRequests();
+        }
     }
 
     private void launchCachedRequests() {
@@ -44,23 +47,27 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
     }
 
     private void sendCachedRequest(final TrackRequest trackRequest) {
-        trackSender.sendTrack(trackRequest, new TrackSender.RequestListener() {
-            @Override
-            public void onSuccess() {
-                trackRequest.sending = false;
-                trackCache.removeFromCache(trackRequest);
-            }
+        if(!optedOut) {
+            trackSender.sendTrack(trackRequest, new TrackSender.RequestListener() {
+                @Override
+                public void onSuccess() {
+                    trackRequest.sending = false;
+                    trackCache.removeFromCache(trackRequest);
+                }
 
-            @Override
-            public void onFailure(int statusCode) {
-                trackRequest.sending = false;
-            }
-        });
+                @Override
+                public void onFailure(int statusCode) {
+                    trackRequest.sending = false;
+                }
+            });
+        }
     }
 
     @Override
     public void onAppGotoForeground() {
-        launchCachedRequests();
+        if (!optedOut) {
+            launchCachedRequests();
+        }
     }
 
     @Override
@@ -80,5 +87,11 @@ public class TrackManager implements AppVisibilityDetector.AppVisibilityCallback
                 new TrackSender(new NearAsyncHttpClient(context, globalConfig)),
                 new TrackCache(TrackCache.getSharedPreferences(context)),
                 new ApplicationVisibility());
+    }
+
+    public void onOptOut() {
+        optedOut = true;
+        trackCache.onOptOut();
+        trackSender.onOptOut();
     }
 }

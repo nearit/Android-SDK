@@ -35,6 +35,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,6 +58,7 @@ public class GlobalConfigTest {
         when(mockEditor.putInt(anyString(), anyInt())).thenReturn(mockEditor);
         when(mockEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mockEditor);
         globalConfig = new GlobalConfig(mockSharedPreferences);
+        globalConfig.setOptOutListener(mockOptOutListener);
     }
 
     @Test
@@ -147,9 +149,16 @@ public class GlobalConfigTest {
 
     @Test
     public void testOptOut() {
-        globalConfig.setOptOutListener(mockOptOutListener);
+        when(mockSharedPreferences.getBoolean(eq(OPT_OUT), anyBoolean())).thenReturn(false);
         globalConfig.setOptOut();
         verify(mockOptOutListener, atLeastOnce()).onOptOut();
+    }
+
+    @Test
+    public void testOptOutIdempotent() {
+        when(mockSharedPreferences.getBoolean(eq(OPT_OUT), anyBoolean())).thenReturn(true);
+        globalConfig.setOptOut();
+        verifyZeroInteractions(mockOptOutListener);
     }
 
     @Test

@@ -58,6 +58,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     private final SharedPreferences sp;
     private List<Region> regions;
     private Map<Region, BeaconDynamicRadar> rangingRadars;
+    private boolean optedOut;
 
     public AltBeaconMonitor(Context context, NodesManager nodesManager) {
         this.context = context;
@@ -179,10 +180,16 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     }
 
     private List<Region> loadRegions() {
-        String regions = sp.getString("regions", null);
-        Type type = new TypeToken<List<Region>>() {
-        }.getType();
-        return new Gson().fromJson(regions, type);
+        if (!optedOut) {
+            String regions = sp.getString("regions", null);
+            Type type = new TypeToken<List<Region>>() {
+            }.getType();
+            return new Gson().fromJson(regions, type);
+        } else return null;
+    }
+
+    private void clearSharedPrefs() {
+        sp.edit().clear().apply();
     }
 
     public void addRegion(Region region) {
@@ -266,9 +273,10 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     public void onForeground() {
         // When going to the foreground, if we have regions to range, start ranging
-
-        refreshRangingList();
-        startRanging();
+        if(!optedOut) {
+            refreshRangingList();
+            startRanging();
+        }
     }
 
     private void refreshRangingList() {
@@ -398,5 +406,12 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
     @Override
     public void onAppGotoBackground() {
         onBackground();
+    }
+
+    public void onOptOut() {
+        optedOut = true;
+        stopRadar();
+        stopRanging();
+        clearSharedPrefs();
     }
 }

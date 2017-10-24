@@ -41,4 +41,11 @@ public class Cacher<T> {
         return sp.getString(Cacher.KEY_LIST, "");
     }
 
+    private void clearSharedPrefs() {
+        sp.edit().clear().apply();
+    }
+
+    public void onOptOut() {
+        clearSharedPrefs();
+    }
 }

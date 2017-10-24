@@ -23,6 +23,7 @@ import static org.hamcrest.core.IsCollectionContaining.hasItem;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -44,6 +45,7 @@ public class TrackCacheTest {
     public void setUp() {
         when(mockSharedPreferences.edit()).thenReturn(mockEditor);
         when(mockEditor.putStringSet(anyString(), ArgumentMatchers.<String>anySet())).thenReturn(mockEditor);
+        when(mockEditor.clear()).thenReturn(mockEditor);
         trackCache = new TrackCache(mockSharedPreferences);
     }
 
@@ -143,5 +145,16 @@ public class TrackCacheTest {
         trackCache = new TrackCache(mockSharedPreferences);
         assertThat(trackCache.getRequests().get(0), is(dummyRequest));
         assertThat(trackCache.getRequests().get(0).sending, is(DEFAULT_SENDING_STATUS));
+    }
+
+    @Test
+    public void ifOptedOut_shouldClearCacheAndSP() {
+        TrackRequest dummy = new TrackRequest("dummy", "dummy");
+        trackCache.addToCache(dummy);
+        assertThat(trackCache.getRequests(), (hasItem(dummy)));
+
+        trackCache.onOptOut();
+        verify(mockEditor, atLeastOnce()).clear();
+        assertThat(trackCache.getRequests(), not(hasItem(dummy)));
     }
 }

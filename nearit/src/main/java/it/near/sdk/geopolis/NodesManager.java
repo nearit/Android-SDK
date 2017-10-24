@@ -32,6 +32,7 @@ public class NodesManager {
     private List<Node> nodes;
     private Morpheus morpheus;
     private final SharedPreferences sp;
+    private boolean optedOut;
 
     public NodesManager(@NonNull SharedPreferences sp) {
         this.sp = checkNotNull(sp);
@@ -134,14 +135,20 @@ public class NodesManager {
      * @throws JSONException
      */
     private List<Node> loadNodes() throws JSONException {
-        String config = getSavedConfig();
-        if (config == null) return null;
-        JSONObject configJson = new JSONObject(config);
-        return NearJsonAPIUtils.parseList(morpheus, configJson, Node.class);
+        if (!optedOut) {
+            String config = getSavedConfig();
+            if (config == null) return null;
+            JSONObject configJson = new JSONObject(config);
+            return NearJsonAPIUtils.parseList(morpheus, configJson, Node.class);
+        } else return null;
     }
 
     private void saveConfig(String json) {
         sp.edit().putString(NODES_CONFIG, json).apply();
+    }
+
+    private void clearSharedPrefs() {
+        sp.edit().clear().apply();
     }
 
     private String getSavedConfig() {
@@ -150,5 +157,10 @@ public class NodesManager {
 
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(NODES_MANAGER_PREF_NAME, Context.MODE_PRIVATE);
+    }
+
+    public void onOptOut() {
+        optedOut = true;
+        clearSharedPrefs();
     }
 }

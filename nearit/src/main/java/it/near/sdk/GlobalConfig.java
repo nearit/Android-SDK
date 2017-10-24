@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.utils.NearItOptOutListener;
 
 /**
  * Class containing global configuration. It saves all configuration strings on disk.
@@ -131,19 +132,22 @@ public class GlobalConfig {
         this.optOutListener = optOutListener;
     }
 
-    public void setOptOut() {
-        NearLog.d("GlobalConfig", "Opting out");
-        this.optOut = true;
-        editor.putBoolean(OPT_OUT, true).apply();
-        if (optOutListener != null) {
-            optOutListener.onOptOut();
+    public void setOptOut(NearItOptOutListener listener) {
+        optOut = getOptOut();
+        if (!optOut) {
+            NearLog.d("GlobalConfig", "Opting out");
+            this.optOut = true;
+            editor.putBoolean(OPT_OUT, true).apply();
+            if (optOutListener != null) {
+                optOutListener.onOptOut();
+            }
+        } else {
+            NearLog.d("GlobalConfig", "Already opted out");
         }
     }
 
     public boolean getOptOut() {
-        if (optOut == DEFAULT_OPT_OUT) {
-            optOut = sp.getBoolean(OPT_OUT, DEFAULT_OPT_OUT);
-        }
+        optOut = sp.getBoolean(OPT_OUT, DEFAULT_OPT_OUT);
         return optOut;
     }
 

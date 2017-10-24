@@ -24,6 +24,7 @@ public class NearInstallationRequestQueue {
     private final NearAsyncHttpClient httpClient;
     private final GlobalConfig globalConfig;
     private boolean onGoingEdit = false;
+    private boolean optedOut;
 
     private static final int NOT_FOUND_ERROR_CODE = 404;
 
@@ -32,6 +33,7 @@ public class NearInstallationRequestQueue {
     public NearInstallationRequestQueue(NearAsyncHttpClient httpClient, GlobalConfig globalConfig) {
         this.httpClient = checkNotNull(httpClient);
         this.globalConfig = checkNotNull(globalConfig);
+        optedOut = globalConfig.getOptOut();
     }
 
     public void registerInstallation(final String installationBody) {

@@ -65,6 +65,7 @@ import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.CurrentTime;
+import it.near.sdk.utils.NearItOptOutListener;
 import it.near.sdk.utils.NearUtils;
 import it.near.sdk.utils.timestamp.NearItTimeStampApi;
 import it.near.sdk.utils.timestamp.NearTimestampChecker;
@@ -109,6 +110,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     private NearItUserProfile nearItUserProfile;
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private static Context context;
+    private boolean optedOut;
 
     /**
      * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
@@ -304,6 +306,14 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         nearItUserProfile.setBatchUserData(context, valuesMap, listener);
     }
 
+    public void getOptOut() {
+        globalConfig.getOptOut();
+    }
+
+    public void optOut(@NonNull NearItOptOutListener listener) {
+        globalConfig.setOptOut(listener);
+    }
+
     /**
      * Set an icon for proximity notification.
      *
@@ -483,33 +493,39 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public void processRecipe(String recipeId) {
-        recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
-            @Override
-            public void onRecipeFetchSuccess(Recipe recipe) {
-                String reactionPluginName = recipe.getReaction_plugin_id();
-                Reaction reaction = reactions.get(reactionPluginName);
-                reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
-            }
+        if(!optedOut) {
+            recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
+                @Override
+                public void onRecipeFetchSuccess(Recipe recipe) {
+                    String reactionPluginName = recipe.getReaction_plugin_id();
+                    Reaction reaction = reactions.get(reactionPluginName);
+                    reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
+                }
 
-            @Override
-            public void onRecipeFetchError(String error) {
+                @Override
+                public void onRecipeFetchError(String error) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     @Override
     public void processRecipe(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleId) {
-        Reaction reaction = reactions.get(reactionPluginId);
-        if (reaction == null) return;
-        reaction.handlePushReaction(recipeId, notificationText, reactionActionId, reactionBundleId);
+        if (!optedOut) {
+            Reaction reaction = reactions.get(reactionPluginId);
+            if (reaction == null) return;
+            reaction.handlePushReaction(recipeId, notificationText, reactionActionId, reactionBundleId);
+        }
     }
 
     @Override
     public boolean processReactionBundle(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleString) {
-        Reaction reaction = reactions.get(reactionPluginId);
-        if (reaction == null) return false;
-        return reaction.handlePushBundledReaction(recipeId, notificationText, reactionActionId, reactionBundleString);
+        if (!optedOut) {
+            Reaction reaction = reactions.get(reactionPluginId);
+            if (reaction == null) return false;
+            return reaction.handlePushBundledReaction(recipeId, notificationText, reactionActionId, reactionBundleString);
+        } else return false;
     }
 
     public RecipeReactionHandler getRecipesReactionHandler() {
@@ -518,6 +534,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public void onOptOut() {
-
+        optedOut = true;
+        geopolis.onOptOut();
+        recipesManager.onOptOut();
+        nearItUserProfile.onOptOut();
     }
 }

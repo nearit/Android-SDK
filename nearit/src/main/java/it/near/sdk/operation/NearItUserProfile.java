@@ -40,10 +40,12 @@ public class NearItUserProfile {
     private ProfileFetchListener profileFetchListener;
 
     private boolean profileCreationBusy = false;
+    private boolean optedOut;
 
     public NearItUserProfile(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
         this.globalConfig = globalConfig;
         this.httpClient = httpClient;
+        optedOut = globalConfig.getOptOut();
     }
 
     public void setProfileUpdateListener(ProfileUpdateListener profileUpdateListener) {
@@ -308,6 +310,10 @@ public class NearItUserProfile {
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             listener.onDataNotSetError("error: impossible to send request");
         }
+    }
+
+    public void onOptOut() {
+        optedOut = true;
     }
 
     public interface ProfileFetchListener {
