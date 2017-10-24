@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.utils.NearItOptOutListener;
 
 import static it.near.sdk.GlobalConfig.APIKEY;
 import static it.near.sdk.GlobalConfig.APPID;
@@ -49,6 +50,8 @@ public class GlobalConfigTest {
     SharedPreferences.Editor mockEditor;
     @Mock
     GlobalConfig.OptOutListener mockOptOutListener;
+    @Mock
+    NearItOptOutListener mockNearItOptOutLister;
 
     @Before
     public void setUp() throws Exception {
@@ -115,7 +118,7 @@ public class GlobalConfigTest {
 
     @Test
     public void testPersistence() {
-        globalConfig.setOptOut();
+        globalConfig.setOptOut(mockNearItOptOutLister);
         verify(mockEditor, atLeastOnce()).putBoolean(OPT_OUT, true);
 
         String appId = "appId";
@@ -150,14 +153,14 @@ public class GlobalConfigTest {
     @Test
     public void testOptOut() {
         when(mockSharedPreferences.getBoolean(eq(OPT_OUT), anyBoolean())).thenReturn(false);
-        globalConfig.setOptOut();
+        globalConfig.setOptOut(mockNearItOptOutLister);
         verify(mockOptOutListener, atLeastOnce()).onOptOut();
     }
 
     @Test
     public void testOptOutIdempotent() {
         when(mockSharedPreferences.getBoolean(eq(OPT_OUT), anyBoolean())).thenReturn(true);
-        globalConfig.setOptOut();
+        globalConfig.setOptOut(mockNearItOptOutLister);
         verifyZeroInteractions(mockOptOutListener);
     }
 
