@@ -192,7 +192,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 NearLog.d(TAG, "Error creating profile. Profile not present");
                 // in case of success, the installation is automatically registered
                 // so we update/create the installation only on profile failure
-                updateInstallation();
+                if(!optedOut) {
+                    updateInstallation();
+                }
                 recipesManager.syncConfig();
             }
         });
@@ -280,7 +282,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     public void setProfileId(String profileId) {
         nearItUserProfile.setProfileId(profileId);
-        updateInstallation();
+        if(!optedOut) {
+            updateInstallation();
+        }
     }
 
     @Deprecated
@@ -475,7 +479,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     }
 
     public void updateInstallation() {
-        nearInstallation.refreshInstallation();
+        if(!optedOut) {
+            nearInstallation.refreshInstallation();
+        }
     }
 
     @Override
