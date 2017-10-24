@@ -29,6 +29,8 @@ import it.near.sdk.utils.NearUtils;
  */
 public class NearAsyncHttpClient {
 
+    private static final int OPTED_OUT_CODE = 451;
+
     private static AsyncHttpClient syncHttpClient = new SyncHttpClient();
     private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
@@ -40,16 +42,16 @@ public class NearAsyncHttpClient {
         this.globalConfig = globalConfig;
     }
 
-    public RequestHandle nearGet(String url, ResponseHandlerInterface responseHandlerInterface) throws AuthenticationException {
-        return NearAsyncHttpClient.get(context, url, responseHandlerInterface);
+    public RequestHandle nearGet(String url, NearJsonHttpResponseHandler responseHandlerInterface) throws AuthenticationException {
+        return this.get(context, url, responseHandlerInterface);
     }
 
-    public static RequestHandle get(Context context, String url, ResponseHandlerInterface responseHandler) throws AuthenticationException {
+    public RequestHandle get(Context context, String url, NearJsonHttpResponseHandler responseHandler) throws AuthenticationException {
         return getClient().get(context,
                 buildUrl(context, url),
-                getHeaders(context),
+                getHeaders(context, globalConfig.getProfileId()),
                 null,
-                responseHandler);
+                new Middle(responseHandler));
     }
 
     private static AsyncHttpClient getClient() {
@@ -59,32 +61,44 @@ public class NearAsyncHttpClient {
         return asyncHttpClient;
     }
 
-    public RequestHandle nearPost(String url, String requestBody, ResponseHandlerInterface responseHandlerInterface) throws AuthenticationException, UnsupportedEncodingException {
-        return NearAsyncHttpClient.post(context, url, requestBody, responseHandlerInterface);
+    public RequestHandle nearPost(String url, String requestBody, NearJsonHttpResponseHandler responseHandlerInterface) throws AuthenticationException, UnsupportedEncodingException {
+        return this.post(context, url, requestBody, responseHandlerInterface);
     }
 
-    public static RequestHandle post(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
+    public RequestHandle post(Context context, String url, String requestBody, NearJsonHttpResponseHandler responseHandler) throws AuthenticationException, UnsupportedEncodingException {
         HttpEntity body = new StringEntity(requestBody);
         return getClient().post(context,
                 buildUrl(context, url),
-                getHeaders(context),
+                getHeaders(context, globalConfig.getProfileId()),
                 body,
                 Constants.Headers.jsonApiHeader,
-                responseHandler);
+                new Middle(responseHandler));
     }
 
-    public RequestHandle nearPut(String url, String requestBody, ResponseHandlerInterface responseHandler) throws AuthenticationException, UnsupportedEncodingException {
-        return NearAsyncHttpClient.put(context, url, requestBody, responseHandler);
+    public RequestHandle nearPut(String url, String requestBody, NearJsonHttpResponseHandler responseHandler) throws AuthenticationException, UnsupportedEncodingException {
+        return this.put(context, url, requestBody, responseHandler);
     }
 
-    public static RequestHandle put(Context context, String url, String requestBody, ResponseHandlerInterface responseHandler) throws UnsupportedEncodingException, AuthenticationException {
+    public RequestHandle put(Context context, String url, String requestBody, NearJsonHttpResponseHandler responseHandler) throws UnsupportedEncodingException, AuthenticationException {
         HttpEntity body = new StringEntity(requestBody);
         return getClient().put(context,
                 buildUrl(context, url),
-                getHeaders(context),
+                getHeaders(context, globalConfig.getProfileId()),
                 body,
                 Constants.Headers.jsonApiHeader,
-                responseHandler);
+                new Middle(responseHandler));
+    }
+
+    public RequestHandle nearDelete(String url, NearJsonHttpResponseHandler responseHandlerInterface) throws AuthenticationException, UnsupportedEncodingException {
+        return this.delete(context, url, responseHandlerInterface);
+    }
+
+    public RequestHandle delete(Context context, String url, NearJsonHttpResponseHandler responseHandlerInterface) throws AuthenticationException, UnsupportedEncodingException {
+        return getClient().delete(context,
+                buildUrl(context, url),
+                getHeaders(context, globalConfig.getProfileId()),
+                null,
+                new Middle(responseHandlerInterface));
     }
 
     public RequestHandle nearMock(Context context, String url, NearJsonHttpResponseHandler responseHandlerInterface, int mockResId) {
@@ -103,7 +117,32 @@ public class NearAsyncHttpClient {
         return nearMock(context, url, responseHandlerInterface, mockResId);
     }
 
-    private static Header[] getHeaders(Context context) throws AuthenticationException {
+    public class Middle extends NearJsonHttpResponseHandler {
+        NearJsonHttpResponseHandler handler;
+
+        public Middle(NearJsonHttpResponseHandler handler) {
+            this.handler = handler;
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, String responseString) {
+            handler.onSuccess(statusCode, headers, responseString);
+        }
+
+        @Override
+        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+            if(statusCode == OPTED_OUT_CODE) {
+                optOutCheck();
+            }
+            handler.onFailureUnique(statusCode, headers, throwable, responseString);
+        }
+    }
+
+    private void optOutCheck() {
+        globalConfig.setOptOut();
+    }
+
+    private static Header[] getHeaders(Context context, String profileId) throws AuthenticationException {
         String apiKey = ApiKeyConfig.readApiKey(context);
         return new Header[]{
                 new BasicHeader(Constants.Headers.accessToken, "bearer " + apiKey),
@@ -111,7 +150,8 @@ public class NearAsyncHttpClient {
                 new BasicHeader(Constants.Headers.accept, Constants.Headers.jsonApiHeader),
                 new BasicHeader(Constants.Headers.version_header_key, String.valueOf(it.near.sdk.BuildConfig.API_VERSION)),
                 new BasicHeader(Constants.Headers.near_version_header_key, String.valueOf(it.near.sdk.BuildConfig.NEAR_API_VERSION)),
-                new BasicHeader(Constants.Headers.acceptLanguage, NearUtils.toBcp47Language(Locale.getDefault()))
+                new BasicHeader(Constants.Headers.acceptLanguage, NearUtils.toBcp47Language(Locale.getDefault())),
+                new BasicHeader(Constants.Headers.profile_id, profileId)
         };
     }
 

@@ -107,9 +107,9 @@ public class NearInstallationRequestQueue {
 
     private class InstallationRequest {
         String installationBody;
-        JsonHttpResponseHandler responseHandler;
+        NearJsonHttpResponseHandler responseHandler;
 
-        InstallationRequest(String installationBody, JsonHttpResponseHandler responseHandler) {
+        InstallationRequest(String installationBody, NearJsonHttpResponseHandler responseHandler) {
             this.installationBody = installationBody;
             this.responseHandler = responseHandler;
         }
