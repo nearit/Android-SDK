@@ -8,6 +8,7 @@ import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
 import com.loopj.android.http.SyncHttpClient;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -122,6 +123,16 @@ public class NearAsyncHttpClient {
 
         public Middle(NearJsonHttpResponseHandler handler) {
             this.handler = handler;
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+            handler.onSuccess(statusCode, headers, response);
+        }
+
+        @Override
+        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+            handler.onSuccess(statusCode, headers, response);
         }
 
         @Override
