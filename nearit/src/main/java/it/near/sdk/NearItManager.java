@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearInstallation;
+import it.near.sdk.communication.OptOutAPI;
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
@@ -65,7 +66,7 @@ import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.CurrentTime;
-import it.near.sdk.utils.NearItOptOutListener;
+import it.near.sdk.communication.OptOutNotifier;
 import it.near.sdk.utils.NearUtils;
 import it.near.sdk.utils.timestamp.NearItTimeStampApi;
 import it.near.sdk.utils.timestamp.NearTimestampChecker;
@@ -110,6 +111,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     private NearItUserProfile nearItUserProfile;
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private static Context context;
+    private OptOutAPI optOutAPI;
     private boolean optedOut;
 
     /**
@@ -156,8 +158,11 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         String apiKey = ApiKeyConfig.readApiKey(context);
         this.context = context.getApplicationContext();
 
+
         this.globalConfig = new GlobalConfig(
                 GlobalConfig.buildSharedPreferences(context));
+
+        this.optOutAPI = new OptOutAPI(new NearAsyncHttpClient(context, globalConfig), globalConfig);
 
         globalConfig.setOptOutListener(this);
         globalConfig.setApiKey(apiKey);
@@ -306,12 +311,12 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         nearItUserProfile.setBatchUserData(context, valuesMap, listener);
     }
 
-    public void getOptOut() {
-        globalConfig.getOptOut();
+    public boolean getOptOut() {
+        return globalConfig.getOptOut();
     }
 
-    public void optOut(@NonNull NearItOptOutListener listener) {
-        globalConfig.setOptOut(listener);
+    public void optOut(@NonNull OptOutNotifier listener) {
+        optOutAPI.optOut(listener);
     }
 
     /**
@@ -535,6 +540,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     @Override
     public void onOptOut() {
         optedOut = true;
+        //  propagate opt-out to other components
         geopolis.onOptOut();
         recipesManager.onOptOut();
         nearItUserProfile.onOptOut();
