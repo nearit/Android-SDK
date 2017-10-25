@@ -192,6 +192,8 @@ public class GeopolisManager {
             // altBeaconMonitor.setUpMonitor(nodes);
             geofenceMonitor.setUpMonitor(GeoFenceMonitor.filterGeofence(nodes));
             geofenceMonitor.startGFRadar();
+        } else {
+            NearLog.d(TAG, "User opted out, radar not started");
         }
     }
 
