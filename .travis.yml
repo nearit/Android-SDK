@@ -25,11 +25,11 @@ android:
 before_install:
   - export TZ=Australia/Canberra
 script:
-  - ./gradlew clean check
+  - ./gradlew clean check connectedCheck
 before_script:
   - echo no | android create avd --force -n test -t android-21 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
-#  - android-wait-for-emulator
+  - android-wait-for-emulator
   - adb shell input keyevent 82 &
 before_install:
   - chmod +x scripts/ci-mock-google-services-setup.sh
