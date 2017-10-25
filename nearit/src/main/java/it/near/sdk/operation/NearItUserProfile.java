@@ -257,6 +257,8 @@ public class NearItUserProfile {
             } catch (AuthenticationException | UnsupportedEncodingException e) {
                 listener.onDataNotSetError("error: impossible to send requests");
             }
+        } else {
+            NearLog.d(TAG, "User data not created because user opted-out");
         }
     }
 
@@ -323,6 +325,8 @@ public class NearItUserProfile {
             } catch (AuthenticationException | UnsupportedEncodingException e) {
                 listener.onDataNotSetError("error: impossible to send request");
             }
+        } else {
+            NearLog.d(TAG, "User data not created because user opted-out");
         }
     }
 
