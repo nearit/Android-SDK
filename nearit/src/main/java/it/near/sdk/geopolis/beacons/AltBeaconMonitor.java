@@ -25,6 +25,7 @@ import org.altbeacon.beacon.startup.RegionBootstrap;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -273,7 +274,7 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
 
     public void onForeground() {
         // When going to the foreground, if we have regions to range, start ranging
-        if(!optedOut) {
+        if (!optedOut) {
             refreshRangingList();
             startRanging();
         }
@@ -412,6 +413,8 @@ public class AltBeaconMonitor extends OnLifecycleEventListener implements Beacon
         optedOut = true;
         stopRadar();
         stopRanging();
+        regions = Collections.emptyList();
+        rangingRadars = Collections.emptyMap();
         clearSharedPrefs();
     }
 }

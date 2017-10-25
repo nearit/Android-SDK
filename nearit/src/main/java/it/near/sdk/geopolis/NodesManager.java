@@ -8,6 +8,8 @@ import android.support.annotation.NonNull;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.geopolis.beacons.BeaconNode;
@@ -161,6 +163,7 @@ public class NodesManager {
 
     public void onOptOut() {
         optedOut = true;
+        nodes = Collections.emptyList();
         clearSharedPrefs();
     }
 }

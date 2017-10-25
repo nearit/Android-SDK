@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.geopolis.GeopolisManager;
@@ -208,6 +209,7 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
     public void onOptOut() {
         optedOut = true;
         stopGFRadar();
+        currentGeofences = Collections.emptyList();
         clearSharedPrefs();
     }
 }
