@@ -24,6 +24,8 @@ public class OptOutAPI {
     private static final String PROFILE_RES_TYPE = "profiles";
     private static final String OPTOUT_RES_TYPE = "optout";
 
+    private static final int OPTOUT_SUCCESS_CODE = 202;
+
     private final NearAsyncHttpClient httpClient;
     private final GlobalConfig globalConfig;
 
@@ -52,19 +54,27 @@ public class OptOutAPI {
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     NearLog.d(TAG, "Profile opted out: " + response.toString());
-                    optOutNotifier.onSuccess();
-                    globalConfig.setOptOut();
+                    OptOutAPI.this.onSuccess(optOutNotifier);
                 }
 
                 @Override
                 public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    optOutNotifier.onFailure("network error: " + statusCode);
+                    if(statusCode == OPTOUT_SUCCESS_CODE) {
+                        OptOutAPI.this.onSuccess(optOutNotifier);
+                    } else {
+                        optOutNotifier.onFailure("network error: " + statusCode);
+                    }
                 }
             });
         } catch (AuthenticationException | UnsupportedEncodingException e) {
             optOutNotifier.onFailure("error: impossible to send request");
         }
 
+    }
+
+    private void onSuccess(OptOutNotifier optOutNotifier) {
+        optOutNotifier.onSuccess();
+        globalConfig.setOptOut();
     }
 
 }
