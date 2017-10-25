@@ -6,26 +6,10 @@ NearIT creates an anonymous profile for every user of your app. You can choose t
 
 You can set user data with this method:
 <div class="code-java">
-NearItManager.getInstance().setUserData("name", "John", new UserDataNotifier() {
-    @Override
-    public void onDataCreated() {
-        // data was set/created
-    }                                           
-    @Override
-    public void onDataNotSetError(String error) {
-        // there was an error
-    }
-});
+NearItManager.getInstance().setUserData("name", "John");
 </div>
 <div class="code-kotlin">
-NearItManager.getInstance().setUserData("name", "John", object : UserDataNotifier {
-    override fun onDataCreated() {
-        // data was set/created
-    }
-    override fun onDataNotSetError(error: String) {
-        // there was an error
-    }
-})
+NearItManager.getInstance().setUserData("name", "John")
 </div>
 
 If you have multiple data properties, set them in batch:
@@ -34,16 +18,7 @@ HashMap<String, String> userDataMap = new HashMap<>();
 userDataMap.put("name", "John");
 userDataMap.put("age", "23");           // set everything as String
 userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
-NearItManager.getInstance().setBatchUserData(userDataMap, new UserDataNotifier() {
-	@Override
-	public void onDataCreated() {
-		// data was set/created 
-	}
-	@Override
-	public void onDataNotSetError(String error) {
-	    // there was an error  
-	}
-});
+NearItManager.getInstance().setBatchUserData(userDataMap);
 </div>
 <div class="code-kotlin">
 val userDataMap: HashMap<String, String> = hashMapOf()
@@ -52,14 +27,7 @@ with(userDataMap) {
     put("age", "23")            // set everything as String
     put("saw_tutorial", "true") // even booleans, the server has all the right logic
 }
-NearItManager.getInstance().setBatchUserData(userDataMap, object : UserDataNotifier {
-    override fun onDataCreated() {
-        // data was set/created 
-    }
-    override fun onDataNotSetError(error: String) {
-        // there was an error  
-    }
-})
+NearItManager.getInstance().setBatchUserData(userDataMap)
 </div>
 
 If you want to set a **date** as a value, you have to use the format "MM-DD-YYYY".
