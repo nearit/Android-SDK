@@ -276,6 +276,8 @@ public class RecipesManager implements RecipeEvaluator {
     public void sendTracking(TrackingInfo trackingInfo, String trackingEvent) throws JSONException {
         if (!optedOut) {
             recipeTrackSender.sendTracking(trackingInfo, trackingEvent);
+        } else {
+            NearLog.d(TAG, "Tracking not sent because user opted-out");
         }
     }
 
