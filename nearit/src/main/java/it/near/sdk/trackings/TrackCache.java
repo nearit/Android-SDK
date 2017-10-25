@@ -21,7 +21,6 @@ public class TrackCache {
 
     private final SharedPreferences sharedPreferences;
     private List<TrackRequest> requestCache;
-    private boolean optedOut;
 
     public TrackCache(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -97,7 +96,6 @@ public class TrackCache {
     }
 
     public void onOptOut() {
-        optedOut = true;
         clearCache();
         clearSharedPrefs();
     }

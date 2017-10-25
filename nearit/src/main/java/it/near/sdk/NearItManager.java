@@ -497,9 +497,11 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public void gotRecipe(Recipe recipe, TrackingInfo trackingInfo) {
-        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
-        if (reaction != null) {
-            reaction.handleReaction(recipe, trackingInfo);
+        if(!globalConfig.getOptOut()) {
+            Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
+            if (reaction != null) {
+                reaction.handleReaction(recipe, trackingInfo);
+            }
         }
     }
 
