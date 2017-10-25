@@ -84,22 +84,24 @@ public class RecipeRepository {
     }
 
     void refreshRecipes(final RecipesFetchListener listener) {
-        recipesApi.processRecipes(new RecipesApi.RecipesListener() {
-            @Override
-            public void onRecipeProcessSuccess(List<Recipe> remote_recipes, boolean online_evaluation_fallback) {
-                recipes = remote_recipes;
-                setCacheTimestamp(currentTime.currentTimeStampSeconds());
-                cache.persistList(recipes);
+        if (!optedOut) {
+            recipesApi.processRecipes(new RecipesApi.RecipesListener() {
+                @Override
+                public void onRecipeProcessSuccess(List<Recipe> remote_recipes, boolean online_evaluation_fallback) {
+                    recipes = remote_recipes;
+                    setCacheTimestamp(currentTime.currentTimeStampSeconds());
+                    cache.persistList(recipes);
 
-                setOnlineEv(online_evaluation_fallback);
-                listener.onGotRecipes(recipes, online_evaluation_fallback, true);
-            }
+                    setOnlineEv(online_evaluation_fallback);
+                    listener.onGotRecipes(recipes, online_evaluation_fallback, true);
+                }
 
-            @Override
-            public void onRecipeProcessError() {
-                listener.onGotRecipes(getLocalRecipes(), getOnlineEv(), false);
-            }
-        });
+                @Override
+                public void onRecipeProcessError() {
+                    listener.onGotRecipes(getLocalRecipes(), getOnlineEv(), false);
+                }
+            });
+        }
     }
 
     private void setCacheTimestamp(long timestamp) {
@@ -145,6 +147,7 @@ public class RecipeRepository {
         optedOut = true;
         cache.onOptOut();
         clearSharedPrefs();
+        recipes = Collections.emptyList();
     }
 
 }

@@ -112,7 +112,6 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private static Context context;
     private OptOutAPI optOutAPI;
-    private boolean optedOut;
 
     /**
      * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
@@ -175,29 +174,29 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     }
 
     private void firstRun() {
-        nearItUserProfile.setProfileUpdateListener(this);
-        nearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
-            @Override
-            public void onProfileCreated(boolean created, String profileId) {
-                NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
-                if (created) {
-                    recipesManager.refreshConfig();
-                } else {
+        if (!globalConfig.getOptOut()) {
+            nearItUserProfile.setProfileUpdateListener(this);
+            nearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
+                @Override
+                public void onProfileCreated(boolean created, String profileId) {
+                    NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
+                    if (created) {
+                        recipesManager.refreshConfig();
+                    } else {
+                        recipesManager.syncConfig();
+                    }
+                }
+
+                @Override
+                public void onProfileCreationError(String error) {
+                    NearLog.d(TAG, "Error creating profile. Profile not present");
+                    // in case of success, the installation is automatically registered
+                    // so we update/create the installation only on profile failure
+                    updateInstallation();
                     recipesManager.syncConfig();
                 }
-            }
-
-            @Override
-            public void onProfileCreationError(String error) {
-                NearLog.d(TAG, "Error creating profile. Profile not present");
-                // in case of success, the installation is automatically registered
-                // so we update/create the installation only on profile failure
-                if(!optedOut) {
-                    updateInstallation();
-                }
-                recipesManager.syncConfig();
-            }
-        });
+            });
+        }
     }
 
     private static void registerReceivers() {
@@ -282,7 +281,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     public void setProfileId(String profileId) {
         nearItUserProfile.setProfileId(profileId);
-        if(!optedOut) {
+        if (!globalConfig.getOptOut()) {
             updateInstallation();
         }
     }
@@ -479,15 +478,17 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     }
 
     public void updateInstallation() {
-        if(!optedOut) {
+        if (!globalConfig.getOptOut()) {
             nearInstallation.refreshInstallation();
         }
     }
 
     @Override
     public void onProfileUpdated() {
-        nearInstallation.refreshInstallation();
-        refreshConfigs();
+        if (!globalConfig.getOptOut()) {
+            nearInstallation.refreshInstallation();
+            refreshConfigs();
+        }
     }
 
     private void addReaction(Reaction reaction) {
@@ -504,7 +505,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public void processRecipe(String recipeId) {
-        if(!optedOut) {
+        if (!globalConfig.getOptOut()) {
             recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
                 @Override
                 public void onRecipeFetchSuccess(Recipe recipe) {
@@ -523,7 +524,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public void processRecipe(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleId) {
-        if (!optedOut) {
+        if (!globalConfig.getOptOut()) {
             Reaction reaction = reactions.get(reactionPluginId);
             if (reaction == null) return;
             reaction.handlePushReaction(recipeId, notificationText, reactionActionId, reactionBundleId);
@@ -532,7 +533,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public boolean processReactionBundle(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleString) {
-        if (!optedOut) {
+        if (!globalConfig.getOptOut()) {
             Reaction reaction = reactions.get(reactionPluginId);
             if (reaction == null) return false;
             return reaction.handlePushBundledReaction(recipeId, notificationText, reactionActionId, reactionBundleString);
@@ -545,10 +546,10 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public void onOptOut() {
-        optedOut = true;
         //  propagate opt-out to other components
         geopolis.onOptOut();
         recipesManager.onOptOut();
         nearItUserProfile.onOptOut();
+        nearInstallation.onOptOut();
     }
 }

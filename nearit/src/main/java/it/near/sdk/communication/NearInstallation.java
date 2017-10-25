@@ -44,10 +44,17 @@ public class NearInstallation {
 
     private final GlobalConfig globalConfig;
 
+    private boolean optedOut;
+
     public NearInstallation(Context context, NearAsyncHttpClient httpClient, GlobalConfig globalConfig) {
         this.context = context;
         this.globalConfig = globalConfig;
-        requestQueue = new NearInstallationRequestQueue(httpClient, globalConfig);
+        optedOut = globalConfig.getOptOut();
+        if (optedOut) {
+            requestQueue = null;
+        } else {
+            requestQueue = new NearInstallationRequestQueue(httpClient, globalConfig);
+        }
     }
 
     /**
@@ -127,5 +134,9 @@ public class NearInstallation {
             }
         }
         return token;
+    }
+
+    public void onOptOut() {
+        optedOut = true;
     }
 }
