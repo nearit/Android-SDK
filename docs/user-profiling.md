@@ -154,4 +154,4 @@ NearItManager.getInstance().optOut(object : OptOutNotifier {
             }
         })
 </div>
-If the opt-out call is successful, the sdk **will cease to work**, it means that the opted out device won't receive any notifications at all.
+If the opt-out call is successful, the sdk **will cease to work**, it means the opted out device won't receive any notifications at all.
