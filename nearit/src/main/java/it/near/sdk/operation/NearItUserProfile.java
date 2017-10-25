@@ -34,6 +34,8 @@ public class NearItUserProfile {
     private static final String DATA_POINTS_RES_TYPE = "data_points";
     private static final String TAG = "NearItUserProfile";
 
+    public static final String OPTED_OUT_PROFILE_ID = "Opted_Out_Profile";
+
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
     private ProfileUpdateListener profileUpdateListener;
@@ -66,28 +68,36 @@ public class NearItUserProfile {
     @Deprecated
     @Nullable
     public String getProfileId() {
-        return globalConfig.getProfileId();
+        if (optedOut) {
+            return OPTED_OUT_PROFILE_ID;
+        } else {
+            return globalConfig.getProfileId();
+        }
     }
 
     public void getProfileId(Context context, final ProfileFetchListener listener) {
-        String profileId = globalConfig.getProfileId();
-        if (profileId != null) {
-            listener.onProfileId(profileId);
+        if (optedOut) {
+            listener.onProfileId(OPTED_OUT_PROFILE_ID);
         } else {
-            if (profileCreationBusy) {
-                profileFetchListener = listener;
+            String profileId = globalConfig.getProfileId();
+            if (profileId != null) {
+                listener.onProfileId(profileId);
             } else {
-                createNewProfile(context, new ProfileCreationListener() {
-                    @Override
-                    public void onProfileCreated(boolean created, String profileId) {
-                        listener.onProfileId(profileId);
-                    }
+                if (profileCreationBusy) {
+                    profileFetchListener = listener;
+                } else {
+                    createNewProfile(context, new ProfileCreationListener() {
+                        @Override
+                        public void onProfileCreated(boolean created, String profileId) {
+                            listener.onProfileId(profileId);
+                        }
 
-                    @Override
-                    public void onProfileCreationError(String error) {
-                        listener.onError("Couldn't create profile");
-                    }
-                });
+                        @Override
+                        public void onProfileCreationError(String error) {
+                            listener.onError("Couldn't create profile");
+                        }
+                    });
+                }
             }
         }
     }
@@ -195,56 +205,58 @@ public class NearItUserProfile {
      * @param listener interface for success or failure on property creation.
      */
     public void setUserData(final Context context, String key, String value, final UserDataNotifier listener) {
-        final NearItManager nearItManager = NearItManager.getInstance();
-        String profileId = nearItManager.globalConfig.getProfileId();
-        if (profileId == null) {
-            listener.onDataNotSetError("Profile didn't exists");
-            createNewProfile(context, new ProfileCreationListener() {
-                @Override
-                public void onProfileCreated(boolean created, String profileId) {
-                    // TODO replay method call?
-                }
+        if (!optedOut) {
+            final NearItManager nearItManager = NearItManager.getInstance();
+            String profileId = nearItManager.globalConfig.getProfileId();
+            if (profileId == null) {
+                listener.onDataNotSetError("Profile didn't exists");
+                createNewProfile(context, new ProfileCreationListener() {
+                    @Override
+                    public void onProfileCreated(boolean created, String profileId) {
+                        // TODO replay method call?
+                    }
 
-                @Override
-                public void onProfileCreationError(String error) {
+                    @Override
+                    public void onProfileCreationError(String error) {
 
-                }
-            });
-            return;
-        }
+                    }
+                });
+                return;
+            }
 
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("key", key);
-        map.put("value", value);
-        String reqBody = null;
-        try {
-            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", map);
-        } catch (JSONException e) {
-            listener.onDataNotSetError("Request creation error");
-        }
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("key", key);
+            map.put("value", value);
+            String reqBody = null;
+            try {
+                reqBody = NearJsonAPIUtils.toJsonAPI("data_points", map);
+            } catch (JSONException e) {
+                listener.onDataNotSetError("Request creation error");
+            }
 
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(PROFILE_RES_TYPE)
-                .appendPath(profileId)
-                .appendPath(DATA_POINTS_RES_TYPE).build();
-        //TODO not tested
-        try {
-            httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "datapoint created: " + response.toString());
-                    nearItManager.getRecipesManager().refreshConfig();
-                    listener.onDataCreated();
-                }
+            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(PLUGIN_NAME)
+                    .appendPath(PROFILE_RES_TYPE)
+                    .appendPath(profileId)
+                    .appendPath(DATA_POINTS_RES_TYPE).build();
+            //TODO not tested
+            try {
+                httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        NearLog.d(TAG, "datapoint created: " + response.toString());
+                        nearItManager.getRecipesManager().refreshConfig();
+                        listener.onDataCreated();
+                    }
 
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    listener.onDataNotSetError("network error: " + statusCode);
-                }
-            });
-        } catch (AuthenticationException | UnsupportedEncodingException e) {
-            listener.onDataNotSetError("error: impossible to send requests");
+                    @Override
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                        listener.onDataNotSetError("network error: " + statusCode);
+                    }
+                });
+            } catch (AuthenticationException | UnsupportedEncodingException e) {
+                listener.onDataNotSetError("error: impossible to send requests");
+            }
         }
     }
 
@@ -256,59 +268,61 @@ public class NearItUserProfile {
      * @param listener  interface for success or failure on properties creation.
      */
     public void setBatchUserData(final Context context, Map<String, String> valuesMap, final UserDataNotifier listener) {
-        String profileId = NearItManager.getInstance().globalConfig.getProfileId();
-        if (profileId == null) {
-            listener.onDataNotSetError("Profile didn't exists");
-            createNewProfile(context, new ProfileCreationListener() {
-                @Override
-                public void onProfileCreated(boolean created, String profileId) {
+        if (!optedOut) {
+            String profileId = NearItManager.getInstance().globalConfig.getProfileId();
+            if (profileId == null) {
+                listener.onDataNotSetError("Profile didn't exists");
+                createNewProfile(context, new ProfileCreationListener() {
+                    @Override
+                    public void onProfileCreated(boolean created, String profileId) {
 
-                }
+                    }
 
-                @Override
-                public void onProfileCreationError(String error) {
+                    @Override
+                    public void onProfileCreationError(String error) {
 
-                }
-            });
-            return;
-        }
+                    }
+                });
+                return;
+            }
 
-        ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
-        for (Map.Entry<String, String> entry : valuesMap.entrySet()) {
-            HashMap<String, Object> map = new HashMap<>();
-            map.put("key", entry.getKey());
-            map.put("value", entry.getValue());
-            maps.add(map);
-        }
-        String reqBody = null;
-        try {
-            reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
-        } catch (JSONException e) {
-            listener.onDataNotSetError("Request creatin error");
-        }
+            ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
+            for (Map.Entry<String, String> entry : valuesMap.entrySet()) {
+                HashMap<String, Object> map = new HashMap<>();
+                map.put("key", entry.getKey());
+                map.put("value", entry.getValue());
+                maps.add(map);
+            }
+            String reqBody = null;
+            try {
+                reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
+            } catch (JSONException e) {
+                listener.onDataNotSetError("Request creatin error");
+            }
 
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(PROFILE_RES_TYPE)
-                .appendPath(profileId)
-                .appendPath(DATA_POINTS_RES_TYPE).build();
+            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(PLUGIN_NAME)
+                    .appendPath(PROFILE_RES_TYPE)
+                    .appendPath(profileId)
+                    .appendPath(DATA_POINTS_RES_TYPE).build();
 
-        try {
-            httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, "datapoint created: " + response.toString());
-                    NearItManager.getInstance().getRecipesManager().refreshConfig();
-                    listener.onDataCreated();
-                }
+            try {
+                httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        NearLog.d(TAG, "datapoint created: " + response.toString());
+                        NearItManager.getInstance().getRecipesManager().refreshConfig();
+                        listener.onDataCreated();
+                    }
 
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    listener.onDataNotSetError("network error: " + statusCode);
-                }
-            });
-        } catch (AuthenticationException | UnsupportedEncodingException e) {
-            listener.onDataNotSetError("error: impossible to send request");
+                    @Override
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                        listener.onDataNotSetError("network error: " + statusCode);
+                    }
+                });
+            } catch (AuthenticationException | UnsupportedEncodingException e) {
+                listener.onDataNotSetError("error: impossible to send request");
+            }
         }
     }
 
