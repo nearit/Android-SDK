@@ -6,12 +6,15 @@ import android.support.annotation.NonNull;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Objects;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.logging.NearLog;
 import it.near.sdk.operation.NearItUserProfile;
+
+import static it.near.sdk.operation.NearItUserProfile.OPTED_OUT_PROFILE_ID;
 
 /**
  * @author federico.boschini
@@ -40,6 +43,12 @@ public class OptOutAPI {
 
         if (profileId == null) {
             optOutNotifier.onFailure("profile id is null, can't opt-out");
+            return;
+        }
+
+        if (profileId.equals(OPTED_OUT_PROFILE_ID)) {
+            //  already opted out. profile id is a dummy one
+            optOutNotifier.onSuccess();
             return;
         }
 

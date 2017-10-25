@@ -162,8 +162,8 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 GlobalConfig.buildSharedPreferences(context));
 
         this.optOutAPI = new OptOutAPI(new NearAsyncHttpClient(context, globalConfig), globalConfig);
-
         globalConfig.setOptOutListener(this);
+
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
