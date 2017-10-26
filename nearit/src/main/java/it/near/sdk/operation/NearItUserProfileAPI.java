@@ -81,6 +81,9 @@ public class NearItUserProfileAPI {
             nearItManager.updateInstallation();
             profileCreationBusy = false;
 
+            //  send user data if any already saved before profile creation
+            userDataBackOff.sendDataPoints();
+
             //  notify the listener
             notifyFetchListener(profileId);
             listener.onProfileCreated(false, profileId);
