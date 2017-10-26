@@ -9,7 +9,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class UserDataCacheManager {
 
@@ -64,18 +66,20 @@ public class UserDataCacheManager {
     boolean removeSentData(HashMap<String, String> sentData) {
         boolean removed = false;
         HashMap<String, String> storedData = loadUserDataFromSP();
+        Set<String> cacheKeySet = new HashSet<>();
+        Set<String> storedKeySet = new HashSet<>();
         for (String key : sentData.keySet()) {
             if (userData.containsKey(key) && userData.get(key).equals(sentData.get(key))) {
-                userData.remove(key);
+                cacheKeySet.add(key);
                 if (storedData.containsKey(key) && storedData.get(key).equals(sentData.get(key))) {
-                    storedData.remove(key);
+                    storedKeySet.add(key);
                 }
-                removed = true;
             }
         }
-        if (removed) {
+        if (userData.keySet().removeAll(cacheKeySet) && storedData.keySet().removeAll(storedKeySet)) {
             String stringMap = serialize(storedData);
             sharedPreferences.edit().putString(SP_MAP_KEY, stringMap).commit();
+            removed = true;
         }
         return removed;
     }
