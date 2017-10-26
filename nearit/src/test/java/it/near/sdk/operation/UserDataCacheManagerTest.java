@@ -22,7 +22,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -139,20 +141,38 @@ public class UserDataCacheManagerTest {
 
     @Test
     public void removeSentData() {
+        when(mockSharedPreferences.getString(SP_MAP_KEY, null)).thenReturn(
+                "{" +
+                "\"dummy\":\"dummy\"," +
+                "\"dummy2\":\"dummy2\"" +
+                "}",
+                "{" +
+                "\"dummy\":\"dummy\"," +
+                "\"dummy2\":\"dummy2\"" +
+                "}",
+                "{" +
+                "\"dummy\":\"dummy\"," +
+                "}",
+                "{" +
+                "\"dummy\":\"dummy2\"," +
+                "}");
         HashMap<String, String> toBeRemoved = Maps.newHashMap();
         cacheManager.setUserData("dummy", "dummy");
         cacheManager.setUserData("dummy2", "dummy2");
         //  2 add
         verify(mockEditor, times(2)).putString(anyString(), anyString());
+
         toBeRemoved.put("dummy", "dummy");
         cacheManager.removeSentData(toBeRemoved);
         assertThat(cacheManager.getUserData().size(), is(1));
         //  + 1 remove
         verify(mockEditor, times(3)).putString(anyString(), anyString());
+
         cacheManager.setUserData("dummy", "dummy");
         cacheManager.setUserData("dummy", "dummy2");
         //  + 1 add + 1 update
         verify(mockEditor, times(5)).putString(anyString(), anyString());
+
         toBeRemoved = Maps.newHashMap();
         toBeRemoved.put("dummy", "dummy");
         cacheManager.removeSentData(toBeRemoved);
