@@ -76,8 +76,8 @@ public class TrackRequestTest {
     @Test(expected = JSONException.class)
     public void deSerializationWithNullValues_shouldNotWork() throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put(KEY_URL, null);
-        jsonObject.put(KEY_BODY, null);
+        jsonObject.put(KEY_URL, JSONObject.NULL);
+        jsonObject.put(KEY_BODY, JSONObject.NULL);
         TrackRequest.fromJsonObject(jsonObject);
     }
 
