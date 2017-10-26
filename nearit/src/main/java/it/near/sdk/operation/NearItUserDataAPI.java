@@ -8,7 +8,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 import cz.msebera.android.httpclient.auth.AuthenticationException;
@@ -36,13 +38,18 @@ public class NearItUserDataAPI {
 
     public void sendDataPoints(@NonNull final HashMap<String, String> userData, final UserDataSendListener listener) {
         String profileId = globalConfig.getProfileId();
-        HashMap<String, Object> userDataConv = new HashMap<>();
-        userDataConv.putAll(userData);
-        if (!userDataConv.isEmpty()) {
+        if (!userData.isEmpty()) {
             if (profileId != null) {
+                ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
+                for (Map.Entry<String, String> entry : userData.entrySet()) {
+                    HashMap<String, Object> map = new HashMap<>();
+                    map.put("key", entry.getKey());
+                    map.put("value", entry.getValue());
+                    maps.add(map);
+                }
                 String reqBody;
                 try {
-                    reqBody = NearJsonAPIUtils.toJsonAPI("data_points", userDataConv);
+                    reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
                 } catch (JSONException e) {
                     NearLog.d(TAG, "Error creating userdata request");
                     listener.onSendingFailure();
