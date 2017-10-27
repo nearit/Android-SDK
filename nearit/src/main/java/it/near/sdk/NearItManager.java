@@ -25,6 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.communication.NearInstallation;
+import it.near.sdk.communication.OptOutAPI;
 import it.near.sdk.geopolis.GeopolisManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.geopolis.geofences.GeoFenceSystemEventsReceiver;
@@ -65,6 +66,7 @@ import it.near.sdk.trackings.TrackManager;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.ApiKeyConfig;
 import it.near.sdk.utils.CurrentTime;
+import it.near.sdk.communication.OptOutNotifier;
 import it.near.sdk.utils.NearUtils;
 import it.near.sdk.utils.timestamp.NearItTimeStampApi;
 import it.near.sdk.utils.timestamp.NearTimestampChecker;
@@ -82,7 +84,7 @@ import it.near.sdk.utils.timestamp.NearTimestampChecker;
  * }
  * </pre>
  */
-public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler {
+public class NearItManager implements ProfileUpdateListener, RecipeReactionHandler, GlobalConfig.OptOutListener {
 
     private static final int NEAR_JOB_SERVICE_ID = 888;
     @Nullable
@@ -109,6 +111,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     private NearItUserProfile nearItUserProfile;
     private HashMap<String, Reaction> reactions = new HashMap<>();
     private static Context context;
+    private OptOutAPI optOutAPI;
 
     /**
      * Setup method for the library, this should absolutely be called inside the onCreate callback of the app Application class.
@@ -154,40 +157,46 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
         String apiKey = ApiKeyConfig.readApiKey(context);
         this.context = context.getApplicationContext();
 
+
         this.globalConfig = new GlobalConfig(
                 GlobalConfig.buildSharedPreferences(context));
+
+        this.optOutAPI = new OptOutAPI(new NearAsyncHttpClient(context, globalConfig), globalConfig);
+        globalConfig.setOptOutListener(this);
 
         globalConfig.setApiKey(apiKey);
         globalConfig.setAppId(NearUtils.fetchAppIdFrom(apiKey));
 
-        nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context), globalConfig);
-        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context));
+        nearInstallation = new NearInstallation(context, new NearAsyncHttpClient(context, globalConfig), globalConfig);
+        nearItUserProfile = new NearItUserProfile(globalConfig, new NearAsyncHttpClient(context, globalConfig));
 
         plugInSetup(context, globalConfig);
     }
 
     private void firstRun() {
-        nearItUserProfile.setProfileUpdateListener(this);
-        nearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
-            @Override
-            public void onProfileCreated(boolean created, String profileId) {
-                NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
-                if (created) {
-                    recipesManager.refreshConfig();
-                } else {
+        if (!globalConfig.getOptOut()) {
+            nearItUserProfile.setProfileUpdateListener(this);
+            nearItUserProfile.createNewProfile(context, new ProfileCreationListener() {
+                @Override
+                public void onProfileCreated(boolean created, String profileId) {
+                    NearLog.d(TAG, created ? "Profile created successfully." : "Profile is present");
+                    if (created) {
+                        recipesManager.refreshConfig();
+                    } else {
+                        recipesManager.syncConfig();
+                    }
+                }
+
+                @Override
+                public void onProfileCreationError(String error) {
+                    NearLog.d(TAG, "Error creating profile. Profile not present");
+                    // in case of success, the installation is automatically registered
+                    // so we update/create the installation only on profile failure
+                    updateInstallation();
                     recipesManager.syncConfig();
                 }
-            }
-
-            @Override
-            public void onProfileCreationError(String error) {
-                NearLog.d(TAG, "Error creating profile. Profile not present");
-                // in case of success, the installation is automatically registered
-                // so we update/create the installation only on profile failure
-                updateInstallation();
-                recipesManager.syncConfig();
-            }
-        });
+            });
+        }
     }
 
     private static void registerReceivers() {
@@ -200,7 +209,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 RecipesHistory.getSharedPreferences(context),
                 new CurrentTime()
         );
-        TrackManager trackManager = TrackManager.obtain(context);
+        TrackManager trackManager = TrackManager.obtain(context, globalConfig);
         List<Validator> validators = new ArrayList<>();
         validators.add(new CooldownValidator(recipesHistory, new CurrentTime()));
         validators.add(new AdvScheduleValidator(new CurrentTime()));
@@ -208,7 +217,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
         RecipesApi recipesApi = RecipesApi.obtain(context, recipesHistory, globalConfig);
         NearItTimeStampApi nearItTimeStampApi = new NearItTimeStampApi(
-                new NearAsyncHttpClient(this.context),
+                new NearAsyncHttpClient(this.context, globalConfig),
                 NearItTimeStampApi.buildMorpheus(),
                 globalConfig);
         NearTimestampChecker nearTimestampChecker = new NearTimestampChecker(nearItTimeStampApi);
@@ -229,7 +238,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
         geopolis = new GeopolisManager(context, recipesManager, globalConfig, trackManager);
 
-        contentNotification = ContentReaction.obtain(context, nearNotifier);
+        contentNotification = ContentReaction.obtain(context, nearNotifier, globalConfig);
         addReaction(contentNotification);
 
         simpleNotification = new SimpleNotificationReaction(nearNotifier);
@@ -239,7 +248,7 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
                 CouponApi.obtain(context, globalConfig));
         addReaction(couponReaction);
 
-        customJSON = CustomJSONReaction.obtain(context, nearNotifier);
+        customJSON = CustomJSONReaction.obtain(context, nearNotifier, globalConfig);
         addReaction(customJSON);
 
         feedback = FeedbackReaction.obtain(context, nearNotifier, globalConfig);
@@ -272,7 +281,9 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     public void setProfileId(String profileId) {
         nearItUserProfile.setProfileId(profileId);
-        updateInstallation();
+        if (!globalConfig.getOptOut()) {
+            updateInstallation();
+        }
     }
 
     @Deprecated
@@ -301,6 +312,14 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     public void setBatchUserData(Map<String, String> valuesMap, @NonNull UserDataNotifier listener) {
         nearItUserProfile.setBatchUserData(context, valuesMap, listener);
+    }
+
+    public boolean getOptOut() {
+        return globalConfig.getOptOut();
+    }
+
+    public void optOut(@NonNull OptOutNotifier listener) {
+        optOutAPI.optOut(listener);
     }
 
     /**
@@ -459,13 +478,17 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
     }
 
     public void updateInstallation() {
-        nearInstallation.refreshInstallation();
+        if (!globalConfig.getOptOut()) {
+            nearInstallation.refreshInstallation();
+        }
     }
 
     @Override
     public void onProfileUpdated() {
-        nearInstallation.refreshInstallation();
-        refreshConfigs();
+        if (!globalConfig.getOptOut()) {
+            nearInstallation.refreshInstallation();
+            refreshConfigs();
+        }
     }
 
     private void addReaction(Reaction reaction) {
@@ -474,44 +497,61 @@ public class NearItManager implements ProfileUpdateListener, RecipeReactionHandl
 
     @Override
     public void gotRecipe(Recipe recipe, TrackingInfo trackingInfo) {
-        Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
-        if (reaction != null) {
-            reaction.handleReaction(recipe, trackingInfo);
+        if(!globalConfig.getOptOut()) {
+            Reaction reaction = reactions.get(recipe.getReaction_plugin_id());
+            if (reaction != null) {
+                reaction.handleReaction(recipe, trackingInfo);
+            }
         }
     }
 
     @Override
     public void processRecipe(String recipeId) {
-        recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
-            @Override
-            public void onRecipeFetchSuccess(Recipe recipe) {
-                String reactionPluginName = recipe.getReaction_plugin_id();
-                Reaction reaction = reactions.get(reactionPluginName);
-                reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
-            }
+        if (!globalConfig.getOptOut()) {
+            recipesManager.processRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
+                @Override
+                public void onRecipeFetchSuccess(Recipe recipe) {
+                    String reactionPluginName = recipe.getReaction_plugin_id();
+                    Reaction reaction = reactions.get(reactionPluginName);
+                    reaction.handlePushReaction(recipe, recipe.getReaction_bundle());
+                }
 
-            @Override
-            public void onRecipeFetchError(String error) {
+                @Override
+                public void onRecipeFetchError(String error) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     @Override
     public void processRecipe(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleId) {
-        Reaction reaction = reactions.get(reactionPluginId);
-        if (reaction == null) return;
-        reaction.handlePushReaction(recipeId, notificationText, reactionActionId, reactionBundleId);
+        if (!globalConfig.getOptOut()) {
+            Reaction reaction = reactions.get(reactionPluginId);
+            if (reaction == null) return;
+            reaction.handlePushReaction(recipeId, notificationText, reactionActionId, reactionBundleId);
+        }
     }
 
     @Override
     public boolean processReactionBundle(String recipeId, String notificationText, String reactionPluginId, String reactionActionId, String reactionBundleString) {
-        Reaction reaction = reactions.get(reactionPluginId);
-        if (reaction == null) return false;
-        return reaction.handlePushBundledReaction(recipeId, notificationText, reactionActionId, reactionBundleString);
+        if (!globalConfig.getOptOut()) {
+            Reaction reaction = reactions.get(reactionPluginId);
+            if (reaction == null) return false;
+            return reaction.handlePushBundledReaction(recipeId, notificationText, reactionActionId, reactionBundleString);
+        } else return false;
     }
 
     public RecipeReactionHandler getRecipesReactionHandler() {
         return this;
+    }
+
+    @Override
+    public void onOptOut() {
+        //  propagate opt-out to other components
+        geopolis.onOptOut();
+        recipesManager.onOptOut();
+        nearItUserProfile.onOptOut();
+        nearInstallation.onOptOut();
     }
 }

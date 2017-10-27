@@ -34,6 +34,11 @@ public class Constants {
         String near_version_header_key = "X-Near-Version";
 
         String acceptLanguage = "Accept-Language";
+
+        /**
+         * Profile-id
+         */
+        String profile_id = "X-Profile-Id";
     }
 
     // -------------------- PATHS --------------------------

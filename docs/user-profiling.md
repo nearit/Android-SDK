@@ -126,3 +126,32 @@ NearItManager.getInstance().resetProfileId(object : NearItUserProfile.ProfileFet
     }
 })
 </div>
+
+## Opt-out
+
+You can **opt-out** a profile and its device:
+<div class="code-java">
+NearItManager.getInstance().optOut(new OptOutNotifier() {
+            @Override
+            public void onSuccess() {
+                //  opt-out successful
+            }
+
+            @Override
+            public void onFailure(String error) {
+                //  network call failed, opt-out will affect the device only
+            }
+        });
+</div>
+<div class="code-kotlin">
+NearItManager.getInstance().optOut(object : OptOutNotifier {
+            override fun onSuccess() {
+                //  opt-out successful
+            }
+
+            override fun onFailure(error: String) {
+                //  network call failed, opt-out will affect the device only
+            }
+        })
+</div>
+If the opt-out call is successful, the sdk **will cease to work**, it means the opted out device won't receive any notifications at all.

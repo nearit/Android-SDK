@@ -178,7 +178,7 @@ public class CouponReaction extends CoreReaction<Coupon> {
         return new CouponReaction(
                 new Cacher<Coupon>(
                         context.getSharedPreferences("never_used", Context.MODE_PRIVATE)),
-                new NearAsyncHttpClient(context),
+                new NearAsyncHttpClient(context, globalConfig),
                 nearNotifier,
                 couponApi,
                 globalConfig,
