@@ -30,61 +30,65 @@ public class NearItUserDataAPI {
 
     private final GlobalConfig globalConfig;
     private final NearAsyncHttpClient httpClient;
+    private boolean optedOut;
 
     public NearItUserDataAPI(GlobalConfig globalConfig, NearAsyncHttpClient httpClient) {
         this.globalConfig = globalConfig;
         this.httpClient = httpClient;
+        optedOut = globalConfig.getOptOut();
     }
 
     public void sendDataPoints(@NonNull final HashMap<String, String> userData, final UserDataSendListener listener) {
-        String profileId = globalConfig.getProfileId();
-        if (!userData.isEmpty()) {
-            if (profileId != null) {
-                ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
-                for (Map.Entry<String, String> entry : userData.entrySet()) {
-                    HashMap<String, Object> map = new HashMap<>();
-                    map.put("key", entry.getKey());
-                    map.put("value", entry.getValue());
-                    maps.add(map);
-                }
-                String reqBody;
-                try {
-                    reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
-                } catch (JSONException e) {
-                    NearLog.d(TAG, "Error creating userdata request");
-                    listener.onSendingFailure();
-                    return;
-                }
+        if (!optedOut) {
+            String profileId = globalConfig.getProfileId();
+            if (!userData.isEmpty()) {
+                if (profileId != null) {
+                    ArrayList<HashMap<String, Object>> maps = new ArrayList<>();
+                    for (Map.Entry<String, String> entry : userData.entrySet()) {
+                        HashMap<String, Object> map = new HashMap<>();
+                        map.put("key", entry.getKey());
+                        map.put("value", entry.getValue());
+                        maps.add(map);
+                    }
+                    String reqBody;
+                    try {
+                        reqBody = NearJsonAPIUtils.toJsonAPI("data_points", maps);
+                    } catch (JSONException e) {
+                        NearLog.d(TAG, "Error creating userdata request");
+                        listener.onSendingFailure();
+                        return;
+                    }
 
-                Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                        .appendPath(PLUGIN_NAME)
-                        .appendPath(PROFILE_RES_TYPE)
-                        .appendPath(profileId)
-                        .appendPath(DATA_POINTS_RES_TYPE).build();
+                    Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                            .appendPath(PLUGIN_NAME)
+                            .appendPath(PROFILE_RES_TYPE)
+                            .appendPath(profileId)
+                            .appendPath(DATA_POINTS_RES_TYPE).build();
 
-                try {
-                    httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
-                        @Override
-                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                            NearLog.d(TAG, "datapoint created: " + response.toString());
-                            listener.onSendingSuccess(userData);
-                        }
+                    try {
+                        httpClient.nearPost(url.toString(), reqBody, new NearJsonHttpResponseHandler() {
+                            @Override
+                            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                                NearLog.d(TAG, "datapoint created: " + response.toString());
+                                listener.onSendingSuccess(userData);
+                            }
 
-                        @Override
-                        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                            NearLog.d(TAG, "datapoint not created, network error: " + statusCode);
-                            listener.onSendingFailure();
-                        }
-                    });
-                } catch (AuthenticationException | UnsupportedEncodingException e) {
-                    NearLog.d(TAG, "error: impossible to send requests");
+                            @Override
+                            public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                                NearLog.d(TAG, "datapoint not created, network error: " + statusCode);
+                                listener.onSendingFailure();
+                            }
+                        });
+                    } catch (AuthenticationException | UnsupportedEncodingException e) {
+                        NearLog.d(TAG, "error: impossible to send requests");
+                    }
                 }
             }
         }
     }
 
     public static NearItUserDataAPI obtain(GlobalConfig globalConfig, Context context) {
-        return new NearItUserDataAPI(globalConfig, new NearAsyncHttpClient(context));
+        return new NearItUserDataAPI(globalConfig, new NearAsyncHttpClient(context, globalConfig));
     }
 
     interface UserDataSendListener {

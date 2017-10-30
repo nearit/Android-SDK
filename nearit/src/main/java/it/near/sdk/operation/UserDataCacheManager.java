@@ -19,6 +19,7 @@ public class UserDataCacheManager {
 
     private final SharedPreferences sharedPreferences;
     private HashMap<String, String> userData;
+    private boolean optedOut;
 
     public UserDataCacheManager(SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -30,12 +31,14 @@ public class UserDataCacheManager {
     }
 
     void setUserData(String key, String value) {
-        if (!userData.containsKey(key)) {
-            userData.put(key, value);
-        } else if (!userData.get(key).equals(value)) {
-            userData.put(key, value);
+        if (!optedOut) {
+            if (!userData.containsKey(key)) {
+                userData.put(key, value);
+            } else if (!userData.get(key).equals(value)) {
+                userData.put(key, value);
+            }
+            saveUserDataToSP(key, value);
         }
-        saveUserDataToSP(key, value);
     }
 
     @SuppressLint("ApplySharedPref")
@@ -117,5 +120,10 @@ public class UserDataCacheManager {
 
     public static UserDataCacheManager obtain(Context context) {
         return new UserDataCacheManager(context.getSharedPreferences(SP_MAP_KEY, Context.MODE_PRIVATE));
+    }
+
+    public void onOptOut() {
+        optedOut = true;
+        removeAllData();
     }
 }

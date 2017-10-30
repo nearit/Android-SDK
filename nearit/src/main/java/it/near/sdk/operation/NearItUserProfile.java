@@ -1,25 +1,12 @@
 package it.near.sdk.operation;
 
 import android.content.Context;
-import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 import java.util.Map;
 
-import cz.msebera.android.httpclient.Header;
-import cz.msebera.android.httpclient.auth.AuthenticationException;
 import it.near.sdk.GlobalConfig;
-import it.near.sdk.NearItManager;
-import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
-import it.near.sdk.communication.NearJsonHttpResponseHandler;
-import it.near.sdk.logging.NearLog;
-import it.near.sdk.utils.NearJsonAPIUtils;
 
 /**
  * Class containing methods to create a new profile and to add values to the profile for user segmentation.
@@ -28,16 +15,22 @@ import it.near.sdk.utils.NearJsonAPIUtils;
  */
 public class NearItUserProfile {
 
+    public static final String OPTED_OUT_PROFILE_ID = "Opted_Out_Profile";
+
     private final GlobalConfig globalConfig;
     private final UserDataBackOff userDataBackOff;
     private final NearItUserProfileAPI userProfileAPI;
 
     private ProfileIdUpdateListener profileIdUpdateListener;
 
+    private boolean optedOut;
+
+
     public NearItUserProfile(GlobalConfig globalConfig, UserDataBackOff userDataBackOff, NearItUserProfileAPI userProfileAPI) {
         this.globalConfig = globalConfig;
         this.userDataBackOff = userDataBackOff;
         this.userProfileAPI = userProfileAPI;
+        optedOut = globalConfig.getOptOut();
     }
 
     public void setProfileIdUpdateListener(ProfileIdUpdateListener profileIdUpdateListener) {
@@ -62,11 +55,19 @@ public class NearItUserProfile {
     @Deprecated
     @Nullable
     public String getProfileId() {
-        return globalConfig.getProfileId();
+        if (optedOut) {
+            return OPTED_OUT_PROFILE_ID;
+        } else {
+            return globalConfig.getProfileId();
+        }
     }
 
     public void getProfileId(Context context, final ProfileFetchListener listener) {
-        userProfileAPI.getProfileId(listener);
+        if (optedOut) {
+            listener.onProfileId(OPTED_OUT_PROFILE_ID);
+        } else {
+            userProfileAPI.getProfileId(listener);
+        }
     }
 
     /**
@@ -86,7 +87,9 @@ public class NearItUserProfile {
      * @param value the value of the data field for the current user.
      */
     public void setUserData(String key, String value) {
-        userDataBackOff.setUserData(key, value);
+        if(!optedOut) {
+            userDataBackOff.setUserData(key, value);
+        }
     }
 
     /**
@@ -95,14 +98,21 @@ public class NearItUserProfile {
      * @param valuesMap map fo key values profile data.
      */
     public void setBatchUserData(Map<String, String> valuesMap) {
-        userDataBackOff.setBatchUserData(valuesMap);
+        if(!optedOut) {
+            userDataBackOff.setBatchUserData(valuesMap);
+        }
     }
 
     public static NearItUserProfile obtain(GlobalConfig globalConfig, Context context) {
         UserDataCacheManager userDataCacheManager = UserDataCacheManager.obtain(context);
         UserDataBackOff userDataBackOff = UserDataBackOff.obtain(userDataCacheManager, globalConfig, context);
-        NearItUserProfileAPI nearItUserProfileAPI = new NearItUserProfileAPI(userDataBackOff, new NearAsyncHttpClient(context), globalConfig);
+        NearItUserProfileAPI nearItUserProfileAPI = new NearItUserProfileAPI(userDataBackOff, new NearAsyncHttpClient(context, globalConfig), globalConfig);
         return new NearItUserProfile(globalConfig, userDataBackOff, nearItUserProfileAPI);
+    }
+
+    public void onOptOut() {
+        optedOut = true;
+        userDataBackOff.onOptOut();
     }
 
     public interface ProfileFetchListener {

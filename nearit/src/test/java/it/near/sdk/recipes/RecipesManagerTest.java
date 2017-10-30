@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -26,6 +27,7 @@ import it.near.sdk.recipes.models.Recipe;
 import it.near.sdk.recipes.models.TriggerRequest;
 import it.near.sdk.recipes.validation.RecipeValidationFilter;
 import it.near.sdk.trackings.TrackingInfo;
+import it.near.sdk.utils.timestamp.NearTimestampChecker;
 
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -38,6 +40,7 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -382,6 +385,45 @@ public class RecipesManagerTest {
         String trackingEvent = "tr";
         recipesManager.sendTracking(triggerRequest.trackingInfo, trackingEvent);
         verify(recipeTrackSender, atLeastOnce()).sendTracking(triggerRequest.trackingInfo, trackingEvent);
+    }
+
+    @Test
+    public void ifOptedOut_shouldNotSyncNorRefreshRecipes() {
+        recipesManager.onOptOut();
+
+        mockRefreshRequest(dummyRecipes, true, true);
+        recipesManager.refreshConfig(recipeRefreshListener);
+        verify(recipeRefreshListener, never()).onRecipesRefresh();
+
+        mockSyncRequest(dummyRecipes, true, true);
+        recipesManager.syncConfig(recipeRefreshListener);
+        verify(recipeRefreshListener, never()).onRecipesRefresh();
+    }
+
+    @Test
+    public void ifOptedOut_shouldNotProcessRecipes() {
+        recipesManager.onOptOut();
+
+        RecipesApi.SingleRecipeListener singleRecipeListener = mock(RecipesApi.SingleRecipeListener.class);
+        String recipeId = "recid";
+        recipesManager.processRecipe(recipeId, singleRecipeListener);
+        verifyZeroInteractions(recipesApi);
+        verify(recipeRepository, times(1)).onOptOut();
+        verify(recipeRepository, never()).addRecipe(ArgumentMatchers.<Recipe>any());
+        verify(recipeRepository, never()).getLocalRecipes();
+        verify(recipeRepository, never()).shouldEvaluateOnline();
+        verify(recipeRepository, never()).refreshRecipes(ArgumentMatchers.<RecipeRepository.RecipesFetchListener>any());
+        verify(recipeRepository, never()).syncRecipes(ArgumentMatchers.<RecipeRepository.RecipesFetchListener>any());
+        verifyZeroInteractions(recipeReactionHandler);
+    }
+
+    @Test
+    public void ifOptedOut_shouldNotSendTrackings() throws JSONException {
+        recipesManager.onOptOut();
+
+        String trackingEvent = "tr";
+        recipesManager.sendTracking(triggerRequest.trackingInfo, trackingEvent);
+        verify(recipeTrackSender, never()).sendTracking(triggerRequest.trackingInfo, trackingEvent);
     }
 
     private void initTriggerRequest() {

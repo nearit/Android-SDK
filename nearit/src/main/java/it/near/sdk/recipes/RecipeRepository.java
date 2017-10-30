@@ -31,6 +31,7 @@ public class RecipeRepository {
     private final RecipesApi recipesApi;
     private final CurrentTime currentTime;
     private final SharedPreferences sp;
+    private boolean optedOut;
 
     public RecipeRepository(NearTimestampChecker nearTimestampChecker,
                             Cacher<Recipe> cache,
@@ -83,22 +84,24 @@ public class RecipeRepository {
     }
 
     void refreshRecipes(final RecipesFetchListener listener) {
-        recipesApi.processRecipes(new RecipesApi.RecipesListener() {
-            @Override
-            public void onRecipeProcessSuccess(List<Recipe> remote_recipes, boolean online_evaluation_fallback) {
-                recipes = remote_recipes;
-                setCacheTimestamp(currentTime.currentTimeStampSeconds());
-                cache.persistList(recipes);
+        if (!optedOut) {
+            recipesApi.processRecipes(new RecipesApi.RecipesListener() {
+                @Override
+                public void onRecipeProcessSuccess(List<Recipe> remote_recipes, boolean online_evaluation_fallback) {
+                    recipes = remote_recipes;
+                    setCacheTimestamp(currentTime.currentTimeStampSeconds());
+                    cache.persistList(recipes);
 
-                setOnlineEv(online_evaluation_fallback);
-                listener.onGotRecipes(recipes, online_evaluation_fallback, true);
-            }
+                    setOnlineEv(online_evaluation_fallback);
+                    listener.onGotRecipes(recipes, online_evaluation_fallback, true);
+                }
 
-            @Override
-            public void onRecipeProcessError() {
-                listener.onGotRecipes(getLocalRecipes(), getOnlineEv(), false);
-            }
-        });
+                @Override
+                public void onRecipeProcessError() {
+                    listener.onGotRecipes(getLocalRecipes(), getOnlineEv(), false);
+                }
+            });
+        }
     }
 
     private void setCacheTimestamp(long timestamp) {
@@ -118,11 +121,17 @@ public class RecipeRepository {
     }
 
     private List<Recipe> loadCachedList() throws JSONException {
-        return cache.loadList(new TypeToken<List<Recipe>>() {}.getType());
+        if (!optedOut) {
+            return cache.loadList(new TypeToken<List<Recipe>>() {}.getType());
+        } else return null;
     }
 
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(NEAR_RECIPES_REPO_PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    private void clearSharedPrefs() {
+        sp.edit().clear().apply();
     }
 
     public boolean shouldEvaluateOnline() {
@@ -132,6 +141,13 @@ public class RecipeRepository {
     // this should remain public, for Xamarin bindings
     public interface RecipesFetchListener {
         void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged);
+    }
+
+    public void onOptOut() {
+        optedOut = true;
+        cache.onOptOut();
+        clearSharedPrefs();
+        recipes = Collections.emptyList();
     }
 
 }

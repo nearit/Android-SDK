@@ -24,6 +24,7 @@ public class NearInstallationRequestQueue {
     private final NearAsyncHttpClient httpClient;
     private final GlobalConfig globalConfig;
     private boolean onGoingEdit = false;
+    private boolean optedOut;
 
     private static final int NOT_FOUND_ERROR_CODE = 404;
 
@@ -32,45 +33,48 @@ public class NearInstallationRequestQueue {
     public NearInstallationRequestQueue(NearAsyncHttpClient httpClient, GlobalConfig globalConfig) {
         this.httpClient = checkNotNull(httpClient);
         this.globalConfig = checkNotNull(globalConfig);
+        optedOut = globalConfig.getOptOut();
     }
 
     public void registerInstallation(final String installationBody) {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
+        if (!optedOut) {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+                @Override
+                public void run() {
 
-                InstallationRequest installationRequest = new InstallationRequest(installationBody, new NearJsonHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                        super.onSuccess(statusCode, headers, response);
-                        onGoingEdit = false;
-                        NearLog.d(TAG, "Installation data sent");
-                        // If the registration is correct, we save the installationId locally
-                        try {
-                            String installationId = response.getJSONObject("data").getString("id");
-                            globalConfig.setInstallationId(installationId);
-                        } catch (JSONException e) {
-                            NearLog.d(TAG, "Data format error");
+                    InstallationRequest installationRequest = new InstallationRequest(installationBody, new NearJsonHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                            super.onSuccess(statusCode, headers, response);
+                            onGoingEdit = false;
+                            NearLog.d(TAG, "Installation data sent");
+                            // If the registration is correct, we save the installationId locally
+                            try {
+                                String installationId = response.getJSONObject("data").getString("id");
+                                globalConfig.setInstallationId(installationId);
+                            } catch (JSONException e) {
+                                NearLog.d(TAG, "Data format error");
+                            }
+                            startConsumingQueue();
                         }
-                        startConsumingQueue();
-                    }
 
-                    @Override
-                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                        super.onFailureUnique(statusCode, headers, throwable, responseString);
-                        onGoingEdit = false;
-                        if (statusCode == NOT_FOUND_ERROR_CODE) {
-                            globalConfig.setInstallationId(null);
-                            registerInstallation(installationBody);
+                        @Override
+                        public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                            super.onFailureUnique(statusCode, headers, throwable, responseString);
+                            onGoingEdit = false;
+                            if (statusCode == NOT_FOUND_ERROR_CODE) {
+                                globalConfig.setInstallationId(null);
+                                registerInstallation(installationBody);
+                            }
+                            startConsumingQueue();
                         }
-                        startConsumingQueue();
-                    }
-                });
-                installationRequests.add(installationRequest);
-                startConsumingQueue();
+                    });
+                    installationRequests.add(installationRequest);
+                    startConsumingQueue();
 
-            }
-        });
+                }
+            });
+        }
     }
 
     private void startConsumingQueue() {
@@ -105,9 +109,9 @@ public class NearInstallationRequestQueue {
 
     private class InstallationRequest {
         String installationBody;
-        JsonHttpResponseHandler responseHandler;
+        NearJsonHttpResponseHandler responseHandler;
 
-        InstallationRequest(String installationBody, JsonHttpResponseHandler responseHandler) {
+        InstallationRequest(String installationBody, NearJsonHttpResponseHandler responseHandler) {
             this.installationBody = installationBody;
             this.responseHandler = responseHandler;
         }

@@ -44,6 +44,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -81,6 +82,7 @@ public class RecipeRepositoryTest {
         when(sp.edit()).thenReturn(editor);
         when(editor.putLong(anyString(), anyLong())).thenReturn(editor);
         when(editor.putBoolean(anyString(), anyBoolean())).thenReturn(editor);
+        when(editor.clear()).thenReturn(editor);
         when(currentTime.currentTimeStampSeconds()).thenReturn(FAKE_TIMESTAMP);
 
         recipeRepository = new RecipeRepository(
@@ -208,6 +210,13 @@ public class RecipeRepositoryTest {
         RecipeRepository.getSharedPreferences(context);
         verify(context, atLeastOnce()).getSharedPreferences(
                 NEAR_RECIPES_REPO_PREFS_NAME, Context.MODE_PRIVATE);
+    }
+
+    @Test
+    public void ifOptedOut_shouldClearSharedPrefs() {
+        recipeRepository.onOptOut();
+        verify(cache, times(1)).onOptOut();
+        verify(sp.edit(), atLeastOnce()).clear();
     }
 
     private void mockSyncNeeded() {

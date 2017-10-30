@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import it.near.sdk.geopolis.GeopolisManager;
@@ -40,6 +41,7 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
     private List<GeofenceNode> currentGeofences;
     private static final String PREFS_SUFFIX = "NearGeoMonitor";
     private FusedLocationProviderClient mFusedLocationClient;
+    private boolean optedOut;
 
     public GeoFenceMonitor(Context mContext) {
         this.mContext = mContext;
@@ -61,14 +63,16 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
 
 
     public void startGFRadar() {
-        Intent serviceIntent = new Intent(mContext, GeoFenceService.class);
-        serviceIntent.putParcelableArrayListExtra(GeoFenceService.GEOFENCES, (ArrayList<? extends Parcelable>) currentGeofences);
-        try {
-            mContext.startService(serviceIntent);
-        } catch(Throwable t) {
-            NearLog.d(TAG, "Could not restart service in the background");
+        if (!optedOut) {
+            Intent serviceIntent = new Intent(mContext, GeoFenceService.class);
+            serviceIntent.putParcelableArrayListExtra(GeoFenceService.GEOFENCES, (ArrayList<? extends Parcelable>) currentGeofences);
+            try {
+                mContext.startService(serviceIntent);
+            } catch(Throwable t) {
+                NearLog.d(TAG, "Could not restart service in the background");
+            }
+            registerForLocationUpdates();
         }
-        registerForLocationUpdates();
     }
 
     public void stopGFRadar() {
@@ -116,6 +120,12 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
         Gson gson = new GsonBuilder().setExclusionStrategies(GeofenceNode.getExclusionStrategy()).create();
         String json = gson.toJson(currentGeofences);
         edit.putString(CURRENT_GEOFENCES, json).apply();
+    }
+
+    public void clearSharedPrefs() {
+        String PACK_NAME = mContext.getApplicationContext().getPackageName();
+        SharedPreferences.Editor edit = mContext.getSharedPreferences(PACK_NAME + PREFS_SUFFIX, 0).edit();
+        edit.clear().apply();
     }
 
     public static List<GeofenceNode> getCurrentGeofences(Context context) {
@@ -195,4 +205,11 @@ public class GeoFenceMonitor implements AppVisibilityDetector.AppVisibilityCallb
             NearLog.i(TAG, "Got location update");
         }
     };
+
+    public void onOptOut() {
+        optedOut = true;
+        stopGFRadar();
+        currentGeofences = Collections.emptyList();
+        clearSharedPrefs();
+    }
 }

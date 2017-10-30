@@ -125,4 +125,8 @@ public class UserDataBackOff implements AppVisibilityDetector.AppVisibilityCallb
     public void onAppGotoBackground() {
 
     }
+
+    public void onOptOut() {
+        userDataCacheManager.onOptOut();
+    }
 }
