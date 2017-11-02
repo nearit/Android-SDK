@@ -3,6 +3,7 @@ package it.near.sdk.operation;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -81,9 +82,19 @@ public class NearItUserDataAPI {
                         });
                     } catch (AuthenticationException | UnsupportedEncodingException e) {
                         NearLog.d(TAG, "error: impossible to send requests");
+                        listener.onSendingFailure();
                     }
+                } else {
+                    Log.d(TAG, "datapoint not created: profile id is null");
+                    listener.onSendingFailure();
                 }
+            } else {
+                Log.d(TAG, "datapoint not created: data is empty");
+                listener.onSendingFailure();
             }
+        } else {
+            Log.d(TAG, "datapoint not created: user opted out");
+            listener.onSendingFailure();
         }
     }
 
