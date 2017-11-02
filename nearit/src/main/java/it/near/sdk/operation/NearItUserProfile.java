@@ -55,7 +55,7 @@ public class NearItUserProfile {
     @Deprecated
     @Nullable
     public String getProfileId() {
-        if (optedOut) {
+        if (globalConfig.getOptOut()) {
             return OPTED_OUT_PROFILE_ID;
         } else {
             return globalConfig.getProfileId();
@@ -63,7 +63,7 @@ public class NearItUserProfile {
     }
 
     public void getProfileId(Context context, final ProfileFetchListener listener) {
-        if (optedOut) {
+        if (globalConfig.getOptOut()) {
             listener.onProfileId(OPTED_OUT_PROFILE_ID);
         } else {
             userProfileAPI.getProfileId(listener);
@@ -87,7 +87,7 @@ public class NearItUserProfile {
      * @param value the value of the data field for the current user.
      */
     public void setUserData(String key, String value) {
-        if(!optedOut) {
+        if(!globalConfig.getOptOut()) {
             userDataBackOff.setUserData(key, value);
         }
     }
@@ -98,7 +98,7 @@ public class NearItUserProfile {
      * @param valuesMap map fo key values profile data.
      */
     public void setBatchUserData(Map<String, String> valuesMap) {
-        if(!optedOut) {
+        if(!globalConfig.getOptOut()) {
             userDataBackOff.setBatchUserData(valuesMap);
         }
     }

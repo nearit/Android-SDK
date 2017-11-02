@@ -18,12 +18,14 @@ import java.util.HashMap;
 import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.NearAsyncHttpClient;
 
+import static it.near.sdk.operation.NearItUserProfile.OPTED_OUT_PROFILE_ID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 
@@ -105,6 +107,20 @@ public class NearItUserProfileTest {
         verify(mockUserProfileAPI, times(1)).createNewProfile(eq(mockProfileCreationListener));
     }
 
+    @Test
+    public void testIfOptedOut_shouldNotSetUserData() {
+        mockOptOut();
+        nearItUserProfile.setUserData("dummy", "dummy");
+        verifyZeroInteractions(mockUserDataBackOff);
+    }
+
+    @Test
+    public void testIfOptedOut_shouldReturnDummyProfileID() {
+        mockOptOut();
+        nearItUserProfile.getProfileId(mockContext, mockProfileFetchListener);
+        verify(mockProfileFetchListener, times(1)).onProfileId(eq(OPTED_OUT_PROFILE_ID));
+    }
+
     private void mockSetDataUpdateListener() {
         doAnswer(new Answer() {
             @Override
@@ -113,6 +129,10 @@ public class NearItUserProfileTest {
                 return null;
             }
         }).when(mockUserDataBackOff).setProfileDataUpdateListener(ArgumentMatchers.<ProfileDataUpdateListener>any());
+    }
+
+    private void mockOptOut() {
+        when(mockGlobalConfig.getOptOut()).thenReturn(true);
     }
 
 }
