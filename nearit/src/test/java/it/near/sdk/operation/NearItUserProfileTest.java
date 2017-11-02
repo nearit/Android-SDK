@@ -25,6 +25,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -111,6 +112,16 @@ public class NearItUserProfileTest {
     public void testIfOptedOut_shouldNotSetUserData() {
         mockOptOut();
         nearItUserProfile.setUserData("dummy", "dummy");
+        verifyZeroInteractions(mockUserDataBackOff);
+    }
+
+    @Test
+    public void testIfOptedOut_shouldNotSetBatchUserData() {
+        mockOptOut();
+        HashMap<String, String> batch = Maps.newHashMap();
+        batch.put("dummy", "dummy");
+        batch.put("dummy2", "dummy2");
+        nearItUserProfile.setBatchUserData(batch);
         verifyZeroInteractions(mockUserDataBackOff);
     }
 
