@@ -40,7 +40,7 @@ public class NearItUserDataAPI {
     }
 
     public void sendDataPoints(@NonNull final HashMap<String, String> userData, final UserDataSendListener listener) {
-        if (!optedOut) {
+        if (!globalConfig.getOptOut()) {
             String profileId = globalConfig.getProfileId();
             if (!userData.isEmpty()) {
                 if (profileId != null) {
@@ -85,16 +85,16 @@ public class NearItUserDataAPI {
                         listener.onSendingFailure();
                     }
                 } else {
-                    Log.d(TAG, "datapoint not created: profile id is null");
                     listener.onSendingFailure();
+                    NearLog.d(TAG, "datapoint not created: profile id is null");
                 }
             } else {
-                Log.d(TAG, "datapoint not created: data is empty");
                 listener.onSendingFailure();
+                NearLog.d(TAG, "datapoint not created: data is empty");
             }
         } else {
-            Log.d(TAG, "datapoint not created: user opted out");
             listener.onSendingFailure();
+            NearLog.d(TAG, "datapoint not created: user opted out");
         }
     }
 
