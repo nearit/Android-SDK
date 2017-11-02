@@ -15,7 +15,6 @@ import android.widget.Toast;
 import it.near.sdk.NearItManager;
 import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.NearItUserProfile;
-import it.near.sdk.operation.UserDataNotifier;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
@@ -110,17 +109,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     public void profileMyUser(View view) {
-        NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()), new UserDataNotifier() {
-            @Override
-            public void onDataCreated() {
-                Toast.makeText(MainActivity.this, "Profile updated", Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onDataNotSetError(String error) {
-
-            }
-        });
+        NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, (ageEditText.getText().toString()));
     }
 
     public void userLogInAndOut(View view) {
