@@ -58,6 +58,7 @@ public class UserDataBackOffTest {
     public void setUP() {
         userDataBackOff = new UserDataBackOff(mockUserDataCacheManager, mockUserDataAPI, mockUserDataTimer, mockGlobalConfig, mockConnectionChecker, mockApplicationVisibility);
         userDataBackOff.setProfileDataUpdateListener(mockUpdateListener);
+        mockProfilePresent();
     }
 
     @Test
@@ -70,9 +71,7 @@ public class UserDataBackOffTest {
     }
 
     @Test
-    public void testIfKeyEmpty_shouldNotSendAndSave() {
-        mockProfilePresent();
-
+    public void testIfKeyEmpty_shouldNotSendAndNotSave() {
         userDataBackOff.setUserData("", "dummy");
         verifyZeroInteractions(mockUserDataTimer);
         verifyZeroInteractions(mockUserDataCacheManager);
@@ -81,8 +80,6 @@ public class UserDataBackOffTest {
 
     @Test
     public void testIfValueNull_shouldTreatAsEmpty() {
-        mockProfilePresent();
-
         userDataBackOff.setUserData("dummy", null);
         verify(mockUserDataTimer, times(1)).start(ArgumentMatchers.<UserDataTimer.TimerListener>any());
         verify(mockUserDataCacheManager, times(1)).setUserData(eq("dummy"), eq(""));
@@ -90,18 +87,12 @@ public class UserDataBackOffTest {
 
     @Test
     public void testSendDataNow() {
-        mockProfilePresent();
-
         userDataBackOff.setUserData("dummy", "dummy");
         verify(mockUserDataTimer, times(1)).start(any(UserDataTimer.TimerListener.class));
-        verify(mockUserDataCacheManager, times(1)).setUserData("dummy", "dummy");
 
         userDataBackOff.setUserData("dummy2", "dummy2");
         ArgumentCaptor<UserDataTimer.TimerListener> captor = ArgumentCaptor.forClass(UserDataTimer.TimerListener.class);
         verify(mockUserDataTimer, times(2)).start(captor.capture());
-        verify(mockUserDataCacheManager, times(1)).setUserData("dummy2", "dummy2");
-        verify(mockUserDataCacheManager, times(2)).setUserData(anyString(), anyString());
-
 
         HashMap<String, String> toBeSent = mockHasDataToSend();
 
@@ -123,7 +114,6 @@ public class UserDataBackOffTest {
 
     @Test
     public void testSendBatchData() {
-        mockProfilePresent();
         HashMap<String, String> batchData = Maps.newHashMap();
         batchData.put("dummy", "dummy");
         batchData.put("dummy2", "dummy2");
@@ -134,6 +124,7 @@ public class UserDataBackOffTest {
 
     @Test
     public void testIfNoData_ShouldNotSend() {
+        mockEmptyCache();
         userDataBackOff.sendDataPoints();
         verify(mockUserDataCacheManager, times(1)).getUserData();
         verifyZeroInteractions(mockUserDataAPI);
@@ -152,7 +143,6 @@ public class UserDataBackOffTest {
 
     @Test
     public void testSendNowFailure_shouldNotRemoveFromCache() {
-        mockProfilePresent();
         userDataBackOff.setUserData("dummy", "dummy");
 
         ArgumentCaptor<UserDataTimer.TimerListener> captor = ArgumentCaptor.forClass(UserDataTimer.TimerListener.class);
@@ -186,8 +176,6 @@ public class UserDataBackOffTest {
 
     @Test
     public void testSendNowSuccess_shouldRemoveFromCache() {
-        mockProfilePresent();
-
         userDataBackOff.setUserData("dummy", "dummy");
         ArgumentCaptor<UserDataTimer.TimerListener> captor = ArgumentCaptor.forClass(UserDataTimer.TimerListener.class);
         verify(mockUserDataTimer, times(1)).start(captor.capture());
@@ -210,7 +198,6 @@ public class UserDataBackOffTest {
     @Test
     public void testIfBusy_DoNotSend() {
         mockHasDataToSend();
-        mockProfilePresent();
 
         mockSendDoNothing();
         userDataBackOff.sendDataPoints();
@@ -254,8 +241,7 @@ public class UserDataBackOffTest {
         verifyZeroInteractions(mockUserDataCacheManager);
         verifyZeroInteractions(mockUserDataAPI);
     }
-
-
+    
 
     private HashMap<String, String> mockHasDataToSend() {
         HashMap<String, String> cachedData = Maps.newHashMap();
@@ -316,5 +302,9 @@ public class UserDataBackOffTest {
                 return null;
             }
         }).when(mockUserDataTimer).start(any(UserDataTimer.TimerListener.class));
+    }
+
+    private void mockEmptyCache() {
+        when(mockUserDataCacheManager.getUserData()).thenReturn(Maps.<String, String>newHashMap());
     }
 }
