@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import it.near.sdk.GlobalConfig;
 import it.near.sdk.communication.Constants;
 import it.near.sdk.communication.NearAsyncHttpClient;
 import it.near.sdk.reactions.Cacher;
@@ -115,10 +116,10 @@ public class ContentReaction extends CoreReaction<Content> {
         return map;
     }
 
-    public static ContentReaction obtain(Context context, NearNotifier nearNotifier) {
+    public static ContentReaction obtain(Context context, NearNotifier nearNotifier, GlobalConfig globalConfig) {
         return new ContentReaction(
                 new Cacher<Content>(context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)),
-                new NearAsyncHttpClient(context),
+                new NearAsyncHttpClient(context, globalConfig),
                 nearNotifier,
                 new TypeToken<List<Content>>() {}.getType());
     }

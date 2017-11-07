@@ -25,6 +25,7 @@ public class RecipesManager implements RecipeEvaluator {
     private final RecipeRepository recipeRepository;
     private final RecipesApi recipesApi;
     private final RecipeReactionHandler recipeReactionHandler;
+    private boolean optedOut;
 
     public RecipesManager(RecipeValidationFilter recipeValidationFilter,
                           RecipeTrackSender recipeTrackSender,
@@ -51,29 +52,33 @@ public class RecipesManager implements RecipeEvaluator {
      * Tries to refresh the recipes list. If some network problem occurs, a cached version will be used.
      */
     public void refreshConfig() {
-        refreshConfig(new RecipeRefreshListener() {
-            @Override
-            public void onRecipesRefresh() {
-            }
+        if (!optedOut) {
+            refreshConfig(new RecipeRefreshListener() {
+                @Override
+                public void onRecipesRefresh() {
+                }
 
-            @Override
-            public void onRecipesRefreshFail() {
-            }
-        });
+                @Override
+                public void onRecipesRefreshFail() {
+                }
+            });
+        }
     }
 
     public void syncConfig() {
-        syncConfig(new RecipeRefreshListener() {
-            @Override
-            public void onRecipesRefresh() {
+        if (!optedOut) {
+            syncConfig(new RecipeRefreshListener() {
+                @Override
+                public void onRecipesRefresh() {
 
-            }
+                }
 
-            @Override
-            public void onRecipesRefreshFail() {
+                @Override
+                public void onRecipesRefreshFail() {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     /**
@@ -81,24 +86,28 @@ public class RecipesManager implements RecipeEvaluator {
      * Plus a listener will be notified of the refresh process.
      */
     public void refreshConfig(final RecipeRefreshListener listener) {
-        recipeRepository.refreshRecipes(new RecipeRepository.RecipesFetchListener() {
-            @Override
-            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
-                listener.onRecipesRefresh();
-            }
-        });
+        if (!optedOut) {
+            recipeRepository.refreshRecipes(new RecipeRepository.RecipesFetchListener() {
+                @Override
+                public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                    listener.onRecipesRefresh();
+                }
+            });
+        }
     }
 
     /**
      * Sync the recipe configuration, only if the cache is cold.
      */
     public void syncConfig(final RecipeRefreshListener listener) {
-        recipeRepository.syncRecipes(new RecipeRepository.RecipesFetchListener() {
-            @Override
-            public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
-                listener.onRecipesRefresh();
-            }
-        });
+        if (!optedOut) {
+            recipeRepository.syncRecipes(new RecipeRepository.RecipesFetchListener() {
+                @Override
+                public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                    listener.onRecipesRefresh();
+                }
+            });
+        }
     }
 
     /**
@@ -108,7 +117,9 @@ public class RecipesManager implements RecipeEvaluator {
      * @param listener
      */
     public void processRecipe(final String id, RecipesApi.SingleRecipeListener listener) {
-        recipesApi.fetchRecipe(id, listener);
+        if (!optedOut) {
+            recipesApi.fetchRecipe(id, listener);
+        }
     }
 
     private void onlinePulseEvaluation(final TriggerRequest triggerRequest) {
@@ -132,17 +143,19 @@ public class RecipesManager implements RecipeEvaluator {
      * @param recipeId recipe identifier.
      */
     private void evaluateRecipe(String recipeId, final TrackingInfo trackingInfo) {
-        recipesApi.evaluateRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
-            @Override
-            public void onRecipeFetchSuccess(Recipe recipe) {
-                recipeReactionHandler.gotRecipe(recipe, trackingInfo);
-            }
+        if (!optedOut) {
+            recipesApi.evaluateRecipe(recipeId, new RecipesApi.SingleRecipeListener() {
+                @Override
+                public void onRecipeFetchSuccess(Recipe recipe) {
+                    recipeReactionHandler.gotRecipe(recipe, trackingInfo);
+                }
 
-            @Override
-            public void onRecipeFetchError(String error) {
-                NearLog.d(TAG, "Recipe evaluation error: " + error);
-            }
-        });
+                @Override
+                public void onRecipeFetchError(String error) {
+                    NearLog.d(TAG, "Recipe evaluation error: " + error);
+                }
+            });
+        }
     }
 
     private boolean filterAndNotify(List<Recipe> matchingRecipes, TrackingInfo trackingInfo) {
@@ -220,29 +233,33 @@ public class RecipesManager implements RecipeEvaluator {
     }
 
     private void handlePulseOnline(final TriggerRequest triggerRequest) {
-        if (recipeRepository.shouldEvaluateOnline()) {
-            onlinePulseEvaluation(triggerRequest);
-        } else {
-            recipeRepository.syncRecipes(new RecipeRepository.RecipesFetchListener() {
-                @Override
-                public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
-                    if (dataChanged) {
-                        boolean found = handlePulseLocally(triggerRequest) ||
-                                handlePulseTags(triggerRequest);
-                        if (!found && online_evaluation_fallback) {
-                            onlinePulseEvaluation(triggerRequest);
+        if (!optedOut) {
+            if (recipeRepository.shouldEvaluateOnline()) {
+                onlinePulseEvaluation(triggerRequest);
+            } else {
+                recipeRepository.syncRecipes(new RecipeRepository.RecipesFetchListener() {
+                    @Override
+                    public void onGotRecipes(List<Recipe> recipes, boolean online_evaluation_fallback, boolean dataChanged) {
+                        if (dataChanged) {
+                            boolean found = handlePulseLocally(triggerRequest) ||
+                                    handlePulseTags(triggerRequest);
+                            if (!found && online_evaluation_fallback) {
+                                onlinePulseEvaluation(triggerRequest);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
     @Override
     public void handleTriggerRequest(TriggerRequest triggerRequest) {
-        if (!handlePulseLocally(triggerRequest) &&
-                !handlePulseTags(triggerRequest)) {
-            handlePulseOnline(triggerRequest);
+        if (!optedOut) {
+            if (!handlePulseLocally(triggerRequest) &&
+                    !handlePulseTags(triggerRequest)) {
+                handlePulseOnline(triggerRequest);
+            }
         }
     }
 
@@ -257,7 +274,15 @@ public class RecipesManager implements RecipeEvaluator {
      * @throws JSONException
      */
     public void sendTracking(TrackingInfo trackingInfo, String trackingEvent) throws JSONException {
-        recipeTrackSender.sendTracking(trackingInfo, trackingEvent);
+        if (!optedOut) {
+            recipeTrackSender.sendTracking(trackingInfo, trackingEvent);
+        } else {
+            NearLog.d(TAG, "Tracking not sent because user opted-out");
+        }
     }
 
+    public void onOptOut() {
+        optedOut = true;
+        recipeRepository.onOptOut();
+    }
 }
