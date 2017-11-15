@@ -6,7 +6,9 @@ import android.support.annotation.Nullable;
 
 
 import cz.msebera.android.httpclient.auth.AuthenticationException;
+import it.near.sdk.communication.OptOutAPI;
 import it.near.sdk.logging.NearLog;
+import it.near.sdk.communication.OptOutNotifier;
 
 /**
  * Class containing global configuration. It saves all configuration strings on disk.
@@ -36,6 +38,11 @@ public class GlobalConfig {
     static final String PREFS_NAME = "NearConfig";
     private SharedPreferences sp;
     private SharedPreferences.Editor editor;
+
+    static final String OPT_OUT = "optout";
+    public static final boolean DEFAULT_OPT_OUT = false;
+    private boolean optOut;
+    private OptOutListener optOutListener;
 
     public GlobalConfig(SharedPreferences sp) {
         this.sp = sp;
@@ -122,6 +129,29 @@ public class GlobalConfig {
         setLocalString(INSTALLATIONID, installationId);
     }
 
+    public void setOptOutListener(OptOutListener optOutListener) {
+        this.optOutListener = optOutListener;
+    }
+
+    public void setOptOut() {
+        optOut = getOptOut();
+        if (!optOut) {
+            NearLog.d("GlobalConfig", "Opting out");
+            this.optOut = true;
+            editor.putBoolean(OPT_OUT, true).apply();
+            if (optOutListener != null) {
+                optOutListener.onOptOut();
+            }
+        } else {
+            NearLog.d("GlobalConfig", "Already opted out");
+        }
+    }
+
+    public boolean getOptOut() {
+        optOut = sp.getBoolean(OPT_OUT, DEFAULT_OPT_OUT);
+        return optOut;
+    }
+
     @Nullable
     public String getProfileId() {
         if (profileId == null) {
@@ -144,5 +174,8 @@ public class GlobalConfig {
         return sp.getString(name, null);
     }
 
+    public interface OptOutListener {
+        void onOptOut();
+    }
 
 }

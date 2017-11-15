@@ -94,15 +94,7 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
     }
 
     private fun profileMyUser() {
-        NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, ageEditText.text.toString(), object : UserDataNotifier {
-            override fun onDataCreated() {
-                Toast.makeText(this@MainActivity, "Profile updated", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onDataNotSetError(error: String) {
-
-            }
-        })
+        NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, ageEditText.text.toString())
     }
 
     private fun userLogInAndOut() {

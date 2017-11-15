@@ -6,12 +6,16 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.reflect.TypeToken;
 
+import org.hamcrest.Matchers;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -20,10 +24,15 @@ import java.util.Map;
 import it.near.sdk.reactions.testmodels.ModelForCache;
 
 import static it.near.sdk.reactions.Cacher.KEY_LIST;
+import static org.hamcrest.Matchers.isIn;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.junit.Assert.assertThat;
+import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +52,7 @@ public class CacherTest {
     public void setUp() throws Exception {
         when(sharedPreferences.edit()).thenReturn(editor);
         when(editor.putString(anyString(), anyString())).thenReturn(editor);
+        when(editor.clear()).thenReturn(editor);
         cacher = new Cacher<>(sharedPreferences);
     }
 
@@ -103,6 +113,25 @@ public class CacherTest {
         }.getType();
         List<ModelForCache> modelForCaches = cacher.loadList(type);
         assertThat(modelForCaches, contains(list.toArray()));
+    }
+
+    @Test
+    public void ifOptedOut_shouldClearSharedPrefs() throws JSONException {
+        list = Lists.newArrayList(
+                new ModelForCache("string1", 1, 1L, buildMap(1)),
+                new ModelForCache("string2", 2, 2L, buildMap(2))
+        );
+        cacher.persistList(list);
+
+        when(sharedPreferences.getString(eq(KEY_LIST), anyString())).thenReturn("");
+        Type type = new TypeToken<List<ModelForCache>>() {
+        }.getType();
+        List<ModelForCache> modelForCaches = cacher.loadList(type);
+
+        cacher.onOptOut();
+        verify(editor, atLeastOnce()).clear();
+
+        assertThat(modelForCaches, Matchers.not(contains(list.toArray())));
     }
 
     private void buildList() {

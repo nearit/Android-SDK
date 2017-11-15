@@ -86,5 +86,18 @@ public class TrackCache {
     public static SharedPreferences getSharedPreferences(Context context) {
         return context.getSharedPreferences(TRACKING_PREFS_NAME, Context.MODE_PRIVATE);
     }
+
+    private void clearSharedPrefs() {
+        sharedPreferences.edit().clear().apply();
+    }
+
+    private void clearCache() {
+        removeAll();
+    }
+
+    public void onOptOut() {
+        clearCache();
+        clearSharedPrefs();
+    }
 }
 

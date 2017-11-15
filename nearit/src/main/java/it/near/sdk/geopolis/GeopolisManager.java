@@ -70,6 +70,8 @@ public class GeopolisManager {
     public static final String META_NODE_TYPE_KEY = "node_type";
     public static final String META_NODE_ID_KEY = "node_id";
 
+    private boolean optedOut;
+
     private final Context context;
     private final RecipeEvaluator recipeEvaluator;
     private final GeoFenceMonitor geofenceMonitor;
@@ -87,6 +89,8 @@ public class GeopolisManager {
         this.recipeEvaluator = recipeEvaluator;
         this.globalConfig = globalConfig;
 
+        this.optedOut = globalConfig.getOptOut();
+
         SharedPreferences nodesManagerSP = NodesManager.getSharedPreferences(context);
         this.nodesManager = new NodesManager(nodesManagerSP);
 
@@ -102,14 +106,16 @@ public class GeopolisManager {
                 new CurrentTime()
         );
 
-        registerProximityReceiver();
-        registerResetReceiver();
+        if (!optedOut) {
+            registerProximityReceiver();
+            registerResetReceiver();
+        }
 
         String PACK_NAME = this.context.getApplicationContext().getPackageName();
         String PREFS_NAME = PACK_NAME + PREFS_SUFFIX;
         sp = this.context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 
-        httpClient = new NearAsyncHttpClient(context);
+        httpClient = new NearAsyncHttpClient(context, globalConfig);
         refreshConfig();
     }
 
@@ -125,6 +131,11 @@ public class GeopolisManager {
         context.registerReceiver(regionEventsReceiver, regionFilter);
     }
 
+    private void unregisterProximityReceiver() {
+        context.unregisterReceiver(regionEventsReceiver);
+        context.unregisterReceiver(resetEventReceiver);
+    }
+
     private void registerResetReceiver() {
         IntentFilter resetFilter = new IntentFilter();
         String packageName = context.getPackageName();
@@ -137,31 +148,33 @@ public class GeopolisManager {
      * If there's an error in refreshing the configuration, a cached version will be used instead.
      */
     public void refreshConfig() {
-        Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
-                .appendPath(PLUGIN_NAME)
-                .appendPath(NODES_RES)
-                .appendQueryParameter("filter[app_id]", globalConfig.getAppId())
-                .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, "**.children")
-                .build();
-        try {
-            httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
-                @Override
-                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                    NearLog.d(TAG, response.toString());
+        if (!optedOut) {
+            Uri url = Uri.parse(Constants.API.PLUGINS_ROOT).buildUpon()
+                    .appendPath(PLUGIN_NAME)
+                    .appendPath(NODES_RES)
+                    .appendQueryParameter("filter[app_id]", globalConfig.getAppId())
+                    .appendQueryParameter(Constants.API.INCLUDE_PARAMETER, "**.children")
+                    .build();
+            try {
+                httpClient.nearGet(url.toString(), new NearJsonHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                        NearLog.d(TAG, response.toString());
 
-                    List<Node> nodes = nodesManager.parseAndSetNodes(response);
-                    startRadarOnNodes(nodes);
-                }
+                        List<Node> nodes = nodesManager.parseAndSetNodes(response);
+                        startRadarOnNodes(nodes);
+                    }
 
-                @Override
-                public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
-                    NearLog.d(TAG, "Error " + statusCode);
-                    // load the config
-                    startRadarOnNodes(nodesManager.getNodes());
-                }
-            });
-        } catch (AuthenticationException e) {
-            NearLog.d(TAG, "Auth error");
+                    @Override
+                    public void onFailureUnique(int statusCode, Header[] headers, Throwable throwable, String responseString) {
+                        NearLog.d(TAG, "Error " + statusCode);
+                        // load the config
+                        startRadarOnNodes(nodesManager.getNodes());
+                    }
+                });
+            } catch (AuthenticationException e) {
+                NearLog.d(TAG, "Auth error");
+            }
         }
     }
 
@@ -172,12 +185,16 @@ public class GeopolisManager {
     }
 
     public void startRadar() {
-        if (isRadarStarted(context)) return;
-        setRadarState(true);
-        List<Node> nodes = nodesManager.getNodes();
-        // altBeaconMonitor.setUpMonitor(nodes);
-        geofenceMonitor.setUpMonitor(GeoFenceMonitor.filterGeofence(nodes));
-        geofenceMonitor.startGFRadar();
+        if(!optedOut) {
+            if (isRadarStarted(context)) return;
+            setRadarState(true);
+            List<Node> nodes = nodesManager.getNodes();
+            // altBeaconMonitor.setUpMonitor(nodes);
+            geofenceMonitor.setUpMonitor(GeoFenceMonitor.filterGeofence(nodes));
+            geofenceMonitor.startGFRadar();
+        } else {
+            NearLog.d(TAG, "User opted out, radar not started");
+        }
     }
 
     public void stopRadar() {
@@ -228,20 +245,24 @@ public class GeopolisManager {
     };
 
     private void trackAndFirePulse(Node node, Events.GeoEvent event) {
-        if (node != null && node.identifier != null) {
-            try {
-                geopolisTrackingsManager.trackEvent(node.identifier, event.event);
-            } catch (JSONException ignored) {
+        if (!optedOut) {
+            if (node != null && node.identifier != null) {
+                try {
+                    geopolisTrackingsManager.trackEvent(node.identifier, event.event);
+                } catch (JSONException ignored) {
+                }
+                firePulse(event, node.tags, node.identifier, node.getClass().getSimpleName());
             }
-            firePulse(event, node.tags, node.identifier, node.getClass().getSimpleName());
         }
     }
 
     private void firePulse(Events.GeoEvent event, List<String> tags, String pulseBundle, String nodeType) {
-        NearLog.d(TAG, "firePulse!");
-        recipeEvaluator.handleTriggerRequest(
-                buildTriggerRequest(event, tags, pulseBundle, nodeType)
-        );
+        if(!optedOut){
+            NearLog.d(TAG, "firePulse!");
+            recipeEvaluator.handleTriggerRequest(
+                    buildTriggerRequest(event, tags, pulseBundle, nodeType)
+            );
+        }
     }
 
     private TriggerRequest buildTriggerRequest(Events.GeoEvent event, List<String> tags, String pulseBundle, String nodeType) {
@@ -297,5 +318,14 @@ public class GeopolisManager {
     public void initLifecycle(Application application) {
         altBeaconMonitor.initAppLifecycleMonitor(application);
         geofenceMonitor.initAppLifecycleMonitor(application);
+    }
+
+    public void onOptOut() {
+        optedOut = true;
+        unregisterProximityReceiver();
+        stopRadar();
+        nodesManager.onOptOut();
+        geofenceMonitor.onOptOut();
+        altBeaconMonitor.onOptOut();
     }
 }
