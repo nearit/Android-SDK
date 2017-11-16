@@ -16,7 +16,7 @@ In the project *build.gradle* make sure to include the following:
 buildscript {
     dependencies {
     ...
-    classpath 'com.google.gms:google-services:3.1.0'
+    classpath 'com.google.gms:google-services:3.1.1'
     }
 }
 allprojects {
