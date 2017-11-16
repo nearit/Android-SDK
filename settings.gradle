@@ -1,1 +1,1 @@
-include ':nearit', ':sample', ':sample-kotlin'
+include ':sample', ':sample-kotlin'

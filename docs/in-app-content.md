@@ -20,15 +20,40 @@ NearUtils.parseCoreContents(intent, coreContentListener)
 If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md).
 
 ## Beacon Interaction Content
-Beacon interaction (beacon ranging) is a peculiar trigger that works only when your app is in the foreground.<br>
-To receive this kind of content set a **proximity listener** with the method:
+Beacon interaction (beacon ranging) is a peculiar trigger that only works when your app is in the foreground.<br>
+NearIT Android SDK will automatically show heads-up notifications.
+
+If you need to disable the default behaviour, call this method in the **onCreate** method of your application: 
 <div class="code-java">
 {
-    ...
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        NearItManager.getInstance().disableDefaultRangingNotifications();
+        // ...
+    }
+}
+</div>
+<div class="code-kotlin">
+{
+    @Override
+    public void onCreate() {
+        super.onCreate()
+        NearItManager.getInstance().disableDefaultRangingNotifications()
+        // ...
+    }
+}
+</div>
+
+    
+And if you want to receive ranging contents and handle them manually, set a **proximity listener** with the method:
+<div class="code-java">
+{
+    //  ...
     NearItManager.getInstance().addProximityListener(this);
     // remember to remove the listener when the object is being destroyed with 
     // NearItManager.getInstance().removeProximityListener(this);
-    ...
+    //  ...
 }
 @Override
 public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
@@ -39,11 +64,11 @@ public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
 </div>
 <div class="code-kotlin">
 {
-    ...
+    //  ...
     NearItManager.getInstance().addProximityListener(this)
     // remember to remove the listener when the object is being destroyed with 
     // NearItManager.getInstance().removeProximityListener(this)
-    ...
+    //  ...
 }
 override fun foregroundEvent(content: Parcelable, trackingInfo: TrackingInfo) {
     // handle the event
@@ -53,7 +78,7 @@ override fun foregroundEvent(content: Parcelable, trackingInfo: TrackingInfo) {
 </div>
 
 
-**Warning:** For this kind of content you will need to write the code for **Trackings** and to eventually show an **In-app notification**.
+**Warning:** In this situation you will need to write the code for **Trackings** and to eventually show an **In-app notification**.
 
 
 ## Trackings
