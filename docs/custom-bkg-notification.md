@@ -62,7 +62,8 @@ override fun onHandleWork(intent: Intent) {
 Then add your custom IntentService to the manifest
 ```xml
 <service android:name=".MyCustomJobIntentService"
-            android:exported="false">
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE">
     <intent-filter>
         <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
         <category android:name="android.intent.category.DEFAULT" />
