@@ -26,6 +26,8 @@ allprojects {
 }
 ```
 
+In your app module `build.gradle` make sure that your `compileSdkVersion` is at least 26.
+
 In AndroidManifest.xml, add the following element as a child of the `<application>` element, by inserting it just before the closing `</application>` tag:
 
 ```xml
