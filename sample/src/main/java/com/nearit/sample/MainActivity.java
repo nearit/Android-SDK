@@ -2,9 +2,11 @@ package com.nearit.sample;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -13,7 +15,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import it.near.sdk.NearItManager;
-import it.near.sdk.geopolis.beacons.ranging.ProximityListener;
 import it.near.sdk.operation.NearItUserProfile;
 import it.near.sdk.reactions.contentplugin.model.Content;
 import it.near.sdk.reactions.couponplugin.model.Coupon;
@@ -21,6 +22,7 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.RecipeRefreshListener;
+import it.near.sdk.recipes.foreground.ProximityListener;
 import it.near.sdk.trackings.TrackingInfo;
 import it.near.sdk.utils.CoreContentsListener;
 import it.near.sdk.utils.NearUtils;
@@ -79,6 +81,9 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEAR_PERMISSION_REQUEST &&
                 resultCode == Activity.RESULT_OK) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
             NearItManager.getInstance().startRadar();
         }
     }

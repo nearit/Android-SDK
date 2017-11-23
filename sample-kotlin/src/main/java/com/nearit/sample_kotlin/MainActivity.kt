@@ -8,15 +8,14 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
 import it.near.sdk.NearItManager
-import it.near.sdk.geopolis.beacons.ranging.ProximityListener
 import it.near.sdk.operation.NearItUserProfile
-import it.near.sdk.operation.UserDataNotifier
 import it.near.sdk.reactions.contentplugin.model.Content
 import it.near.sdk.reactions.couponplugin.model.Coupon
 import it.near.sdk.reactions.customjsonplugin.model.CustomJSON
 import it.near.sdk.reactions.feedbackplugin.model.Feedback
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification
 import it.near.sdk.recipes.RecipeRefreshListener
+import it.near.sdk.recipes.foreground.ProximityListener
 import it.near.sdk.trackings.TrackingInfo
 import it.near.sdk.utils.CoreContentsListener
 import it.near.sdk.utils.NearUtils
