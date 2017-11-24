@@ -4,14 +4,25 @@
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
+    android:gravity="center_horizontal"
     tools:context="com.nearit.sample_kotlin.MainActivity">
+
+    <ImageView
+        android:id="@+id/brand"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="50dp"
+        android:background="@drawable/brand"/>
 
     <Button
         android:id="@+id/permission_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
+        android:layout_below="@id/brand"
+        android:background="@drawable/button"
+        android:padding="10dp"
+        android:textColor="#fff"
         android:text="Start radar" />
 
     <Button
@@ -20,6 +31,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_below="@+id/permission_button"
+        android:background="@drawable/button"
+        android:padding="10dp"
+        android:textColor="#fff"
         android:text="Refresh recipes" />
 
     <EditText
@@ -27,6 +41,7 @@
         android:layout_width="60dp"
         android:layout_height="wrap_content"
         android:layout_below="@+id/refresh_button"
+        android:textColor="#333"
         android:inputType="number" />
 
     <Button
@@ -35,12 +50,18 @@
         android:id="@+id/ageSetButton"
         android:layout_below="@+id/refresh_button"
         android:layout_toRightOf="@id/ageEditText"
+        android:background="@drawable/button"
+        android:padding="10dp"
+        android:textColor="#fff"
         android:text="Set Age" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/loginButton"
+        android:background="@drawable/button"
+        android:padding="10dp"
+        android:textColor="#fff"
         android:layout_below="@id/ageSetButton" />
 
 
