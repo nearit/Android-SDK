@@ -21,10 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
-        android:background="@drawable/button"
-        android:minHeight="0dp"
-        android:padding="10dp"
-        android:textColor="#fff"
+        style="@style/ButtonStyle"
         android:text="Start radar" />
 
     <Button
@@ -33,16 +30,14 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         android:layout_below="@+id/permission_button"
-        android:minHeight="0dp"
-        android:background="@drawable/button"
-        android:padding="10dp"
-        android:textColor="#fff"
+        style="@style/ButtonStyle"
         android:text="Refresh recipes" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+
         <EditText
             android:id="@+id/ageEditText"
             android:layout_width="60dp"
@@ -59,10 +54,7 @@
             android:layout_below="@+id/refresh_button"
             android:layout_toRightOf="@id/ageEditText"
             android:layout_marginLeft="5dp"
-            android:background="@drawable/button"
-            android:minHeight="0dp"
-            android:padding="10dp"
-            android:textColor="#fff"
+            style="@style/ButtonStyle"
             android:text="Set Age" />
     </LinearLayout>
 
@@ -71,11 +63,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/loginButton"
         android:layout_below="@id/ageSetButton"
-        android:background="@drawable/button"
-        android:minHeight="0dp"
-        android:layout_marginTop="24dp"
-        android:padding="10dp"
-        android:textColor="#fff" />
+        style="@style/ButtonStyle"
+        android:layout_marginTop="24dp"/>
 
 
 </LinearLayout>

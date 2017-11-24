@@ -11,6 +11,13 @@
         <item name="colorControlHighlight">#333</item>
     </style>
 
+    <style name="ButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button</item>
+        <item name="android:textColor">#fff</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:minHeight">0dp</item>
+    </style>
+
     <style name="dialogcustom" parent="AppTheme">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
