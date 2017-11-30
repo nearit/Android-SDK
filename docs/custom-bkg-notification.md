@@ -76,3 +76,64 @@ Then add your custom IntentService to the manifest
 ```
 
 By combination of intent filters, you can customize only one kind of background notifications, or use 2 different intent services for the 2 situations.
+
+## Custom ranging notifications
+Beacon interaction (beacon ranging) is a peculiar trigger that only works when your app is in the foreground.<br>
+NearIT Android SDK will automatically show heads-up notifications.
+
+If you need to disable the default behaviour, call this method in the **onCreate** method of your application: 
+<div class="code-java">
+{
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        NearItManager.getInstance().disableDefaultRangingNotifications();
+        // ...
+    }
+}
+</div>
+<div class="code-kotlin">
+{
+    @Override
+    public void onCreate() {
+        super.onCreate()
+        NearItManager.getInstance().disableDefaultRangingNotifications()
+        // ...
+    }
+}
+</div>
+
+    
+And if you want to receive ranging contents and handle them manually, set a **proximity listener** with the method:
+<div class="code-java">
+{
+    //  ...
+    NearItManager.getInstance().addProximityListener(this);
+    // remember to remove the listener when the object is being destroyed with 
+    // NearItManager.getInstance().removeProximityListener(this);
+    //  ...
+}
+@Override
+public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
+    // handle the event
+    // To extract the content and to have it automatically casted to the appropriate object type
+    NearUtils.parseCoreContents(content, trackingInfo, coreContentListener);
+}
+</div>
+<div class="code-kotlin">
+{
+    //  ...
+    NearItManager.getInstance().addProximityListener(this)
+    // remember to remove the listener when the object is being destroyed with 
+    // NearItManager.getInstance().removeProximityListener(this)
+    //  ...
+}
+override fun foregroundEvent(content: Parcelable, trackingInfo: TrackingInfo) {
+    // handle the event
+    // To extract the content and to have it automatically casted to the appropriate object type
+    NearUtils.parseCoreContents(content, trackingInfo, coreContentListener)
+}
+</div>
+
+
+**Warning:** In this situation you will need to write the code for **Trackings** and to eventually show an **In-app notification**.

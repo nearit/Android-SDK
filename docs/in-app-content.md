@@ -1,7 +1,8 @@
 # Handle In-app Content
 
 After an user **taps on a notification**, you will receive content through an intent to your app launcher activity.
-If you want to just check if the intent carries NearIT content use this method:
+ 
+If you want to check whether the intent carries NearIT content, use this method:
 
 <div class="code-java">
 boolean hasNearItContent = NearUtils.carriesNearItContent(intent);
@@ -19,99 +20,61 @@ NearUtils.parseCoreContents(intent, coreContentListener)
 
 If you want to customize the behavior of background notification see [this page](custom-bkg-notification.md).
 
-## Beacon Interaction Content
-Beacon interaction (beacon ranging) is a peculiar trigger that only works when your app is in the foreground.<br>
-NearIT Android SDK will automatically show heads-up notifications.
+## Intent catching
 
-If you need to disable the default behaviour, call this method in the **onCreate** method of your application: 
+A good strategy is to handle the intent, is in the **onNewIntent** activity method, but also check for **onPostCreate** method, so that you can cover most combinations of activity *launch mode* and activity foreground status. 
 <div class="code-java">
-{
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        NearItManager.getInstance().disableDefaultRangingNotifications();
-        // ...
-    }
-}
-</div>
-<div class="code-kotlin">
-{
-    @Override
-    public void onCreate() {
-        super.onCreate()
-        NearItManager.getInstance().disableDefaultRangingNotifications()
-        // ...
-    }
-}
-</div>
-
-    
-And if you want to receive ranging contents and handle them manually, set a **proximity listener** with the method:
-<div class="code-java">
-{
-    //  ...
-    NearItManager.getInstance().addProximityListener(this);
-    // remember to remove the listener when the object is being destroyed with 
-    // NearItManager.getInstance().removeProximityListener(this);
-    //  ...
+@Override
+protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+    super.onPostCreate(savedInstanceState);
+    onNewIntent(getIntent());
 }
 @Override
-public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
-    // handle the event
-    // To extract the content and to have it automatically casted to the appropriate object type
-    NearUtils.parseCoreContents(content, trackingInfo, coreContentListener);
+protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    if (intent != null &&
+            intent.getExtras() != null &&
+            NearUtils.carriesNearItContent(intent)) {
+        // we got a NearIT intent
+        NearUtils.parseCoreContents(intent, this);
+    }
 }
 </div>
 <div class="code-kotlin">
-{
-    //  ...
-    NearItManager.getInstance().addProximityListener(this)
-    // remember to remove the listener when the object is being destroyed with 
-    // NearItManager.getInstance().removeProximityListener(this)
-    //  ...
+override fun onPostCreate(savedInstanceState: Bundle?) {
+    super.onPostCreate(savedInstanceState)
+    onNewIntent(intent)
 }
-override fun foregroundEvent(content: Parcelable, trackingInfo: TrackingInfo) {
-    // handle the event
-    // To extract the content and to have it automatically casted to the appropriate object type
-    NearUtils.parseCoreContents(content, trackingInfo, coreContentListener)
+override fun onNewIntent(intent: Intent?) {
+    super.onNewIntent(intent)
+    if (intent != null &&
+            intent.extras != null &&
+            NearUtils.carriesNearItContent(intent)) {
+        // we got a NearIT intent
+        NearUtils.parseCoreContents(intent, this)
+    }
 }
 </div>
 
-
-**Warning:** In this situation you will need to write the code for **Trackings** and to eventually show an **In-app notification**.
-
-
-## Trackings
-NearIT allows to track user engagement events on recipes. Any recipe has at least two default events:
-
-  - **Notified**: the user *received* a notification
-  - **Engaged**: the user *tapped* on the notification
-  
-Usually the SDK tracks those events automatically, but if you write custom code to show notification or content (i.e. to receive Beacon interaction content) please make sure that at least the "**notified**" event is tracked.
-<br>**Warning:** Failing in tracking this event cause some NearIT features to not work.
-
-
-You can track **default or custom events** using the "**sendTracking**" method:
-
+If your launcher is a splash activity, you should pass the intent extras with the NearIT content to the next activity. For example:
 <div class="code-java">
-// notified - notification received
-NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
-
-// engaged - notification tapped
-NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
-
-// custom recipe event
-NearItManager.getInstance().sendTracking(trackingInfo, "my awesome custom event");
+@Override
+protected void onNewIntent(Intent intent) {
+    Intent nextActivityIntent = new Intent(this, NextActivity.class);
+    nextActivityIntent.putExtras(intent.getExtras());
+    // eventually you can add other extras and flags to the intent
+    startActivity(nextActivityIntent);
+}
 </div>
 <div class="code-kotlin">
-// notified - notification received
-NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS)
-
-// engaged - notification tapped
-NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS)
-
-// custom recipe event
-NearItManager.getInstance().sendTracking(trackingInfo, "my awesome custom event")
+override fun onNewIntent(intent: Intent?) {
+    intent?.let {
+        val nextActivityIntent = Intent(this, NextActivity::class.java)
+        nextActivityIntent.putExtras(it.extras)
+        // eventually you can add other extras and flags to the intent
+        startActivity(nextActivityIntent) 
+    }
+}
 </div>
 
 ## Content Objects
