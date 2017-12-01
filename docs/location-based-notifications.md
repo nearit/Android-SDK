@@ -7,7 +7,7 @@ If you are also manually including ACCESS_COARSE_LOCATION in your manifest pleas
         android:maxSdkVersion="22"/>
 ```
 
-When you want to start the radar for **geofences and beacons** call this method:
+After you asked for the proper permissions:
 
 <div class="code-java">
 // call this when you are given the proper permission for scanning (ACCESS_FINE_LOCATION)
@@ -26,7 +26,7 @@ To learn how to deal with in-app content once the user taps on the notification,
 If you want to customize your notifications, see this [section](custom-bkg-notification.md).
 
 ___
-**WARNING**: If you experience build or runtime problems with google play services components, make sure to include the 11.4.2 version of any gms dependency in your app. Example:
+**WARNING**: If you experience build or runtime problems with google play services components, make sure to include the 11.6.0 version of any gms dependency in your app. Example:
 ```xml
 compile 'com.google.android.gms:play-services-analytics:11.6.0'
 ```

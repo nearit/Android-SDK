@@ -12,7 +12,7 @@ NearItManager.getInstance().setPushNotificationIcon(R.drawable.ic_my_push_notifi
 </div>
 
 ## Custom Service
-To handle complex use cases, you can write your own IntentService by subclassing the built-in one.
+To handle complex use cases, you can write your own JobIntentService by subclassing the built-in one.
 Let's look at the built-in IntentService manifest declaration:
 ```xml
 <!-- built in service -->
@@ -31,7 +31,7 @@ protected void onHandleWork(@NonNull Intent intent) {
 //  Do whatever you want with the intent, but be aware that, depending on the target,
 //  this might be executed in a jobservice and background limitations apply.<br>
 //  To notify it to the user with a system notification, call 
-//  super.sendSimpleNotification(intent);
+//  super.sendSimpleNotification(this, intent);
 //  this method also sends the proper tracking information to our servers.<br>
 //  If you want to completely customize the user experience, you should implement your logic here.
 //  You may want to use this method:
@@ -59,7 +59,7 @@ override fun onHandleWork(intent: Intent) {
 }
 </div>
 
-Then add your custom IntentService to the manifest
+Then add your custom JobIntentService to the manifest
 ```xml
 <service android:name=".MyCustomJobIntentService"
             android:exported="false"
@@ -94,11 +94,9 @@ If you need to disable the default behaviour, call this method in the **onCreate
 </div>
 <div class="code-kotlin">
 {
-    @Override
-    public void onCreate() {
+    override fun onCreate() {
         super.onCreate()
         NearItManager.getInstance().disableDefaultRangingNotifications()
-        // ...
     }
 }
 </div>
