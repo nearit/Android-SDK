@@ -11,10 +11,10 @@ import it.near.sdk.reactions.feedbackplugin.model.Feedback
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification
 import it.near.sdk.recipes.foreground.ProximityListener
 import it.near.sdk.trackings.TrackingInfo
-import it.near.sdk.utils.CoreContentsListener
+import it.near.sdk.utils.ContentsListener
 import it.near.sdk.utils.NearUtils
 
-class ForegroundActivity : AppCompatActivity(), ProximityListener, CoreContentsListener {
+class ForegroundActivity : AppCompatActivity(), ProximityListener, ContentsListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +26,7 @@ class ForegroundActivity : AppCompatActivity(), ProximityListener, CoreContentsL
     override fun foregroundEvent(content: Parcelable?, trackingInfo: TrackingInfo?) {
         // You will be notified of any foreground content in this method
         // To have the Parcelable object casted appropriately you can use the utility method
-        NearUtils.parseCoreContents(content, trackingInfo, this)
+        NearUtils.parseContents(content, trackingInfo, this)
     }
 
     override fun gotContentNotification(notification: Content?, trackingInfo: TrackingInfo?) {

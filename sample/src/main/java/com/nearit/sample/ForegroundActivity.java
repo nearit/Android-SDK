@@ -12,10 +12,10 @@ import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.foreground.ProximityListener;
 import it.near.sdk.trackings.TrackingInfo;
-import it.near.sdk.utils.CoreContentsListener;
+import it.near.sdk.utils.ContentsListener;
 import it.near.sdk.utils.NearUtils;
 
-public class ForegroundActivity extends AppCompatActivity implements ProximityListener, CoreContentsListener {
+public class ForegroundActivity extends AppCompatActivity implements ProximityListener, ContentsListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,15 +23,13 @@ public class ForegroundActivity extends AppCompatActivity implements ProximityLi
         setContentView(R.layout.activity_foreground);
 
         NearItManager.getInstance().addProximityListener(this);
-
     }
-
 
     @Override
     public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
         // You will be notified of any foreground content in this method
         // To have the Parcelable object casted appropriately you can use the utility method
-        NearUtils.parseCoreContents(content, trackingInfo, this);
+        NearUtils.parseContents(content, trackingInfo, this);
 
     }
 

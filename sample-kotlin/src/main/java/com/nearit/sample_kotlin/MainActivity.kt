@@ -2,10 +2,12 @@ package com.nearit.sample_kotlin
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
-import android.os.Parcelable
+import android.support.v4.app.ActivityCompat
 import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
+import android.view.View
 import android.widget.Toast
 import it.near.sdk.NearItManager
 import it.near.sdk.operation.NearItUserProfile
@@ -15,13 +17,12 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON
 import it.near.sdk.reactions.feedbackplugin.model.Feedback
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification
 import it.near.sdk.recipes.RecipeRefreshListener
-import it.near.sdk.recipes.foreground.ProximityListener
 import it.near.sdk.trackings.TrackingInfo
-import it.near.sdk.utils.CoreContentsListener
+import it.near.sdk.utils.ContentsListener
 import it.near.sdk.utils.NearUtils
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListener {
+class MainActivity : AppCompatActivity(), ContentsListener {
 
     private val NEAR_PERMISSION_REQUEST: Int = 1000
     /**
@@ -35,23 +36,17 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        permission_button.setOnClickListener { requestPermissions() }
-        refresh_button.setOnClickListener { refreshNearRecipes() }
-        ageSetButton.setOnClickListener { profileMyUser() }
-        loginButton.setOnClickListener { userLogInAndOut() }
-
         fakeCrm = FakeCrm()
 
         setLoginButtonText(isUserLoggedIn)
-        NearItManager.getInstance().addProximityListener(this@MainActivity)
     }
 
-    private fun requestPermissions() {
+    fun requestPermissions(view : View) {
         startActivityForResult(PermissionsActivity.createIntent(this@MainActivity), NEAR_PERMISSION_REQUEST)
     }
 
-    private fun refreshNearRecipes() {
+
+    fun refreshNearRecipes(view : View) {
         NearItManager.getInstance().refreshConfigs(object : RecipeRefreshListener {
             override fun onRecipesRefresh() {
                 Toast.makeText(this@MainActivity, "Recipes refreshed", Toast.LENGTH_SHORT).show()
@@ -63,16 +58,15 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
         })
     }
 
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == NEAR_PERMISSION_REQUEST && resultCode == Activity.RESULT_OK) {
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return
+            }
             NearItManager.getInstance().startRadar()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        NearItManager.getInstance().removeProximityListener(this)
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -88,15 +82,19 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
                 NearUtils.carriesNearItContent(intent)) {
             // we got a NearIT intent
 
-            NearUtils.parseCoreContents(intent, this)
+            NearUtils.parseContents(intent, this)
         }
     }
 
-    private fun profileMyUser() {
+    fun profileMyUser(view : View) {
         NearItManager.getInstance().setUserData(KEY_FOR_AGE_FIELD, ageEditText.text.toString())
     }
 
-    private fun userLogInAndOut() {
+    fun triggerCustomAction(view : View) {
+        NearItManager.getInstance().processCustomTrigger("MY_CUSTOM_TRIGGER")
+    }
+
+    fun userLogInAndOut(view : View) {
         // this is an example crm integration
         if (isUserLoggedIn) {
             logout()
@@ -147,10 +145,6 @@ class MainActivity : AppCompatActivity(), ProximityListener, CoreContentsListene
 
     private fun setLoginButtonText(isUserLoggedIn: Boolean) {
         loginButton.text = if (isUserLoggedIn) "logout" else "login"
-    }
-
-    override fun foregroundEvent(content: Parcelable?, trackingInfo: TrackingInfo?) {
-        NearUtils.parseCoreContents(content, trackingInfo, this@MainActivity)
     }
 
     override fun gotContentNotification(notification: Content, trackingInfo: TrackingInfo) {

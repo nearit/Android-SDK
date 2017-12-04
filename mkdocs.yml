@@ -12,7 +12,7 @@ pages:
     - 'User Profiling' : 'user-profiling.md'
   - 'Other resources' :
     - 'Customize Notifications' : 'custom-bkg-notification.md'
-    - 'Custom trackings' : 'custom-trackings.md'
+    - 'Custom Trackings' : 'custom-trackings.md'
     - 'Testing' : 'testing.md'
     - 'Logging' : 'logging.md'
   - 'Samples' :

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -22,12 +21,11 @@ import it.near.sdk.reactions.customjsonplugin.model.CustomJSON;
 import it.near.sdk.reactions.feedbackplugin.model.Feedback;
 import it.near.sdk.reactions.simplenotificationplugin.model.SimpleNotification;
 import it.near.sdk.recipes.RecipeRefreshListener;
-import it.near.sdk.recipes.foreground.ProximityListener;
 import it.near.sdk.trackings.TrackingInfo;
-import it.near.sdk.utils.CoreContentsListener;
+import it.near.sdk.utils.ContentsListener;
 import it.near.sdk.utils.NearUtils;
 
-public class MainActivity extends AppCompatActivity implements ProximityListener, CoreContentsListener {
+public class MainActivity extends AppCompatActivity implements ContentsListener {
 
     private static final String TAG = "MainActivity";
     private static final int NEAR_PERMISSION_REQUEST = 1000;
@@ -54,8 +52,10 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
 
         setLoginButtonText(isUserLoggedIn);
 
-        NearItManager.getInstance().addProximityListener(this);
+    }
 
+    public void triggerCustomAction(View view) {
+        NearItManager.getInstance().processCustomTrigger("MY_TRIGGER");
     }
 
     public void requestPermissions(View view) {
@@ -66,12 +66,12 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         NearItManager.getInstance().refreshConfigs(new RecipeRefreshListener() {
             @Override
             public void onRecipesRefresh() {
-                Toast.makeText(MainActivity.this, "Recipes refreshed", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Refresh successfull", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRecipesRefreshFail() {
-                Toast.makeText(MainActivity.this, "Could not refresh recipes", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Could not refresh", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEAR_PERMISSION_REQUEST &&
                 resultCode == Activity.RESULT_OK) {
+
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
@@ -91,7 +92,6 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        NearItManager.getInstance().removeProximityListener(this);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
                 NearUtils.carriesNearItContent(intent)) {
             // we got a NearIT intent
 
-            NearUtils.parseCoreContents(intent, this);
+            NearUtils.parseContents(intent, this);
         }
     }
 
@@ -180,11 +180,6 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     }
 
     @Override
-    public void foregroundEvent(Parcelable content, TrackingInfo trackingInfo) {
-        NearUtils.parseCoreContents(content, trackingInfo, this);
-    }
-
-    @Override
     public void gotContentNotification(Content notification, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a notification with content", Toast.LENGTH_SHORT).show();
     }
@@ -210,5 +205,4 @@ public class MainActivity extends AppCompatActivity implements ProximityListener
     public void gotFeedbackNotification(Feedback s_notif, TrackingInfo trackingInfo) {
         Toast.makeText(this, "You received a feedback request", Toast.LENGTH_SHORT).show();
     }
-
 }

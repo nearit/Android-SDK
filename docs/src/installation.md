@@ -7,31 +7,48 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk.core:nearitsdk:@@versionNumber@@'
+    compile 'it.near.sdk:nearit:@@versionNumber@@'
 }
 ```
 
-In the *onCreate* method of your Application class, initialize a *NearItManager* object, passing the API key as a String
-
-
+In the project *build.gradle* make sure to include the following:
 ```java
-@Override
-public void onCreate() {
-  super.onCreate();
-  nearItManager = new NearItManager(this, getResources().getString(R.string.nearit_api_key));
+buildscript {
+    dependencies {
+    ...
+    classpath 'com.google.gms:google-services:@@googleServicesNumber@@'
+    }
+}
+allprojects {
+    repositories {
+        maven { url "https://maven.google.com" }
+    }
 }
 ```
 
-You can find the API key on [NearIT web interface](https://go.nearit.com/), under the "SDK Integration" section.
+In your app module `build.gradle` make sure that your `compileSdkVersion` is at least 26.
 
-The constructor for `NearItManager` will try to sync the recipes with our servers. If you need to sync the recipes configuration more often than you call the constructor, call this method:
+In AndroidManifest.xml, add the following element as a child of the `<application>` element, by inserting it just before the closing `</application>` tag:
 
-```java
-nearItManager.refreshConfigs();
+```xml
+<meta-data
+       android:name="near_api_key"
+       android:value="<your-near-api-key>" />
 ```
 
-If you need feedback on whether the refresh was successfull or not, you can use this other version of the method:
+You can find your API key on <a href="https://go.nearit.com/" target="_blank">**NearIT web interface**</a>, under the "SDK Integration" section.
 
-```java
-nearItManager.refreshConfigs(recipeRefreshListener);
-```
+
+##Initialization and data updates##
+
+The SDK **initialization is done automatically** and handles the task of syncing the recipes with our servers when your app starts up, plus it **schedules updates** every few hours so that changes in recipes can reach your users even if they don't open the app.
+
+*Warning:* this feature is only available for devices running Lollipop or newer versions of Android.
+
+However, if you need to sync the recipes configuration at certain times, you can call this method:
+<div class="code-java">
+NearItManager.getInstance().refreshConfigs();
+</div>
+<div class="code-kotlin">
+NearItManager.getInstance().refreshConfigs()
+</div>
