@@ -20,11 +20,7 @@ buildscript {
     // ...
     dependencies {
         // ...
-<<<<<<< HEAD:docs/push-notifications.md
-        classpath 'com.google.gms:google-services:3.1.1' // google-services plugin
-=======
         classpath 'com.google.gms:google-services:@@googleServicesNumber@@' // google-services plugin
->>>>>>> N320-injectVersIntoDocs:docs/src/push-notifications.md
     }
 }
 ```
