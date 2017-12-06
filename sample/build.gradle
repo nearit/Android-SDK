@@ -57,8 +57,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 
-    compile 'it.near.sdk:nearit:2.5.0'
-    // compile project(':nearit')
+    // compile 'it.near.sdk:nearit:2.5.1'
+    compile project(':nearit')
     compile 'com.android.support:appcompat-v7:26.1.0'
 
     testCompile 'junit:junit:4.12'
