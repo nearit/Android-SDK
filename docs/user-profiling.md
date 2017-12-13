@@ -71,7 +71,7 @@ NearItManager.getInstance().setProfileId(profileId);
 NearItManager.getInstance().profileId = profileId
 </div>
 
-Whenever a user **sings out** from your app, you should reset the NearIT profileID:
+Whenever a user **signs out** from your app, you should reset the NearIT profileID:
 <div class="code-java">
 NearItManager.getInstance().resetProfileId(new NearItUserProfile.ProfileFetchListener() {
     @Override
@@ -120,4 +120,5 @@ NearItManager.getInstance().optOut(object : OptOutNotifier {
             }
         })
 </div>
-If the opt-out call is successful, the SDK **will cease to work**, it means the opted out device won't receive any notifications at all.
+
+If the opt-out call is successful all the **user-data** and **trackings** will be deleted and the **SDK will cease to work** (the opted out device won't receive any notifications at all).

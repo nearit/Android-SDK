@@ -37,18 +37,3 @@ In AndroidManifest.xml, add the following element as a child of the `<applicatio
 ```
 
 You can find your API key on <a href="https://go.nearit.com/" target="_blank">**NearIT web interface**</a>, under the "SDK Integration" section.
-
-
-##Initialization and data updates##
-
-The SDK **initialization is done automatically** and handles the task of syncing the recipes with our servers when your app starts up, plus it **schedules updates** every few hours so that changes in recipes can reach your users even if they don't open the app.
-
-*Warning:* this feature is only available for devices running Lollipop or newer versions of Android.
-
-However, if you need to sync the recipes configuration at certain times, you can call this method:
-<div class="code-java">
-NearItManager.getInstance().refreshConfigs();
-</div>
-<div class="code-kotlin">
-NearItManager.getInstance().refreshConfigs()
-</div>
