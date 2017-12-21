@@ -74,7 +74,6 @@ override fun onNewIntent(intent: Intent?) {
         // eventually you can add other extras and flags to the intent
         startActivity(nextActivityIntent) 
     }
->>>>>>> master
 }
 </div>
 
