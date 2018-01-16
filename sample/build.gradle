@@ -52,7 +52,7 @@ android {
 }
 
 dependencies {
-    // compile 'it.near.sdk:nearit:2.5.1'
+    // compile 'it.near.sdk:nearit:2.5.6'
     implementation project(':nearit')
     implementation libraries.near.support
 
