@@ -24,7 +24,7 @@ The recipe carries a coupon and your user has already received it.
 ## Beacons notifications are not working
  
 Note: Beacon detection only works on devices running Android 4.3+ with Bluetooth LE enabled.
-Make sure that your beacon is properly configured, and that the iBeacon package is enabled. If your NearIT app has more than one region in the panel, make sure that those regions are not overlapping in signal. For every beacon on the platform, also make sure that you don???t have more than one physical beacons with the same settings deployed in your space.
+Make sure that your beacon is properly configured, and that the iBeacon package is enabled. If your NearIT app has more than one region in the panel, make sure that those regions are not overlapping in signal. For every beacon on the platform, also make sure that you don’t have more than one physical beacons with the same settings deployed in your space.
 <br>
 ## Push notifications are not working
 

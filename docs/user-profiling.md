@@ -121,4 +121,4 @@ NearItManager.getInstance().optOut(object : OptOutNotifier {
         })
 </div>
 
-If the opt-out call is successful all the **user-data** and **trackings** will be deleted and the **SDK will cease to work** (the opted out device won't receive any notifications at all).
+If the opt-out call is successful all the **user-data** and **trackings** will be deleted and the **SDK will cease to work** (the user's devices will not receive further notifications).

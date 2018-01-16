@@ -25,16 +25,6 @@
         android:text="Start radar"
         android:onClick="requestPermissions"/>
 
-    <Button
-        android:id="@+id/refresh_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:layout_below="@+id/permission_button"
-        style="@style/ButtonStyle"
-        android:text="Refresh recipes"
-        android:onClick="refreshNearRecipes"/>
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,5 +1,4 @@
 buildscript {
-    ext.kotlin_version = '1.1.60'
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         jcenter()
@@ -24,13 +23,13 @@ buildProperties {
     }
 }
 android {
-    compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.2"
 
     defaultConfig {
         applicationId "com.nearit.sample_kotlin"
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -51,17 +50,17 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
 
     // compile 'it.near.sdk:nearit:2.5.1'
-    compile project(':nearit')
-    compile 'com.android.support:appcompat-v7:26.1.0'
+    implementation project(':nearit')
+    implementation libraries.near.support
+    implementation libraries.samples.kotlin_stdlib
 
-    testCompile 'junit:junit:4.12'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    testImplementation libraries.test.junit
+
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }
 
 apply plugin: 'com.google.gms.google-services'

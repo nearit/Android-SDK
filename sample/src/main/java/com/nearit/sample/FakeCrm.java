@@ -1,5 +1,8 @@
 package com.nearit.sample;
 
+import it.near.sdk.NearItManager;
+import it.near.sdk.communication.OptOutNotifier;
+
 public class FakeCrm {
 
     public void logout() {
@@ -14,6 +17,20 @@ public class FakeCrm {
 
     public void saveProfileId(String nearProfileId) {
         // add the near profile to the user data and sync to my server
+    }
+
+    public void optOut() {
+        NearItManager.getInstance().optOut(new OptOutNotifier() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(String error) {
+
+            }
+        });
     }
 
     public interface LoginListener {

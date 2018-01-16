@@ -20,16 +20,12 @@ buildProperties {
 }
 
 android {
-    signingConfigs {
-        config {
-        }
-    }
-    compileSdkVersion 26
-    buildToolsVersion '26.0.2'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.2'
     defaultConfig {
         applicationId "com.nearit.sample"
         minSdkVersion 15
-        targetSdkVersion 26
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
 
@@ -49,19 +45,22 @@ android {
     lintOptions {
         abortOnError false
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    // compile 'it.near.sdk:nearit:2.5.1'
+    implementation project(':nearit')
+    implementation libraries.near.support
+
+    testImplementation libraries.test.junit
+
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
-    // compile 'it.near.sdk:nearit:2.5.1'
-    compile project(':nearit')
-    compile 'com.android.support:appcompat-v7:26.1.0'
-
-    testCompile 'junit:junit:4.12'
 }
 
 apply plugin: 'com.google.gms.google-services'

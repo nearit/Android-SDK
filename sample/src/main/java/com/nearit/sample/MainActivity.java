@@ -144,29 +144,25 @@ public class MainActivity extends AppCompatActivity implements ContentsListener 
     }
 
     private void login() {
-        fakeCrm.login("username", "password", new FakeCrm.LoginListener() {
+        fakeCrm.login("username", "password", userData -> {
+            isUserLoggedIn = true;
+            setLoginButtonText(isUserLoggedIn);
+            String nearProfileFromServer = userData.nearProfileId;
+            if (nearProfileFromServer == null) {
+                // user needs a near profile
+                NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
 
-            @Override
-            public void onLogin(FakeCrm.UserData userData) {
-                isUserLoggedIn = true;
-                setLoginButtonText(isUserLoggedIn);
-                String nearProfileFromServer = userData.nearProfileId;
-                if (nearProfileFromServer == null) {
-                    // user needs a near profile
-                    NearItManager.getInstance().getProfileId(new NearItUserProfile.ProfileFetchListener() {
+                    @Override
+                    public void onProfileId(String profileId) {
+                        fakeCrm.saveProfileId(profileId);
+                    }
 
-                        @Override
-                        public void onProfileId(String profileId) {
-                            fakeCrm.saveProfileId(profileId);
-                        }
-
-                        @Override
-                        public void onError(String error) {}
-                    });
-                } else {
-                    // user already has a near profile
-                    NearItManager.getInstance().setProfileId(nearProfileFromServer);
-                }
+                    @Override
+                    public void onError(String error) {}
+                });
+            } else {
+                // user already has a near profile
+                NearItManager.getInstance().setProfileId(nearProfileFromServer);
             }
         });
     }

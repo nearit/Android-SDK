@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity(), ContentsListener {
                     })
                 } else {
                     // user already has a near profile
-                    NearItManager.getInstance().profileId = nearProfileFromServer
+                    NearItManager.getInstance().setProfileId(nearProfileFromServer)
                 }
             }
         })
