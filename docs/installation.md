@@ -7,7 +7,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.5.7'
+    compile 'it.near.sdk:nearit:2.6.0'
 }
 ```
 
@@ -37,3 +37,13 @@ In AndroidManifest.xml, add the following element as a child of the `<applicatio
 ```
 
 You can find your API key on <a href="https://go.nearit.com/" target="_blank">**NearIT web interface**</a>, under the "SDK Integration" section.
+
+
+## Enable Test Devices
+
+Test Devices allow you to test NearIT features on single devices and is extremely useful for debugging.
+
+Navigate **"Settings > Test devices"** section of NearIT and follow the instructions to enable this feature.
+
+In the same section, you can send invite links to mail addresses. If users have the app installed, they can click the link on their smart-phone to be prompted with a request to enroll their device among the testers.
+

@@ -41,8 +41,8 @@ dependencies {
 apply plugin: 'com.google.gms.google-services'
 ```
 <br><br>
-**5.** Open [NearIT](https://go.nearit.com), select your app and navigate to **“Settings > Push Settings”**.
-Paste your project FCM Key under the **“Setup Android push notifications”** block.
+**5.** Open [NearIT](https://go.nearit.com), select your app and navigate to **"Settings > Push Settings"**.
+Paste your project FCM Key under the **"Setup Android push notifications"** block.
 ![nearitsettings](push_help/fcm_upload.gif "")
 <br><br>
 ___

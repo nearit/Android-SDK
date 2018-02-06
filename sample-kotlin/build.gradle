@@ -1,4 +1,5 @@
 buildscript {
+
     repositories {
         maven { url 'https://maven.fabric.io/public' }
         jcenter()
@@ -51,10 +52,10 @@ android {
 
 dependencies {
 
-    // compile 'it.near.sdk:nearit:2.5.7'
+    // compile 'it.near.sdk:nearit:2.6.0'
     implementation project(':nearit')
     implementation libraries.near.support
-    implementation libraries.samples.kotlin_stdlib
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     testImplementation libraries.test.junit
 

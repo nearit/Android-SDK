@@ -37,7 +37,7 @@
             android:name=".MyBackgroundJIS"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE">
-           <intent-filter>
+            <intent-filter>
                 <action android:name="it.near.sdk.permission.PUSH_MESSAGE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -68,6 +68,18 @@
         <meta-data
             android:name="near_api_key"
             android:value="@string/near_api_key" />
+
+        <!-- To enable test enrollment activity -->
+        <!--<activity
+            android:name="it.near.sdk.utils.device.NearTestEnrollActivity"
+            android:theme="@style/NearTestEnrollStyle">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="YOUR_APP_SCHEME" />
+            </intent-filter>
+        </activity>-->
 
     </application>
 
