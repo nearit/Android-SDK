@@ -1,64 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
+    android:background="@color/near_brand"
     tools:context=".MainActivity">
+
+    <com.nearit.ui_bindings.permissions.views.PermissionBar
+        android:id="@+id/permission_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:invisibleMode="false"
+        app:autostartRadar="true"
+        />
 
     <ImageView
         android:id="@+id/brand"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="60dp"
-        android:background="@drawable/brand"/>
-
-    <Button
-        android:id="@+id/permission_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        style="@style/ButtonStyle"
-        android:text="Start radar"
-        android:onClick="requestPermissions"/>
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/ageEditText"
-            android:layout_width="60dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/refresh_button"
-            android:textColorHint="#333"
-            android:textColorHighlight="#333"
-            android:inputType="number" />
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/ageSetButton"
-            android:layout_below="@+id/refresh_button"
-            android:layout_toRightOf="@id/ageEditText"
-            android:layout_marginLeft="5dp"
-            style="@style/ButtonStyle"
-            android:text="Set Age"
-            android:onClick="profileMyUser"/>
-
-    </LinearLayout>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/loginButton"
-        android:layout_below="@id/ageSetButton"
-        style="@style/ButtonStyle"
-        android:layout_marginTop="24dp"
-        android:onClick="userLogInAndOut"/>
+        android:background="@drawable/nearit"/>
 
 </LinearLayout>
