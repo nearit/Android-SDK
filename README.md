@@ -30,7 +30,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.6.1_sample'
+    compile 'it.near.sdk:nearit:2.6.2_sample2'
 }
 ```
 

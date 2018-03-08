@@ -51,9 +51,8 @@ android {
 }
 
 dependencies {
-
-    // compile 'it.near.sdk:nearit:2.6.1'
-    implementation project(':nearit')
+    compile 'it.near.sdk:nearit:2.6.1'
+    compile 'it.near.sdk:nearit-ui:1.1.12'
     implementation libraries.near.support
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 

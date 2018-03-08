@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:background="@color/near_brand"
+    android:background="@color/colorPrimary"
     tools:context=".MainActivity">
 
     <com.nearit.ui_bindings.permissions.views.PermissionBar
