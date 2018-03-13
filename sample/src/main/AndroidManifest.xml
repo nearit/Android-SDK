@@ -59,7 +59,6 @@
             </intent-filter>
         </service>-->
 
-
         <meta-data
             android:name="near_api_key"
             android:value="@string/near_api_key" />
