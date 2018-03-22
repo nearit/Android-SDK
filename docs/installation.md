@@ -7,7 +7,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.6.3'
+    compile 'it.near.sdk:nearit:2.7.0'
 }
 ```
 
@@ -16,7 +16,7 @@ In the project *build.gradle* make sure to include the following:
 buildscript {
     dependencies {
     ...
-    classpath 'com.google.gms:google-services:3.1.1'
+    classpath 'com.google.gms:google-services:3.2.0'
     }
 }
 allprojects {

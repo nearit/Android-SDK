@@ -26,6 +26,11 @@ class MainActivity : AppCompatActivity() {
         bar.unbindFromActivity()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        bar.onActivityResult(requestCode, resultCode)
+    }
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         onNewIntent(intent)

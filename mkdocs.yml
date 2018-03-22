@@ -13,7 +13,8 @@ pages:
   - 'Other resources' :
     - 'Customize Notifications' : 'custom-bkg-notification.md'
     - 'Custom Trackings' : 'custom-trackings.md'
-    - 'Testing' : 'testing.md'
     - 'Logging' : 'logging.md'
+    - 'Troubleshooting' : 'troubleshooting.md'
+    - 'Before you release' : 'checklist.md'
   - 'Samples' :
     - 'Best Practice on Permissions Request' : 'permission-request-sample.md'

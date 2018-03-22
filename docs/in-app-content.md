@@ -74,7 +74,6 @@ override fun onNewIntent(intent: Intent?) {
         // eventually you can add other extras and flags to the intent
         startActivity(nextActivityIntent) 
     }
->>>>>>> master
 }
 </div>
 
@@ -153,4 +152,31 @@ NearItManager.getInstance().getCoupons(object : CouponListener {
 </div>
 The method will also return already redeemed coupons so you get to decide to filter them if necessary.
 
+## Notifications Inbox
+
+You can get the user notification history calling the method:
+<div class="code-java">
+NearItManager.getInstance().getInbox(new InboxManager.OnInboxMessages() {
+    @Override
+    public void onMessages(@NonNull List<InboxItem> inboxItemList) { 
+    }
+    @Override
+    public void onError(String error) {
+    }
+});
+</div>
+<div class="code-kotlin">
+NearItManager.getInstance().getInbox(object : InboxManager.OnInboxMessages {
+    override fun onMessages(inboxItemList: MutableList<InboxItem>) {
+    }
+    override fun onError(error: String?) {   
+    }
+})
+</div>
+You will receive a list of `InboxItem`, an object that bundles:
+
+- `reaction` : the NearIT content delivered to the user.
+- `trackingInfo`: the tracking info of the interaction.
+- `read` : a boolean indicating if the content was read. This value is determined by recipe trackings.
+- `timestamp` : a timestamp of the interaction.
 

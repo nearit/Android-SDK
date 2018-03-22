@@ -52,4 +52,10 @@ public class MainActivity extends AppCompatActivity {
             NearITUIBindings.onNewIntent(this, intent);
         }
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //  call this method to inform the bar that a result occured so it can hide itself
+        bar.onActivityResult(requestCode, resultCode);
+    }
 }

@@ -52,9 +52,9 @@ android {
 }
 
 dependencies {
-    compile 'it.near.sdk:nearit:2.6.1'
-    compile 'it.near.sdk:nearit-ui:1.1.12'
-    // implementation project(':nearit')
+    // implementation 'it.near.sdk:nearit:2.7.0'
+    implementation 'it.near.sdk:nearit-ui:1.1.12'
+    implementation project(':nearit')
     implementation libraries.near.support
 
     testImplementation libraries.test.junit
