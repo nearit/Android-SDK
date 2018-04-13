@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void triggerCustomAction(View view) {
-        NearItManager.getInstance().processCustomTrigger("MY_TRIGGER");
+        NearItManager.getInstance().triggerInAppEvent("MY_TRIGGER");
     }
 
     @Override

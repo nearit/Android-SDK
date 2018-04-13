@@ -48,6 +48,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun triggerCustomAction(view : View) {
-        NearItManager.getInstance().processCustomTrigger("MY_CUSTOM_TRIGGER")
+        NearItManager.getInstance().triggerInAppEvent("MY_CUSTOM_TRIGGER")
     }
 }
