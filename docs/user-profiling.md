@@ -12,25 +12,35 @@ NearItManager.getInstance().setUserData("name", "John");
 NearItManager.getInstance().setUserData("name", "John")
 </div>
 
-If you have multiple data properties, set them in batch:
+If you want to set a **date** as a value, you have to use the format `MM-DD-YYYY`.
+
+If you want to set a multiple choice data point:
 <div class="code-java">
-HashMap<String, String> userDataMap = new HashMap<>();
-userDataMap.put("name", "John");
-userDataMap.put("age", "23");           // set everything as String
-userDataMap.put("saw_tutorial", "true") // even booleans, the server has all the right logic
-NearItManager.getInstance().setBatchUserData(userDataMap);
+NearMultipleChoiceDataPoint multipleChoice = new NearMultipleChoiceDataPoint();
+multipleChoice.put("food", true);
+multipleChoice.put("drink", true);
+multipleChoice.put("exercise", false);
+NearItManager.getInstance().setUserData("interests", multipleChoice);
 </div>
 <div class="code-kotlin">
-val userDataMap: HashMap<String, String> = hashMapOf()
-with(userDataMap) {
-    put("name", "John")
-    put("age", "23")            // set everything as String
-    put("saw_tutorial", "true") // even booleans, the server has all the right logic
-}
-NearItManager.getInstance().setBatchUserData(userDataMap)
+val multipleChoice = NearMultipleChoiceDataPoint()
+multipleChoice["food"] = true
+multipleChoice["drink"] = true
+multipleChoice["exercise"] = false
+NearItManager.getInstance().setUserData("interests", multipleChoice)
 </div>
 
-If you want to set a **date** as a value, you have to use the format "MM-DD-YYYY".
+**WARNING:** With multiple choice data points you should always provide an object with values for all the keys, even keys whose value did not change. Keys missing from the object will have their value overridden by `false`.
+
+You can delete the value for a certain user data point, passing null as the value for its key:
+<div class="code-java">
+NearItManager.getInstance().setUserData("gender", (String) null);
+NearItManager.getInstance().setUserData("interests", (NearMultipleChoiceDataPoint) null);
+</div>
+<div class="code-kotlin">
+NearItManager.getInstance().setUserData("gender", null as NearMultipleChoiceDataPoint?)
+NearItManager.getInstance().setUserData("interests", null as String?)
+</div>
 
 ## Save the profile ID!
 

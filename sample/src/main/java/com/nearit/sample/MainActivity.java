@@ -10,6 +10,7 @@ import com.nearit.ui_bindings.NearITUIBindings;
 import com.nearit.ui_bindings.permissions.views.PermissionBar;
 
 import it.near.sdk.NearItManager;
+import it.near.sdk.operation.values.NearMultipleChoiceDataPoint;
 import it.near.sdk.utils.NearUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,5 +58,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         //  call this method to inform the bar that a result occured so it can hide itself
         bar.onActivityResult(requestCode, resultCode);
+    }
+
+    public void sendMultiDataPoint(View view) {
+        NearMultipleChoiceDataPoint multi = new NearMultipleChoiceDataPoint();
+        multi.put("food", true);
+        multi.put("drink", true);
+        multi.put("exercise", false);
+        NearItManager.getInstance().setUserData("interests", multi);
     }
 }

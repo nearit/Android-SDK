@@ -26,7 +26,7 @@ String notificationMessage = feedbackFromNear.notificationMessage
 ```
 The recipeId is no longer delivered to the app, now all tracking is done with a `TrackingInfo` object:
 ```java
-NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
+NearItManager.getInstance().sendTracking(trackingInfo, Recipe.OPENED);
 ```
 Consequently, the callback for the proximity listener interface has different arguments:
 ```java
@@ -51,5 +51,5 @@ If you are customizing the notification, you can still use manual trackings:
 ```java
 // to extract the TrackingInfo from the intent:
 // TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
-NearItManager.getInstance().sendTracking(trackingInfo, Recipe.ENGAGED_STATUS);
+NearItManager.getInstance().sendTracking(trackingInfo, Recipe.OPENED);
 ```

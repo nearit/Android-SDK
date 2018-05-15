@@ -37,9 +37,9 @@ protected void onHandleWork(@NonNull Intent intent) {
 //  You may want to use this method:
 //  NearUtils.parseContents(intent, contentListener); // to get casted content in the listener callback methods<br>
 //  IMPORTANT
-//  If you are overriding the default notification mechanism, remember to track the recipe as notified with:
+//  If you are overriding the default notification mechanism, remember to track the recipe as received with:
 //  TrackingInfo trackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO);
-//  NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS);
+//  NearItManager.getInstance().sendTracking(trackingInfo, Recipe.RECEIVED);
 }
 </div>
 <div class="code-kotlin">
@@ -53,9 +53,9 @@ override fun onHandleWork(intent: Intent) {
 //  You may want to use this method:
 //  NearUtils.parseContents(intent, contentListener) // to get casted content in the listener callback methods<br>
 //  IMPORTANT
-//  If you are overriding the default notification mechanism, remember to track the recipe as notified with:
+//  If you are overriding the default notification mechanism, remember to track the recipe as received with:
 //  val trackingInfo: TrackingInfo = intent.getParcelableExtra(NearItIntentConstants.TRACKING_INFO)
-//  NearItManager.getInstance().sendTracking(trackingInfo, Recipe.NOTIFIED_STATUS)
+//  NearItManager.getInstance().sendTracking(trackingInfo, Recipe.RECEIVED)
 }
 </div>
 

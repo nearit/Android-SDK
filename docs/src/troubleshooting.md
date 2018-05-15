@@ -49,9 +49,9 @@ If you just switched your debug build between different firebase projects or Nea
 <br>
 ## Cooldown rules are not applied
 
-Cooldown rules are only applied if the proper trackings are correctly observed. Specifically, cooldown filters are based on the `Notified` recipe trackings. If you are not customizing the notification creation, trackings are automatic.
-If you are customizing background notifications you should track the recipe as `Notified` just before you launch your notifications. 
-If you are customizing foreground notifications with a `ProximityListener`, you should track the recipe as `Notified` just before you show the user any indication that a content is available.
+Cooldown rules are only applied if the proper trackings are correctly observed. Specifically, cooldown filters are based on the `Received` recipe trackings. If you are not customizing the notification creation, trackings are automatic.
+If you are customizing background notifications you should track the recipe as `Received` just before you launch your notifications. 
+If you are customizing foreground notifications with a `ProximityListener`, you should track the recipe as `Received` just before you show the user any indication that a content is available.
 
 ## After switching between environments, some features stopped working
 

@@ -26,4 +26,10 @@
         android:layout_marginBottom="60dp"
         android:background="@drawable/nearit"/>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PROFILATI"
+        android:onClick="sendMultiDataPoint"/>
+
 </LinearLayout>
