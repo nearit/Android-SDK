@@ -64,8 +64,8 @@ If you want to customize your notifications, see this [section](custom-bkg-notif
 
 ___
 
-**WARNING**: If you experience build or runtime problems with google play services components, make sure to include the 12.0.0 version of any gms dependency in your app. Example:
+**WARNING**: If you experience build or runtime problems with google play services components, make sure to include the 12.0.1 version of any gms dependency in your app. Example:
 ```xml
-compile 'com.google.android.gms:play-services-analytics:12.0.0'
+compile 'com.google.android.gms:play-services-analytics:12.0.1'
 ```
 Conflicting play services version may result in compile-time and run-time errors.
