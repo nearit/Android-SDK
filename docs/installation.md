@@ -7,7 +7,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.9.1'
+    compile 'it.near.sdk:nearit:2.9.0'
     compile 'com.google.firebase:firebase-messaging:12.0.1'
     compile 'com.google.firebase:firebase-core:12.0.1'
     compile 'com.google.android.gms:play-services-location:12.0.1'
