@@ -63,9 +63,10 @@ If you want to customize your notifications, see this [section](custom-bkg-notif
 
 
 ___
-
-**WARNING**: If you experience build or runtime problems with google play services components, make sure to include the @@playServicesNumber@@ version of any gms dependency in your app. Example:
+**WARNING**: If you experience build or runtime problems with google play services or firebase components, make sure to include the following versions of these dependencies in your app:
 ```xml
-compile 'com.google.android.gms:play-services-analytics:@@playServicesNumber@@'
+compile "com.google.firebase:firebase-messaging:@@firebase_messaging_version@@"
+compile "com.google.firebase:firebase-core:@@firebase_core_version@@"
+compile "com.google.android.gms:play-services-location:@@play_services_location@@"
 ```
 Conflicting play services version may result in compile-time and run-time errors.

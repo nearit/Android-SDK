@@ -39,6 +39,19 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+
+    flavorDimensions "environment"
+    productFlavors {
+        staging {
+            dimension "environment"
+            applicationIdSuffix ".staging"
+            versionNameSuffix "-staging"
+        }
+        production {
+            dimension "environment"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -52,7 +65,7 @@ android {
 
 dependencies {
     // implementation 'it.near.sdk:nearit:2.9.3'
-    implementation 'it.near.sdk:nearit-ui:1.1.13'
+    implementation 'it.near.sdk:nearit-ui:1.1.19'
     implementation project(':nearit')
     implementation libraries.near.support
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -64,4 +77,4 @@ dependencies {
     })
 }
 
-apply plugin: 'com.google.gms.google-services'
+// apply plugin: 'com.google.gms.google-services'

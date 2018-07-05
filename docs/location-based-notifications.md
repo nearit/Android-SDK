@@ -21,8 +21,10 @@ To learn how to deal with in-app content once the user taps on the notification,
 If you want to customize your notifications, see this [section](custom-bkg-notification.md).
 
 ___
-**WARNING**: If you experience build or runtime problems with google play services components, make sure to include the 12.0.1 version of any gms dependency in your app. Example:
+**WARNING**: If you experience build or runtime problems with google play services or firebase components, make sure to include the following versions of these dependencies in your app:
 ```xml
-compile 'com.google.android.gms:play-services-analytics:12.0.1'
+compile "com.google.firebase:firebase-messaging:17.0.0"
+compile "com.google.firebase:firebase-core:16.0.0"
+compile "com.google.android.gms:play-services-location:15.0.1"
 ```
 Conflicting play services version may result in compile-time and run-time errors.

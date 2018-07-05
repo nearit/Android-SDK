@@ -36,6 +36,19 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
     }
+
+    flavorDimensions "environment"
+    productFlavors {
+        staging {
+            dimension "environment"
+            applicationIdSuffix ".staging"
+            versionNameSuffix "-staging"
+        }
+        production {
+            dimension "environment"
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
@@ -53,15 +66,9 @@ android {
 
 dependencies {
     // implementation 'it.near.sdk:nearit:2.9.3'
-    implementation 'it.near.sdk:nearit-ui:1.1.13'
-    implementation project(':nearit')
+    implementation 'it.near.sdk:nearit-ui:1.1.19'
+    implementation(project(':nearit'))
     implementation libraries.near.support
-
-    testImplementation libraries.test.junit
-
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
 }
 
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'
