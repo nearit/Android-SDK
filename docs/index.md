@@ -1,5 +1,9 @@
 # NearIT Android SDK
 
+# Warning: this doc is deprecated
+
+Visit the new documentation at this [link](https://docs.nearit.com/android/installation/)
+
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
 [![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://developer.android.com/about/dashboards/index.html#Platform) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/nearit/Android-SDK/blob/master/LICENSE)
