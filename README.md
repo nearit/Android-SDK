@@ -54,4 +54,4 @@ For information on how to integrate all NearIT features in your app, follow the 
 
 ## Migration
 
-If you are upgrading your NearIt dependency from 2.1.x follow this [guide](docs/src/migration-2.2.md)
+If you are upgrading your NearIt dependency from 2.1.x follow this [guide](migration-2.2.md)
