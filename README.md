@@ -5,7 +5,7 @@ NearIT allows to engage app users by sending **context-aware targeted content**.
 [![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://developer.android.com/about/dashboards/index.html#Platform) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
 [![Download](https://api.bintray.com/packages/nearit/NearIT-Android-SDK/it.near.sdk%3Anearit/images/download.svg) ](https://bintray.com/nearit/NearIT-Android-SDK/it.near.sdk%3Anearit/_latestVersion)
 ![CircleCI](https://circleci.com/bb/Synapsev2/android-sdk.svg?style=svg&circle-token=db61dcef36cb607df966d415992533076b8927bc)
-[![Documentation Status](https://readthedocs.org/projects/nearit-android/badge/?version=latest)](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/nearit-android/badge/?version=latest)](https://docs.nearit.com/android/installation/)
 
 ## Recipes
 
@@ -50,7 +50,7 @@ NearItManager.getInstance()
 
 ## Integration guide
 
-For information on how to integrate all NearIT features in your app, follow the [integration guide](http://nearit-android.readthedocs.io/en/latest/?badge=latest)
+For information on how to integrate all NearIT features in your app, follow the [integration guide](https://docs.nearit.com/android/installation/)
 
 ## Migration
 
