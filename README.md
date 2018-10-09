@@ -30,7 +30,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.9.5'
+    compile 'it.near.sdk:nearit:2.10'
 }
 ```
 
@@ -52,6 +52,7 @@ NearItManager.getInstance()
 
 For information on how to integrate all NearIT features in your app, follow the [integration guide](https://docs.nearit.com/android/installation/)
 
+
 ## Migration
 
-If you are upgrading your NearIt dependency from 2.1.x follow this [guide](migration-2.2.md)
+If you are upgrading your NearIt dependency from 2.1.x follow this [guide](docs/src/migration-2.2.md)
