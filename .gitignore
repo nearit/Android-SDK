@@ -45,3 +45,6 @@ captures/
 /captures
 .idea
 /testinstrumentator/testinstrumentator.iml
+
+docs/*
+!docs/migration/
