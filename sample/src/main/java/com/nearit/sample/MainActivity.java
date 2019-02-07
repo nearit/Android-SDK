@@ -11,9 +11,13 @@ import com.nearit.ui_bindings.permissions.views.PermissionBar;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.operation.values.NearMultipleChoiceDataPoint;
+import it.near.sdk.recipes.inbox.model.HistoryItem;
+import it.near.sdk.recipes.inbox.update.NotificationHistoryUpdateListener;
 import it.near.sdk.utils.NearUtils;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements NotificationHistoryUpdateListener {
 
     private PermissionBar bar;
 
@@ -23,16 +27,25 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         bar = findViewById(R.id.permission_bar);
         bar.bindToActivity(this, 6);
+
+        NearItManager.getInstance().addNotificationHistoryUpdateListener(this);
     }
 
     public void triggerCustomAction(View view) {
         NearItManager.getInstance().triggerInAppEvent("MY_TRIGGER");
     }
 
+    public void onInbox(View view) {
+        Intent intent = NearITUIBindings.getInstance(this).notificationHistoryIntentBuilder().build();
+        startActivity(intent);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         bar.unbindFromActivity();
+
+        NearItManager.getInstance().removeNotificationHistoryUpdateListener(this);
     }
 
     @Override
@@ -66,5 +79,13 @@ public class MainActivity extends AppCompatActivity {
         multi.put("drink", true);
         multi.put("exercise", false);
         NearItManager.getInstance().setUserData("interests", multi);
+    }
+
+    @Override
+    public void onNotificationHistoryUpdated(List<HistoryItem> items) {
+        int unreadCount = 0;
+        for (HistoryItem item : items) {
+            if (item.isNew) unreadCount++;
+        }
     }
 }
