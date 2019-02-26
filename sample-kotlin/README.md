@@ -6,4 +6,12 @@
 ```
 nearit_api=my-secret-near-api-key
 ```
+* Comment this line in the `build.gradle` file
+```
+implementation(project(':nearit'))
+```
+* Remove the comment in this line in the `build.gradle` file
+```
+// implementation 'it.near.sdk:nearit:2.11.2'
+```
 * Build and run the sample
