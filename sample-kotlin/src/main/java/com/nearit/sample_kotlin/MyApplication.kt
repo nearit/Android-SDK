@@ -14,7 +14,7 @@ class MyApplication : Application() {
         NearItManager.getInstance().setPushNotificationIcon(R.drawable.googleg_disabled_color_18)
 
         NearItManager.getInstance().addNotificationHistoryUpdateListener { items ->
-            val count = items.count { !it.isNew }
+            val count = items.count { it.isNew }
             Toast.makeText(this, count.toString(), LENGTH_SHORT).show()
         }
 

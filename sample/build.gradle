@@ -65,7 +65,7 @@ android {
 }
 
 dependencies {
-    // implementation 'it.near.sdk:nearit:2.11.2'
+    // implementation 'it.near.sdk:nearit:2.12.0'
     implementation 'it.near.sdk:nearit-ui:2.11.2'
     implementation(project(':nearit'))
 
