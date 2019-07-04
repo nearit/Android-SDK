@@ -10,4 +10,8 @@ class CustomFirebaseMessagingService : FirebaseMessagingService() {
         NearFcmListenerService.processRemoteMessage(remoteMessage)
     }
 
+    override fun onNewToken(refreshedToken: String?) {
+        NearFcmListenerService.sendRegistrationToServer(refreshedToken)
+    }
+
 }

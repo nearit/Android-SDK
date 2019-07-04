@@ -20,12 +20,12 @@ buildProperties {
 }
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '28.0.3'
+    compileSdkVersion 29
+    buildToolsVersion '29.0.0'
     defaultConfig {
         applicationId "com.nearit.sample"
-        minSdkVersion 15
-        targetSdkVersion 27
+        minSdkVersion 16
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
 
@@ -65,11 +65,11 @@ android {
 }
 
 dependencies {
-    // implementation 'it.near.sdk:nearit:2.12.2'
-    implementation 'it.near.sdk:nearit-ui:2.11.2'
+    // implementation 'it.near.sdk:nearit:2.12.3'
+    implementation 'it.near.sdk:nearit-ui:2.11.9'
     implementation(project(':nearit'))
 
-    implementation libraries.near.support
+    implementation 'androidx.appcompat:appcompat:1.0.2'
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -24,13 +24,13 @@ Once the settings are configured, **everyone** - even people without technical s
 ## Installation
 
 Minimum Requirements:
-- Android API level: 15+
+- Android API level: 16+
 
 To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.12.2'
+    compile 'it.near.sdk:nearit:2.12.3'
 }
 ```
 

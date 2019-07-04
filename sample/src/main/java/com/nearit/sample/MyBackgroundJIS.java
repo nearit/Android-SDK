@@ -1,7 +1,8 @@
 package com.nearit.sample;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import it.near.sdk.recipes.background.NearBackgroundJobIntentService;
 

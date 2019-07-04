@@ -2,7 +2,8 @@ package com.nearit.sample;
 
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import it.near.sdk.NearItManager;
 import it.near.sdk.reactions.contentplugin.model.Content;

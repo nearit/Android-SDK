@@ -12,4 +12,9 @@ public class CustomFirebaseMessagingService extends FirebaseMessagingService {
     public void onMessageReceived(RemoteMessage remoteMessage) {
         NearFcmListenerService.processRemoteMessage(remoteMessage);
     }
+
+    @Override
+    public void onNewToken(String refreshedToken) {
+        NearFcmListenerService.sendRegistrationToServer(refreshedToken);
+    }
 }

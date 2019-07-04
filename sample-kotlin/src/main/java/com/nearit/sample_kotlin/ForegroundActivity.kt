@@ -2,7 +2,7 @@ package com.nearit.sample_kotlin
 
 import android.os.Bundle
 import android.os.Parcelable
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import it.near.sdk.NearItManager
 import it.near.sdk.reactions.contentplugin.model.Content
 import it.near.sdk.reactions.couponplugin.model.Coupon

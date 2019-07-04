@@ -2,9 +2,9 @@ package com.nearit.sample_kotlin
 
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import com.nearit.ui_bindings.NearITUIBindings
 import com.nearit.ui_bindings.permissions.views.PermissionBar
 import it.near.sdk.NearItManager
