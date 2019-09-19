@@ -2,7 +2,7 @@
 
 NearIT allows to engage app users by sending **context-aware targeted content**.
 
-[![API](https://img.shields.io/badge/API-15%2B-blue.svg?style=flat)](https://developer.android.com/about/dashboards/index.html#Platform) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
+[![API](https://img.shields.io/badge/API-16%2B-blue.svg?style=flat)](https://developer.android.com/about/dashboards/index.html#Platform) [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](LICENSE)
 [![Download](https://api.bintray.com/packages/nearit/NearIT-Android-SDK/it.near.sdk%3Anearit/images/download.svg) ](https://bintray.com/nearit/NearIT-Android-SDK/it.near.sdk%3Anearit/_latestVersion)
 ![CircleCI](https://circleci.com/bb/Synapsev2/android-sdk.svg?style=svg&circle-token=db61dcef36cb607df966d415992533076b8927bc)
 [![Documentation Status](https://img.shields.io/badge/docs-visit-green.svg)](https://docs.nearit.com/android/installation/)
@@ -30,7 +30,7 @@ To start using the SDK, include this in your app *build.gradle*
 
 ```java
 dependencies {
-    compile 'it.near.sdk:nearit:2.12.3'
+    compile 'it.near.sdk:nearit:2.12.4'
 }
 ```
 
