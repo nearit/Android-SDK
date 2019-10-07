@@ -15,41 +15,144 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:invisibleMode="false"
-        app:autostartRadar="true"
-        />
+        app:autostartRadar="true" />
 
     <ImageView
         android:id="@+id/brand"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="30dp"
-        android:layout_marginBottom="60dp"
         android:background="@drawable/nearit"/>
 
-    <Button
-        android:id="@+id/button3"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="openInbox"
-        android:text="Inbox" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="50dp"
+        android:paddingStart="50dp"
+        android:paddingRight="50dp"
+        android:paddingEnd="50dp">
 
-    <LinearLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-        <Button
-                android:id="@+id/button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:onClick="clearBadge"
-                android:text="Viste!"/>
-
-        <TextView
-                android:id="@+id/unreadCount"
+            <Button
+                android:id="@+id/inboxButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"/>
-    </LinearLayout>
+                android:onClick="openNotificationHistory"
+                android:background="#333"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="@string/inbox_button_label" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="openCouponHistory"
+                android:background="#333"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="Coupon History" />
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="triggerCustomAction"
+                android:background="#333"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="Trigger in-app event" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:text="Will trigger with the key \'my_trigger\'"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="profileMale"
+                    android:background="#333"
+                    android:textColor="#fff"
+                    android:layout_weight="1"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:text="Male" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="profileFemale"
+                    android:background="#333"
+                    android:textColor="#fff"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:text="Female" />
+
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:onClick="resetProfile"
+                    android:background="#333"
+                    android:textColor="#fff"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:text="Reset" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:textAlignment="center"
+                android:text="Set profilation for \'gender\'"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="readTheDocs"
+                android:background="#333"
+                android:textColor="#fff"
+                android:layout_marginTop="40dp"
+                android:focusable="true"
+                android:clickable="true"
+                android:foreground="?attr/selectableItemBackground"
+                android:text="Read our docs" />
+
+        </LinearLayout>
+
+    </ScrollView>
 
 </LinearLayout>

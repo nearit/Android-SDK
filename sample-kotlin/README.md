@@ -12,6 +12,6 @@ implementation(project(':nearit'))
 ```
 * Remove the comment in this line in the `build.gradle` file
 ```
-// implementation 'it.near.sdk:nearit:2.11.2'
+// implementation 'it.near.sdk:nearit:X.Y.Z'
 ```
 * Build and run the sample

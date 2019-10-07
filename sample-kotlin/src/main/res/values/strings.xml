@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kotlin Sample</string>
+    <string name="inbox_button_label">Notification History (%d)</string>
 </resources>

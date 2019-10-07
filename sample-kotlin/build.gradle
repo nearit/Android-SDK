@@ -25,7 +25,7 @@ buildProperties {
 }
 android {
     compileSdkVersion 29
-    buildToolsVersion '29.0.0'
+    buildToolsVersion '29.0.2'
 
     defaultConfig {
         applicationId "com.nearit.sample_kotlin"
@@ -64,11 +64,11 @@ android {
 }
 
 dependencies {
-    // implementation 'it.near.sdk:nearit:2.12.3'
+    // implementation 'it.near.sdk:nearit:2.12.4'
     implementation 'it.near.sdk:nearit-ui:2.11.9'
     implementation project(':nearit')
 
-    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     testImplementation libraries.test.junit
